@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>後台管理 — 房地合一稅試算</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d0d0c;
+    --surface: #161614;
+    --surface2: #1e1e1b;
+    --border: #2a2a27;
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.12);
+    --text: #e0dccc;
+    --text-dim: #8a8578;
+    --text-muted: #4a4640;
+    --red: #c0392b;
+    --green: #27ae60;
+    --blue: #2980b9;
+    --code: #1a1a17;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* Layout */
+  .app { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  aside {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-brand {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-brand h1 {
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .sidebar-brand p {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  nav { padding: 12px 0; flex: 1; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+
+  .nav-item.active {
+    color: var(--gold);
+    background: var(--gold-dim);
+    border-left-color: var(--gold);
+  }
+
+  .nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+
+  .nav-group-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 16px 20px 6px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .sidebar-footer a {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 8px 0;
+  }
+
+  .sidebar-footer a:hover { color: #e8c97a; }
+
+  /* Content */
+  .content { flex: 1; overflow-y: auto; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-title { font-size: 0.92rem; color: var(--text); font-weight: 400; }
+
+  .topbar-actions { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    border-radius: 2px;
+  }
+
+  .btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+  .btn-primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #0d0d0c;
+    font-weight: 500;
+  }
+
+  .btn-primary:hover { background: #e8c97a; border-color: #e8c97a; }
+
+  .btn-danger {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(192,57,43,0.06);
+  }
+
+  /* Sections */
+  .section { display: none; padding: 32px; max-width: 900px; }
+  .section.active { display: block; }
+
+  .section-header { margin-bottom: 28px; }
+  .section-header h2 { font-size: 1.2rem; font-weight: 400; color: var(--text); margin-bottom: 6px; }
+  .section-header p { font-size: 0.82rem; color: var(--text-dim); }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--gold);
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-body { padding: 20px; }
+
+  /* Form */
+  .form-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(42,42,39,0.5);
+  }
+
+  .form-row:last-child { border-bottom: none; }
+
+  .form-label {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    padding-top: 10px;
+  }
+
+  .form-label small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .form-control {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    width: 100%;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .form-control:focus { border-color: var(--gold); }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  .form-group { display: flex; gap: 10px; align-items: center; }
+  .form-unit { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+
+  /* Tax rate table */
+  .rate-table { width: 100%; border-collapse: collapse; }
+  .rate-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  .rate-table td {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(42,42,39,0.4);
+    vertical-align: middle;
+  }
+  .rate-table tr:last-child td { border-bottom: none; }
+
+  .rate-input {
+    background: var(--code);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .rate-input:focus { border-color: var(--gold); }
+
+  /* CPI table */
+  .cpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+
+  .cpi-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+  }
+
+  .cpi-year { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+  .cpi-val-input {
+    background: var(--code);
+    border: 1px solid var(--border);
+    color: var(--gold);
+    padding: 5px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .cpi-val-input:focus { border-color: var(--gold); }
+
+  .add-cpi-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  /* Status badge */
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    border-radius: 2px;
+  }
+  .badge-ok { background: rgba(39,174,96,0.12); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+  .badge-warn { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    border-left: 3px solid var(--gold);
+    padding: 14px 20px;
+    font-size: 0.82rem;
+    color: var(--text);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.error { border-color: var(--red); border-left-color: var(--red); }
+
+  /* Preview box */
+  .preview-box {
+    background: var(--code);
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  /* Changelog */
+  .change-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .change-time { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; white-space: nowrap; min-width: 140px; }
+  .change-desc { font-size: 0.82rem; color: var(--text-dim); }
+
+  @media (max-width: 768px) {
+    aside { display: none; }
+    .section { padding: 20px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside>
+    <div class="sidebar-brand">
+      <h1>⚙ 後台管理</h1>
+      <p>房地合一稅試算工具</p>
+    </div>
+
+    <nav>
+      <div class="nav-group-label">基本設定</div>
+      <div class="nav-item active" onclick="switchSection('brand')">
+        <span class="nav-icon">🏷</span> 品牌與外觀
+      </div>
+      <div class="nav-item" onclick="switchSection('rules')">
+        <span class="nav-icon">📋</span> 稅率規則
+      </div>
+      <div class="nav-item" onclick="switchSection('rates')">
+        <span class="nav-icon">📊</span> CPI 調整表
+      </div>
+      <div class="nav-group-label">內容維護</div>
+      <div class="nav-item" onclick="switchSection('text')">
+        <span class="nav-icon">✏️</span> 文字說明
+      </div>
+      <div class="nav-item" onclick="switchSection('legal')">
+        <span class="nav-icon">⚖️</span> 免責聲明
+      </div>
+      <div class="nav-group-label">系統</div>
+      <div class="nav-item" onclick="switchSection('export')">
+        <span class="nav-icon">💾</span> 匯出 / 匯入
+      </div>
+      <div class="nav-item" onclick="switchSection('log')">
+        <span class="nav-icon">📝</span> 更新記錄
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="index.html" target="_blank">→ 開啟前台試算</a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="content">
+
+    <!-- ── Brand ── -->
+    <div class="section active" id="section-brand">
+      <div class="topbar">
+        <span class="topbar-title">品牌與外觀</span>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="saveSection('brand')">儲存變更</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+
+        <div class="card">
+          <div class="card-header">品牌資訊</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">工具名稱<small>顯示在 Header 左上</small></div>
+              <input class="form-control" id="cfg-brand" placeholder="房地合一稅試算">
+            </div>
+            <div class="form-row">
+              <div class="form-label">副標題<small>名稱下方的小字</small></div>
+              <input class="form-control" id="cfg-brandSubtitle" placeholder="個人・房地合一 2.0・...">
+            </div>
+            <div class="form-row">
+              <div class="form-label">版本號<small>右上角標籤</small></div>
+              <input class="form-control" id="cfg-version" placeholder="v1.3 · 2026/5">
+            </div>
+            <div class="form-row">
+              <div class="form-label">頁尾署名<small>左下角顯示</small></div>
+              <input class="form-control" id="cfg-footerCredit" placeholder="房地合一稅試算工具">
+            </div>
+            <div class="form-row">
+              <div class="form-label">資料更新日期<small>頁尾右下角</small></div>
+              <input class="form-control" id="cfg-updatedDate" placeholder="2026-05-02" type="date">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Rules ── -->
+    <div class="section" id="section-rules">
+      <div class="topbar">
+        <span class="topbar-title">稅率規則</span>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="saveSection('rules')">儲存變更</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+
+        <div class="card">
+          <div class="card-header">持有期間稅率級距</div>
+          <div class="card-body">
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:16px;">依持有年數由短到長排列。最後一筆的「持有上限（年）」設超大值即代表「此年數以上」。</p>
+            <table class="rate-table">
+              <thead>
+                <tr>
+                  <th>說明標籤</th>
+                  <th>持有上限（年）</th>
+                  <th>稅率（%）</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="rate-tbody"></tbody>
+            </table>
+            <button class="btn" style="margin-top:14px;" onclick="addRateRow()">+ 新增級距</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">自住優惠設定</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">免稅額上限<small>超過部分才按優惠稅率課</small></div>
+              <div class="form-group">
+                <input class="form-control" id="cfg-selfuseExemptLimit" type="number" placeholder="400">
+                <span class="form-unit">萬</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">優惠稅率<small>超過免稅額的部分</small></div>
+              <div class="form-group">
+                <input class="form-control" id="cfg-selfuseTaxRate" type="number" placeholder="10">
+                <span class="form-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">移轉費用推計設定</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">推計比率<small>成交價 × 此比率</small></div>
+              <div class="form-group">
+                <input class="form-control" id="cfg-transferEstimateRate" type="number" placeholder="3">
+                <span class="form-unit">%</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-label">推計上限<small>推計金額不超過此值</small></div>
+              <div class="form-group">
+                <input class="form-control" id="cfg-transferEstimateCap" type="number" placeholder="30">
+                <span class="form-unit">萬</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CPI ── -->
+    <div class="section" id="section-rates">
+      <div class="topbar">
+        <span class="topbar-title">CPI 調整表</span>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="saveSection('rates')">儲存變更</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+
+        <div class="card">
+          <div class="card-header">
+            年度 CPI 指數
+            <span class="badge badge-ok">以 2016 年 = 1.000 為基準</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:16px;">用於繼承取得情境的成本調整。請填入各年度相對 2016 年的 CPI 比率（例：2022 年通膨後填 1.057）。</p>
+            <div class="cpi-grid" id="cpi-grid"></div>
+            <div class="add-cpi-row">
+              <input class="form-control" id="new-cpi-year" type="number" placeholder="年份（例：2027）" style="max-width:180px;">
+              <input class="form-control" id="new-cpi-val" type="number" step="0.001" placeholder="指數（例：1.145）" style="max-width:180px;">
+              <button class="btn btn-primary" onclick="addCpiRow()">新增</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Text ── -->
+    <div class="section" id="section-text">
+      <div class="topbar">
+        <span class="topbar-title">文字說明</span>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="saveSection('text')">儲存變更</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+        <div class="card">
+          <div class="card-header">取得方式說明文字</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">一般買賣<small>說明文字</small></div>
+              <textarea class="form-control" id="txt-normal" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-label">自住房地<small>說明文字</small></div>
+              <textarea class="form-control" id="txt-selfuse" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-label">繼承取得<small>說明文字</small></div>
+              <textarea class="form-control" id="txt-inherit" rows="3"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-label">配偶贈與<small>說明文字</small></div>
+              <textarea class="form-control" id="txt-gift" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-muted);padding:4px 0;">※ 文字說明目前儲存在設定中，前台會自動讀取（下一版功能）</p>
+      </div>
+    </div>
+
+    <!-- ── Legal ── -->
+    <div class="section" id="section-legal">
+      <div class="topbar">
+        <span class="topbar-title">免責聲明</span>
+        <div class="topbar-actions">
+          <button class="btn btn-primary" onclick="saveSection('legal')">儲存變更</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+        <div class="card">
+          <div class="card-header">免責聲明文字</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-label">聲明內容<small>顯示在試算結果頁底部</small></div>
+              <textarea class="form-control" id="cfg-disclaimer" rows="6"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Export ── -->
+    <div class="section" id="section-export">
+      <div class="topbar">
+        <span class="topbar-title">匯出 / 匯入</span>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+
+        <div class="card">
+          <div class="card-header">匯出設定</div>
+          <div class="card-body">
+            <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:16px;">將目前所有設定匯出成 JSON 檔案，可備份或移轉到其他環境。</p>
+            <button class="btn btn-primary" onclick="exportConfig()">⬇ 下載設定檔（config.json）</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">匯入設定</div>
+          <div class="card-body">
+            <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:16px;">上傳之前匯出的 config.json 來還原設定。<strong style="color:var(--red);">注意：會覆蓋目前所有設定。</strong></p>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importConfig()">
+              <button class="btn" onclick="document.getElementById('import-file').click()">⬆ 選擇設定檔</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">重置為預設值</div>
+          <div class="card-body">
+            <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:16px;">清除所有自訂設定，回到出廠預設值。</p>
+            <button class="btn btn-danger" onclick="resetConfig()">⚠ 重置所有設定</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">目前設定 JSON 預覽</div>
+          <div class="card-body">
+            <div class="preview-box" id="json-preview"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Log ── -->
+    <div class="section" id="section-log">
+      <div class="topbar">
+        <span class="topbar-title">更新記錄</span>
+        <div class="topbar-actions">
+          <button class="btn" onclick="clearLog()">清除記錄</button>
+        </div>
+      </div>
+      <div style="padding:32px;max-width:900px;">
+        <div class="card">
+          <div class="card-header">變更歷史</div>
+          <div class="card-body" id="log-list">
+            <p style="font-size:0.82rem;color:var(--text-muted);">尚無記錄。儲存設定後會自動記錄。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG LAYER
+// ═══════════════════════════════════════════
+function getDefaultConfig() {
+  return {
+    brand: '房地合一稅試算',
+    brandSubtitle: '個人・房地合一 2.0・2021/7/1 起適用',
+    version: 'v1.3 · 2026/5',
+    updatedDate: '2026-05-02',
+    footerCredit: '房地合一稅試算工具',
+    selfuseExemptLimit: 400,
+    selfuseTaxRate: 10,
+    transferEstimateRate: 3,
+    transferEstimateCap: 30,
+    disclaimer: '本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
+    texts: {
+      normal:  '你用錢買進這間房，現在要賣掉。沒有自住滿 6 年的條件、不是繼承來的、不是配偶贈與來的。',
+      selfuse: '你（或配偶／未成年子女）在這間房連續設籍並實際居住滿 6 年以上，期間沒出租、沒做生意、過去 6 年沒用過自住優惠。課稅所得 400 萬以下免稅，超過部分稅率 10%。',
+      inherit: '這間房是你從家人繼承來的（例如父母過世）。持有期間自動合併「被繼承人持有 + 你持有」。取得成本是「繼承時的房屋評定現值 + 公告土地現值」，系統自動套 CPI 調整。',
+      gift:    '這間房是配偶贈與給你的。持有期間追溯到配偶當初買房的日期。取得成本沿用配偶當初買房的成本（不做 CPI 調整）。',
+    },
+    taxRates: [
+      { maxYears: 2,   rate: 45, label: '持有 ≤ 2 年' },
+      { maxYears: 5,   rate: 35, label: '持有 2-5 年' },
+      { maxYears: 10,  rate: 20, label: '持有 5-10 年' },
+      { maxYears: 999, rate: 15, label: '持有 > 10 年' }
+    ],
+    cpiTable: {
+      '2016': 1.000, '2017': 1.008, '2018': 1.015, '2019': 1.021,
+      '2020': 1.017, '2021': 1.022, '2022': 1.057, '2023': 1.092,
+      '2024': 1.112, '2025': 1.125, '2026': 1.130
+    }
+  };
+}
+
+function loadConfig() {
+  const saved = localStorage.getItem('rlandy_config');
+  if (saved) { try { return JSON.parse(saved); } catch(e) {} }
+  return getDefaultConfig();
+}
+
+function saveConfig(cfg) {
+  localStorage.setItem('rlandy_config', JSON.stringify(cfg));
+  addLog('儲存設定');
+  updateJsonPreview(cfg);
+}
+
+let cfg = loadConfig();
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function switchSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'export') updateJsonPreview(cfg);
+  if (id === 'log') renderLog();
+}
+
+// ═══════════════════════════════════════════
+// FILL FORMS
+// ═══════════════════════════════════════════
+function fillForms() {
+  // Brand
+  setVal('cfg-brand', cfg.brand);
+  setVal('cfg-brandSubtitle', cfg.brandSubtitle);
+  setVal('cfg-version', cfg.version);
+  setVal('cfg-updatedDate', cfg.updatedDate);
+  setVal('cfg-footerCredit', cfg.footerCredit);
+
+  // Rules
+  setVal('cfg-selfuseExemptLimit', cfg.selfuseExemptLimit);
+  setVal('cfg-selfuseTaxRate', cfg.selfuseTaxRate);
+  setVal('cfg-transferEstimateRate', cfg.transferEstimateRate);
+  setVal('cfg-transferEstimateCap', cfg.transferEstimateCap);
+
+  // Legal
+  setVal('cfg-disclaimer', cfg.disclaimer);
+
+  // Texts
+  setVal('txt-normal', cfg.texts?.normal || '');
+  setVal('txt-selfuse', cfg.texts?.selfuse || '');
+  setVal('txt-inherit', cfg.texts?.inherit || '');
+  setVal('txt-gift', cfg.texts?.gift || '');
+
+  // Tax rates
+  renderRateTable();
+
+  // CPI
+  renderCpiGrid();
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val || '';
+}
+
+// ═══════════════════════════════════════════
+// RATE TABLE
+// ═══════════════════════════════════════════
+function renderRateTable() {
+  const tbody = document.getElementById('rate-tbody');
+  tbody.innerHTML = '';
+  (cfg.taxRates || []).forEach((tier, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="rate-input" value="${tier.label}" onchange="updateRate(${i},'label',this.value)"></td>
+      <td><input class="rate-input" type="number" value="${tier.maxYears}" onchange="updateRate(${i},'maxYears',+this.value)" style="max-width:80px;"></td>
+      <td><input class="rate-input" type="number" value="${tier.rate}" onchange="updateRate(${i},'rate',+this.value)" style="max-width:80px;"></td>
+      <td><button class="btn btn-danger" style="padding:5px 10px;font-size:0.75rem;" onclick="removeRate(${i})">刪除</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateRate(i, field, val) { cfg.taxRates[i][field] = val; }
+function addRateRow() {
+  cfg.taxRates.push({ label: '新級距', maxYears: 15, rate: 10 });
+  renderRateTable();
+}
+function removeRate(i) {
+  cfg.taxRates.splice(i, 1);
+  renderRateTable();
+}
+
+// ═══════════════════════════════════════════
+// CPI GRID
+// ═══════════════════════════════════════════
+function renderCpiGrid() {
+  const grid = document.getElementById('cpi-grid');
+  grid.innerHTML = '';
+  Object.entries(cfg.cpiTable || {}).sort((a,b) => +a[0]-+b[0]).forEach(([yr, val]) => {
+    const div = document.createElement('div');
+    div.className = 'cpi-item';
+    div.innerHTML = `
+      <div class="cpi-year">${yr} 年</div>
+      <input class="cpi-val-input" type="number" step="0.001" value="${val}" onchange="cfg.cpiTable['${yr}']=+this.value">
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function addCpiRow() {
+  const yr = document.getElementById('new-cpi-year').value;
+  const val = parseFloat(document.getElementById('new-cpi-val').value);
+  if (!yr || isNaN(val)) { toast('請填入年份和指數', true); return; }
+  cfg.cpiTable[yr] = val;
+  renderCpiGrid();
+  document.getElementById('new-cpi-year').value = '';
+  document.getElementById('new-cpi-val').value = '';
+}
+
+// ═══════════════════════════════════════════
+// SAVE SECTIONS
+// ═══════════════════════════════════════════
+function saveSection(sec) {
+  if (sec === 'brand') {
+    cfg.brand = document.getElementById('cfg-brand').value;
+    cfg.brandSubtitle = document.getElementById('cfg-brandSubtitle').value;
+    cfg.version = document.getElementById('cfg-version').value;
+    cfg.updatedDate = document.getElementById('cfg-updatedDate').value;
+    cfg.footerCredit = document.getElementById('cfg-footerCredit').value;
+  }
+  if (sec === 'rules') {
+    cfg.selfuseExemptLimit = +document.getElementById('cfg-selfuseExemptLimit').value;
+    cfg.selfuseTaxRate = +document.getElementById('cfg-selfuseTaxRate').value;
+    cfg.transferEstimateRate = +document.getElementById('cfg-transferEstimateRate').value;
+    cfg.transferEstimateCap = +document.getElementById('cfg-transferEstimateCap').value;
+    // taxRates already updated inline
+  }
+  if (sec === 'rates') {
+    // cpiTable already updated inline
+  }
+  if (sec === 'text') {
+    if (!cfg.texts) cfg.texts = {};
+    cfg.texts.normal  = document.getElementById('txt-normal').value;
+    cfg.texts.selfuse = document.getElementById('txt-selfuse').value;
+    cfg.texts.inherit = document.getElementById('txt-inherit').value;
+    cfg.texts.gift    = document.getElementById('txt-gift').value;
+  }
+  if (sec === 'legal') {
+    cfg.disclaimer = document.getElementById('cfg-disclaimer').value;
+  }
+
+  saveConfig(cfg);
+  addLog(`儲存「${secName(sec)}」設定`);
+  toast('已儲存 ✓ 前台試算即時生效');
+}
+
+function secName(s) {
+  return {brand:'品牌',rules:'稅率規則',rates:'CPI表',text:'文字說明',legal:'免責聲明'}[s] || s;
+}
+
+// ═══════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════
+function exportConfig() {
+  const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `rlandy-config-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  addLog('匯出設定檔');
+}
+
+function importConfig() {
+  const file = document.getElementById('import-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      cfg = imported;
+      saveConfig(cfg);
+      fillForms();
+      addLog('匯入設定檔：' + file.name);
+      toast('設定已匯入 ✓');
+    } catch(err) {
+      toast('JSON 格式錯誤，無法匯入', true);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetConfig() {
+  if (!confirm('確定要重置所有設定嗎？這個動作無法復原。')) return;
+  cfg = getDefaultConfig();
+  saveConfig(cfg);
+  fillForms();
+  addLog('重置為預設值');
+  toast('已重置為預設值');
+}
+
+function updateJsonPreview(c) {
+  const el = document.getElementById('json-preview');
+  if (el) el.textContent = JSON.stringify(c, null, 2);
+}
+
+// ═══════════════════════════════════════════
+// CHANGE LOG
+// ═══════════════════════════════════════════
+function addLog(msg) {
+  const logs = JSON.parse(localStorage.getItem('rlandy_log') || '[]');
+  logs.unshift({ time: new Date().toLocaleString('zh-TW'), msg });
+  if (logs.length > 50) logs.pop();
+  localStorage.setItem('rlandy_log', JSON.stringify(logs));
+}
+
+function renderLog() {
+  const logs = JSON.parse(localStorage.getItem('rlandy_log') || '[]');
+  const el = document.getElementById('log-list');
+  if (!logs.length) {
+    el.innerHTML = '<p style="font-size:0.82rem;color:var(--text-muted);">尚無記錄。</p>';
+    return;
+  }
+  el.innerHTML = logs.map(l =>
+    `<div class="change-item">
+      <div class="change-time">${l.time}</div>
+      <div class="change-desc">${l.msg}</div>
+    </div>`
+  ).join('');
+}
+
+function clearLog() {
+  if (!confirm('確定清除所有更新記錄？')) return;
+  localStorage.removeItem('rlandy_log');
+  renderLog();
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function toast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (isError ? ' error' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+fillForms();
+</script>
+</body>
+</html>
