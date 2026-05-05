@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>房地合一稅試算｜信義房屋</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --red:#C00000; --red-dark:#9a0000; --red-light:#fdf0f0; --red-mid:#f5d5d5;
+    --gold:#b8860b;
+    --bg:#f5f3f0; --white:#ffffff; --surface2:#edeae6;
+    --border:#e0dad3; --border-dark:#c8bfb5;
+    --text:#1a1410; --text-dim:#5a4e44; --text-muted:#9a8e84;
+    --green:#2e7d52;
+    --shadow-sm:0 1px 4px rgba(0,0,0,0.06);
+    --shadow-md:0 4px 16px rgba(0,0,0,0.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:400;min-height:100vh;line-height:1.7;}
+
+  /* Header */
+  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  .header-left{display:flex;align-items:center;gap:16px;}
+  .sinyi-emblem{width:38px;height:38px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:0.1em;line-height:1.15;}
+  .sinyi-name small{display:block;font-size:0.62rem;color:var(--text-muted);font-weight:400;letter-spacing:0.05em;font-family:'Noto Sans TC',sans-serif;}
+  .hd{width:1px;height:28px;background:var(--border);}
+  .tool-title{font-size:0.88rem;color:var(--text-dim);}
+  .header-contact{display:flex;align-items:center;gap:10px;}
+  .contact-btn{display:flex;align-items:center;gap:7px;padding:7px 14px;font-size:0.78rem;font-family:inherit;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;border-radius:2px;}
+  .btn-phone{background:var(--red);color:white;border:1.5px solid var(--red);}
+  .btn-phone:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 3px 10px rgba(192,0,0,.25);}
+  .btn-line{background:#06C755;color:white;border:1.5px solid #06C755;}
+  .btn-line:hover{background:#05a847;transform:translateY(-1px);}
+
+  /* Progress */
+  .progress-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;overflow-x:auto;height:52px;}
+  .step-item{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .step-num{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border-dark);display:flex;align-items:center;justify-content:center;font-size:.68rem;color:var(--text-muted);font-weight:500;transition:all .3s;}
+  .step-item.active .step-num{background:var(--red);border-color:var(--red);color:white;}
+  .step-item.done .step-num{background:var(--red-light);border-color:var(--red);color:var(--red);}
+  .step-label{font-size:.72rem;color:var(--text-muted);white-space:nowrap;}
+  .step-item.active .step-label{color:var(--red);font-weight:500;}
+  .step-item.done .step-label{color:var(--text-dim);}
+  .step-sep{width:20px;height:1px;background:var(--border);margin:0 4px;flex-shrink:0;}
+
+  /* Main */
+  main{max-width:740px;margin:0 auto;padding:48px 24px 100px;}
+  .step-panel{display:none;animation:fadeUp .3s ease;}
+  .step-panel.active{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .step-tag{font-size:.67rem;color:var(--red);letter-spacing:.2em;text-transform:uppercase;font-weight:500;margin-bottom:10px;}
+  h2{font-family:'Noto Serif TC',serif;font-size:1.55rem;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:6px;}
+  .step-desc{color:var(--text-dim);font-size:.88rem;margin-bottom:36px;}
+
+  /* Hero banner */
+  .hero-banner{background:var(--red);padding:26px 30px;margin-bottom:32px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;}
+  .hero-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border:20px solid rgba(255,255,255,.06);border-radius:50%;}
+  .hero-banner-icon{font-size:2.2rem;flex-shrink:0;}
+  .hero-banner-text h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:white;font-weight:600;margin-bottom:4px;}
+  .hero-banner-text p{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.5;}
+
+  /* Type cards */
+  .type-grid{display:grid;gap:10px;margin-bottom:36px;}
+  .type-card{background:var(--white);border:1.5px solid var(--border);padding:20px 22px;cursor:pointer;transition:all .2s;position:relative;box-shadow:var(--shadow-sm);}
+  .type-card:hover{border-color:var(--red);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+  .type-card.selected{border-color:var(--red);background:var(--red-light);box-shadow:0 0 0 1px var(--red),var(--shadow-sm);}
+  .type-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;transition:background .2s;}
+  .type-card.selected::before{background:var(--red);}
+  .type-card-title{font-family:'Noto Serif TC',serif;font-weight:700;font-size:1rem;color:var(--text);margin-bottom:5px;}
+  .type-card.selected .type-card-title{color:var(--red);}
+  .type-card-desc{font-size:.8rem;color:var(--text-muted);line-height:1.6;}
+
+  /* Form */
+  .field-group{margin-bottom:22px;}
+  .field-label{font-size:.83rem;color:var(--text-dim);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:500;}
+  .field-required{font-size:.64rem;color:var(--red);border:1px solid var(--red);padding:1px 5px;background:var(--red-light);}
+  .field-tip{font-size:.75rem;color:var(--text-muted);margin-top:6px;}
+  .input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);background:var(--white);transition:border-color .2s;box-shadow:var(--shadow-sm);}
+  .input-wrap:focus-within{border-color:var(--red);box-shadow:0 0 0 3px var(--red-light);}
+  .input-wrap.error{border-color:#e53e3e;}
+  .input-wrap input{flex:1;background:transparent;border:none;outline:none;padding:11px 14px;color:var(--text);font-size:.95rem;font-family:inherit;font-weight:500;}
+  .input-wrap input::placeholder{color:var(--text-muted);font-weight:400;}
+  .input-unit{padding:0 14px;color:var(--text-muted);font-size:.82rem;border-left:1px solid var(--border);}
+  input[type="date"]{background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;font-size:.9rem;font-family:inherit;outline:none;width:100%;transition:all .2s;box-shadow:var(--shadow-sm);}
+  input[type="date"]:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-light);}
+  .auto-sum{background:var(--surface2);border:1.5px solid var(--border);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+  .auto-sum-label{font-size:.82rem;color:var(--text-dim);}
+  .auto-sum-val{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:var(--red);font-weight:600;}
+
+  /* Checkbox */
+  .check-item{display:flex;align-items:flex-start;gap:13px;padding:13px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+  .check-box{width:20px;height:20px;border:1.5px solid var(--border-dark);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--white);transition:all .2s;border-radius:2px;}
+  .check-box.checked{background:var(--red);border-color:var(--red);}
+  .check-box.checked::after{content:'✓';color:white;font-size:.72rem;font-weight:700;}
+  .check-text{font-size:.85rem;color:var(--text-dim);line-height:1.5;}
+
+  /* Boxes */
+  .warn-box{background:#fff8f8;border:1.5px solid #fca5a5;border-left:4px solid #ef4444;padding:13px 16px;font-size:.8rem;color:var(--text-dim);line-height:1.65;margin-bottom:24px;}
+  .info-box{background:#fffbeb;border:1.5px solid #fcd34d;border-left:4px solid var(--gold);padding:13px 16px;font-size:.8rem;color:var(--text-dim);line-height:1.65;margin-bottom:24px;}
+
+  /* Toggle */
+  .toggle-row{display:flex;align-items:center;gap:13px;padding:12px 0;cursor:pointer;}
+  .toggle{width:42px;height:24px;background:var(--border-dark);border-radius:12px;position:relative;transition:background .2s;flex-shrink:0;}
+  .toggle.on{background:var(--red);}
+  .toggle::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .toggle.on::after{left:21px;}
+  .toggle-label{font-size:.85rem;color:var(--text-dim);}
+
+  /* Transfer mode */
+  .transfer-mode-switch{display:flex;gap:8px;margin-bottom:22px;}
+  .mode-btn{padding:8px 16px;border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);font-size:.8rem;cursor:pointer;font-family:inherit;transition:all .2s;}
+  .mode-btn.active{border-color:var(--red);color:var(--red);background:var(--red-light);font-weight:500;}
+  .estimate-info{background:#fffbeb;border:1.5px solid #fcd34d;border-left:4px solid var(--gold);padding:12px 16px;font-size:.82rem;color:var(--text-dim);display:none;margin-bottom:16px;}
+
+  /* Buttons */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:22px;border-top:1px solid var(--border);}
+  .btn{padding:11px 26px;font-size:.85rem;font-family:inherit;font-weight:500;cursor:pointer;transition:all .2s;border-radius:2px;}
+  .btn-back{background:var(--white);border:1.5px solid var(--border-dark);color:var(--text-dim);}
+  .btn-back:hover{border-color:var(--text-dim);color:var(--text);}
+  .btn-next{background:var(--red);border:1.5px solid var(--red);color:white;box-shadow:0 2px 8px rgba(192,0,0,.18);}
+  .btn-next:hover{background:var(--red-dark);transform:translateY(-1px);}
+  .btn-calc{background:var(--red);border:1.5px solid var(--red);color:white;font-size:.95rem;padding:13px 36px;font-weight:700;letter-spacing:.08em;}
+  .btn-calc:hover{background:var(--red-dark);transform:translateY(-1px);}
+
+  /* Review table */
+  .review-table{width:100%;border-collapse:collapse;margin-bottom:28px;}
+  .review-table td{padding:10px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+  .review-table td:first-child{color:var(--text-muted);width:44%;padding-right:16px;}
+  .review-table td:last-child{color:var(--text);font-weight:500;}
+
+  /* Results */
+  #result-panel{display:none;animation:fadeUp .4s ease;}
+  .result-hero{background:var(--red);padding:34px 36px 30px;margin-bottom:14px;text-align:center;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(192,0,0,.18);}
+  .result-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border:30px solid rgba(255,255,255,.05);border-radius:50%;}
+  .result-hero-label{font-size:.75rem;color:rgba(255,255,255,.7);letter-spacing:.2em;margin-bottom:10px;}
+  .result-hero-amt{font-family:'Noto Serif TC',serif;font-size:3rem;font-weight:700;color:white;line-height:1.1;margin-bottom:8px;position:relative;z-index:1;}
+  .result-hero-sub{font-size:.8rem;color:rgba(255,255,255,.7);position:relative;z-index:1;}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .result-card{background:var(--white);border:1.5px solid var(--border);padding:20px;box-shadow:var(--shadow-sm);}
+  .result-card-label{font-size:.73rem;color:var(--text-muted);letter-spacing:.08em;margin-bottom:7px;}
+  .result-card-val{font-family:'Noto Serif TC',serif;font-size:1.45rem;color:var(--text);font-weight:600;}
+  .result-card.highlight{border-color:var(--red);background:var(--red-light);margin-bottom:14px;}
+  .result-card.highlight .result-card-val{color:var(--red);font-size:1.7rem;}
+
+  .loan-section{background:var(--white);border:1.5px solid var(--border);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .loan-section h3{font-size:.85rem;color:var(--text-dim);margin-bottom:14px;font-weight:500;}
+
+  .reverse-section{background:var(--surface2);border:1.5px solid var(--border);padding:24px;margin-bottom:14px;}
+  .reverse-section h3{font-family:'Noto Serif TC',serif;font-size:1rem;color:var(--red);margin-bottom:5px;font-weight:700;}
+  .reverse-section p{font-size:.8rem;color:var(--text-muted);margin-bottom:16px;}
+  .reverse-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+  .reverse-row label{font-size:.82rem;color:var(--text-dim);min-width:90px;}
+  .reverse-result{background:var(--white);border:1.5px solid var(--border);padding:9px 14px;font-family:'Noto Serif TC',serif;font-size:1.1rem;color:var(--red);min-width:110px;text-align:right;font-weight:600;}
+
+  /* Accordion */
+  .accordion-header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;cursor:pointer;border-top:1px solid var(--border);font-size:.85rem;color:var(--text-dim);user-select:none;font-weight:500;}
+  .accordion-header:hover{color:var(--red);}
+  .accordion-content{display:none;padding-bottom:16px;font-size:.82rem;color:var(--text-muted);line-height:1.9;}
+  .accordion-content.open{display:block;}
+  .calc-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+  .calc-row.total{border-top:2px solid var(--red);border-bottom:none;color:var(--red);font-weight:700;padding-top:10px;margin-top:4px;}
+
+  /* Contact strip */
+  .result-contact-strip{background:var(--red);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .rcs-text strong{display:block;font-family:'Noto Serif TC',serif;font-size:.95rem;color:white;font-weight:700;margin-bottom:3px;}
+  .rcs-text span{font-size:.78rem;color:rgba(255,255,255,.75);}
+  .rcs-btns{display:flex;gap:10px;flex-shrink:0;}
+  .rcs-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;font-family:inherit;border:none;}
+  .rcs-btn-phone{background:white;color:var(--red);}
+  .rcs-btn-phone:hover{background:#fff0f0;transform:translateY(-1px);}
+  .rcs-btn-line{background:#06C755;color:white;}
+  .rcs-btn-line:hover{background:#05a847;transform:translateY(-1px);}
+
+  /* Actions */
+  .result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  .btn-action{padding:10px 18px;font-size:.8rem;font-family:inherit;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:var(--white);color:var(--text-dim);font-weight:400;border-radius:2px;}
+  .btn-action:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+
+  /* Disclaimer */
+  .disclaimer{margin-top:14px;padding:20px;border:1.5px solid var(--border);background:var(--white);font-size:.78rem;color:var(--text-muted);line-height:1.8;}
+  .disclaimer strong{color:var(--text-dim);}
+
+  /* Error */
+  .error-msg{font-size:.78rem;color:#e53e3e;margin-top:6px;display:none;}
+  .divider{border:none;border-top:1px solid var(--border);margin:22px 0;}
+
+  /* Footer */
+  footer{background:var(--text);border-top:3px solid var(--red);padding:22px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  .footer-brand{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
+  .footer-info{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
+  .footer-contact{display:flex;gap:10px;align-items:center;}
+
+  @media(max-width:640px){
+    header{padding:0 16px;height:56px;}
+    .tool-title,.hd{display:none;}
+    .progress-wrap{padding:0 16px;}
+    main{padding:30px 16px 80px;}
+    h2{font-size:1.28rem;}
+    .result-hero-amt{font-size:2.3rem;}
+    .result-grid{grid-template-columns:1fr;}
+    footer{padding:18px 16px;flex-direction:column;align-items:flex-start;}
+    .result-contact-strip{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="sinyi-emblem">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
+    </div>
+    <div class="sinyi-name">信義房屋<small>文心高工店</small></div>
+    <div class="hd"></div>
+    <span class="tool-title">房地合一稅試算</span>
+  </div>
+  <div class="header-contact">
+    <a class="contact-btn btn-phone" href="tel:0933317625">📞 0933-317-625</a>
+    <a class="contact-btn btn-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      加 LINE 好友
+    </a>
+  </div>
+</header>
+
+<div class="progress-wrap" id="progress-bar"></div>
+
+<main>
+
+<!-- STEP 1 -->
+<div class="step-panel active" id="step-1">
+  <div class="hero-banner">
+    <div class="hero-banner-icon">🏠</div>
+    <div class="hero-banner-text">
+      <h3>房地合一稅快速試算</h3>
+      <p>輸入房屋資料，立即試算應繳稅額與稅後實拿<br>有疑問歡迎來電或加 LINE 詢問</p>
+    </div>
+  </div>
+  <div class="step-tag">STEP 01</div>
+  <h2>你的房子是怎麼取得的？</h2>
+  <p class="step-desc">選一個最符合你狀況的情境</p>
+  <div class="type-grid">
+    <div class="type-card" data-type="normal" onclick="selectType(this)">
+      <div class="type-card-title">💰 一般買賣</div>
+      <div class="type-card-desc">你用錢買進這間房，現在要賣掉。沒有自住滿 6 年的條件、不是繼承來的、不是配偶贈與來的。</div>
+    </div>
+    <div class="type-card" data-type="selfuse" onclick="selectType(this)">
+      <div class="type-card-title">🏡 自住房地（優惠稅率）</div>
+      <div class="type-card-desc">你（或配偶／未成年子女）連續設籍並實際居住滿 6 年以上。課稅所得 400 萬以下免稅，超過部分稅率 10%。</div>
+    </div>
+    <div class="type-card" data-type="inherit" onclick="selectType(this)">
+      <div class="type-card-title">📋 繼承取得</div>
+      <div class="type-card-desc">這間房是你從家人繼承來的。持有期間自動合併「被繼承人 + 你」。取得成本為繼承時評定現值，系統自動套 CPI 調整。</div>
+    </div>
+    <div class="type-card" data-type="gift" onclick="selectType(this)">
+      <div class="type-card-title">💑 配偶贈與取得</div>
+      <div class="type-card-desc">這間房是配偶贈與給你的。持有期間追溯到配偶當初買房的日期，取得成本沿用配偶當初買房成本。</div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <div></div>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 2A 自住 -->
+<div class="step-panel" id="step-selfuse">
+  <div class="step-tag">STEP 02 · 自住確認</div>
+  <h2>確認自住 4 要件</h2>
+  <p class="step-desc">4 項要件必須全部成立，缺一項就不能用優惠稅率</p>
+  <div class="warn-box">⚠ 所得稅法 §4-5 + §14-4。4 個條件必須<strong>同時成立</strong>。亂勾的話國稅局會核退並補稅 + 罰鍰。</div>
+  <div class="field-group">
+    <div class="field-label">自住起算日</div>
+    <input type="date" id="selfuse-start-date" min="2010-01-01">
+  </div>
+  <div id="selfuse-checks">
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div class="check-text">本人／配偶／未成年子女連續設籍此屋並實際居住 ≥ 6 年</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div class="check-text">期間內沒出租、沒做生意、沒用來營業</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div class="check-text">本人與配偶、未成年子女，在交易前 6 年內未曾適用過自住優惠</div>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 2B 繼承 -->
+<div class="step-panel" id="step-inherit">
+  <div class="step-tag">STEP 02 · 繼承資料</div>
+  <h2>繼承相關日期與成本</h2>
+  <p class="step-desc">系統自動合計被繼承人持有時間，並套 CPI 調整</p>
+  <div class="field-group">
+    <div class="field-label">被繼承人原始取得日</div>
+    <input type="date" id="inherit-orig-date">
+  </div>
+  <div class="toggle-row" onclick="toggleInheritMerge()">
+    <div class="toggle on" id="toggle-inherit-merge"></div>
+    <div class="toggle-label">合計被繼承人持有期間（所得稅法 §4-5 第一項第四款）</div>
+  </div>
+  <div class="info-box" style="margin-top:12px;">通常勾選比較有利。若被繼承人持有 &lt; 2 年，合計反而吃 45% 高稅率，這時取消勾選。</div>
+  <div class="field-group">
+    <div class="field-label">繼承登記完成日<span class="field-required">必填</span></div>
+    <input type="date" id="inherit-register-date" min="2016-01-01">
+    <div class="field-tip">房地合一稅新制適用 2016/1/1 起取得的房地</div>
+  </div>
+  <div class="field-group">
+    <div class="field-label">繼承時房屋評定現值</div>
+    <div class="input-wrap"><input type="number" id="inherit-house-val" placeholder="例：200" oninput="updateInheritSum()"><span class="input-unit">萬</span></div>
+  </div>
+  <div class="field-group">
+    <div class="field-label">繼承時公告土地現值</div>
+    <div class="input-wrap"><input type="number" id="inherit-land-val" placeholder="例：300" oninput="updateInheritSum()"><span class="input-unit">萬</span></div>
+  </div>
+  <div class="field-group">
+    <div class="field-label">繼承登記雜費（代書費、規費等）</div>
+    <div class="input-wrap"><input type="number" id="inherit-misc" placeholder="0" oninput="updateInheritSum()"><span class="input-unit">元</span></div>
+  </div>
+  <div class="auto-sum">
+    <span class="auto-sum-label">取得成本合計（CPI 調整前）</span>
+    <span class="auto-sum-val" id="inherit-sum">0 萬</span>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 2C 配偶贈與 -->
+<div class="step-panel" id="step-gift">
+  <div class="step-tag">STEP 02 · 配偶贈與</div>
+  <h2>配偶贈與相關資料</h2>
+  <p class="step-desc">持有時間追溯到配偶當初買房的日期</p>
+  <div class="field-group">
+    <div class="field-label">配偶當初買這間房的日期<span class="field-required">必填</span></div>
+    <input type="date" id="gift-spouse-buy-date">
+  </div>
+  <div class="field-group">
+    <div class="field-label">贈與給你的日期<span class="field-required">必填</span></div>
+    <input type="date" id="gift-transfer-date" min="2016-01-01">
+  </div>
+  <div class="field-group">
+    <div class="field-label">配偶當初買這間房的價格<span class="field-required">必填</span></div>
+    <div class="input-wrap"><input type="number" id="gift-price" placeholder="例：1000" oninput="updateGiftSum()"><span class="input-unit">萬</span></div>
+  </div>
+  <hr class="divider">
+  <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">配偶買房時的費用（可選填）</p>
+  <div class="field-group"><div class="field-label">契稅</div><div class="input-wrap"><input type="number" id="gift-deed-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="gift-stamp-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="gift-agent-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">仲介費</div><div class="input-wrap"><input type="number" id="gift-broker-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">裝修費</div><div class="input-wrap"><input type="number" id="gift-reno-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="gift-other-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="auto-sum">
+    <span class="auto-sum-label">配偶買房費用合計</span>
+    <span class="auto-sum-val" id="gift-sum">0 元</span>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 3 日期 -->
+<div class="step-panel" id="step-dates">
+  <div class="step-tag">STEP 03</div>
+  <h2>這間房的重要日期</h2>
+  <p class="step-desc">你持有多久會決定稅率是多少</p>
+  <div class="field-group">
+    <div class="field-label">買進完成所有權移轉登記日<span class="field-required">必填</span></div>
+    <input type="date" id="buy-date" min="2016-01-01" onchange="updateHoldPeriod()">
+    <div class="field-tip">不是簽約日，是地政事務所登記到你名下的那一天</div>
+  </div>
+  <div class="field-group" style="margin-top:20px;">
+    <div class="field-label">出售完成所有權移轉登記日（或預計日）<span class="field-required">必填</span></div>
+    <input type="date" id="sell-date" onchange="updateHoldPeriod()">
+  </div>
+  <div class="auto-sum" id="hold-display" style="display:none;">
+    <span class="auto-sum-label">持有期間（自動計算）</span>
+    <span class="auto-sum-val" id="hold-text">—</span>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 4 成交價 -->
+<div class="step-panel" id="step-price">
+  <div class="step-tag">STEP 04</div>
+  <h2>這間房你要賣多少？</h2>
+  <p class="step-desc">買方答應給你的成交總價（含車位）</p>
+  <div class="field-group">
+    <div class="field-label">成交價<span class="field-required">必填</span></div>
+    <div class="input-wrap" id="sell-price-wrap"><input type="number" id="sell-price" placeholder="例：1500"><span class="input-unit">萬</span></div>
+    <div class="error-msg" id="sell-price-err">請輸入成交價</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 5 購入成本 -->
+<div class="step-panel" id="step-cost">
+  <div class="step-tag">STEP 05</div>
+  <h2>你當初買這間房花了多少？</h2>
+  <p class="step-desc">當初付給賣方的總價</p>
+  <div class="field-group">
+    <div class="field-label">購入價金<span class="field-required">必填</span></div>
+    <div class="input-wrap" id="buy-price-wrap"><input type="number" id="buy-price" placeholder="例：1000"><span class="input-unit">萬</span></div>
+    <div class="error-msg" id="buy-price-err">請輸入購入價金</div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 6 取得費用 -->
+<div class="step-panel" id="step-buy-fees">
+  <div class="step-tag">STEP 06</div>
+  <h2>買房時付了哪些費用？</h2>
+  <p class="step-desc">這些費用都能從稅裡扣掉。不確定的就留空</p>
+  <div class="field-group"><div class="field-label">契稅</div><div class="input-wrap"><input type="number" id="buy-deed-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">買進時繳給政府的稅，通常是房屋現值 × 6%</div></div>
+  <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="buy-stamp-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="buy-agent-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">委託地政士辦理過戶，通常 1–2 萬</div></div>
+  <div class="field-group"><div class="field-label">仲介費（買入時）</div><div class="input-wrap"><input type="number" id="buy-broker-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><div class="field-label">履保費</div><div class="input-wrap"><input type="number" id="buy-escrow-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group">
+    <div class="field-label">裝修費</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div class="check-box" id="reno-check" onclick="toggleReno()"></div>
+      <span style="font-size:.8rem;color:var(--text-muted);">我確認此裝修為增置／改良（有單據，非一般修繕）</span>
+    </div>
+    <div class="input-wrap"><input type="number" id="buy-reno-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div>
+  </div>
+  <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="buy-other-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="auto-sum">
+    <span class="auto-sum-label">取得時費用合計</span>
+    <span class="auto-sum-val" id="buy-fee-sum">0 元</span>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 7 移轉費用 -->
+<div class="step-panel" id="step-sell-fees">
+  <div class="step-tag">STEP 07</div>
+  <h2>賣房時付了哪些費用？</h2>
+  <p class="step-desc">這些費用也能扣稅。不確定就留空，系統可自動推計</p>
+  <div class="transfer-mode-switch">
+    <button class="mode-btn active" id="btn-actual" onclick="setTransferMode('actual')">實報費用</button>
+    <button class="mode-btn" id="btn-estimate" onclick="setTransferMode('estimate')">改用推計（3%）</button>
+  </div>
+  <div class="estimate-info" id="estimate-info">✅ 已改用 3% 推計。系統以成交價 × 3%（上限 30 萬）計算，通常比實報有利。</div>
+  <div id="actual-fields">
+    <div class="field-group"><div class="field-label">仲介費（出售時）</div><div class="input-wrap"><input type="number" id="sell-broker-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">履保費</div><div class="input-wrap"><input type="number" id="sell-escrow-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="sell-agent-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">規費</div><div class="input-wrap"><input type="number" id="sell-reg-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="sell-stamp-tax" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">公證費</div><div class="input-wrap"><input type="number" id="sell-notary-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="sell-other-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="auto-sum">
+      <span class="auto-sum-label">移轉費用合計</span>
+      <span class="auto-sum-val" id="sell-fee-sum">0 元</span>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 8 土地漲價 -->
+<div class="step-panel" id="step-land">
+  <div class="step-tag">STEP 08</div>
+  <h2>土地增值稅的土地漲價總數額</h2>
+  <p class="step-desc">從土地增值稅試算或繳款書抄，別跟房地合一稅重複算了</p>
+  <div class="field-group">
+    <div class="field-label">土地漲價總數額 <a href="https://www.etax.nat.gov.tw/etwmain/etw168w" target="_blank" style="font-size:.75rem;color:var(--red);text-decoration:none;margin-left:6px;">→ 財政部試算</a></div>
+    <div class="input-wrap"><input type="number" id="land-inc-total" placeholder="0"><span class="input-unit">萬</span></div>
+    <div class="field-tip">千萬別在移轉費用再填土增稅，會重複扣。</div>
+  </div>
+  <div class="field-group">
+    <div class="field-label">扣除上限（公告現值差額）（選填）</div>
+    <div class="input-wrap"><input type="number" id="land-inc-cap" placeholder="0（不設限）"><span class="input-unit">萬</span></div>
+  </div>
+  <div class="field-group">
+    <div class="field-label">土地增值稅金額（選填，用於計算「真正到手」）</div>
+    <div class="input-wrap"><input type="number" id="land-tax-amt" placeholder="0"><span class="input-unit">萬</span></div>
+  </div>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-next" onclick="goNext()">下一步 →</button>
+  </div>
+</div>
+
+<!-- STEP 9 確認 -->
+<div class="step-panel" id="step-review">
+  <div class="step-tag">STEP 09</div>
+  <h2>確認資料，開始計算</h2>
+  <p class="step-desc">確認一下填寫的資料，沒問題就按計算</p>
+  <table class="review-table" id="review-table"></table>
+  <div class="nav-row">
+    <button class="btn btn-back" onclick="goBack()">← 上一步</button>
+    <button class="btn btn-calc" onclick="calculate()">開始計算 →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-panel">
+  <div class="step-tag">試算結果</div>
+  <div class="result-hero">
+    <div class="result-hero-label">應繳房地合一稅</div>
+    <div class="result-hero-amt" id="r-tax">— 萬</div>
+    <div class="result-hero-sub" id="r-rate-label">稅率：—</div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card"><div class="result-card-label">課稅所得</div><div class="result-card-val" id="r-income">—</div></div>
+    <div class="result-card"><div class="result-card-label">持有期間</div><div class="result-card-val" id="r-hold">—</div></div>
+    <div class="result-card"><div class="result-card-label">成交價</div><div class="result-card-val" id="r-sell">—</div></div>
+    <div class="result-card"><div class="result-card-label">取得成本 + 費用</div><div class="result-card-val" id="r-cost">—</div></div>
+  </div>
+  <div class="result-card highlight">
+    <div class="result-card-label">稅後實拿</div>
+    <div class="result-card-val" id="r-net">—</div>
+  </div>
+
+  <div class="loan-section">
+    <h3>若你還有未繳清的房貸（可選填）</h3>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <div class="input-wrap" style="max-width:200px;"><input type="number" id="loan-input" placeholder="0" oninput="updateLoan()"><span class="input-unit">萬</span></div>
+      <span style="font-size:.82rem;color:var(--text-muted);">扣貸後實拿：</span>
+      <span style="font-family:'Noto Serif TC',serif;font-size:1.2rem;color:var(--red);font-weight:700;" id="r-after-loan">—</span>
+    </div>
+  </div>
+
+  <div class="reverse-section">
+    <h3>🎯 反推賣價（議價神器）</h3>
+    <p>輸入你想達到的目標，系統立刻算出要賣多少</p>
+    <div class="reverse-row">
+      <label>想稅後實拿</label>
+      <div class="input-wrap" style="max-width:140px;"><input type="number" id="rev-net" placeholder="0" oninput="calcReverse('net')"><span class="input-unit">萬</span></div>
+      <span style="font-size:.82rem;color:var(--text-muted);">→ 賣價至少</span>
+      <div class="reverse-result" id="rev-net-result">—</div><span style="font-size:.78rem;color:var(--text-muted);">萬</span>
+    </div>
+    <div class="reverse-row">
+      <label>想稅後獲利</label>
+      <div class="input-wrap" style="max-width:140px;"><input type="number" id="rev-profit" placeholder="0" oninput="calcReverse('profit')"><span class="input-unit">萬</span></div>
+      <span style="font-size:.82rem;color:var(--text-muted);">→ 賣價至少</span>
+      <div class="reverse-result" id="rev-profit-result">—</div><span style="font-size:.78rem;color:var(--text-muted);">萬</span>
+    </div>
+  </div>
+
+  <div class="accordion-header" onclick="toggleAccordion('calc-detail')"><span>計算過程明細</span><span>▾</span></div>
+  <div class="accordion-content" id="calc-detail"></div>
+  <div class="accordion-header" onclick="toggleAccordion('law-detail')"><span>法源依據</span><span>▾</span></div>
+  <div class="accordion-content" id="law-detail"></div>
+
+  <div class="result-contact-strip">
+    <div class="rcs-text">
+      <strong>有任何問題？直接聯繫信義房屋 文心高工店</strong>
+      <span>專業顧問為你解答稅務疑問、議價策略</span>
+    </div>
+    <div class="rcs-btns">
+      <a class="rcs-btn rcs-btn-phone" href="tel:0933317625">📞 立即通話</a>
+      <a class="rcs-btn rcs-btn-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        加 LINE 好友
+      </a>
+    </div>
+  </div>
+
+  <div class="result-actions">
+    <button class="btn-action" onclick="window.print()">🖨 列印 / PDF</button>
+    <button class="btn-action" onclick="shareToLine()">📤 LINE 分享結果</button>
+    <button class="btn-action" onclick="resetAll()">🔄 重新試算</button>
+  </div>
+
+  <div class="disclaimer" id="disclaimer-box"></div>
+</div>
+
+</main>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="sinyi-emblem" style="width:30px;height:30px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
+    </div>
+    <div>
+      <div class="footer-brand">信義房屋 文心高工店</div>
+      <div class="footer-info" id="footer-update">資料更新日期：2026-05-05 ・ 房地合一 2.0（2021/7/1 起）</div>
+    </div>
+  </div>
+  <div class="footer-contact">
+    <a href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 0933-317-625</a>
+    <a href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
+  </div>
+</footer>
+
+<script>
+function getConfig(){
+  const s=localStorage.getItem('rlandy_config');
+  if(s){try{return JSON.parse(s);}catch(e){}}
+  return{brand:'信義房屋 文心高工店',updatedDate:'2026-05-05',selfuseExemptLimit:400,selfuseTaxRate:10,transferEstimateRate:3,transferEstimateCap:30,
+    disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
+    taxRates:[{maxYears:2,rate:45,label:'持有 ≤ 2 年'},{maxYears:5,rate:35,label:'持有 2-5 年'},{maxYears:10,rate:20,label:'持有 5-10 年'},{maxYears:999,rate:15,label:'持有 > 10 年'}],
+    cpiTable:{'2016':1,'2017':1.008,'2018':1.015,'2019':1.021,'2020':1.017,'2021':1.022,'2022':1.057,'2023':1.092,'2024':1.112,'2025':1.125,'2026':1.13}
+  };
+}
+
+let currentType=null,transferMode='actual',renoConfirmed=false,inheritMerge=true,stepIdx=0;
+
+const STEPS={
+  normal:['step-1','step-dates','step-price','step-cost','step-buy-fees','step-sell-fees','step-land','step-review'],
+  selfuse:['step-1','step-selfuse','step-dates','step-price','step-cost','step-buy-fees','step-sell-fees','step-land','step-review'],
+  inherit:['step-1','step-inherit','step-dates','step-price','step-buy-fees','step-sell-fees','step-land','step-review'],
+  gift:['step-1','step-gift','step-dates','step-price','step-buy-fees','step-sell-fees','step-land','step-review']
+};
+const LABELS={'step-1':'取得方式','step-selfuse':'自住確認','step-inherit':'繼承資料','step-gift':'配偶贈與','step-dates':'重要日期','step-price':'成交價','step-cost':'購入成本','step-buy-fees':'取得費用','step-sell-fees':'移轉費用','step-land':'土地漲價','step-review':'確認計算'};
+
+function getSteps(){return currentType?STEPS[currentType]:STEPS.normal;}
+
+function renderProgress(){
+  const steps=getSteps();
+  const bar=document.getElementById('progress-bar');
+  bar.innerHTML='';
+  steps.forEach((s,i)=>{
+    const item=document.createElement('div');
+    item.className='step-item'+(i===stepIdx?' active':i<stepIdx?' done':'');
+    item.innerHTML=`<div class="step-num">${i<stepIdx?'✓':i+1}</div><div class="step-label">${LABELS[s]||s}</div>`;
+    bar.appendChild(item);
+    if(i<steps.length-1){const sep=document.createElement('div');sep.className='step-sep';bar.appendChild(sep);}
+  });
+}
+
+function showStep(id){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById(id);if(el)el.classList.add('active');
+  document.getElementById('result-panel').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  renderProgress();
+}
+
+function goNext(){
+  const steps=getSteps();const curId=steps[stepIdx];
+  if(curId==='step-1'&&!currentType){alert('請選擇取得方式');return;}
+  if(curId==='step-price'){
+    const v=parseFloat(document.getElementById('sell-price').value);
+    if(!v||v<=0){document.getElementById('sell-price-wrap').classList.add('error');document.getElementById('sell-price-err').style.display='block';return;}
+    document.getElementById('sell-price-wrap').classList.remove('error');document.getElementById('sell-price-err').style.display='none';
+  }
+  if(curId==='step-cost'&&currentType!=='inherit'){
+    const v=parseFloat(document.getElementById('buy-price').value);
+    if(!v||v<=0){document.getElementById('buy-price-wrap').classList.add('error');document.getElementById('buy-price-err').style.display='block';return;}
+  }
+  if(curId==='step-review'){calculate();return;}
+  if(stepIdx<steps.length-1){stepIdx++;showStep(steps[stepIdx]);}
+}
+
+function goBack(){if(stepIdx>0){stepIdx--;showStep(getSteps()[stepIdx]);}}
+
+function selectType(el){
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');currentType=el.dataset.type;stepIdx=0;renderProgress();
+}
+
+function toggleCheck(item){item.querySelector('.check-box').classList.toggle('checked');}
+function toggleReno(){renoConfirmed=!renoConfirmed;document.getElementById('reno-check').classList.toggle('checked',renoConfirmed);}
+function toggleInheritMerge(){inheritMerge=!inheritMerge;document.getElementById('toggle-inherit-merge').classList.toggle('on',inheritMerge);}
+
+function setTransferMode(mode){
+  transferMode=mode;
+  document.getElementById('btn-actual').classList.toggle('active',mode==='actual');
+  document.getElementById('btn-estimate').classList.toggle('active',mode==='estimate');
+  document.getElementById('actual-fields').style.display=mode==='actual'?'block':'none';
+  document.getElementById('estimate-info').style.display=mode==='estimate'?'block':'none';
+}
+
+function toggleAccordion(id){document.getElementById(id).classList.toggle('open');}
+function n(id){return parseFloat(document.getElementById(id).value)||0;}
+function s(id){return document.getElementById(id).value||'';}
+
+function updateInheritSum(){document.getElementById('inherit-sum').textContent=(n('inherit-house-val')+n('inherit-land-val')).toFixed(1)+' 萬';}
+function updateGiftSum(){document.getElementById('gift-sum').textContent=(n('gift-deed-tax')+n('gift-stamp-tax')+n('gift-agent-fee')+n('gift-broker-fee')+n('gift-reno-fee')+n('gift-other-fee')).toLocaleString()+' 元';}
+function updateBuyFeeSum(){document.getElementById('buy-fee-sum').textContent=(n('buy-deed-tax')+n('buy-stamp-tax')+n('buy-agent-fee')+n('buy-broker-fee')+n('buy-escrow-fee')+n('buy-reno-fee')+n('buy-other-fee')).toLocaleString()+' 元';}
+function updateSellFeeSum(){document.getElementById('sell-fee-sum').textContent=(n('sell-broker-fee')+n('sell-escrow-fee')+n('sell-agent-fee')+n('sell-reg-fee')+n('sell-stamp-tax')+n('sell-notary-fee')+n('sell-other-fee')).toLocaleString()+' 元';}
+
+function updateHoldPeriod(){
+  const b=s('buy-date'),sl=s('sell-date');if(!b||!sl)return;
+  const yrs=(new Date(sl)-new Date(b))/(365.25*24*3600*1000);if(yrs<=0)return;
+  document.getElementById('hold-display').style.display='flex';
+  document.getElementById('hold-text').textContent=`${Math.floor(yrs)} 年 ${Math.round((yrs-Math.floor(yrs))*12)} 個月`;
+}
+
+function buildReview(){
+  const rows=[['取得方式',{normal:'一般買賣',selfuse:'自住房地',inherit:'繼承取得',gift:'配偶贈與'}[currentType]],
+    ['買入日期',s('buy-date')||'—'],['出售日期',s('sell-date')||'—'],
+    ['成交價',s('sell-price')?s('sell-price')+' 萬':'—']];
+  if(currentType!=='inherit'&&currentType!=='gift')rows.push(['購入價金',s('buy-price')?s('buy-price')+' 萬':'—']);
+  rows.push(['移轉費用模式',transferMode==='estimate'?'推計 3%':'實報'],['土地漲價總數額',(s('land-inc-total')||'0')+' 萬']);
+  document.getElementById('review-table').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+}
+
+function getHoldYears(){
+  const start=currentType==='gift'?s('gift-spouse-buy-date'):(currentType==='inherit'&&inheritMerge)?s('inherit-orig-date'):s('buy-date');
+  return(new Date(s('sell-date'))-new Date(start||s('buy-date')))/(365.25*24*3600*1000);
+}
+
+function calculate(){
+  buildReview();
+  const cfg=getConfig();
+  const sellPrice=n('sell-price');
+  const holdYrs=getHoldYears();
+
+  let costBase=0;
+  if(currentType==='inherit'){
+    const raw=n('inherit-house-val')+n('inherit-land-val');
+    const regY=s('inherit-register-date')?new Date(s('inherit-register-date')).getFullYear():2020;
+    const sellY=s('sell-date')?new Date(s('sell-date')).getFullYear():2026;
+    const ratio=(cfg.cpiTable[String(sellY)]||1.13)/(cfg.cpiTable[String(regY)]||1);
+    costBase=raw*ratio+n('inherit-misc')/10000;
+  }else if(currentType==='gift'){
+    costBase=n('gift-price')+(n('gift-deed-tax')+n('gift-stamp-tax')+n('gift-agent-fee')+n('gift-broker-fee')+n('gift-reno-fee')+n('gift-other-fee'))/10000;
+  }else{
+    costBase=n('buy-price');
+  }
+
+  let buyFees=0;
+  if(currentType!=='inherit'&&currentType!=='gift'){
+    buyFees=(n('buy-deed-tax')+n('buy-stamp-tax')+n('buy-agent-fee')+n('buy-broker-fee')+n('buy-escrow-fee')+n('buy-reno-fee')+n('buy-other-fee'))/10000;
+  }
+
+  let sellFees=transferMode==='estimate'?Math.min(sellPrice*cfg.transferEstimateRate/100,cfg.transferEstimateCap)
+    :(n('sell-broker-fee')+n('sell-escrow-fee')+n('sell-agent-fee')+n('sell-reg-fee')+n('sell-stamp-tax')+n('sell-notary-fee')+n('sell-other-fee'))/10000;
+
+  const landIncCap=n('land-inc-cap');
+  const landInc=landIncCap>0?Math.min(n('land-inc-total'),landIncCap):n('land-inc-total');
+  const totalCost=costBase+buyFees+sellFees+landInc;
+  let taxableIncome=sellPrice-totalCost;
+
+  let exempt=0,selfuseApplied=false;
+  if(currentType==='selfuse'){
+    const allChk=[...document.querySelectorAll('#selfuse-checks .check-box')].every(c=>c.classList.contains('checked'));
+    if(allChk&&holdYrs>=6){selfuseApplied=true;exempt=Math.min(Math.max(taxableIncome,0),cfg.selfuseExemptLimit);taxableIncome=Math.max(taxableIncome-exempt,0);}
+  }
+
+  let taxRate=15,rateTier='持有 > 10 年 → 15%';
+  if(selfuseApplied){taxRate=cfg.selfuseTaxRate;rateTier=`自住優惠 ${cfg.selfuseTaxRate}%`;}
+  else{for(const t of cfg.taxRates){if(holdYrs<=t.maxYears){taxRate=t.rate;rateTier=t.label+` → ${t.rate}%`;break;}}}
+
+  const taxAmt=Math.max(taxableIncome,0)*taxRate/100;
+  const landTax=n('land-tax-amt');
+  const netAmt=sellPrice-taxAmt-landTax;
+
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('result-panel').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  const fmt=v=>v.toFixed(1)+' 萬';
+  const yInt=Math.floor(holdYrs),mo=Math.round((holdYrs-yInt)*12);
+
+  document.getElementById('r-tax').textContent=fmt(taxAmt);
+  document.getElementById('r-rate-label').textContent=`稅率：${rateTier}・持有 ${yInt} 年 ${mo} 個月`;
+  document.getElementById('r-income').textContent=fmt(Math.max(taxableIncome,0));
+  document.getElementById('r-hold').textContent=`${yInt} 年 ${mo} 個月`;
+  document.getElementById('r-sell').textContent=fmt(sellPrice);
+  document.getElementById('r-cost').textContent=fmt(totalCost);
+  document.getElementById('r-net').textContent=fmt(netAmt);
+  document.getElementById('r-after-loan').textContent='—';
+  document.getElementById('loan-input').value='';
+
+  window._calc={taxRate,selfuseApplied,exempt,cfg,totalCost,taxAmt,netAmt,taxableIncome};
+
+  let d='';
+  d+=`<div class="calc-row"><span>成交價</span><span>${fmt(sellPrice)}</span></div>`;
+  d+=`<div class="calc-row"><span>取得成本</span><span>- ${fmt(costBase)}</span></div>`;
+  d+=`<div class="calc-row"><span>取得費用</span><span>- ${fmt(buyFees)}</span></div>`;
+  d+=`<div class="calc-row"><span>移轉費用（${transferMode==='estimate'?'推計':'實報'}）</span><span>- ${fmt(sellFees)}</span></div>`;
+  d+=`<div class="calc-row"><span>土地漲價總數額</span><span>- ${fmt(landInc)}</span></div>`;
+  if(selfuseApplied)d+=`<div class="calc-row"><span>自住免稅額</span><span>- ${fmt(exempt)}</span></div>`;
+  d+=`<div class="calc-row total"><span>課稅所得</span><span>${fmt(Math.max(taxableIncome,0))}</span></div>`;
+  d+=`<div class="calc-row"><span>稅率</span><span>${taxRate}%</span></div>`;
+  d+=`<div class="calc-row total"><span>應繳稅額</span><span>${fmt(taxAmt)}</span></div>`;
+  document.getElementById('calc-detail').innerHTML=d;
+
+  document.getElementById('law-detail').innerHTML=`
+    <div class="calc-row"><span>持有 ≤ 2 年 稅率 45%</span><span>所得稅法 §4-4</span></div>
+    <div class="calc-row"><span>持有 2-5 年 稅率 35%</span><span>所得稅法 §4-4</span></div>
+    <div class="calc-row"><span>持有 5-10 年 稅率 20%</span><span>所得稅法 §4-4</span></div>
+    <div class="calc-row"><span>持有 >10 年 稅率 15%</span><span>所得稅法 §4-4</span></div>
+    <div class="calc-row"><span>自住優惠 400 萬免稅</span><span>財政部公告</span></div>
+    <div class="calc-row"><span>移轉費用推計 3%／上限 30 萬</span><span>南區國稅局公告</span></div>
+    <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--red);">財政部稅務入口網 — 房地交易試算 →</a></div>`;
+
+  document.getElementById('disclaimer-box').innerHTML=`<strong>⚠ 法律免責聲明</strong><br>${cfg.disclaimer}`;
+}
+
+function updateLoan(){
+  if(!window._calc)return;
+  document.getElementById('r-after-loan').textContent=(window._calc.netAmt-(parseFloat(document.getElementById('loan-input').value)||0)).toFixed(1)+' 萬';
+}
+
+function calcReverse(type){
+  if(!window._calc)return;
+  const{taxRate,totalCost,selfuseApplied,exempt}=window._calc;
+  const target=parseFloat(document.getElementById(`rev-${type}`).value)||0;
+  const r=taxRate/100;
+  const neededNet=type==='profit'?target+totalCost:target;
+  const base=selfuseApplied?totalCost+exempt:totalCost;
+  const sell=(neededNet-base*r)/(1-r);
+  document.getElementById(`rev-${type}-result`).textContent=sell>0?sell.toFixed(1):'—';
+}
+
+function shareToLine(){
+  const tax=document.getElementById('r-tax').textContent;
+  const net=document.getElementById('r-net').textContent;
+  window.open(`https://line.me/R/msg/text/?${encodeURIComponent(`房地合一稅試算結果（信義房屋 文心高工店）\n應繳稅額：${tax}\n稅後實拿：${net}\n\n有任何疑問歡迎聯繫：https://line.me/ti/p/EfDsNa26Xw`)}`, '_blank');
+}
+
+function resetAll(){
+  currentType=null;stepIdx=0;transferMode='actual';renoConfirmed=false;inheritMerge=true;
+  document.querySelectorAll('input[type=number],input[type=date]').forEach(i=>i.value='');
+  document.querySelectorAll('.check-box').forEach(c=>c.classList.remove('checked'));
+  document.getElementById('toggle-inherit-merge').classList.add('on');
+  document.getElementById('result-panel').style.display='none';
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  showStep('step-1');
+}
+
+setTransferMode('actual');
+renderProgress();
+</script>
+</body>
+</html>
