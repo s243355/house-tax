@@ -197,22 +197,22 @@
   <div class="hero-banner">
     <div class="hero-banner-icon">📋</div>
     <div class="hero-banner-text">
-      <h3>財產交易所得稅試算（舊制）</h3>
-      <p>適用民國 104 年 12 月 31 日以前取得的房地<br>土地免稅，房屋所得併入個人綜合所得稅</p>
+      <h3 id="ot-banner-title">財產交易所得稅試算（舊制）</h3>
+      <p id="ot-banner-desc">適用民國 104 年 12 月 31 日以前取得的房地<br>土地免稅，房屋所得併入個人綜合所得稅</p>
     </div>
   </div>
   <div class="step-tag">STEP 01</div>
-  <h2>請選擇申報方式</h2>
-  <p class="step-desc">依照你是否有原始買賣成本資料來判斷</p>
+  <h2 id="ot-s1-title">請選擇申報方式</h2>
+  <p class="step-desc" id="ot-s1-desc">依照你是否有原始買賣成本資料來判斷</p>
 
   <div class="method-grid">
     <div class="method-card" data-method="actual" onclick="selectMethod(this)">
-      <div class="method-card-title">📄 核實認定（有買賣成本）</div>
-      <div class="method-card-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：（賣價 - 買價 - 必要費用）× 房地比，所得併入綜所稅。</div>
+      <div class="method-card-title" id="ot-m-actual-title">📄 核實認定（有買賣成本）</div>
+      <div class="method-card-desc" id="ot-m-actual-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：（賣價 - 買價 - 必要費用）× 房地比，所得併入綜所稅。</div>
     </div>
     <div class="method-card" data-method="standard" onclick="selectMethod(this)">
-      <div class="method-card-title">📊 標準認定（無法舉證成本）</div>
-      <div class="method-card-desc">無法提供或政府無法查到原始取得成本（通常為 101 年 7 月前取得）。以房屋評定現值 × 各縣市比率計算所得。</div>
+      <div class="method-card-title" id="ot-m-standard-title">📊 標準認定（無法舉證成本）</div>
+      <div class="method-card-desc" id="ot-m-standard-desc">無法提供或政府無法查到原始取得成本（通常為 101 年 7 月前取得）。以房屋評定現值 × 各縣市比率計算所得。</div>
     </div>
   </div>
 
@@ -422,7 +422,7 @@
   <div class="step-tag">試算結果</div>
 
   <div class="result-hero">
-    <div class="result-hero-label">估算應繳所得稅增加額（財交所得部分）</div>
+    <div class="result-hero-label" id="ot-result-label">估算應繳所得稅增加額（財交所得部分）</div>
     <div class="result-hero-amt" id="r-tax-inc">— 萬</div>
     <div class="result-hero-sub" id="r-rate-label">適用稅率：—</div>
   </div>
@@ -464,8 +464,8 @@
 
   <div class="result-contact-strip">
     <div class="rcs-text">
-      <strong>有任何問題？直接聯繫信義房屋 文心高工店</strong>
-      <span>專業顧問為你解答稅務疑問、議價策略</span>
+      <strong id="ot-contact-title">有任何問題？直接聯繫信義房屋 文心高工店</strong>
+      <span id="ot-contact-desc">專業顧問為你解答稅務疑問、議價策略</span>
     </div>
     <div class="rcs-btns">
       <a class="rcs-btn rcs-btn-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
@@ -477,7 +477,8 @@
   </div>
 
   <div class="result-actions">
-    <button class="btn-action" onclick="window.print()">🖨 列印 / PDF</button>
+    <button class="btn-action" style="background:var(--pri);border-color:var(--pri);color:white;font-weight:600;" onclick="generatePDF()">📄 下載 PDF 報告</button>
+    <button class="btn-action" onclick="window.print()">🖨 列印</button>
     <button class="btn-action" onclick="resetAll()">🔄 重新試算</button>
     <a class="btn-action" href="index.html">← 回主頁</a>
   </div>
@@ -570,6 +571,31 @@ function goBack(){if(stepIdx>0){stepIdx--;showStep(getSteps()[stepIdx]);}}
 function selectMethod(el){
   document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');currentMethod=el.dataset.method;stepIdx=0;renderProgress();
+// 套用後台文字設定
+(function(){
+  const c2=getConfig();
+  function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+  function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+  sa('hdr-branch',c2.brandSubtitle);
+  const pl=c2.phoneLabel||'0933-317-625';
+  sa('hdr-phone-label',pl);
+  document.getElementById('footer-phone').textContent='📞 '+pl;
+  sh('hdr-phone','tel:'+(c2.phone||'0933317625'));
+  sh('footer-phone','tel:'+(c2.phone||'0933317625'));
+  sh('hdr-line',c2.lineUrl);sh('footer-line',c2.lineUrl);
+  sh('res-phone','tel:'+(c2.phone||'0933317625'));
+  sh('res-line',c2.lineUrl);
+  sa('footer-brand',c2.brand);
+  if(c2.updatedDate)document.getElementById('footer-update').textContent='資料更新日期：'+c2.updatedDate+' ・ 財產交易所得稅（舊制）';
+  const ot=c2.oldTax||{};
+  sa('ot-banner-title',ot.bannerTitle);
+  if(ot.bannerDesc)document.getElementById('ot-banner-desc').innerHTML=ot.bannerDesc.replace(/\n/g,'<br>');
+  sa('ot-s1-title',ot.s1Title);sa('ot-s1-desc',ot.s1Desc);
+  sa('ot-m-actual-title',ot.mActualTitle);sa('ot-m-actual-desc',ot.mActualDesc);
+  sa('ot-m-standard-title',ot.mStandardTitle);sa('ot-m-standard-desc',ot.mStandardDesc);
+  sa('ot-result-label',ot.resultLabel);
+  sa('ot-contact-title',ot.contactTitle);sa('ot-contact-desc',ot.contactDesc);
+})();
 }
 
 function n(id){return parseFloat(document.getElementById(id).value)||0;}
@@ -738,6 +764,95 @@ if(cfg.brand)document.getElementById('footer-brand').textContent=cfg.brand;
 if(cfg.updatedDate)document.getElementById('footer-update').textContent=`資料更新日期：${cfg.updatedDate} ・ 財產交易所得稅（舊制）`;
 
 renderProgress();
+function generatePDF(){
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const methodLabel=currentMethod==='actual'?'核實認定':'標準認定';
+  const taxInc=document.getElementById('r-tax-inc').textContent;
+  const propIncome=document.getElementById('r-prop-income').textContent;
+  const rateLabel=document.getElementById('r-rate-label').textContent;
+  const netIncome=document.getElementById('r-net-income').textContent;
+  const ratio=document.getElementById('r-ratio').textContent;
+  const net=document.getElementById('r-net').textContent;
+
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;background:white;}
+    .page{max-width:680px;margin:0 auto;padding:40px;}
+    .header{background:#7a3000;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;letter-spacing:.1em;}
+    .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
+    .report-title{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
+    .report-title strong{display:block;font-size:1rem;color:white;}
+    .hero-section{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
+    .hero-tax{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;margin-bottom:4px;}
+    .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);}
+    .section{padding:0 32px 24px;}
+    .section-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
+    .highlight-card{border:1.5px solid #7a3000;background:#fff8f3;padding:16px 18px;margin-bottom:20px;}
+    .highlight-card .data-label{color:#7a3000;}
+    .highlight-card .data-val{color:#7a3000;font-size:1.5rem;}
+    .contact-section{background:#1a4a7a;padding:20px 32px;}
+    .contact-brand{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
+    .contact-info{font-size:.82rem;color:rgba(255,255,255,.8);}
+    .disclaimer{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+    .note{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #b45309;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#5a4e44;}
+  </style></head><body>
+  <div class="page">
+    <div class="header">
+      <div class="brand">${brand}<small>財產交易所得稅試算報告（舊制）</small></div>
+      <div class="report-title">試算日期<strong>${today}</strong></div>
+    </div>
+    <div class="hero-section">
+      <div class="hero-label">估算因財產交易所得增加的稅額</div>
+      <div class="hero-tax">${taxInc}</div>
+      <div class="hero-sub">${rateLabel}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">試算概覽</div>
+      <div class="data-grid">
+        <div class="data-card"><div class="data-label">申報方式</div><div class="data-val">${methodLabel}</div></div>
+        <div class="data-card"><div class="data-label">房地比</div><div class="data-val">${ratio}</div></div>
+        <div class="data-card"><div class="data-label">財產交易所得</div><div class="data-val">${propIncome}</div></div>
+        <div class="data-card"><div class="data-label">綜合所得淨額</div><div class="data-val">${netIncome}</div></div>
+        <div class="data-card"><div class="data-label">增加稅額</div><div class="data-val">${taxInc}</div></div>
+        <div class="data-card"><div class="data-label">稅後實拿（估算）</div><div class="data-val">${net}</div></div>
+      </div>
+      <div class="highlight-card"><div class="data-label">稅後實拿（賣價扣除相關稅費）</div><div class="data-val">${net}</div></div>
+      <div class="note">
+        💡 財產交易所得稅（舊制）須於隔年 5 月申報個人綜合所得稅時一併申報。土地部分免稅，僅房屋部分所得計入綜所稅。
+      </div>
+      <div class="section-title">計算明細</div>
+      ${document.getElementById('calc-detail').innerHTML.replace(/class="calc-row/g,'style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0dad3;font-size:.82rem;" class="x')}
+    </div>
+    <div class="contact-section">
+      <div class="contact-brand">${brand}</div>
+      <div class="contact-info">📞 ${phone}　｜　LINE：${lineUrl}</div>
+    </div>
+    <div class="disclaimer">⚠ 本試算報告僅供參考，實際稅額依國稅局核定為準。財產交易所得稅請於隔年 5 月申報綜所稅時申報。正式報稅請洽會計師或各地國稅局（0800-000-321）。</div>
+  </div>
+  </body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`財產交易所得稅試算報告_${today.replace(/\//g,'')}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後，按 Ctrl+P（Mac: ⌘+P）即可存成 PDF 檔案。'),500);
+}
+
 </script>
 </body>
 </html>

@@ -34,7 +34,7 @@
 
   .select-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:22px;font-weight:500;}
 
-  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:44px;}
+  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:44px;} .tool-grid>a:last-child{grid-column:1/-1;display:grid !important;grid-template-columns:260px 1fr auto;flex-direction:row;}
 
   .tool-card{background:var(--white);border:1.5px solid var(--border);cursor:pointer;transition:all .25s;text-decoration:none;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);overflow:hidden;}
   .tool-card:hover{border-color:var(--red);box-shadow:var(--shadow-lg);transform:translateY(-4px);}
@@ -98,9 +98,9 @@
 </header>
 
 <div class="hero">
-  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
-  <h1>房產稅務試算工具</h1>
-  <p>提供房地合一稅（新制）與財產交易所得稅（舊制）兩種試算工具，幫你快速掌握賣房稅務，做出最有利的決策</p>
+  <div class="hero-tag" id="hero-tag">SINYI REALTY · 文心高工店</div>
+  <h1 id="hero-title">房產稅務試算工具</h1>
+  <p id="hero-desc">提供房地合一稅（新制）與財產交易所得稅（舊制）兩種試算工具，幫你快速掌握賣房稅務，做出最有利的決策</p>
 </div>
 
 <main>
@@ -110,11 +110,11 @@
     <a class="tool-card" href="house-tax.html">
       <div class="tc-top" style="background:var(--red);">
         <span class="tc-icon">🏠</span>
-        <div class="tc-name">房地合一稅試算</div>
-        <div class="tc-law">新制・所得稅法 §4-4・2021/7/1 房地合一 2.0</div>
+        <div class="tc-name" id="card-new-title">房地合一稅試算</div>
+        <div class="tc-law" id="card-new-law">新制・所得稅法 §4-4・2021/7/1 房地合一 2.0</div>
       </div>
       <div class="tc-body">
-        <div class="tc-desc">適用 <strong>民國 105 年 1 月 1 日以後</strong>完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</div>
+        <div class="tc-desc" id="card-new-desc">適用 <strong>民國 105 年 1 月 1 日以後</strong>完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</div>
         <div class="tc-tags">
           <span class="tc-tag">105年後取得</span>
           <span class="tc-tag">分離課稅</span>
@@ -124,18 +124,18 @@
         </div>
       </div>
       <div class="tc-foot">
-        <span style="color:var(--red);">開始試算 →</span>
+        <span id="card-new-btn" style="color:var(--red);">開始試算 →</span>
       </div>
     </a>
 
     <a class="tool-card brown" href="old-tax.html">
       <div class="tc-top" style="background:var(--brown);">
         <span class="tc-icon">📋</span>
-        <div class="tc-name">財產交易所得稅試算</div>
-        <div class="tc-law">舊制・所得稅法 §14 第七類・綜合所得稅</div>
+        <div class="tc-name" id="card-old-title">財產交易所得稅試算</div>
+        <div class="tc-law" id="card-old-law">舊制・所得稅法 §14 第七類・綜合所得稅</div>
       </div>
       <div class="tc-body">
-        <div class="tc-desc">適用 <strong>民國 104 年 12 月 31 日以前</strong>完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</div>
+        <div class="tc-desc" id="card-old-desc">適用 <strong>民國 104 年 12 月 31 日以前</strong>完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</div>
         <div class="tc-tags">
           <span class="tc-tag">104年前取得</span>
           <span class="tc-tag">併入綜所稅</span>
@@ -145,14 +145,31 @@
         </div>
       </div>
       <div class="tc-foot" style="background:var(--brown-light);border-top-color:#f0d0b0;">
-        <span style="color:var(--brown);">開始試算 →</span>
+        <span id="card-old-btn" style="color:var(--brown);">開始試算 →</span>
+      </div>
+    </a>
+
+    <a class="tool-card" href="mortgage.html" style="grid-column:1/-1;display:grid;grid-template-columns:280px 1fr auto;">
+      <div class="tc-top" style="background:#1a4a7a;border-radius:0;">
+        <span class="tc-icon">🏦</span>
+        <div class="tc-name" id="card-mortgage-title">房貸試算工具</div>
+        <div class="tc-law" id="card-mortgage-law">月付金・總利息・還款明細・寬限期</div>
+      </div>
+      <div class="tc-body" style="padding:22px 26px;">
+        <div class="tc-desc" id="card-mortgage-desc">輸入房屋總價、自備款比例、利率，立即算出每月還款金額、總利息、年度還款明細，並比較不同貸款年限的差異。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">等額本息</span><span class="tc-tag">等額本金</span><span class="tc-tag">寬限期</span><span class="tc-tag">年限比較</span>
+        </div>
+      </div>
+      <div class="tc-foot" style="background:#eef4fb;border-top-color:#c8ddf0;align-self:stretch;min-width:100px;justify-content:center;">
+        <span id="card-mortgage-btn" style="color:#1a4a7a;">開始試算 →</span>
       </div>
     </a>
   </div>
 
   <div class="info-card">
-    <h3>🤔 不確定適用哪個制度？</h3>
-    <p>判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
+    <h3 id="table-title">🤔 不確定適用哪個制度？</h3>
+    <p id="table-desc">判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
     <table>
       <thead><tr><th>取得過戶登記日</th><th>適用制度</th><th>計稅方式</th></tr></thead>
       <tbody>
@@ -186,13 +203,30 @@
 </footer>
 
 <script>
-function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{brand:'信義房屋 文心高工店',brandSubtitle:'文心高工店',phone:'0933317625',phoneLabel:'0933-317-625',lineUrl:'https://line.me/ti/p/EfDsNa26Xw'};}
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
+function tv(obj,...keys){let v=obj;for(const k of keys)v=v?.[k];return v;}
 const c=getConfig();
-if(c.brandSubtitle)document.getElementById('hdr-branch').textContent=c.brandSubtitle;
-if(c.phoneLabel){document.getElementById('hdr-phone-label').textContent=c.phoneLabel;document.getElementById('footer-phone').textContent='📞 '+c.phoneLabel;}
-if(c.phone){document.getElementById('hdr-phone').href='tel:'+c.phone;document.getElementById('footer-phone').href='tel:'+c.phone;}
-if(c.lineUrl){document.getElementById('hdr-line').href=c.lineUrl;document.getElementById('footer-line').href=c.lineUrl;}
-if(c.brand)document.getElementById('footer-brand').textContent=c.brand;
+function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+// 品牌
+sa('hdr-branch',tv(c,'brandSubtitle'));
+const pl=tv(c,'phoneLabel')||'0933-317-625';
+sa('hdr-phone-label',pl);
+document.getElementById('footer-phone').textContent='📞 '+pl;
+sh('hdr-phone','tel:'+(tv(c,'phone')||'0933317625'));
+sh('footer-phone','tel:'+(tv(c,'phone')||'0933317625'));
+sh('hdr-line',tv(c,'lineUrl'));sh('footer-line',tv(c,'lineUrl'));
+sa('footer-brand',tv(c,'brand'));
+// 首頁文字
+const h=c.home||{};
+sa('hero-tag',h.heroTag);sa('hero-title',h.heroTitle);sa('hero-desc',h.heroDesc);
+sa('card-new-title',h.newTitle);sa('card-new-law',h.newLaw);sa('card-new-desc',h.newDesc);sa('card-new-btn',h.newBtn);
+sa('card-old-title',h.oldTitle);sa('card-old-law',h.oldLaw);sa('card-old-desc',h.oldDesc);sa('card-old-btn',h.oldBtn);
+sa('table-title',h.tableTitle);sa('table-desc',h.tableDesc);
+// 房貸卡片
+const mt=c.mortgage||{};
+sa('card-mortgage-title',mt.cardTitle);sa('card-mortgage-law',mt.cardLaw);
+sa('card-mortgage-desc',mt.cardDesc);sa('card-mortgage-btn',mt.cardBtn);
 </script>
 </body>
 </html>

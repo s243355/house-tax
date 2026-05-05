@@ -3,49 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>後台管理｜信義房屋 房地合一稅試算</title>
+<title>後台管理｜信義房屋 房產稅務試算</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
-
-  :root {
-    --red:#C00000; --red-dark:#9a0000; --red-light:#fdf0f0; --red-mid:#f5d5d5;
-    --bg:#f5f3f0; --white:#ffffff; --surface2:#edeae6;
-    --border:#e0dad3; --border-dark:#c8bfb5;
-    --text:#1a1410; --text-dim:#5a4e44; --text-muted:#9a8e84;
-    --green:#2e7d52; --blue:#1a6fa8;
-    --shadow-sm:0 1px 4px rgba(0,0,0,0.06);
-    --shadow-md:0 4px 16px rgba(0,0,0,0.09);
-  }
-
+  :root{--red:#C00000;--red-dark:#9a0000;--red-light:#fdf0f0;--red-mid:#f5d5d5;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;--border:#e0dad3;--border-dark:#c8bfb5;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;--green:#2e7d52;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);}
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:400;min-height:100vh;}
-
-  /* Layout */
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;}
   .app{display:flex;min-height:100vh;}
 
   /* Sidebar */
   aside{width:220px;background:var(--white);border-right:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);}
-
   .sidebar-brand{padding:20px;border-bottom:3px solid var(--red);}
   .sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-  .sb-emblem{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sb-emblem{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;}
   .sb-name{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:var(--red);letter-spacing:.08em;}
   .sb-sub{font-size:.68rem;color:var(--text-muted);margin-top:2px;}
-
-  nav{padding:8px 0;flex:1;}
+  nav{padding:8px 0;flex:1;overflow-y:auto;}
   .nav-group{font-size:.63rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;padding:14px 18px 5px;}
   .nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:.82rem;color:var(--text-dim);cursor:pointer;transition:all .15s;border-left:3px solid transparent;}
   .nav-item:hover{color:var(--red);background:var(--red-light);}
   .nav-item.active{color:var(--red);background:var(--red-light);border-left-color:var(--red);font-weight:500;}
   .nav-icon{font-size:.95rem;width:18px;text-align:center;}
-
   .sidebar-footer{padding:14px 18px;border-top:1px solid var(--border);}
-  .sidebar-footer a{display:block;font-size:.78rem;color:var(--red);text-decoration:none;padding:7px 0;font-weight:500;}
+  .sidebar-footer a{display:block;font-size:.78rem;color:var(--red);text-decoration:none;padding:5px 0;font-weight:500;}
   .sidebar-footer a:hover{color:var(--red-dark);}
 
   /* Content */
   .content{flex:1;overflow-y:auto;}
-
   .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:var(--shadow-sm);}
   .topbar-title{font-size:.9rem;color:var(--text);font-weight:500;}
   .topbar-actions{display:flex;gap:8px;}
@@ -56,30 +40,46 @@
   .btn-primary{background:var(--red);border:1.5px solid var(--red);color:white;font-weight:500;}
   .btn-primary:hover{background:var(--red-dark);}
   .btn-danger{border:1.5px solid #dc2626;color:#dc2626;background:rgba(220,38,38,.05);}
-  .btn-danger:hover{background:rgba(220,38,38,.1);}
 
   /* Sections */
   .section{display:none;animation:fadeIn .25s ease;}
   .section.active{display:block;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-  .section-wrap{padding:28px;max-width:860px;}
+  .section-wrap{padding:28px;max-width:900px;}
 
   /* Cards */
   .card{background:var(--white);border:1.5px solid var(--border);margin-bottom:18px;box-shadow:var(--shadow-sm);}
   .card-header{padding:14px 20px;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--red);font-weight:500;display:flex;justify-content:space-between;align-items:center;}
   .card-body{padding:20px;}
 
-  /* Form rows */
+  /* Form */
   .form-row{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start;padding:11px 0;border-bottom:1px solid rgba(224,218,211,.6);}
   .form-row:last-child{border-bottom:none;}
-  .form-label{font-size:.82rem;color:var(--text-dim);padding-top:9px;font-weight:400;}
+  .form-label{font-size:.82rem;color:var(--text-dim);padding-top:9px;}
   .form-label small{display:block;font-size:.7rem;color:var(--text-muted);margin-top:3px;}
   .form-control{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:9px 13px;font-size:.85rem;font-family:inherit;width:100%;transition:border-color .15s;outline:none;border-radius:2px;}
   .form-control:focus{border-color:var(--red);background:var(--white);box-shadow:0 0 0 3px var(--red-light);}
-  textarea.form-control{resize:vertical;min-height:80px;font-size:.82rem;line-height:1.6;}
+  textarea.form-control{resize:vertical;min-height:70px;font-size:.82rem;line-height:1.6;}
   .form-group{display:flex;gap:10px;align-items:center;}
   .form-unit{font-size:.78rem;color:var(--text-muted);white-space:nowrap;}
+
+  /* Page tabs */
+  .page-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .page-tab{padding:8px 16px;border:1.5px solid var(--border);background:var(--white);color:var(--text-dim);font-size:.8rem;font-family:inherit;cursor:pointer;transition:all .15s;border-radius:2px;}
+  .page-tab.active{border-color:var(--red);color:var(--red);background:var(--red-light);font-weight:500;}
+
+  .text-fields{display:none;}
+  .text-fields.active{display:block;}
+
+  /* Text field group */
+  .tf-group{background:var(--white);border:1.5px solid var(--border);margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .tf-header{padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text-dim);font-weight:500;display:flex;align-items:center;gap:8px;}
+  .tf-header .tf-tag{font-size:.65rem;color:var(--text-muted);background:var(--border);padding:2px 7px;border-radius:2px;}
+  .tf-body{padding:16px 18px;}
+  .tf-row{margin-bottom:12px;}
+  .tf-row:last-child{margin-bottom:0;}
+  .tf-label{font-size:.75rem;color:var(--text-muted);margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+  .tf-key{font-family:'JetBrains Mono',monospace;font-size:.68rem;background:var(--surface2);padding:2px 6px;color:var(--text-dim);}
 
   /* Rate table */
   .rate-table{width:100%;border-collapse:collapse;}
@@ -89,346 +89,474 @@
   .rate-input{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:.85rem;width:100%;outline:none;transition:border-color .15s;border-radius:2px;}
   .rate-input:focus{border-color:var(--red);background:var(--white);}
 
-  /* CPI grid */
+  /* CPI */
   .cpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
   .cpi-item{background:var(--surface2);border:1.5px solid var(--border);padding:10px 12px;border-radius:2px;}
   .cpi-year{font-size:.7rem;color:var(--text-muted);margin-bottom:6px;font-family:'JetBrains Mono',monospace;}
-  .cpi-val-input{background:var(--white);border:1.5px solid var(--border);color:var(--red);padding:5px 8px;font-family:'JetBrains Mono',monospace;font-size:.88rem;width:100%;outline:none;transition:border-color .15s;font-weight:500;}
+  .cpi-val-input{background:var(--white);border:1.5px solid var(--border);color:var(--red);padding:5px 8px;font-family:'JetBrains Mono',monospace;font-size:.88rem;width:100%;outline:none;font-weight:500;}
   .cpi-val-input:focus{border-color:var(--red);}
   .add-row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
-
-  /* Badge */
-  .badge{display:inline-block;padding:3px 9px;font-size:.67rem;letter-spacing:.06em;border-radius:2px;}
-  .badge-ok{background:rgba(46,125,82,.1);color:var(--green);border:1px solid rgba(46,125,82,.3);}
-  .badge-warn{background:var(--red-light);color:var(--red);border:1px solid var(--red-mid);}
 
   /* Preview */
   .preview-box{background:var(--surface2);border:1.5px solid var(--border);padding:16px;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--text-dim);white-space:pre-wrap;max-height:280px;overflow-y:auto;border-radius:2px;}
 
   /* Log */
-  .change-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:flex-start;}
+  .change-item{padding:12px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;}
   .change-time{font-size:.7rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;white-space:nowrap;min-width:140px;}
   .change-desc{font-size:.82rem;color:var(--text-dim);}
-
-  /* Toast */
-  #toast{position:fixed;bottom:24px;right:24px;background:var(--white);border:1.5px solid var(--red);border-left:4px solid var(--red);padding:13px 18px;font-size:.82rem;color:var(--text);z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;box-shadow:var(--shadow-md);}
-  #toast.show{opacity:1;transform:translateY(0);}
-  #toast.error{border-color:#dc2626;border-left-color:#dc2626;}
 
   /* Contact preview */
   .contact-preview{background:var(--red);padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:12px;border-radius:2px;}
   .cp-label{font-size:.75rem;color:rgba(255,255,255,.7);}
   .cp-val{font-size:.9rem;color:white;font-weight:600;}
 
-  @media(max-width:768px){
-    aside{display:none;}
-    .section-wrap{padding:16px;}
-    .form-row{grid-template-columns:1fr;}
-  }
+  /* Toast */
+  #toast{position:fixed;bottom:24px;right:24px;background:var(--white);border:1.5px solid var(--red);border-left:4px solid var(--red);padding:13px 18px;font-size:.82rem;color:var(--text);z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;box-shadow:var(--shadow-md);}
+  #toast.show{opacity:1;transform:translateY(0);}
+  #toast.error{border-color:#dc2626;border-left-color:#dc2626;}
+
+  @media(max-width:768px){aside{display:none;}.section-wrap{padding:16px;}.form-row{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
 
 <div class="app">
-  <!-- Sidebar -->
-  <aside>
-    <div class="sidebar-brand">
-      <div class="sb-logo">
-        <div class="sb-emblem">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
-        </div>
-        <div class="sb-name">信義房屋</div>
-      </div>
-      <div class="sb-sub">⚙ 後台管理系統</div>
+<aside>
+  <div class="sidebar-brand">
+    <div class="sb-logo">
+      <div class="sb-emblem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+      <div class="sb-name">信義房屋</div>
     </div>
-
-    <nav>
-      <div class="nav-group">基本設定</div>
-      <div class="nav-item active" data-sec="brand" onclick="switchSection(this)"><span class="nav-icon">🏷</span>品牌與聯絡</div>
-      <div class="nav-item" data-sec="rules" onclick="switchSection(this)"><span class="nav-icon">📋</span>稅率規則</div>
-      <div class="nav-item" data-sec="cpi" onclick="switchSection(this)"><span class="nav-icon">📊</span>CPI 調整表</div>
-      <div class="nav-group">內容維護</div>
-      <div class="nav-item" data-sec="legal" onclick="switchSection(this)"><span class="nav-icon">⚖️</span>免責聲明</div>
-      <div class="nav-group">系統</div>
-      <div class="nav-item" data-sec="export" onclick="switchSection(this)"><span class="nav-icon">💾</span>匯出 / 匯入</div>
-      <div class="nav-item" data-sec="log" onclick="switchSection(this)"><span class="nav-icon">📝</span>更新記錄</div>
-    </nav>
-
-    <div class="sidebar-footer">
-      <a href="index.html" target="_blank">→ 開啟前台試算</a>
-    </div>
-  </aside>
-
-  <!-- Content -->
-  <div class="content">
-
-    <!-- ── 品牌與聯絡 ── -->
-    <div class="section active" id="section-brand">
-      <div class="topbar">
-        <span class="topbar-title">品牌與聯絡資訊</span>
-        <div class="topbar-actions">
-          <button class="btn btn-primary" onclick="saveBrand()">儲存變更</button>
-        </div>
-      </div>
-      <div class="section-wrap">
-
-        <div class="card">
-          <div class="card-header">品牌資訊</div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-label">門店名稱<small>顯示在 Header 及頁尾</small></div>
-              <input class="form-control" id="cfg-brand" placeholder="信義房屋 文心高工店">
-            </div>
-            <div class="form-row">
-              <div class="form-label">副標題<small>Header 名稱下方小字</small></div>
-              <input class="form-control" id="cfg-brandSubtitle" placeholder="文心高工店">
-            </div>
-            <div class="form-row">
-              <div class="form-label">版本號<small>右上角標籤</small></div>
-              <input class="form-control" id="cfg-version" placeholder="v1.3 · 2026/5">
-            </div>
-            <div class="form-row">
-              <div class="form-label">資料更新日期</div>
-              <input class="form-control" id="cfg-updatedDate" type="date">
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">聯絡資訊（電話 & LINE）</div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-label">電話號碼<small>點擊可直接撥出</small></div>
-              <div class="form-group">
-                <input class="form-control" id="cfg-phone" placeholder="0933317625" oninput="updateContactPreview()">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-label">電話顯示文字<small>按鈕上的文字</small></div>
-              <input class="form-control" id="cfg-phoneLabel" placeholder="0933-317-625" oninput="updateContactPreview()">
-            </div>
-            <div class="form-row">
-              <div class="form-label">LINE 好友連結<small>加好友的網址</small></div>
-              <input class="form-control" id="cfg-lineUrl" placeholder="https://line.me/ti/p/EfDsNa26Xw" oninput="updateContactPreview()">
-            </div>
-
-            <div style="margin-top:6px;">
-              <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">預覽效果</div>
-              <div class="contact-preview">
-                <div>
-                  <div class="cp-label">電話</div>
-                  <div class="cp-val" id="prev-phone">—</div>
-                </div>
-                <div style="width:1px;height:30px;background:rgba(255,255,255,.2);"></div>
-                <div>
-                  <div class="cp-label">LINE</div>
-                  <div class="cp-val" id="prev-line">—</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ── 稅率規則 ── -->
-    <div class="section" id="section-rules">
-      <div class="topbar">
-        <span class="topbar-title">稅率規則</span>
-        <div class="topbar-actions">
-          <button class="btn btn-primary" onclick="saveRules()">儲存變更</button>
-        </div>
-      </div>
-      <div class="section-wrap">
-
-        <div class="card">
-          <div class="card-header">持有期間稅率級距</div>
-          <div class="card-body">
-            <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">依持有年數由短到長排列。最後一筆的「持有上限」設超大值（如 999）代表「此年數以上」。</p>
-            <table class="rate-table">
-              <thead><tr><th>說明標籤</th><th>持有上限（年）</th><th>稅率（%）</th><th></th></tr></thead>
-              <tbody id="rate-tbody"></tbody>
-            </table>
-            <button class="btn btn-outline" style="margin-top:12px;" onclick="addRateRow()">+ 新增級距</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">自住優惠設定</div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-label">免稅額上限<small>超過部分才按優惠稅率課</small></div>
-              <div class="form-group"><input class="form-control" id="cfg-selfuseExemptLimit" type="number" placeholder="400"><span class="form-unit">萬</span></div>
-            </div>
-            <div class="form-row">
-              <div class="form-label">優惠稅率<small>超過免稅額的部分</small></div>
-              <div class="form-group"><input class="form-control" id="cfg-selfuseTaxRate" type="number" placeholder="10"><span class="form-unit">%</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">移轉費用推計設定</div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-label">推計比率</div>
-              <div class="form-group"><input class="form-control" id="cfg-transferEstimateRate" type="number" placeholder="3"><span class="form-unit">%</span></div>
-            </div>
-            <div class="form-row">
-              <div class="form-label">推計上限</div>
-              <div class="form-group"><input class="form-control" id="cfg-transferEstimateCap" type="number" placeholder="30"><span class="form-unit">萬</span></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ── CPI ── -->
-    <div class="section" id="section-cpi">
-      <div class="topbar">
-        <span class="topbar-title">CPI 調整表</span>
-        <div class="topbar-actions">
-          <button class="btn btn-primary" onclick="saveCpi()">儲存變更</button>
-        </div>
-      </div>
-      <div class="section-wrap">
-        <div class="card">
-          <div class="card-header">年度 CPI 指數 <span class="badge badge-ok">以 2016 = 1.000 為基準</span></div>
-          <div class="card-body">
-            <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">用於繼承取得情境的成本調整。填入各年度相對 2016 年的 CPI 比率。</p>
-            <div class="cpi-grid" id="cpi-grid"></div>
-            <div class="add-row">
-              <input class="form-control" id="new-cpi-year" type="number" placeholder="年份（如 2027）" style="max-width:160px;">
-              <input class="form-control" id="new-cpi-val" type="number" step="0.001" placeholder="指數（如 1.145）" style="max-width:160px;">
-              <button class="btn btn-primary" onclick="addCpiRow()">新增</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 免責聲明 ── -->
-    <div class="section" id="section-legal">
-      <div class="topbar">
-        <span class="topbar-title">免責聲明</span>
-        <div class="topbar-actions">
-          <button class="btn btn-primary" onclick="saveLegal()">儲存變更</button>
-        </div>
-      </div>
-      <div class="section-wrap">
-        <div class="card">
-          <div class="card-header">免責聲明文字</div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-label">聲明內容<small>顯示在試算結果頁底部</small></div>
-              <textarea class="form-control" id="cfg-disclaimer" rows="6"></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 匯出匯入 ── -->
-    <div class="section" id="section-export">
-      <div class="topbar">
-        <span class="topbar-title">匯出 / 匯入</span>
-      </div>
-      <div class="section-wrap">
-
-        <div class="card">
-          <div class="card-header">匯出設定</div>
-          <div class="card-body">
-            <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">將目前所有設定匯出成 JSON 檔案，可備份或移轉到其他瀏覽器。</p>
-            <button class="btn btn-primary" onclick="exportConfig()">⬇ 下載設定檔（config.json）</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">匯入設定</div>
-          <div class="card-body">
-            <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">上傳之前匯出的 config.json 來還原設定。<strong style="color:#dc2626;">注意：會覆蓋目前所有設定。</strong></p>
-            <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importConfig()">
-            <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆ 選擇設定檔</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">重置為預設值</div>
-          <div class="card-body">
-            <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">清除所有自訂設定，回到出廠預設值。</p>
-            <button class="btn btn-danger" onclick="resetConfig()">⚠ 重置所有設定</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">目前設定 JSON 預覽</div>
-          <div class="card-body"><div class="preview-box" id="json-preview"></div></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ── 更新記錄 ── -->
-    <div class="section" id="section-log">
-      <div class="topbar">
-        <span class="topbar-title">更新記錄</span>
-        <div class="topbar-actions">
-          <button class="btn btn-outline" onclick="clearLog()">清除記錄</button>
-        </div>
-      </div>
-      <div class="section-wrap">
-        <div class="card">
-          <div class="card-header">變更歷史</div>
-          <div class="card-body" id="log-list">
-            <p style="font-size:.82rem;color:var(--text-muted);">尚無記錄。儲存設定後會自動記錄。</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <div class="sb-sub">⚙ 後台管理系統</div>
   </div>
-</div>
+
+  <nav>
+    <div class="nav-group">基本設定</div>
+    <div class="nav-item active" data-sec="brand" onclick="switchSection(this)"><span class="nav-icon">🏷</span>品牌與聯絡</div>
+    <div class="nav-item" data-sec="rules" onclick="switchSection(this)"><span class="nav-icon">📋</span>稅率規則</div>
+    <div class="nav-item" data-sec="cpi" onclick="switchSection(this)"><span class="nav-icon">📊</span>CPI 調整表</div>
+    <div class="nav-group">文字管理</div>
+    <div class="nav-item" data-sec="text-home" onclick="switchSection(this)"><span class="nav-icon">🏠</span>首頁文字</div>
+    <div class="nav-item" data-sec="text-new" onclick="switchSection(this)"><span class="nav-icon">📄</span>新制試算文字</div>
+    <div class="nav-item" data-sec="text-old" onclick="switchSection(this)"><span class="nav-icon">📋</span>舊制試算文字</div>
+    <div class="nav-item" data-sec="text-mortgage" onclick="switchSection(this)"><span class="nav-icon">🏦</span>房貸試算文字</div>
+    <div class="nav-group">其他</div>
+    <div class="nav-item" data-sec="legal" onclick="switchSection(this)"><span class="nav-icon">⚖️</span>免責聲明</div>
+    <div class="nav-item" data-sec="seo" onclick="switchSection(this)"><span class="nav-icon">🔍</span>SEO / 分享預覽</div>
+    <div class="nav-item" data-sec="export" onclick="switchSection(this)"><span class="nav-icon">💾</span>匯出 / 匯入</div>
+    <div class="nav-item" data-sec="log" onclick="switchSection(this)"><span class="nav-icon">📝</span>更新記錄</div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="index.html" target="_blank">→ 首頁</a>
+    <a href="house-tax.html" target="_blank">→ 新制試算</a>
+    <a href="old-tax.html" target="_blank">→ 舊制試算</a>
+    <a href="mortgage.html" target="_blank">→ 房貸試算</a>
+  </div>
+</aside>
+
+<div class="content">
+
+  <!-- ── 品牌與聯絡 ── -->
+  <div class="section active" id="section-brand">
+    <div class="topbar"><span class="topbar-title">品牌與聯絡資訊</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveBrand()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">品牌資訊</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">門店名稱<small>Header 及頁尾</small></div><input class="form-control" id="cfg-brand" placeholder="信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">副標題<small>Header 名稱下方小字</small></div><input class="form-control" id="cfg-brandSubtitle" placeholder="文心高工店"></div>
+          <div class="form-row"><div class="form-label">版本號<small>右上角標籤</small></div><input class="form-control" id="cfg-version" placeholder="v1.3 · 2026/5"></div>
+          <div class="form-row"><div class="form-label">資料更新日期</div><input class="form-control" id="cfg-updatedDate" type="date"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">聯絡資訊</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">電話號碼<small>用於撥出連結</small></div><input class="form-control" id="cfg-phone" placeholder="0933317625" oninput="updateContactPreview()"></div>
+          <div class="form-row"><div class="form-label">電話顯示文字<small>按鈕上顯示</small></div><input class="form-control" id="cfg-phoneLabel" placeholder="0933-317-625" oninput="updateContactPreview()"></div>
+          <div class="form-row"><div class="form-label">LINE 好友連結<small>加好友的網址</small></div><input class="form-control" id="cfg-lineUrl" placeholder="https://line.me/ti/p/..." oninput="updateContactPreview()"></div>
+          <div style="margin-top:8px;">
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">預覽效果</div>
+            <div class="contact-preview">
+              <div><div class="cp-label">電話</div><div class="cp-val" id="prev-phone">—</div></div>
+              <div style="width:1px;height:30px;background:rgba(255,255,255,.2);"></div>
+              <div><div class="cp-label">LINE</div><div class="cp-val" id="prev-line">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 稅率規則 ── -->
+  <div class="section" id="section-rules">
+    <div class="topbar"><span class="topbar-title">稅率規則</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveRules()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">持有期間稅率級距（新制）</div>
+        <div class="card-body">
+          <table class="rate-table"><thead><tr><th>說明標籤</th><th>持有上限（年）</th><th>稅率（%）</th><th></th></tr></thead><tbody id="rate-tbody"></tbody></table>
+          <button class="btn btn-outline" style="margin-top:12px;" onclick="addRateRow()">+ 新增級距</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">自住優惠（新制）</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">免稅額上限<small>萬元</small></div><div class="form-group"><input class="form-control" id="cfg-selfuseExemptLimit" type="number" placeholder="400"><span class="form-unit">萬</span></div></div>
+          <div class="form-row"><div class="form-label">優惠稅率</div><div class="form-group"><input class="form-control" id="cfg-selfuseTaxRate" type="number" placeholder="10"><span class="form-unit">%</span></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">移轉費用推計（新制）</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">推計比率</div><div class="form-group"><input class="form-control" id="cfg-transferEstimateRate" type="number" placeholder="3"><span class="form-unit">%</span></div></div>
+          <div class="form-row"><div class="form-label">推計上限</div><div class="form-group"><input class="form-control" id="cfg-transferEstimateCap" type="number" placeholder="30"><span class="form-unit">萬</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CPI ── -->
+  <div class="section" id="section-cpi">
+    <div class="topbar"><span class="topbar-title">CPI 調整表</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveCpi()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">年度 CPI 指數（2016 = 1.000）</div>
+        <div class="card-body">
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">用於繼承取得情境的成本調整。</p>
+          <div class="cpi-grid" id="cpi-grid"></div>
+          <div class="add-row">
+            <input class="form-control" id="new-cpi-year" type="number" placeholder="年份（如 2027）" style="max-width:160px;">
+            <input class="form-control" id="new-cpi-val" type="number" step="0.001" placeholder="指數（如 1.145）" style="max-width:160px;">
+            <button class="btn btn-primary" onclick="addCpiRow()">新增</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 首頁文字 ── -->
+  <div class="section" id="section-text-home">
+    <div class="topbar"><span class="topbar-title">首頁文字管理</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveTextHome()">儲存變更</button></div></div>
+    <div class="section-wrap">
+
+      <div class="card">
+        <div class="card-header">Hero 區塊（大標題區）</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">副標籤<small>紅色小字</small></div><input class="form-control" id="ht-hero-tag" placeholder="SINYI REALTY · 文心高工店"></div>
+          <div class="form-row"><div class="form-label">大標題</div><input class="form-control" id="ht-hero-title" placeholder="房產稅務試算工具"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><textarea class="form-control" id="ht-hero-desc" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">新制工具卡片</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">卡片標題</div><input class="form-control" id="ht-new-title" placeholder="房地合一稅試算"></div>
+          <div class="form-row"><div class="form-label">法規小字</div><input class="form-control" id="ht-new-law" placeholder="新制・所得稅法 §4-4"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><textarea class="form-control" id="ht-new-desc" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">按鈕文字</div><input class="form-control" id="ht-new-btn" placeholder="開始試算 →"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">舊制工具卡片</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">卡片標題</div><input class="form-control" id="ht-old-title" placeholder="財產交易所得稅試算"></div>
+          <div class="form-row"><div class="form-label">法規小字</div><input class="form-control" id="ht-old-law" placeholder="舊制・所得稅法 §14 第七類"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><textarea class="form-control" id="ht-old-desc" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">按鈕文字</div><input class="form-control" id="ht-old-btn" placeholder="開始試算 →"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">判斷表</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">判斷表標題</div><input class="form-control" id="ht-table-title" placeholder="🤔 不確定適用哪個制度？"></div>
+          <div class="form-row"><div class="form-label">判斷說明</div><input class="form-control" id="ht-table-desc" placeholder="判斷依據是完成所有權移轉登記日..."></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 新制文字 ── -->
+  <div class="section" id="section-text-new">
+    <div class="topbar"><span class="topbar-title">新制試算頁文字管理</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveTextNew()">儲存變更</button></div></div>
+    <div class="section-wrap">
+
+      <div class="card">
+        <div class="card-header">頂部 Banner</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">Banner 標題</div><input class="form-control" id="nt-banner-title" placeholder="房地合一稅快速試算"></div>
+          <div class="form-row"><div class="form-label">Banner 說明</div><textarea class="form-control" id="nt-banner-desc" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">STEP 01 — 取得方式</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">頁面標題</div><input class="form-control" id="nt-s1-title" placeholder="你的房子是怎麼取得的？"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><input class="form-control" id="nt-s1-desc" placeholder="選一個最符合你狀況的情境"></div>
+          <div class="form-row"><div class="form-label">一般買賣 說明</div><textarea class="form-control" id="nt-type-normal" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">自住房地 說明</div><textarea class="form-control" id="nt-type-selfuse" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">繼承取得 說明</div><textarea class="form-control" id="nt-type-inherit" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">配偶贈與 說明</div><textarea class="form-control" id="nt-type-gift" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">結果頁</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">結果頁標題<small>「應繳…」那行</small></div><input class="form-control" id="nt-result-label" placeholder="應繳房地合一稅"></div>
+          <div class="form-row"><div class="form-label">聯絡區塊標題</div><input class="form-control" id="nt-contact-title" placeholder="有任何問題？直接聯繫信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">聯絡區塊說明</div><input class="form-control" id="nt-contact-desc" placeholder="專業顧問為你解答稅務疑問、議價策略"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 舊制文字 ── -->
+  <div class="section" id="section-text-old">
+    <div class="topbar"><span class="topbar-title">舊制試算頁文字管理</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveTextOld()">儲存變更</button></div></div>
+    <div class="section-wrap">
+
+      <div class="card">
+        <div class="card-header">頂部 Banner</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">Banner 標題</div><input class="form-control" id="ot-banner-title" placeholder="財產交易所得稅試算（舊制）"></div>
+          <div class="form-row"><div class="form-label">Banner 說明</div><textarea class="form-control" id="ot-banner-desc" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">STEP 01 — 申報方式</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">頁面標題</div><input class="form-control" id="ot-s1-title" placeholder="請選擇申報方式"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><input class="form-control" id="ot-s1-desc" placeholder="依照你是否有原始買賣成本資料來判斷"></div>
+          <div class="form-row"><div class="form-label">核實認定 標題</div><input class="form-control" id="ot-m-actual-title" placeholder="📄 核實認定（有買賣成本）"></div>
+          <div class="form-row"><div class="form-label">核實認定 說明</div><textarea class="form-control" id="ot-m-actual-desc" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">標準認定 標題</div><input class="form-control" id="ot-m-standard-title" placeholder="📊 標準認定（無法舉證成本）"></div>
+          <div class="form-row"><div class="form-label">標準認定 說明</div><textarea class="form-control" id="ot-m-standard-desc" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">結果頁</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">結果頁標題</div><input class="form-control" id="ot-result-label" placeholder="估算應繳所得稅增加額（財交所得部分）"></div>
+          <div class="form-row"><div class="form-label">聯絡區塊標題</div><input class="form-control" id="ot-contact-title" placeholder="有任何問題？直接聯繫信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">聯絡區塊說明</div><input class="form-control" id="ot-contact-desc" placeholder="專業顧問為你解答稅務疑問、議價策略"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 免責聲明 ── -->
+  <div class="section" id="section-legal">
+    <div class="topbar"><span class="topbar-title">免責聲明</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveLegal()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">免責聲明文字（顯示在所有試算結果頁底部）</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">聲明內容</div><textarea class="form-control" id="cfg-disclaimer" rows="6"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEO ── -->
+  <div class="section" id="section-seo">
+    <div class="topbar"><span class="topbar-title">SEO / 分享預覽</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveSeo()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">LINE / FB 分享預覽文字</div>
+        <div class="card-body">
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px;">這些設定需要你手動更新 HTML 檔案的 &lt;head&gt; 區塊，系統會幫你產生要貼的程式碼。</p>
+          <div class="form-row"><div class="form-label">首頁 OG 標題<small>LINE 預覽顯示的標題</small></div><input class="form-control" id="seo-home-title" placeholder="房產稅務試算工具｜信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">首頁 OG 描述<small>LINE 預覽顯示的文字</small></div><textarea class="form-control" id="seo-home-desc" rows="2" placeholder="提供房地合一稅（新制）與財產交易所得稅（舊制）快速試算..."></textarea></div>
+          <div class="form-row"><div class="form-label">新制頁 OG 標題</div><input class="form-control" id="seo-new-title" placeholder="房地合一稅試算｜信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">新制頁 OG 描述</div><textarea class="form-control" id="seo-new-desc" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">舊制頁 OG 標題</div><input class="form-control" id="seo-old-title" placeholder="財產交易所得稅試算（舊制）｜信義房屋"></div>
+          <div class="form-row"><div class="form-label">舊制頁 OG 描述</div><textarea class="form-control" id="seo-old-desc" rows="2"></textarea></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">複製貼入 HTML 的程式碼</div>
+        <div class="card-body">
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:10px;">貼在每個 HTML 檔案的 &lt;title&gt; 標籤上方的 &lt;head&gt; 內：</p>
+          <div class="preview-box" id="seo-code-preview"></div>
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="copySeoCode()">複製程式碼</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 匯出匯入 ── -->
+  <div class="section" id="section-export">
+    <div class="topbar"><span class="topbar-title">匯出 / 匯入</span></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">匯出設定</div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">將目前所有設定匯出成 JSON 檔案備份。</p>
+          <button class="btn btn-primary" onclick="exportConfig()">⬇ 下載設定檔（config.json）</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">匯入設定</div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">上傳之前匯出的 config.json。<strong style="color:#dc2626;">注意：會覆蓋目前所有設定。</strong></p>
+          <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importConfig()">
+          <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆ 選擇設定檔</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">重置為預設值</div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">清除所有自訂設定，回到出廠預設值。</p>
+          <button class="btn btn-danger" onclick="resetConfig()">⚠ 重置所有設定</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">目前設定 JSON 預覽</div>
+        <div class="card-body"><div class="preview-box" id="json-preview"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Log ── -->
+  <div class="section" id="section-log">
+    <div class="topbar"><span class="topbar-title">更新記錄</span><div class="topbar-actions"><button class="btn btn-outline" onclick="clearLog()">清除記錄</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">變更歷史</div>
+        <div class="card-body" id="log-list"><p style="font-size:.82rem;color:var(--text-muted);">尚無記錄。</p></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ── 房貸文字 ── -->
+  <div class="section" id="section-text-mortgage">
+    <div class="topbar"><span class="topbar-title">房貸試算頁文字管理</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveTextMortgage()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">首頁工具卡片</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">卡片標題</div><input class="form-control" id="mt-card-title" placeholder="房貸試算工具"></div>
+          <div class="form-row"><div class="form-label">法規小字</div><input class="form-control" id="mt-card-law" placeholder="月付金・總利息・還款明細・寬限期"></div>
+          <div class="form-row"><div class="form-label">說明文字</div><textarea class="form-control" id="mt-card-desc" rows="2"></textarea></div>
+          <div class="form-row"><div class="form-label">按鈕文字</div><input class="form-control" id="mt-card-btn" placeholder="開始試算 →"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">結果頁聯絡區塊</div>
+        <div class="card-body">
+          <div class="form-row"><div class="form-label">聯絡標題</div><input class="form-control" id="mt-contact-title" placeholder="想了解實際可貸金額或利率？聯繫信義房屋 文心高工店"></div>
+          <div class="form-row"><div class="form-label">聯絡說明</div><input class="form-control" id="mt-contact-desc" placeholder="協助你洽詢銀行、評估最有利的貸款方案"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
 
 <script>
-// ═══ CONFIG ═══
+// ═══ DEFAULT CONFIG ═══
 function getDefaultConfig(){
   return{
-    brand:'信義房屋 文心高工店',
-    brandSubtitle:'文心高工店',
-    version:'v1.3 · 2026/5',
-    updatedDate:'2026-05-05',
-    phone:'0933317625',
-    phoneLabel:'0933-317-625',
-    lineUrl:'https://line.me/ti/p/EfDsNa26Xw',
-    selfuseExemptLimit:400,
-    selfuseTaxRate:10,
-    transferEstimateRate:3,
-    transferEstimateCap:30,
+    // 品牌
+    brand:'信義房屋 文心高工店',brandSubtitle:'文心高工店',version:'v1.3 · 2026/5',updatedDate:'2026-05-05',
+    phone:'0933317625',phoneLabel:'0933-317-625',lineUrl:'https://line.me/ti/p/EfDsNa26Xw',
+    // 稅率
+    selfuseExemptLimit:400,selfuseTaxRate:10,transferEstimateRate:3,transferEstimateCap:30,
+    taxRates:[{maxYears:2,rate:45,label:'持有 ≤ 2 年'},{maxYears:5,rate:35,label:'持有 2-5 年'},{maxYears:10,rate:20,label:'持有 5-10 年'},{maxYears:999,rate:15,label:'持有 > 10 年'}],
+    cpiTable:{'2016':1,'2017':1.008,'2018':1.015,'2019':1.021,'2020':1.017,'2021':1.022,'2022':1.057,'2023':1.092,'2024':1.112,'2025':1.125,'2026':1.13},
+    // 免責聲明
+    mortgage:{
+      cardTitle:'房貸試算工具',
+      cardLaw:'月付金・總利息・還款明細・寬限期',
+      cardDesc:'輸入房屋總價、自備款比例、利率，立即算出每月還款金額、總利息、年度還款明細，並比較不同貸款年限的差異。',
+      cardBtn:'開始試算 →',
+      contactTitle:'想了解實際可貸金額或利率？聯繫信義房屋 文心高工店',
+      contactDesc:'協助你洽詢銀行、評估最有利的貸款方案'
+    },
     disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
-    taxRates:[
-      {maxYears:2,rate:45,label:'持有 ≤ 2 年'},
-      {maxYears:5,rate:35,label:'持有 2-5 年'},
-      {maxYears:10,rate:20,label:'持有 5-10 年'},
-      {maxYears:999,rate:15,label:'持有 > 10 年'}
-    ],
-    cpiTable:{'2016':1,'2017':1.008,'2018':1.015,'2019':1.021,'2020':1.017,'2021':1.022,'2022':1.057,'2023':1.092,'2024':1.112,'2025':1.125,'2026':1.13}
+    // 首頁文字
+    home:{
+      heroTag:'SINYI REALTY · 文心高工店',
+      heroTitle:'房產稅務試算工具',
+      heroDesc:'提供房地合一稅（新制）與財產交易所得稅（舊制）兩種試算工具，幫你快速掌握賣房稅務，做出最有利的決策',
+      newTitle:'房地合一稅試算',newLaw:'新制・所得稅法 §4-4・2021/7/1 房地合一 2.0',
+      newDesc:'適用民國 105 年 1 月 1 日以後完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。',
+      newBtn:'開始試算 →',
+      oldTitle:'財產交易所得稅試算',oldLaw:'舊制・所得稅法 §14 第七類・綜合所得稅',
+      oldDesc:'適用民國 104 年 12 月 31 日以前完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。',
+      oldBtn:'開始試算 →',
+      tableTitle:'🤔 不確定適用哪個制度？',
+      tableDesc:'判斷依據是完成所有權移轉登記日（過戶登記日），不是簽約日或交屋日。'
+    },
+    // 新制文字
+    newTax:{
+      bannerTitle:'房地合一稅快速試算',
+      bannerDesc:'輸入房屋資料，立即試算應繳稅額與稅後實拿\n有疑問歡迎來電或加 LINE 詢問',
+      s1Title:'你的房子是怎麼取得的？',s1Desc:'選一個最符合你狀況的情境',
+      typeNormal:'你用錢買進這間房，現在要賣掉。沒有自住滿 6 年的條件、不是繼承來的、不是配偶贈與來的。',
+      typeSelfuse:'你（或配偶／未成年子女）連續設籍並實際居住滿 6 年以上。課稅所得 400 萬以下免稅，超過部分稅率 10%。',
+      typeInherit:'這間房是你從家人繼承來的。持有期間自動合併「被繼承人 + 你」。取得成本為繼承時評定現值，系統自動套 CPI 調整。',
+      typeGift:'這間房是配偶贈與給你的。持有期間追溯到配偶當初買房的日期，取得成本沿用配偶當初買房成本。',
+      resultLabel:'應繳房地合一稅',
+      contactTitle:'有任何問題？直接聯繫信義房屋 文心高工店',
+      contactDesc:'專業顧問為你解答稅務疑問、議價策略'
+    },
+    // 舊制文字
+    oldTax:{
+      bannerTitle:'財產交易所得稅試算（舊制）',
+      bannerDesc:'適用民國 104 年 12 月 31 日以前取得的房地\n土地免稅，房屋所得併入個人綜合所得稅',
+      s1Title:'請選擇申報方式',s1Desc:'依照你是否有原始買賣成本資料來判斷',
+      mActualTitle:'📄 核實認定（有買賣成本）',
+      mActualDesc:'政府查得到你的原始取得成本。計算：（賣價 - 買價 - 必要費用）× 房地比，所得併入綜所稅。',
+      mStandardTitle:'📊 標準認定（無法舉證成本）',
+      mStandardDesc:'無法提供或政府無法查到原始取得成本（通常為 101 年 7 月前取得）。以房屋評定現值 × 各縣市比率計算所得。',
+      resultLabel:'估算應繳所得稅增加額（財交所得部分）',
+      contactTitle:'有任何問題？直接聯繫信義房屋 文心高工店',
+      contactDesc:'專業顧問為你解答稅務疑問、議價策略'
+    },
+    // SEO
+    seo:{
+      homeTitle:'房產稅務試算工具｜信義房屋 文心高工店',
+      homeDesc:'提供房地合一稅（新制）與財產交易所得稅（舊制）快速試算，幫你掌握賣房稅務、算出稅後實拿金額。',
+      newTitle:'房地合一稅試算｜信義房屋 文心高工店',
+      newDesc:'房地合一稅快速試算，支援自住優惠、繼承、配偶贈與等情境，一鍵算出應繳稅額與稅後實拿。',
+      oldTitle:'財產交易所得稅試算（舊制）｜信義房屋',
+      oldDesc:'舊制財產交易所得稅試算，支援核實認定與標準認定，自動套用各縣市比率與累進稅率。'
+    }
   };
 }
 
 function loadConfig(){
   const s=localStorage.getItem('rlandy_config');
-  if(s){try{return{...getDefaultConfig(),...JSON.parse(s)};}catch(e){}}
+  if(s){try{const d=getDefaultConfig();const p=JSON.parse(s);return deepMerge(d,p);}catch(e){}}
   return getDefaultConfig();
 }
 
-function saveConfigData(c){
-  localStorage.setItem('rlandy_config',JSON.stringify(c));
-  updateJsonPreview(c);
+function deepMerge(target,source){
+  const result={...target};
+  for(const key of Object.keys(source)){
+    if(source[key]&&typeof source[key]==='object'&&!Array.isArray(source[key])){
+      result[key]=deepMerge(target[key]||{},source[key]);
+    }else{result[key]=source[key];}
+  }
+  return result;
 }
+
+function saveConfigData(c){localStorage.setItem('rlandy_config',JSON.stringify(c));updateJsonPreview(c);}
 
 let cfg=loadConfig();
 
@@ -438,175 +566,230 @@ function switchSection(el){
   el.classList.add('active');
   const sec=el.dataset.sec;
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('section-'+sec).classList.add('active');
-  if(sec==='export'){updateJsonPreview(cfg);}
-  if(sec==='log'){renderLog();}
+  document.getElementById('section-'+sec.replace('-','_').replace('-','_')).classList.add('active');
+  if(sec==='export')updateJsonPreview(cfg);
+  if(sec==='log')renderLog();
+  if(sec==='seo')updateSeoPreview();
 }
 
 // ═══ FILL FORMS ═══
 function fillForms(){
-  setV('cfg-brand',cfg.brand);
-  setV('cfg-brandSubtitle',cfg.brandSubtitle);
-  setV('cfg-version',cfg.version);
-  setV('cfg-updatedDate',cfg.updatedDate);
-  setV('cfg-phone',cfg.phone||'0933317625');
-  setV('cfg-phoneLabel',cfg.phoneLabel||'0933-317-625');
-  setV('cfg-lineUrl',cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw');
-  setV('cfg-selfuseExemptLimit',cfg.selfuseExemptLimit);
-  setV('cfg-selfuseTaxRate',cfg.selfuseTaxRate);
-  setV('cfg-transferEstimateRate',cfg.transferEstimateRate);
-  setV('cfg-transferEstimateCap',cfg.transferEstimateCap);
+  setV('cfg-brand',cfg.brand);setV('cfg-brandSubtitle',cfg.brandSubtitle);
+  setV('cfg-version',cfg.version);setV('cfg-updatedDate',cfg.updatedDate);
+  setV('cfg-phone',cfg.phone);setV('cfg-phoneLabel',cfg.phoneLabel);setV('cfg-lineUrl',cfg.lineUrl);
+  setV('cfg-selfuseExemptLimit',cfg.selfuseExemptLimit);setV('cfg-selfuseTaxRate',cfg.selfuseTaxRate);
+  setV('cfg-transferEstimateRate',cfg.transferEstimateRate);setV('cfg-transferEstimateCap',cfg.transferEstimateCap);
   setV('cfg-disclaimer',cfg.disclaimer);
-  updateContactPreview();
-  renderRateTable();
-  renderCpiGrid();
+  // Home text
+  const h=cfg.home||{};
+  setV('ht-hero-tag',h.heroTag);setV('ht-hero-title',h.heroTitle);setV('ht-hero-desc',h.heroDesc);
+  setV('ht-new-title',h.newTitle);setV('ht-new-law',h.newLaw);setV('ht-new-desc',h.newDesc);setV('ht-new-btn',h.newBtn);
+  setV('ht-old-title',h.oldTitle);setV('ht-old-law',h.oldLaw);setV('ht-old-desc',h.oldDesc);setV('ht-old-btn',h.oldBtn);
+  setV('ht-table-title',h.tableTitle);setV('ht-table-desc',h.tableDesc);
+  // New tax text
+  const nt=cfg.newTax||{};
+  setV('nt-banner-title',nt.bannerTitle);setV('nt-banner-desc',nt.bannerDesc);
+  setV('nt-s1-title',nt.s1Title);setV('nt-s1-desc',nt.s1Desc);
+  setV('nt-type-normal',nt.typeNormal);setV('nt-type-selfuse',nt.typeSelfuse);
+  setV('nt-type-inherit',nt.typeInherit);setV('nt-type-gift',nt.typeGift);
+  setV('nt-result-label',nt.resultLabel);setV('nt-contact-title',nt.contactTitle);setV('nt-contact-desc',nt.contactDesc);
+  // Old tax text
+  const ot=cfg.oldTax||{};
+  setV('ot-banner-title',ot.bannerTitle);setV('ot-banner-desc',ot.bannerDesc);
+  setV('ot-s1-title',ot.s1Title);setV('ot-s1-desc',ot.s1Desc);
+  setV('ot-m-actual-title',ot.mActualTitle);setV('ot-m-actual-desc',ot.mActualDesc);
+  setV('ot-m-standard-title',ot.mStandardTitle);setV('ot-m-standard-desc',ot.mStandardDesc);
+  setV('ot-result-label',ot.resultLabel);setV('ot-contact-title',ot.contactTitle);setV('ot-contact-desc',ot.contactDesc);
+  // SEO
+  const seo=cfg.seo||{};
+  setV('seo-home-title',seo.homeTitle);setV('seo-home-desc',seo.homeDesc);
+  setV('seo-new-title',seo.newTitle);setV('seo-new-desc',seo.newDesc);
+  setV('seo-old-title',seo.oldTitle);setV('seo-old-desc',seo.oldDesc);
+  // Mortgage
+  const mt2=cfg.mortgage||{};
+  setV('mt-card-title',mt2.cardTitle);setV('mt-card-law',mt2.cardLaw);
+  setV('mt-card-desc',mt2.cardDesc);setV('mt-card-btn',mt2.cardBtn);
+  setV('mt-contact-title',mt2.contactTitle);setV('mt-contact-desc',mt2.contactDesc);
+  updateContactPreview();renderRateTable();renderCpiGrid();
 }
 
 function setV(id,val){const el=document.getElementById(id);if(el)el.value=val||'';}
+function gV(id){return document.getElementById(id)?.value||'';}
 
 function updateContactPreview(){
-  const phone=document.getElementById('cfg-phoneLabel').value||document.getElementById('cfg-phone').value||'—';
-  const line=document.getElementById('cfg-lineUrl').value||'—';
-  document.getElementById('prev-phone').textContent='📞 '+phone;
-  document.getElementById('prev-line').textContent=line.length>30?line.slice(0,28)+'…':line;
+  document.getElementById('prev-phone').textContent='📞 '+(gV('cfg-phoneLabel')||gV('cfg-phone')||'—');
+  const url=gV('cfg-lineUrl');
+  document.getElementById('prev-line').textContent=url.length>30?url.slice(0,28)+'…':url||'—';
 }
 
 // ═══ RATE TABLE ═══
 function renderRateTable(){
-  const tbody=document.getElementById('rate-tbody');
-  tbody.innerHTML='';
+  const tbody=document.getElementById('rate-tbody');tbody.innerHTML='';
   (cfg.taxRates||[]).forEach((t,i)=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td><input class="rate-input" value="${t.label}" onchange="cfg.taxRates[${i}].label=this.value"></td>
-      <td><input class="rate-input" type="number" value="${t.maxYears}" onchange="cfg.taxRates[${i}].maxYears=+this.value" style="max-width:80px;"></td>
-      <td><input class="rate-input" type="number" value="${t.rate}" onchange="cfg.taxRates[${i}].rate=+this.value" style="max-width:80px;"></td>
-      <td><button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick="removeRate(${i})">刪除</button></td>`;
+    tr.innerHTML=`<td><input class="rate-input" value="${t.label}" onchange="cfg.taxRates[${i}].label=this.value"></td><td><input class="rate-input" type="number" value="${t.maxYears}" onchange="cfg.taxRates[${i}].maxYears=+this.value" style="max-width:80px;"></td><td><input class="rate-input" type="number" value="${t.rate}" onchange="cfg.taxRates[${i}].rate=+this.value" style="max-width:80px;"></td><td><button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick="removeRate(${i})">刪除</button></td>`;
     tbody.appendChild(tr);
   });
 }
-
 function addRateRow(){cfg.taxRates.push({label:'新級距',maxYears:15,rate:10});renderRateTable();}
 function removeRate(i){cfg.taxRates.splice(i,1);renderRateTable();}
 
 // ═══ CPI ═══
 function renderCpiGrid(){
-  const grid=document.getElementById('cpi-grid');
-  grid.innerHTML='';
+  const grid=document.getElementById('cpi-grid');grid.innerHTML='';
   Object.entries(cfg.cpiTable||{}).sort((a,b)=>+a[0]-+b[0]).forEach(([yr,val])=>{
-    const div=document.createElement('div');
-    div.className='cpi-item';
+    const div=document.createElement('div');div.className='cpi-item';
     div.innerHTML=`<div class="cpi-year">${yr} 年</div><input class="cpi-val-input" type="number" step="0.001" value="${val}" onchange="cfg.cpiTable['${yr}']=+this.value">`;
     grid.appendChild(div);
   });
 }
-
 function addCpiRow(){
   const yr=document.getElementById('new-cpi-year').value;
   const val=parseFloat(document.getElementById('new-cpi-val').value);
   if(!yr||isNaN(val)){toast('請填入年份和指數',true);return;}
   cfg.cpiTable[yr]=val;renderCpiGrid();
-  document.getElementById('new-cpi-year').value='';
-  document.getElementById('new-cpi-val').value='';
+  document.getElementById('new-cpi-year').value='';document.getElementById('new-cpi-val').value='';
 }
 
-// ═══ SAVE ═══
+// ═══ SAVE SECTIONS ═══
 function saveBrand(){
-  cfg.brand=document.getElementById('cfg-brand').value;
-  cfg.brandSubtitle=document.getElementById('cfg-brandSubtitle').value;
-  cfg.version=document.getElementById('cfg-version').value;
-  cfg.updatedDate=document.getElementById('cfg-updatedDate').value;
-  cfg.phone=document.getElementById('cfg-phone').value;
-  cfg.phoneLabel=document.getElementById('cfg-phoneLabel').value;
-  cfg.lineUrl=document.getElementById('cfg-lineUrl').value;
-  saveConfigData(cfg);addLog('儲存「品牌與聯絡」設定');
-  toast('已儲存 ✓ 前台試算即時生效');
+  cfg.brand=gV('cfg-brand');cfg.brandSubtitle=gV('cfg-brandSubtitle');
+  cfg.version=gV('cfg-version');cfg.updatedDate=gV('cfg-updatedDate');
+  cfg.phone=gV('cfg-phone');cfg.phoneLabel=gV('cfg-phoneLabel');cfg.lineUrl=gV('cfg-lineUrl');
+  saveConfigData(cfg);addLog('儲存「品牌與聯絡」');toast('已儲存 ✓');
 }
-
 function saveRules(){
-  cfg.selfuseExemptLimit=+document.getElementById('cfg-selfuseExemptLimit').value;
-  cfg.selfuseTaxRate=+document.getElementById('cfg-selfuseTaxRate').value;
-  cfg.transferEstimateRate=+document.getElementById('cfg-transferEstimateRate').value;
-  cfg.transferEstimateCap=+document.getElementById('cfg-transferEstimateCap').value;
-  saveConfigData(cfg);addLog('儲存「稅率規則」設定');
-  toast('已儲存 ✓ 前台試算即時生效');
+  cfg.selfuseExemptLimit=+gV('cfg-selfuseExemptLimit');cfg.selfuseTaxRate=+gV('cfg-selfuseTaxRate');
+  cfg.transferEstimateRate=+gV('cfg-transferEstimateRate');cfg.transferEstimateCap=+gV('cfg-transferEstimateCap');
+  saveConfigData(cfg);addLog('儲存「稅率規則」');toast('已儲存 ✓');
+}
+function saveCpi(){saveConfigData(cfg);addLog('儲存「CPI 調整表」');toast('已儲存 ✓');}
+function saveLegal(){cfg.disclaimer=gV('cfg-disclaimer');saveConfigData(cfg);addLog('儲存「免責聲明」');toast('已儲存 ✓');}
+
+function saveTextHome(){
+  if(!cfg.home)cfg.home={};
+  cfg.home.heroTag=gV('ht-hero-tag');cfg.home.heroTitle=gV('ht-hero-title');cfg.home.heroDesc=gV('ht-hero-desc');
+  cfg.home.newTitle=gV('ht-new-title');cfg.home.newLaw=gV('ht-new-law');cfg.home.newDesc=gV('ht-new-desc');cfg.home.newBtn=gV('ht-new-btn');
+  cfg.home.oldTitle=gV('ht-old-title');cfg.home.oldLaw=gV('ht-old-law');cfg.home.oldDesc=gV('ht-old-desc');cfg.home.oldBtn=gV('ht-old-btn');
+  cfg.home.tableTitle=gV('ht-table-title');cfg.home.tableDesc=gV('ht-table-desc');
+  saveConfigData(cfg);addLog('儲存「首頁文字」');toast('已儲存 ✓ 首頁即時生效');
+}
+function saveTextNew(){
+  if(!cfg.newTax)cfg.newTax={};
+  cfg.newTax.bannerTitle=gV('nt-banner-title');cfg.newTax.bannerDesc=gV('nt-banner-desc');
+  cfg.newTax.s1Title=gV('nt-s1-title');cfg.newTax.s1Desc=gV('nt-s1-desc');
+  cfg.newTax.typeNormal=gV('nt-type-normal');cfg.newTax.typeSelfuse=gV('nt-type-selfuse');
+  cfg.newTax.typeInherit=gV('nt-type-inherit');cfg.newTax.typeGift=gV('nt-type-gift');
+  cfg.newTax.resultLabel=gV('nt-result-label');cfg.newTax.contactTitle=gV('nt-contact-title');cfg.newTax.contactDesc=gV('nt-contact-desc');
+  saveConfigData(cfg);addLog('儲存「新制試算文字」');toast('已儲存 ✓ 新制試算頁即時生效');
+}
+function saveTextOld(){
+  if(!cfg.oldTax)cfg.oldTax={};
+  cfg.oldTax.bannerTitle=gV('ot-banner-title');cfg.oldTax.bannerDesc=gV('ot-banner-desc');
+  cfg.oldTax.s1Title=gV('ot-s1-title');cfg.oldTax.s1Desc=gV('ot-s1-desc');
+  cfg.oldTax.mActualTitle=gV('ot-m-actual-title');cfg.oldTax.mActualDesc=gV('ot-m-actual-desc');
+  cfg.oldTax.mStandardTitle=gV('ot-m-standard-title');cfg.oldTax.mStandardDesc=gV('ot-m-standard-desc');
+  cfg.oldTax.resultLabel=gV('ot-result-label');cfg.oldTax.contactTitle=gV('ot-contact-title');cfg.oldTax.contactDesc=gV('ot-contact-desc');
+  saveConfigData(cfg);addLog('儲存「舊制試算文字」');toast('已儲存 ✓ 舊制試算頁即時生效');
+}
+function saveTextMortgage(){
+  if(!cfg.mortgage)cfg.mortgage={};
+  cfg.mortgage.cardTitle=gV('mt-card-title');cfg.mortgage.cardLaw=gV('mt-card-law');
+  cfg.mortgage.cardDesc=gV('mt-card-desc');cfg.mortgage.cardBtn=gV('mt-card-btn');
+  cfg.mortgage.contactTitle=gV('mt-contact-title');cfg.mortgage.contactDesc=gV('mt-contact-desc');
+  saveConfigData(cfg);addLog('儲存「房貸試算文字」');toast('已儲存 ✓ 房貸試算頁即時生效');
+}
+function saveSeo(){
+  if(!cfg.seo)cfg.seo={};
+  cfg.seo.homeTitle=gV('seo-home-title');cfg.seo.homeDesc=gV('seo-home-desc');
+  cfg.seo.newTitle=gV('seo-new-title');cfg.seo.newDesc=gV('seo-new-desc');
+  cfg.seo.oldTitle=gV('seo-old-title');cfg.seo.oldDesc=gV('seo-old-desc');
+  saveConfigData(cfg);updateSeoPreview();addLog('儲存「SEO 設定」');toast('已儲存 ✓');
 }
 
-function saveCpi(){
-  saveConfigData(cfg);addLog('儲存「CPI 調整表」');
-  toast('已儲存 ✓');
+// ═══ SEO PREVIEW ═══
+function updateSeoPreview(){
+  const seo=cfg.seo||{};
+  const code=`<!-- 貼入 index.html 的 <head> 內 -->
+<meta property="og:title" content="${gV('seo-home-title')||seo.homeTitle||''}">
+<meta property="og:description" content="${gV('seo-home-desc')||seo.homeDesc||''}">
+<meta name="description" content="${gV('seo-home-desc')||seo.homeDesc||''}">
+<meta property="og:type" content="website">
+
+<!-- 貼入 house-tax.html 的 <head> 內 -->
+<meta property="og:title" content="${gV('seo-new-title')||seo.newTitle||''}">
+<meta property="og:description" content="${gV('seo-new-desc')||seo.newDesc||''}">
+<meta name="description" content="${gV('seo-new-desc')||seo.newDesc||''}">
+
+<!-- 貼入 old-tax.html 的 <head> 內 -->
+<meta property="og:title" content="${gV('seo-old-title')||seo.oldTitle||''}">
+<meta property="og:description" content="${gV('seo-old-desc')||seo.oldDesc||''}">
+<meta name="description" content="${gV('seo-old-desc')||seo.oldDesc||''}">`;
+  document.getElementById('seo-code-preview').textContent=code;
 }
 
-function saveLegal(){
-  cfg.disclaimer=document.getElementById('cfg-disclaimer').value;
-  saveConfigData(cfg);addLog('儲存「免責聲明」');
-  toast('已儲存 ✓');
+function copySeoCode(){
+  const text=document.getElementById('seo-code-preview').textContent;
+  navigator.clipboard.writeText(text).then(()=>toast('已複製到剪貼簿 ✓')).catch(()=>toast('複製失敗，請手動選取',true));
 }
 
 // ═══ EXPORT / IMPORT ═══
 function exportConfig(){
   const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`sinyi-config-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();addLog('匯出設定檔');
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`sinyi-config-${new Date().toISOString().slice(0,10)}.json`;a.click();addLog('匯出設定檔');
 }
-
 function importConfig(){
-  const file=document.getElementById('import-file').files[0];
-  if(!file)return;
+  const file=document.getElementById('import-file').files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    try{
-      cfg={...getDefaultConfig(),...JSON.parse(e.target.result)};
-      saveConfigData(cfg);fillForms();addLog('匯入設定檔：'+file.name);
-      toast('設定已匯入 ✓');
-    }catch(err){toast('JSON 格式錯誤，無法匯入',true);}
-  };
-  reader.readAsText(file);
+    try{cfg=deepMerge(getDefaultConfig(),JSON.parse(e.target.result));saveConfigData(cfg);fillForms();addLog('匯入設定檔：'+file.name);toast('設定已匯入 ✓');}
+    catch(err){toast('JSON 格式錯誤',true);}
+  };reader.readAsText(file);
 }
-
 function resetConfig(){
-  if(!confirm('確定要重置所有設定嗎？這個動作無法復原。'))return;
-  cfg=getDefaultConfig();saveConfigData(cfg);fillForms();addLog('重置為預設值');
-  toast('已重置為預設值');
+  if(!confirm('確定要重置所有設定嗎？'))return;
+  cfg=getDefaultConfig();saveConfigData(cfg);fillForms();addLog('重置為預設值');toast('已重置為預設值');
 }
-
-function updateJsonPreview(c){
-  const el=document.getElementById('json-preview');
-  if(el)el.textContent=JSON.stringify(c,null,2);
-}
+function updateJsonPreview(c){const el=document.getElementById('json-preview');if(el)el.textContent=JSON.stringify(c,null,2);}
 
 // ═══ LOG ═══
 function addLog(msg){
   const logs=JSON.parse(localStorage.getItem('rlandy_log')||'[]');
   logs.unshift({time:new Date().toLocaleString('zh-TW'),msg});
-  if(logs.length>50)logs.pop();
-  localStorage.setItem('rlandy_log',JSON.stringify(logs));
+  if(logs.length>50)logs.pop();localStorage.setItem('rlandy_log',JSON.stringify(logs));
 }
-
 function renderLog(){
   const logs=JSON.parse(localStorage.getItem('rlandy_log')||'[]');
   const el=document.getElementById('log-list');
   if(!logs.length){el.innerHTML='<p style="font-size:.82rem;color:var(--text-muted);">尚無記錄。</p>';return;}
   el.innerHTML=logs.map(l=>`<div class="change-item"><div class="change-time">${l.time}</div><div class="change-desc">${l.msg}</div></div>`).join('');
 }
-
-function clearLog(){
-  if(!confirm('確定清除所有更新記錄？'))return;
-  localStorage.removeItem('rlandy_log');renderLog();
-}
+function clearLog(){if(!confirm('確定清除？'))return;localStorage.removeItem('rlandy_log');renderLog();}
 
 // ═══ TOAST ═══
 function toast(msg,isError){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className='show'+(isError?' error':'');
-  clearTimeout(el._t);
+  const el=document.getElementById('toast');el.textContent=msg;
+  el.className='show'+(isError?' error':'');clearTimeout(el._t);
   el._t=setTimeout(()=>{el.className='';},3000);
 }
 
-// Init
+// ═══ FIX SECTION IDs ═══
+// nav data-sec 用 - 但 HTML id 要對應
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',function(){
+    const sec=this.dataset.sec;
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    this.classList.add('active');
+    const el=document.getElementById('section-'+sec);
+    if(el)el.classList.add('active');
+    if(sec==='export')updateJsonPreview(cfg);
+    if(sec==='log')renderLog();
+    if(sec==='seo')updateSeoPreview();
+  });
+});
+
 fillForms();
 </script>
 </body>
