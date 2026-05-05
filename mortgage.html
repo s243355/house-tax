@@ -136,6 +136,29 @@
   .fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
   .fi{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
 
+
+  /* LINE Share Modal */
+  .line-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .line-modal-overlay.open{display:flex;animation:fadeInM .2s ease;}
+  @keyframes fadeInM{from{opacity:0}to{opacity:1}}
+  .line-modal{background:var(--white);width:100%;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.18);animation:slideUpM .25s ease;}
+  @keyframes slideUpM{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lm-header{background:#06C755;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .lm-header-left{display:flex;align-items:center;gap:10px;}
+  .lm-header h3{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:white;}
+  .lm-header p{font-size:.72rem;color:rgba(255,255,255,.8);margin-top:2px;}
+  .lm-close{background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+  .lm-close:hover{background:rgba(255,255,255,.35);}
+  .lm-body{padding:20px 22px;}
+  .lm-preview{background:#f0faf2;border:1.5px solid #b8e8c4;padding:16px 18px;font-size:.82rem;color:#1a3a20;line-height:1.85;white-space:pre-wrap;word-break:break-all;margin-bottom:16px;min-height:120px;max-height:320px;overflow-y:auto;}
+  .lm-actions{display:flex;gap:10px;}
+  .lm-btn{flex:1;padding:12px;font-size:.85rem;font-family:inherit;font-weight:600;cursor:pointer;transition:all .2s;border:none;border-radius:2px;}
+  .lm-btn-copy{background:#06C755;color:white;}
+  .lm-btn-copy:hover{background:#05a847;}
+  .lm-btn-copy.copied{background:#2e7d52;}
+  .lm-btn-open{background:var(--white);border:1.5px solid #06C755;color:#06C755;}
+  .lm-btn-open:hover{background:#f0faf2;}
+  .lm-tip{font-size:.72rem;color:var(--text-muted);margin-top:10px;text-align:center;line-height:1.6;}
   @media(max-width:640px){
     header{padding:0 16px;height:56px;}.ht,.hd{display:none;}
     .hero{padding:36px 20px 32px;}.hero h1{font-size:1.6rem;}
@@ -348,11 +371,34 @@
       </div>
     </div>
 
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;" onclick="showLineShare()">📤 LINE 分享試算結果</button>
+    </div>
     <div class="info-box">
       ⚠ 本試算為估算參考，實際貸款金額、利率及條件依各銀行審核為準。建議洽詢專業人員取得正式報價。
     </div>
 
   </div>
+<div class="line-modal-overlay" id="line-modal" onclick="closeLineModal(event)">
+  <div class="line-modal">
+    <div class="lm-header">
+      <div class="lm-header-left">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        <div><h3>LINE 試算摘要</h3><p>複製後貼到 LINE 群組或個人對話</p></div>
+      </div>
+      <button class="lm-close" onclick="closeLineModal()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div class="lm-preview" id="line-preview-text"></div>
+      <div class="lm-actions">
+        <button class="lm-btn lm-btn-copy" id="copy-btn" onclick="copyLineText()">📋 複製文字</button>
+        <button class="lm-btn lm-btn-open" onclick="openLineApp()">開啟 LINE →</button>
+      </div>
+      <div class="lm-tip">複製後切換到 LINE，貼上即可分享給家人或朋友討論</div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <footer>
@@ -564,6 +610,67 @@ function toggleSchedule(){
   showMonthly = !showMonthly;
   document.getElementById('toggle-btn').textContent = showMonthly ? '切換為年度明細' : '顯示每月明細';
   buildSchedule(showMonthly);
+}
+
+function showLineShare(){
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const loanAmt=document.getElementById('r-loan-total').textContent;
+  const monthly=document.getElementById('r-monthly').textContent;
+  const totalInt=document.getElementById('r-total-interest').textContent;
+  const totalPay=document.getElementById('r-total-pay').textContent;
+  const downAmt=document.getElementById('r-down').textContent;
+  const rate=document.getElementById('rate-display').textContent;
+  const years=document.getElementById('loan-years').value;
+  const repayType=document.getElementById('repay-type').value==='equal-payment'?'等額本息':'等額本金';
+  const grace=document.getElementById('grace-years').value;
+  const graceLine=grace>0?`⏸ 寬限期：${grace} 年（寬限期月付：${document.getElementById('r-grace-monthly').textContent}）
+`:'';
+
+  const msg=`🏦 房貸試算結果
+${'═'.repeat(22)}
+💰 貸款金額：${loanAmt} 萬
+💵 自備款：${downAmt}
+📅 貸款年限：${years} 年
+📊 年利率：${rate}（${repayType}）
+${graceLine}
+📆 每月還款：${monthly} 元
+💸 總利息：${totalInt} 萬
+🧾 還清後總支出：${totalPay} 萬
+${'─'.repeat(22)}
+試算日期：${today}
+
+📞 ${brand}
+☎ ${phone}
+LINE 諮詢：${lineUrl}
+
+⚠ 本試算僅供參考，實際條件依銀行審核為準`;
+
+  document.getElementById('line-preview-text').textContent=msg;
+  document.getElementById('line-modal').classList.add('open');
+  document.getElementById('copy-btn').textContent='📋 複製文字';
+  document.getElementById('copy-btn').classList.remove('copied');
+}
+
+function closeLineModal(e){
+  if(!e||e.target===document.getElementById('line-modal'))
+    document.getElementById('line-modal').classList.remove('open');
+}
+
+function copyLineText(){
+  const text=document.getElementById('line-preview-text').textContent;
+  const btn=document.getElementById('copy-btn');
+  const done=()=>{btn.textContent='✅ 已複製！';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 複製文字';btn.classList.remove('copied');},3000);};
+  navigator.clipboard.writeText(text).then(done).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();
+  });
+}
+
+function openLineApp(){
+  window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('line-preview-text').textContent),'_blank');
 }
 
 // Init config
