@@ -75,7 +75,14 @@
   .fi{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
 
   @media(max-width:620px){
-    header{padding:0 16px;height:56px;}.ht,.hd{display:none;}
+    header{padding:0 12px;height:52px;}
+    .ht,.hd{display:none;}
+    .sinyi-name{font-size:.9rem;}
+    .sinyi-name small{font-size:.58rem;}
+    .sinyi-emblem{width:30px;height:30px;}
+    .hc{gap:5px;}
+    .cb{padding:6px 10px;font-size:.72rem;gap:5px;}
+    .cb svg{width:11px;height:11px;}
     .hero{padding:44px 20px 40px;}.hero h1{font-size:1.7rem;}
     main{padding:36px 16px 60px;}
     .tool-grid{grid-template-columns:1fr;}
@@ -106,6 +113,9 @@
   <h1 id="hero-title">房產稅務試算工具</h1>
   <p id="hero-desc">提供房地合一稅（新制）與財產交易所得稅（舊制）兩種試算工具，幫你快速掌握賣房稅務，做出最有利的決策</p>
 </div>
+
+<!-- 公告欄 -->
+<div id="announcement-bar" style="display:none;"></div>
 
 <main>
   <div class="select-label">請選擇你的房子適用的制度</div>
@@ -205,6 +215,24 @@
     </a>
   </div>
 
+  <!-- 換屋規劃 + 名片 快捷 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+    <a href="home-buying.html" style="background:var(--white);border:1.5px solid var(--border);padding:18px 20px;text-decoration:none;display:flex;align-items:center;gap:14px;transition:all .2s;box-shadow:var(--shadow-sm);" onmouseover="this.style.borderColor='#4a1a7a'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;background:#4a1a7a;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border-radius:2px;">🔑</div>
+      <div>
+        <div style="font-family:'Noto Serif TC',serif;font-size:.92rem;font-weight:700;color:#4a1a7a;margin-bottom:3px;" id="card-hb-title">換屋資金規劃</div>
+        <div style="font-size:.75rem;color:var(--text-muted);" id="card-hb-desc">賣舊房→買新房　一條龍試算</div>
+      </div>
+    </a>
+    <a href="card.html" style="background:var(--white);border:1.5px solid var(--border);padding:18px 20px;text-decoration:none;display:flex;align-items:center;gap:14px;transition:all .2s;box-shadow:var(--shadow-sm);" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border-radius:2px;">📇</div>
+      <div>
+        <div style="font-family:'Noto Serif TC',serif;font-size:.92rem;font-weight:700;color:var(--red);margin-bottom:3px;" id="card-vc-title">數位名片</div>
+        <div style="font-size:.75rem;color:var(--text-muted);" id="card-vc-desc">LINE QR Code・電話・工具總覽</div>
+      </div>
+    </a>
+  </div>
+
   <div class="info-card">
     <h3 id="table-title">🤔 不確定適用哪個制度？</h3>
     <p id="table-desc">判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
@@ -271,6 +299,23 @@ sa('card-hc-desc',hc.cardDesc);sa('card-hc-btn',hc.cardBtn);
 const rr=c.repurchaseRefund||{};
 sa('card-rr-title',rr.cardTitle);sa('card-rr-law',rr.cardLaw);
 sa('card-rr-desc',rr.cardDesc);sa('card-rr-btn',rr.cardBtn);
+// 換屋、名片
+const hb=c.homeBuying||{};const vc=c.card||{};
+sa('card-hb-title',hb.cardTitle);sa('card-hb-desc',hb.cardDesc);
+sa('card-vc-title',vc.cardTitle);sa('card-vc-desc',vc.cardDesc);
+// 公告欄
+const ann=c.announcement||{};
+if(ann.enabled&&ann.title){
+  const now=new Date();
+  const expired=ann.expire&&new Date(ann.expire)<now;
+  if(!expired){
+    const styles={info:{bg:'#fffbeb',border:'#b8860b',color:'#1a1410',icon:'📢'},promo:{bg:'#f0f8f2',border:'#2e7d52',color:'#1a3a20',icon:'🎁'},warn:{bg:'#fff8f8',border:'#C00000',color:'#3a1010',icon:'⚠'}};
+    const st=styles[ann.type||'info'];
+    const bar=document.getElementById('announcement-bar');
+    bar.style.display='block';
+    bar.innerHTML=`<div style="background:${st.bg};border-bottom:3px solid ${st.border};padding:12px 40px;font-size:.85rem;color:${st.color};display:flex;align-items:center;gap:10px;">${st.icon} <strong>${ann.title}</strong>${ann.desc?' &nbsp;—&nbsp; '+ann.desc:''}</div>`;
+  }
+}
 </script>
 </body>
 </html>

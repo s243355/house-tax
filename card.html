@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聯絡我們｜信義房屋 文心高工店</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+  :root{
+    --red:#C00000;--red-dark:#9a0000;--red-light:#fdf0f0;
+    --bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
+    --border:#e0dad3;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 20px rgba(0,0,0,.1);--shadow-lg:0 8px 40px rgba(0,0,0,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px 60px;}
+
+  /* 名片主體 */
+  .card{
+    background:var(--white);
+    width:100%;max-width:420px;
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+    border-radius:4px;
+    position:relative;
+  }
+
+  /* 上半：品牌區 */
+  .card-top{
+    background:var(--red);
+    padding:36px 32px 28px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .card-top::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;border:32px solid rgba(255,255,255,.07);border-radius:50%;}
+  .card-top::after{content:'';position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;border:22px solid rgba(255,255,255,.05);border-radius:50%;}
+
+  .card-logo{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px;position:relative;z-index:1;}
+  .logo-emblem{width:52px;height:52px;background:white;display:flex;align-items:center;justify-content:center;border-radius:3px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  .logo-emblem svg{width:32px;height:32px;}
+  .logo-text{text-align:left;}
+  .logo-brand{font-family:'Noto Serif TC',serif;font-size:1.4rem;font-weight:700;color:white;letter-spacing:.12em;line-height:1.1;}
+  .logo-sub{font-size:.72rem;color:rgba(255,255,255,.75);margin-top:4px;letter-spacing:.08em;}
+
+  .card-tagline{font-size:.78rem;color:rgba(255,255,255,.7);position:relative;z-index:1;letter-spacing:.05em;}
+
+  /* QR Code 區 */
+  .qr-section{padding:28px 32px 20px;text-align:center;border-bottom:1px solid var(--border);}
+  .qr-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;}
+  .qr-wrap{display:inline-block;padding:12px;background:white;border:2px solid var(--border);box-shadow:var(--shadow-sm);margin-bottom:14px;}
+  .qr-wrap img{width:160px;height:160px;display:block;}
+  .qr-hint{font-size:.75rem;color:var(--text-muted);line-height:1.55;}
+
+  /* 聯絡資訊 */
+  .contact-section{padding:20px 32px;}
+  .contact-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+  .contact-item:last-child{border-bottom:none;}
+  .contact-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;}
+  .contact-icon.phone{background:var(--red-light);}
+  .contact-icon.line{background:#e8faf0;}
+  .contact-icon.addr{background:var(--surface2);}
+  .contact-icon.web{background:#eef4fb;}
+  .contact-info{flex:1;}
+  .contact-info-label{font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;margin-bottom:2px;}
+  .contact-info-val{font-size:.92rem;color:var(--text);font-weight:500;}
+  .contact-info-val a{color:var(--red);text-decoration:none;font-weight:600;}
+  .contact-info-val a:hover{text-decoration:underline;}
+
+  /* 工具列 */
+  .tools-section{padding:16px 32px;background:var(--surface2);border-top:1px solid var(--border);}
+  .tools-label{font-size:.68rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;}
+  .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .tool-chip{background:var(--white);border:1.5px solid var(--border);padding:8px 6px;text-align:center;font-size:.7rem;color:var(--text-dim);text-decoration:none;transition:all .2s;border-radius:2px;}
+  .tool-chip:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
+  .tool-chip-icon{font-size:1.1rem;display:block;margin-bottom:3px;}
+
+  /* 底部 CTA */
+  .card-bottom{padding:20px 32px;}
+  .cta-phone{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--red);color:white;padding:14px;text-decoration:none;font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;letter-spacing:.08em;transition:all .2s;margin-bottom:10px;border-radius:2px;}
+  .cta-phone:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(192,0,0,.3);}
+  .cta-line{display:flex;align-items:center;justify-content:center;gap:10px;background:#06C755;color:white;padding:14px;text-decoration:none;font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;letter-spacing:.08em;transition:all .2s;border-radius:2px;}
+  .cta-line:hover{background:#05a847;transform:translateY(-1px);}
+
+  /* 動作列 */
+  .actions{width:100%;max-width:420px;display:flex;gap:10px;margin-top:16px;}
+  .action-btn{flex:1;padding:11px;background:var(--white);border:1.5px solid var(--border);font-size:.8rem;font-family:inherit;cursor:pointer;color:var(--text-dim);transition:all .2s;border-radius:2px;}
+  .action-btn:hover{border-color:var(--red);color:var(--red);}
+
+  /* 頁尾 */
+  .page-footer{margin-top:20px;font-size:.72rem;color:var(--text-muted);text-align:center;}
+  .page-footer a{color:var(--red);text-decoration:none;}
+
+  /* 列印模式 */
+  @media print{
+    body{background:white;padding:0;}
+    .actions,.page-footer{display:none;}
+    .card{box-shadow:none;border:1px solid #ddd;max-width:100%;}
+  }
+
+  @media(max-width:480px){
+    body{padding:16px 12px 40px;}
+    .card-top{padding:28px 20px 22px;}
+    .qr-section{padding:20px 20px 14px;}
+    .contact-section{padding:14px 20px;}
+    .tools-section{padding:14px 20px;}
+    .card-bottom{padding:16px 20px;}
+    .qr-wrap img{width:140px;height:140px;}
+  }
+</style>
+<!-- QR Code 產生庫 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="card" id="business-card">
+
+  <!-- 品牌頂部 -->
+  <div class="card-top">
+    <div class="card-logo">
+      <div class="logo-emblem">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="8" height="8" fill="#C00000"/>
+          <rect x="13" y="3" width="8" height="8" fill="#C00000" opacity="0.6"/>
+          <rect x="3" y="13" width="8" height="8" fill="#C00000" opacity="0.6"/>
+          <rect x="13" y="13" width="8" height="8" fill="#C00000"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-brand" id="card-brand">信義房屋</div>
+        <div class="logo-sub" id="card-branch">文心高工店</div>
+      </div>
+    </div>
+    <div class="card-tagline" id="card-tagline">專業・誠信・用心服務每一位客戶</div>
+  </div>
+
+  <!-- QR Code -->
+  <div class="qr-section">
+    <div class="qr-label">LINE 加好友 · 掃碼即加</div>
+    <div class="qr-wrap">
+      <div id="qrcode"></div>
+    </div>
+    <div class="qr-hint">用 LINE 相機或手機相機掃描<br>即可加入好友，隨時諮詢</div>
+  </div>
+
+  <!-- 聯絡資訊 -->
+  <div class="contact-section">
+    <div class="contact-item">
+      <div class="contact-icon phone">📞</div>
+      <div class="contact-info">
+        <div class="contact-info-label">直撥電話</div>
+        <div class="contact-info-val"><a id="card-phone-link" href="tel:0933317625" id="card-phone-val">0933-317-625</a></div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon line">💬</div>
+      <div class="contact-info">
+        <div class="contact-info-label">LINE 加好友</div>
+        <div class="contact-info-val"><a id="card-line-link" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">點此加入 LINE 好友</a></div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon addr">📍</div>
+      <div class="contact-info">
+        <div class="contact-info-label">門店地址</div>
+        <div class="contact-info-val" id="card-address">台中市（請在後台設定地址）</div>
+      </div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon web">🔗</div>
+      <div class="contact-info">
+        <div class="contact-info-label">稅務試算工具</div>
+        <div class="contact-info-val"><a id="card-web-link" href="https://s243355.github.io/house-tax/" target="_blank" id="card-web-val">s243355.github.io/house-tax</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具捷徑 -->
+  <div class="tools-section">
+    <div class="tools-label">免費試算工具</div>
+    <div class="tools-grid">
+      <a class="tool-chip" id="chip-new" href="house-tax.html">
+        <span class="tool-chip-icon">🏠</span>房地合一稅
+      </a>
+      <a class="tool-chip" id="chip-old" href="old-tax.html">
+        <span class="tool-chip-icon">📋</span>財交所得稅
+      </a>
+      <a class="tool-chip" id="chip-mortgage" href="mortgage.html">
+        <span class="tool-chip-icon">🏦</span>房貸試算
+      </a>
+      <a class="tool-chip" id="chip-holding" href="holding-cost.html">
+        <span class="tool-chip-icon">🌿</span>持有成本
+      </a>
+      <a class="tool-chip" id="chip-refund" href="repurchase-refund.html">
+        <span class="tool-chip-icon">🔄</span>重購退稅
+      </a>
+      <a class="tool-chip" id="chip-homebuying" href="home-buying.html">
+        <span class="tool-chip-icon">🔑</span>換屋規劃
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA 按鈕 -->
+  <div class="card-bottom">
+    <a class="cta-phone" id="cta-phone" href="tel:0933317625">
+      📞 立即致電諮詢
+    </a>
+    <a class="cta-line" id="cta-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      加 LINE 好友
+    </a>
+  </div>
+
+</div><!-- /card -->
+
+<!-- 動作列 -->
+<div class="actions">
+  <button class="action-btn" onclick="window.print()">🖨 列印名片</button>
+  <button class="action-btn" onclick="shareCard()">📤 分享連結</button>
+  <a class="action-btn" href="index.html" style="text-align:center;text-decoration:none;">← 回主頁</a>
+</div>
+
+<div class="page-footer">
+  <a href="index.html">信義房屋 文心高工店 · 房產稅務試算工具</a>
+</div>
+
+<script>
+function getConfig(){
+  const s=localStorage.getItem('rlandy_config');
+  if(s){try{return JSON.parse(s);}catch(e){}}
+  return{};
+}
+
+function initCard(){
+  const c=getConfig();
+  const vc=c.card||{};
+
+  // 品牌
+  const brand=c.brand||'信義房屋 文心高工店';
+  const brandParts=brand.split(/[\s　]/);
+  if(brandParts.length>=2){
+    document.getElementById('card-brand').textContent=brandParts[0];
+    document.getElementById('card-branch').textContent=brandParts.slice(1).join(' ');
+  } else {
+    document.getElementById('card-brand').textContent=brand;
+  }
+  if(c.brandSubtitle)document.getElementById('card-branch').textContent=c.brandSubtitle;
+
+  // 標語
+  if(vc.tagline)document.getElementById('card-tagline').textContent=vc.tagline;
+
+  // 電話
+  const phone=c.phone||'0933317625';
+  const phoneLabel=c.phoneLabel||'0933-317-625';
+  document.getElementById('card-phone-link').href='tel:'+phone;
+  document.getElementById('card-phone-link').textContent=phoneLabel;
+  document.getElementById('cta-phone').href='tel:'+phone;
+
+  // LINE
+  const lineUrl=c.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  document.getElementById('card-line-link').href=lineUrl;
+  document.getElementById('cta-line').href=lineUrl;
+
+  // 地址
+  if(vc.address)document.getElementById('card-address').textContent=vc.address;
+
+  // 網址
+  const webUrl=vc.webUrl||window.location.href.replace('/card.html','/');
+  document.getElementById('card-web-link').href=webUrl;
+  document.getElementById('card-web-link').textContent=webUrl.replace(/https?:\/\//,'').replace(/\/$/,'');
+
+  // 產生 QR Code
+  document.getElementById('qrcode').innerHTML='';
+  try{
+    new QRCode(document.getElementById('qrcode'),{
+      text:lineUrl,
+      width:160,height:160,
+      colorDark:'#C00000',
+      colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){
+    // fallback: Google Charts API
+    const img=document.createElement('img');
+    img.src=`https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=C00000&data=${encodeURIComponent(lineUrl)}`;
+    img.width=160;img.height=160;
+    document.getElementById('qrcode').appendChild(img);
+  }
+}
+
+function shareCard(){
+  const url=window.location.href;
+  if(navigator.share){
+    navigator.share({title:'信義房屋 文心高工店',text:'房產稅務免費試算工具 + 聯絡方式',url}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>alert('✅ 連結已複製！\n貼到 LINE 或訊息傳給客戶即可。')).catch(()=>{
+      prompt('複製此連結：',url);
+    });
+  }
+}
+
+initCard();
+</script>
+</body>
+</html>

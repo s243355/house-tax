@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>換屋資金規劃｜信義房屋 文心高工店</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+  :root{
+    --pri:#4a1a7a;--pri-dark:#360f5c;--pri-light:#f5eeff;--pri-mid:#d4b8f0;
+    --red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
+    --border:#e0dad3;--border-dark:#c8bfb5;
+    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
+    --green:#2e7d52;--gold:#b8860b;--blue:#1a4a7a;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
+
+  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  .sinyi-emblem{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;}
+  .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.15;}
+  .sinyi-name small{display:block;font-size:.62rem;color:var(--text-muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
+  .hl{display:flex;align-items:center;gap:13px;}
+  .hd{width:1px;height:26px;background:var(--border);}
+  .ht{font-size:.88rem;color:var(--text-dim);}
+  .hc{display:flex;gap:8px;}
+  .cb{display:flex;align-items:center;gap:7px;padding:7px 14px;font-size:.78rem;font-family:inherit;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;border-radius:2px;}
+  .bp{background:var(--red);color:white;border:1.5px solid var(--red);}
+  .bp:hover{background:#9a0000;transform:translateY(-1px);}
+  .bl{background:#06C755;color:white;border:1.5px solid #06C755;}
+  .bl:hover{background:#05a847;transform:translateY(-1px);}
+
+  .hero{background:var(--pri);padding:44px 40px 40px;text-align:center;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border:36px solid rgba(255,255,255,.05);border-radius:50%;}
+  .hero-tag{font-size:.68rem;color:rgba(255,255,255,.6);letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px;position:relative;z-index:1;}
+  .hero h1{font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:white;margin-bottom:10px;position:relative;z-index:1;}
+  .hero p{font-size:.88rem;color:rgba(255,255,255,.75);position:relative;z-index:1;max-width:500px;margin:0 auto;}
+
+  main{max-width:780px;margin:0 auto;padding:44px 24px 100px;}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--pri);text-decoration:none;margin-bottom:24px;font-weight:500;}
+
+  /* Flow steps */
+  .flow-bar{display:flex;align-items:center;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:4px;}
+  .flow-step{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+  .flow-num{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border-dark);display:flex;align-items:center;justify-content:center;font-size:.68rem;color:var(--text-muted);font-weight:600;transition:all .3s;}
+  .flow-num.active{background:var(--pri);border-color:var(--pri);color:white;}
+  .flow-num.done{background:var(--pri-light);border-color:var(--pri);color:var(--pri);}
+  .flow-label{font-size:.72rem;color:var(--text-muted);white-space:nowrap;}
+  .flow-step.active .flow-label{color:var(--pri);font-weight:500;}
+  .flow-step.done .flow-label{color:var(--text-dim);}
+  .flow-arrow{color:var(--text-muted);font-size:.8rem;margin:0 4px;flex-shrink:0;}
+
+  .section-card{background:var(--white);border:1.5px solid var(--border);padding:24px 28px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  .section-tag{font-size:.66rem;color:var(--pri);letter-spacing:.18em;text-transform:uppercase;font-weight:500;margin-bottom:8px;}
+  .section-title{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--pri);}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .field-group{margin-bottom:0;}
+  .field-label{font-size:.82rem;color:var(--text-dim);margin-bottom:7px;font-weight:500;}
+  .field-tip{font-size:.73rem;color:var(--text-muted);margin-top:5px;line-height:1.5;}
+  .input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);background:var(--white);transition:border-color .2s;box-shadow:var(--shadow-sm);}
+  .input-wrap:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-light);}
+  .input-wrap input{flex:1;background:transparent;border:none;outline:none;padding:10px 13px;color:var(--text);font-size:.92rem;font-family:inherit;font-weight:500;}
+  .input-wrap input::placeholder{color:var(--text-muted);font-weight:400;}
+  .input-unit{padding:0 12px;color:var(--text-muted);font-size:.8rem;border-left:1px solid var(--border);white-space:nowrap;}
+  .input-select{width:100%;background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:10px 13px;font-size:.88rem;font-family:inherit;outline:none;box-shadow:var(--shadow-sm);appearance:none;cursor:pointer;}
+  .input-select:focus{border-color:var(--pri);}
+  .select-wrap{position:relative;}
+  .select-wrap::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;}
+
+  .slider-wrap{margin-top:8px;}
+  input[type=range]{width:100%;accent-color:var(--pri);cursor:pointer;}
+  .slider-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--text-muted);margin-top:3px;}
+
+  .auto-sum{background:var(--surface2);border:1.5px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+  .as-label{font-size:.8rem;color:var(--text-dim);}
+  .as-val{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:var(--pri);font-weight:700;}
+
+  .info-box{background:var(--pri-light);border:1.5px solid var(--pri-mid);border-left:4px solid var(--pri);padding:12px 16px;font-size:.8rem;color:var(--text-dim);line-height:1.65;margin-bottom:14px;}
+  .warn-box{background:#fff8f8;border:1.5px solid #fca5a5;border-left:4px solid #ef4444;padding:12px 16px;font-size:.8rem;color:var(--text-dim);line-height:1.65;margin-bottom:14px;}
+  .success-box{background:#f0f8f2;border:1.5px solid #b8dfc4;border-left:4px solid var(--green);padding:12px 16px;font-size:.8rem;color:#1a3a20;line-height:1.65;margin-bottom:14px;}
+
+  .calc-btn{width:100%;padding:14px;background:var(--pri);border:none;color:white;font-size:.95rem;font-family:inherit;font-weight:700;cursor:pointer;transition:all .2s;margin-top:20px;letter-spacing:.08em;border-radius:2px;}
+  .calc-btn:hover{background:var(--pri-dark);transform:translateY(-1px);}
+
+  /* Result */
+  #result-section{display:none;animation:fadeUp .4s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  /* 資金流向圖 */
+  .flow-diagram{background:var(--white);border:1.5px solid var(--border);padding:24px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  .flow-diagram-title{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:20px;}
+  .flow-node{background:var(--surface2);border:1.5px solid var(--border);padding:14px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:2px;}
+  .flow-node.income{border-left:4px solid var(--green);background:#f0f8f2;}
+  .flow-node.expense{border-left:4px solid var(--red);background:#fff8f8;}
+  .flow-node.result{border-left:4px solid var(--pri);background:var(--pri-light);}
+  .flow-node.result.ok{border-left-color:var(--green);background:#f0f8f2;}
+  .flow-node.result.warn{border-left-color:#e67e22;background:#fffbeb;}
+  .flow-node.result.fail{border-left-color:var(--red);background:#fff8f8;}
+  .fn-label{font-size:.82rem;color:var(--text-dim);font-weight:400;}
+  .fn-label small{display:block;font-size:.7rem;color:var(--text-muted);margin-top:2px;}
+  .fn-val{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;color:var(--text);}
+  .fn-val.green{color:var(--green);}
+  .fn-val.red{color:var(--red);}
+  .fn-val.pri{color:var(--pri);}
+  .fn-val.gold{color:var(--gold);}
+  .flow-connector{text-align:center;color:var(--text-muted);font-size:.9rem;margin:2px 0;}
+
+  /* 新房貸款試算 */
+  .mortgage-result{background:var(--blue);padding:20px 24px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .mr-label{font-size:.72rem;color:rgba(255,255,255,.65);letter-spacing:.1em;margin-bottom:6px;}
+  .mr-val{font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:white;line-height:1.1;}
+  .mr-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
+  .mr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+  .mr-card{background:rgba(255,255,255,.12);padding:12px 14px;}
+  .mr-card-label{font-size:.7rem;color:rgba(255,255,255,.6);margin-bottom:4px;}
+  .mr-card-val{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:600;}
+
+  /* 結論 */
+  .verdict{background:var(--white);border:1.5px solid var(--border);padding:24px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
+  .verdict-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;margin-bottom:14px;}
+  .verdict-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+  .verdict-row:last-child{border-bottom:none;}
+  .verdict-row span:first-child{color:var(--text-muted);}
+  .verdict-row span:last-child{font-weight:600;font-family:'Noto Serif TC',serif;}
+
+  /* LINE Modal */
+  .line-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .line-modal-overlay.open{display:flex;}
+  .line-modal{background:var(--white);width:100%;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
+  .lm-header{background:#06C755;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .lm-header-left{display:flex;align-items:center;gap:10px;}
+  .lm-header h3{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:white;}
+  .lm-header p{font-size:.72rem;color:rgba(255,255,255,.8);margin-top:2px;}
+  .lm-close{background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+  .lm-body{padding:20px 22px;}
+  .lm-preview{background:#f0faf2;border:1.5px solid #b8e8c4;padding:16px 18px;font-size:.82rem;color:#1a3a20;line-height:1.85;white-space:pre-wrap;word-break:break-all;margin-bottom:16px;min-height:120px;max-height:340px;overflow-y:auto;}
+  .lm-actions{display:flex;gap:10px;}
+  .lm-btn{flex:1;padding:12px;font-size:.85rem;font-family:inherit;font-weight:600;cursor:pointer;transition:all .2s;border:none;border-radius:2px;}
+  .lm-btn-copy{background:#06C755;color:white;}
+  .lm-btn-copy.copied{background:#2e7d52;}
+  .lm-btn-open{background:var(--white);border:1.5px solid #06C755;color:#06C755;}
+  .lm-tip{font-size:.72rem;color:var(--text-muted);margin-top:10px;text-align:center;}
+
+  .result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  .btn-action{padding:10px 18px;font-size:.8rem;font-family:inherit;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:var(--white);color:var(--text-dim);border-radius:2px;}
+  .btn-action:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-light);}
+  .btn-action.primary{background:var(--pri);border-color:var(--pri);color:white;font-weight:600;}
+  .btn-action.primary:hover{background:var(--pri-dark);color:white;}
+
+  .contact-strip{background:var(--red);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .cs-text strong{display:block;font-family:'Noto Serif TC',serif;font-size:.95rem;color:white;font-weight:700;margin-bottom:3px;}
+  .cs-text span{font-size:.78rem;color:rgba(255,255,255,.75);}
+  .cs-btns{display:flex;gap:10px;}
+  .cs-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;border:none;}
+  .cs-btn-phone{background:white;color:var(--red);}
+  .cs-btn-line{background:#06C755;color:white;}
+  .cs-btn-line:hover{background:#05a847;}
+
+  footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  .fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
+  .fi{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
+
+  @media(max-width:640px){
+    header{padding:0 12px;height:52px;}
+    .ht,.hd{display:none;}
+    .sinyi-name{font-size:.9rem;}
+    .sinyi-emblem{width:30px;height:30px;}
+    .hc{gap:5px;}
+    .cb{padding:6px 10px;font-size:.72rem;gap:5px;}
+    .hero{padding:28px 16px 24px;}.hero h1{font-size:1.5rem;}
+    main{padding:20px 14px 60px;}
+    .section-card{padding:18px 16px;}
+    .field-grid{grid-template-columns:1fr;}
+    .mr-grid{grid-template-columns:1fr 1fr;}
+    .flow-bar{gap:0;}
+    .contact-strip{flex-direction:column;align-items:flex-start;}
+    footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hl">
+    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div class="sinyi-name">信義房屋<small id="hdr-branch">文心高工店</small></div>
+    <div class="hd"></div>
+    <span class="ht">換屋資金規劃</span>
+  </div>
+  <div class="hc">
+    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">0933-317-625</span></a>
+    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      加 LINE 好友
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">SINYI REALTY · 換屋資金規劃</div>
+  <h1>換屋資金一條龍規劃</h1>
+  <p>從賣掉舊房到買進新房，完整試算每一步的資金流向，讓你換屋心裡有底</p>
+</div>
+
+<main>
+  <a class="back-link" href="index.html">← 回主頁</a>
+
+  <!-- 流程指示 -->
+  <div class="flow-bar" id="flow-bar">
+    <div class="flow-step active" id="fs-1"><div class="flow-num active">1</div><div class="flow-label">舊房資料</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" id="fs-2"><div class="flow-num">2</div><div class="flow-label">舊房稅費</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" id="fs-3"><div class="flow-num">3</div><div class="flow-label">新房設定</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" id="fs-4"><div class="flow-num">4</div><div class="flow-label">資金結果</div></div>
+  </div>
+
+  <!-- SECTION 1: 舊房資料 -->
+  <div class="section-card" id="sec-1">
+    <div class="section-tag">STEP 01</div>
+    <div class="section-title">舊房：你打算賣多少？</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">舊房預計成交價</div>
+        <div class="input-wrap"><input type="number" id="old-price" placeholder="例：1500" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">舊房剩餘貸款</div>
+        <div class="input-wrap"><input type="number" id="old-loan" placeholder="0" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">若已還清或無貸款填 0</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">原始購入成本</div>
+        <div class="input-wrap"><input type="number" id="old-cost" placeholder="例：1000" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">用於估算房地合一稅</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">持有期間</div>
+        <div class="select-wrap">
+          <select class="input-select" id="old-hold-years" onchange="calcOldNet()">
+            <option value="2">2 年以下（稅率 45%）</option>
+            <option value="4">2～5 年（稅率 35%）</option>
+            <option value="8" selected>5～10 年（稅率 20%）</option>
+            <option value="15">10 年以上（稅率 15%）</option>
+            <option value="selfuse">自住優惠（10%）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="auto-sum">
+      <span class="as-label">賣房稅後預估實拿（含簡估稅費）</span>
+      <span class="as-val" id="old-net-preview">—</span>
+    </div>
+  </div>
+
+  <!-- SECTION 2: 舊房稅費細項 -->
+  <div class="section-card" id="sec-2">
+    <div class="section-tag">STEP 02</div>
+    <div class="section-title">舊房：賣房相關稅費估算</div>
+    <div class="info-box">
+      💡 以下為系統自動估算，可手動修改。若要精確計算，建議先用「房地合一稅試算」工具完整試算後填入。
+    </div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">房地合一稅（估算）</div>
+        <div class="input-wrap"><input type="number" id="old-tax" placeholder="自動估算" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">土地增值稅</div>
+        <div class="input-wrap"><input type="number" id="old-land-tax" placeholder="0" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">仲介費（賣方）</div>
+        <div class="input-wrap"><input type="number" id="old-broker" placeholder="自動估算" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">通常為成交價 × 1～2%</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">代書費、規費等</div>
+        <div class="input-wrap"><input type="number" id="old-misc" placeholder="例：3" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+      </div>
+    </div>
+    <div class="auto-sum">
+      <span class="as-label">賣房費用合計</span>
+      <span class="as-val" id="old-fee-total">— 萬</span>
+    </div>
+  </div>
+
+  <!-- SECTION 3: 新房設定 -->
+  <div class="section-card" id="sec-3">
+    <div class="section-tag">STEP 03</div>
+    <div class="section-title">新房：你打算買多少？</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">新房目標總價</div>
+        <div class="input-wrap"><input type="number" id="new-price" placeholder="例：2000" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">自備款比例</div>
+        <div class="select-wrap">
+          <select class="input-select" id="new-down-ratio" onchange="updateDownAmt()">
+            <option value="20">20%（八成貸）</option>
+            <option value="25">25%（七五成貸）</option>
+            <option value="30" selected>30%（七成貸）</option>
+            <option value="40">40%（六成貸）</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">新房貸款年限</div>
+        <div class="select-wrap">
+          <select class="input-select" id="new-loan-years" onchange="updateFlowCalc()">
+            <option value="20">20 年</option>
+            <option value="25">25 年</option>
+            <option value="30" selected>30 年</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">預估年利率</div>
+        <div class="input-wrap"><input type="number" id="new-rate" placeholder="2.0" step="0.1" value="2.0" oninput="updateFlowCalc()"><span class="input-unit">%</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+      <div class="field-label" style="margin-bottom:10px;">新房額外費用</div>
+      <div class="field-grid">
+        <div class="field-group">
+          <div class="field-label" style="font-weight:400;">契稅、代書費等</div>
+          <div class="input-wrap"><input type="number" id="new-misc" placeholder="例：5" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+          <div class="field-tip">通常 3～8 萬</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label" style="font-weight:400;">裝潢預算</div>
+          <div class="input-wrap"><input type="number" id="new-reno" placeholder="0" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">🔑 計算換屋資金規劃</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result-section">
+    <div style="height:20px;"></div>
+
+    <!-- 資金流向圖 -->
+    <div class="flow-diagram">
+      <div class="flow-diagram-title">💰 換屋資金流向圖</div>
+
+      <div class="flow-node income">
+        <div class="fn-label">舊房成交價<small>你收到的錢</small></div>
+        <div class="fn-val green" id="r-old-price">—</div>
+      </div>
+      <div class="flow-connector">↓ 扣除</div>
+      <div class="flow-node expense">
+        <div class="fn-label">舊房剩餘貸款<small>還給銀行</small></div>
+        <div class="fn-val red" id="r-old-loan">—</div>
+      </div>
+      <div class="flow-connector">↓ 扣除</div>
+      <div class="flow-node expense">
+        <div class="fn-label">賣房稅費合計<small>房地合一稅 + 土增稅 + 仲介費等</small></div>
+        <div class="fn-val red" id="r-old-fees">—</div>
+      </div>
+      <div class="flow-connector">↓ 剩下</div>
+      <div class="flow-node result" id="fn-available">
+        <div class="fn-label">可用資金<small>賣房後實際到手</small></div>
+        <div class="fn-val pri" id="r-available">—</div>
+      </div>
+      <div class="flow-connector">↓ 需要支出</div>
+      <div class="flow-node expense">
+        <div class="fn-label">新房自備款<small>新房總價 × 自備款比例</small></div>
+        <div class="fn-val red" id="r-new-down">—</div>
+      </div>
+      <div class="flow-connector">↓ 還需</div>
+      <div class="flow-node expense">
+        <div class="fn-label">新房額外費用<small>契稅、代書費、裝潢等</small></div>
+        <div class="fn-val red" id="r-new-misc">—</div>
+      </div>
+      <div class="flow-connector">↓ 結算</div>
+      <div class="flow-node result" id="fn-gap">
+        <div class="fn-label" id="gap-label">資金缺口 / 結餘<small id="gap-desc">—</small></div>
+        <div class="fn-val" id="r-gap">—</div>
+      </div>
+    </div>
+
+    <!-- 新房貸款試算 -->
+    <div class="mortgage-result">
+      <div class="mr-label">新房每月房貸（估算）</div>
+      <div class="mr-val" id="r-monthly">—</div>
+      <div class="mr-sub" id="r-monthly-sub">—</div>
+      <div class="mr-grid">
+        <div class="mr-card"><div class="mr-card-label">貸款金額</div><div class="mr-card-val" id="r-loan-amt">—</div></div>
+        <div class="mr-card"><div class="mr-card-label">貸款年限</div><div class="mr-card-val" id="r-loan-years">—</div></div>
+        <div class="mr-card"><div class="mr-card-label">總利息</div><div class="mr-card-val" id="r-total-int">—</div></div>
+      </div>
+    </div>
+
+    <!-- 結論摘要 -->
+    <div class="verdict">
+      <div class="verdict-title" id="verdict-title">📋 換屋計畫摘要</div>
+      <div class="verdict-row"><span>舊房稅後實拿</span><span id="vd-net">—</span></div>
+      <div class="verdict-row"><span>新房所需總資金</span><span id="vd-need">—</span></div>
+      <div class="verdict-row"><span>資金缺口 / 結餘</span><span id="vd-gap">—</span></div>
+      <div class="verdict-row"><span>新房月付金</span><span id="vd-monthly">—</span></div>
+      <div class="verdict-row"><span>換屋可行性評估</span><span id="vd-verdict">—</span></div>
+    </div>
+
+    <div id="verdict-msg"></div>
+
+    <div class="result-actions">
+      <button class="btn-action primary" onclick="showLineShare()">📤 LINE 分享規劃</button>
+      <button class="btn-action" onclick="window.print()">🖨 列印</button>
+      <button class="btn-action" onclick="resetAll()">🔄 重新規劃</button>
+    </div>
+
+    <div class="contact-strip">
+      <div class="cs-text">
+        <strong id="cs-title">想更精確評估換屋計畫？信義房屋 文心高工店 幫你規劃</strong>
+        <span id="cs-desc">免費試算舊房售價空間、新房議價策略、最佳換屋時機</span>
+      </div>
+      <div class="cs-btns">
+        <a class="cs-btn cs-btn-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
+        <a class="cs-btn cs-btn-line" id="res-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          加 LINE 好友
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- LINE Modal -->
+<div class="line-modal-overlay" id="line-modal" onclick="closeLineModal(event)">
+  <div class="line-modal">
+    <div class="lm-header">
+      <div class="lm-header-left">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        <div><h3>LINE 換屋規劃摘要</h3><p>複製後貼到 LINE 群組或個人對話</p></div>
+      </div>
+      <button class="lm-close" onclick="closeLineModal()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div class="lm-preview" id="line-preview-text"></div>
+      <div class="lm-actions">
+        <button class="lm-btn lm-btn-copy" id="copy-btn" onclick="copyLineText()">📋 複製文字</button>
+        <button class="lm-btn lm-btn-open" onclick="openLineApp()">開啟 LINE →</button>
+      </div>
+      <div class="lm-tip">複製後切換到 LINE，貼上即可分享</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div><div class="fb" id="footer-brand">信義房屋 文心高工店</div><div class="fi">換屋資金規劃工具 · 僅供參考</div></div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 0933-317-625</a>
+    <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
+  </div>
+</footer>
+
+<script>
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
+function n(id){return parseFloat(document.getElementById(id).value)||0;}
+function s(id){return document.getElementById(id).value||'';}
+let lastResult=null;
+
+function getTaxRate(){
+  const v=s('old-hold-years');
+  if(v==='selfuse')return 0.10;
+  if(+v<=2)return 0.45;
+  if(+v<=5)return 0.35;
+  if(+v<=10)return 0.20;
+  return 0.15;
+}
+
+function calcOldNet(){
+  const price=n('old-price');
+  const cost=n('old-cost');
+  const loan=n('old-loan');
+  const taxRate=getTaxRate();
+  if(price>0&&cost>0){
+    const income=Math.max(price-cost,0);
+    const tax=income*taxRate;
+    const broker=price*0.015;
+    const net=price-loan-tax-broker;
+    document.getElementById('old-net-preview').textContent=net.toFixed(1)+' 萬';
+    // 自動填入稅費估算
+    if(!document.getElementById('old-tax').value)
+      document.getElementById('old-tax').placeholder=tax.toFixed(1)+' (估算)';
+    if(!document.getElementById('old-broker').value)
+      document.getElementById('old-broker').placeholder=broker.toFixed(1)+' (估算)';
+  }
+  updateFlowCalc();
+}
+
+function updateDownAmt(){updateFlowCalc();}
+
+function getOldTax(){
+  const v=n('old-tax');if(v>0)return v;
+  const price=n('old-price'),cost=n('old-cost');
+  if(price>0&&cost>0)return Math.max(price-cost,0)*getTaxRate();
+  return 0;
+}
+function getOldBroker(){
+  const v=n('old-broker');if(v>0)return v;
+  return n('old-price')*0.015;
+}
+
+function updateFlowCalc(){
+  const oldFeeTotal=getOldTax()+n('old-land-tax')+getOldBroker()+n('old-misc');
+  document.getElementById('old-fee-total').textContent=oldFeeTotal.toFixed(1)+' 萬';
+  updateFlowBar();
+}
+
+function updateFlowBar(){
+  const steps=['fs-1','fs-2','fs-3','fs-4'];
+  const filled=[n('old-price')>0, n('old-price')>0&&(n('old-tax')>0||n('old-cost')>0), n('new-price')>0, false];
+  steps.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    const num=el.querySelector('.flow-num');
+    const label=el.querySelector('.flow-label');
+    if(filled[i]){el.className='flow-step done';num.className='flow-num done';num.textContent='✓';}
+    else if(i===steps.findIndex((_,j)=>!filled[j])){el.className='flow-step active';num.className='flow-num active';num.textContent=i+1;}
+    else{el.className='flow-step';num.className='flow-num';num.textContent=i+1;}
+  });
+}
+
+function calcMortgage(loanAmt, years, rate){
+  const monthlyRate=rate/100/12;
+  const months=years*12;
+  if(monthlyRate===0)return{monthly:loanAmt*10000/months,totalInt:0};
+  const monthly=loanAmt*10000*monthlyRate*Math.pow(1+monthlyRate,months)/(Math.pow(1+monthlyRate,months)-1);
+  const totalInt=monthly*months-loanAmt*10000;
+  return{monthly,totalInt:totalInt/10000};
+}
+
+function calculate(){
+  const oldPrice=n('old-price');
+  const oldLoan=n('old-loan');
+  const oldTax=getOldTax();
+  const oldBroker=getOldBroker();
+  const oldLandTax=n('old-land-tax');
+  const oldMisc=n('old-misc');
+  const oldFees=oldTax+oldLandTax+oldBroker+oldMisc;
+  const available=oldPrice-oldLoan-oldFees;
+
+  const newPrice=n('new-price');
+  const newDownRatio=parseInt(s('new-down-ratio'))||30;
+  const newDown=newPrice*newDownRatio/100;
+  const newLoan=newPrice*(1-newDownRatio/100);
+  const newMisc=n('new-misc');
+  const newReno=n('new-reno');
+  const newTotalNeeded=newDown+newMisc+newReno;
+
+  const gap=available-newTotalNeeded;
+  const loanYears=parseInt(s('new-loan-years'))||30;
+  const rate=n('new-rate')||2.0;
+  const {monthly,totalInt}=calcMortgage(newLoan,loanYears,rate);
+
+  lastResult={oldPrice,oldLoan,oldFees,available,newPrice,newDown,newLoan,newMisc,newReno,newTotalNeeded,gap,monthly,totalInt,loanYears,rate,newDownRatio};
+
+  document.getElementById('result-section').style.display='block';
+  const fmt=v=>v.toFixed(1)+' 萬';
+
+  document.getElementById('r-old-price').textContent=fmt(oldPrice);
+  document.getElementById('r-old-loan').textContent=fmt(oldLoan);
+  document.getElementById('r-old-fees').textContent=fmt(oldFees);
+  document.getElementById('r-available').textContent=fmt(available);
+  document.getElementById('r-new-down').textContent=fmt(newDown);
+  document.getElementById('r-new-misc').textContent=fmt(newMisc+newReno);
+  document.getElementById('r-gap').textContent=(gap>=0?'+':'')+fmt(gap);
+  document.getElementById('r-monthly').textContent=Math.round(monthly).toLocaleString()+' 元';
+  document.getElementById('r-monthly-sub').textContent=`貸款 ${fmt(newLoan)} ・${loanYears} 年・年利 ${rate}%`;
+  document.getElementById('r-loan-amt').textContent=fmt(newLoan);
+  document.getElementById('r-loan-years').textContent=loanYears+' 年';
+  document.getElementById('r-total-int').textContent=fmt(totalInt);
+
+  // 顏色
+  const gapEl=document.getElementById('r-gap');
+  const fnGap=document.getElementById('fn-gap');
+  if(gap>=0){
+    gapEl.className='fn-val green';
+    fnGap.className='flow-node result ok';
+    document.getElementById('gap-label').textContent='資金結餘';
+    document.getElementById('gap-desc').textContent='賣掉舊房後還有多餘資金';
+  } else {
+    gapEl.className='fn-val red';
+    fnGap.className='flow-node result fail';
+    document.getElementById('gap-label').textContent='資金缺口';
+    document.getElementById('gap-desc').textContent='還需籌措的額外資金';
+  }
+
+  const available_el=document.getElementById('r-available');
+  available_el.className='fn-val '+(available>=0?'green':'red');
+
+  // Verdict
+  document.getElementById('vd-net').textContent=fmt(available);
+  document.getElementById('vd-need').textContent=fmt(newTotalNeeded);
+  document.getElementById('vd-gap').textContent=(gap>=0?'結餘 ':'')+fmt(Math.abs(gap));
+  document.getElementById('vd-monthly').textContent=Math.round(monthly).toLocaleString()+' 元/月';
+
+  let verdictText,verdictColor,msgHtml='';
+  if(gap>=0&&monthly<50000){
+    verdictText='✅ 換屋可行';verdictColor='var(--green)';
+    msgHtml=`<div class="success-box">✅ 賣掉舊房後資金充裕（結餘 ${fmt(gap)}），新房月付 ${Math.round(monthly).toLocaleString()} 元，換屋計畫可行！建議確認新房落點與時機。</div>`;
+  } else if(gap<0){
+    verdictText='⚠ 需籌措資金';verdictColor='#e67e22';
+    msgHtml=`<div class="warn-box">⚠ 賣掉舊房後尚有 ${fmt(Math.abs(gap))} 的資金缺口，需另行籌措（如親友借款、其他儲蓄）。建議重新評估新房總價或提高舊房售價。</div>`;
+  } else {
+    verdictText='⚠ 注意月付壓力';verdictColor='var(--gold)';
+    msgHtml=`<div class="warn-box">⚠ 資金雖夠，但月付金 ${Math.round(monthly).toLocaleString()} 元偏高。建議評估貸款年限是否可延長，或考慮較低總價的新房。</div>`;
+  }
+  document.getElementById('vd-verdict').textContent=verdictText;
+  document.getElementById('vd-verdict').style.color=verdictColor;
+  document.getElementById('verdict-msg').innerHTML=msgHtml;
+
+  window.scrollTo({top:document.getElementById('result-section').offsetTop-20,behavior:'smooth'});
+}
+
+function showLineShare(){
+  if(!lastResult){alert('請先完成試算');return;}
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const {oldPrice,oldLoan,oldFees,available,newPrice,newDown,newTotalNeeded,gap,monthly,totalInt,loanYears,rate,newLoan,newDownRatio}=lastResult;
+  const fmt=v=>v.toFixed(1);
+
+  const msg=`🔑 換屋資金規劃試算
+${'═'.repeat(22)}
+【舊房】
+💰 成交價：${fmt(oldPrice)} 萬
+🏦 剩餘貸款：${fmt(oldLoan)} 萬
+💸 賣房稅費：${fmt(oldFees)} 萬
+✅ 賣房實拿：${fmt(available)} 萬
+
+【新房】
+🏡 目標總價：${fmt(newPrice)} 萬
+💵 自備款（${newDownRatio}%）：${fmt(newDown)} 萬
+🏦 需貸款：${fmt(newLoan)} 萬
+📅 月付金：${Math.round(monthly).toLocaleString()} 元（${loanYears}年・${rate}%）
+
+【資金結算】
+${gap>=0?'💚 結餘：'+fmt(gap)+' 萬':'❗ 缺口：'+fmt(Math.abs(gap))+' 萬（需另籌）'}
+${'─'.repeat(22)}
+試算日期：${today}
+
+📞 ${brand}
+☎ ${phone}
+LINE 諮詢：${lineUrl}`;
+
+  document.getElementById('line-preview-text').textContent=msg;
+  document.getElementById('line-modal').classList.add('open');
+  document.getElementById('copy-btn').textContent='📋 複製文字';
+  document.getElementById('copy-btn').classList.remove('copied');
+}
+
+function closeLineModal(e){if(!e||e.target===document.getElementById('line-modal'))document.getElementById('line-modal').classList.remove('open');}
+function copyLineText(){
+  const text=document.getElementById('line-preview-text').textContent;
+  const btn=document.getElementById('copy-btn');
+  const done=()=>{btn.textContent='✅ 已複製！';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 複製文字';btn.classList.remove('copied');},3000);};
+  navigator.clipboard.writeText(text).then(done).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();});
+}
+function openLineApp(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('line-preview-text').textContent),'_blank');}
+
+function resetAll(){
+  document.querySelectorAll('input[type=number]').forEach(i=>{
+    if(i.id==='new-rate')i.value='2.0'; else i.value='';
+    i.placeholder=i.getAttribute('placeholder')||'';
+  });
+  document.getElementById('result-section').style.display='none';
+  lastResult=null;updateFlowBar();
+  document.getElementById('old-net-preview').textContent='—';
+  document.getElementById('old-fee-total').textContent='— 萬';
+}
+
+// Init config
+(function(){
+  const c=getConfig();
+  function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+  function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+  sa('hdr-branch',c.brandSubtitle);
+  const pl=c.phoneLabel||'0933-317-625';
+  sa('hdr-phone-label',pl);
+  document.getElementById('footer-phone').textContent='📞 '+pl;
+  sh('hdr-phone','tel:'+(c.phone||'0933317625'));sh('footer-phone','tel:'+(c.phone||'0933317625'));
+  sh('hdr-line',c.lineUrl);sh('footer-line',c.lineUrl);
+  sh('res-phone','tel:'+(c.phone||'0933317625'));sh('res-line',c.lineUrl);
+  sa('footer-brand',c.brand);
+  const hb=c.homeBuying||{};
+  if(hb.contactTitle)sa('cs-title',hb.contactTitle);
+  if(hb.contactDesc)sa('cs-desc',hb.contactDesc);
+})();
+</script>
+</body>
+</html>

@@ -119,6 +119,29 @@
 </style>
 </head>
 <body>
+
+<!-- 密碼鎖 -->
+<div id="pw-overlay" style="position:fixed;inset:0;background:#f5f3f0;z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:white;border:1.5px solid #e0dad3;padding:40px 36px;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.1);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+      <div style="width:40px;height:40px;background:#C00000;display:flex;align-items:center;justify-content:center;border-radius:2px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;color:#C00000;">後台管理系統</div>
+        <div style="font-size:.72rem;color:#9a8e84;">信義房屋 文心高工店</div>
+      </div>
+    </div>
+    <div style="font-size:.82rem;color:#5a4e44;margin-bottom:16px;">請輸入管理密碼</div>
+    <input type="password" id="pw-input" placeholder="輸入密碼"
+      style="width:100%;padding:11px 14px;border:1.5px solid #e0dad3;font-size:.95rem;font-family:inherit;outline:none;margin-bottom:10px;background:#f5f3f0;"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pw-error" style="font-size:.78rem;color:#C00000;margin-bottom:10px;display:none;">密碼錯誤，請再試一次</div>
+    <button onclick="checkPw()" style="width:100%;padding:12px;background:#C00000;border:none;color:white;font-size:.88rem;font-family:inherit;font-weight:600;cursor:pointer;border-radius:2px;">進入後台</button>
+    <div style="font-size:.72rem;color:#9a8e84;margin-top:12px;text-align:center;">預設密碼：<strong>sinyi2024</strong>（可在後台修改）</div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <div class="app">
@@ -145,6 +168,8 @@
     <div class="nav-item" data-sec="stats" onclick="switchSection(this)"><span class="nav-icon">📊</span>試算統計</div>
     <div class="nav-item" data-sec="leads" onclick="switchSection(this)"><span class="nav-icon">👥</span>客戶留資</div>
     <div class="nav-group">其他</div>
+    <div class="nav-item" data-sec="announcement" onclick="switchSection(this)"><span class="nav-icon">📢</span>公告欄管理</div>
+    <div class="nav-item" data-sec="password" onclick="switchSection(this)"><span class="nav-icon">🔒</span>密碼設定</div>
     <div class="nav-item" data-sec="legal" onclick="switchSection(this)"><span class="nav-icon">⚖️</span>免責聲明</div>
     <div class="nav-item" data-sec="seo" onclick="switchSection(this)"><span class="nav-icon">🔍</span>SEO / 分享預覽</div>
     <div class="nav-item" data-sec="export" onclick="switchSection(this)"><span class="nav-icon">💾</span>匯出 / 匯入</div>
@@ -361,6 +386,87 @@
     </div>
   </div>
 
+
+  <!-- ── 公告欄 ── -->
+  <div class="section" id="section-announcement">
+    <div class="topbar"><span class="topbar-title">公告欄管理</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveAnnouncement()">儲存變更</button></div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">首頁公告欄</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-label">啟用公告<small>顯示在首頁 Hero 區塊下方</small></div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="toggle" id="toggle-announcement" onclick="toggleAnnouncement()" style="cursor:pointer;"></div>
+              <span style="font-size:.82rem;color:var(--text-dim);" id="announcement-status">目前：關閉</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">公告類型<small>決定顏色與 icon</small></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;" id="announcement-type-btns">
+              <button class="btn btn-outline ann-type active" data-type="info" onclick="selectAnnType(this)" style="font-size:.78rem;">📢 一般公告</button>
+              <button class="btn btn-outline ann-type" data-type="promo" onclick="selectAnnType(this)" style="font-size:.78rem;">🎁 優惠活動</button>
+              <button class="btn btn-outline ann-type" data-type="warn" onclick="selectAnnType(this)" style="font-size:.78rem;">⚠ 重要提醒</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">公告標題<small>粗體大字</small></div>
+            <input class="form-control" id="ann-title" placeholder="五月份限定：免費稅務諮詢，立即預約">
+          </div>
+          <div class="form-row">
+            <div class="form-label">公告說明<small>標題下方小字（可留空）</small></div>
+            <input class="form-control" id="ann-desc" placeholder="歡迎致電或加 LINE 預約，名額有限">
+          </div>
+          <div class="form-row">
+            <div class="form-label">到期日<small>到期後自動隱藏（可留空）</small></div>
+            <input class="form-control" id="ann-expire" type="date">
+          </div>
+          <div style="margin-top:16px;background:var(--surface2);border:1.5px solid var(--border);padding:14px 16px;border-radius:2px;">
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">預覽效果</div>
+            <div id="ann-preview" style="background:#fffbeb;border-left:4px solid #b8860b;padding:12px 16px;font-size:.85rem;color:#1a1410;">
+              <strong>公告標題</strong>　公告說明
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 密碼設定 ── -->
+  <div class="section" id="section-password">
+    <div class="topbar"><span class="topbar-title">後台密碼設定</span></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">修改後台登入密碼</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-label">目前密碼</div>
+            <input class="form-control" type="password" id="pw-current" placeholder="輸入目前密碼">
+          </div>
+          <div class="form-row">
+            <div class="form-label">新密碼</div>
+            <input class="form-control" type="password" id="pw-new" placeholder="至少 6 個字元">
+          </div>
+          <div class="form-row">
+            <div class="form-label">確認新密碼</div>
+            <input class="form-control" type="password" id="pw-confirm" placeholder="再輸入一次">
+          </div>
+          <div style="margin-top:14px;display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="changePassword()">修改密碼</button>
+            <button class="btn btn-danger" onclick="resetPassword()">重設為預設密碼</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">登出後台</div>
+        <div class="card-body">
+          <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:14px;">登出後需重新輸入密碼才能進入後台。</p>
+          <button class="btn btn-outline" onclick="logout()">登出後台</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── 免責聲明 ── -->
   <div class="section" id="section-legal">
     <div class="topbar"><span class="topbar-title">免責聲明</span><div class="topbar-actions"><button class="btn btn-primary" onclick="saveLegal()">儲存變更</button></div></div>
@@ -573,6 +679,8 @@ function getDefaultConfig(){
       contactTitle:'想確認退稅資格？讓信義房屋 文心高工店 幫你確認',
       contactDesc:'協助你準備申請文件，確保不漏掉這筆退稅'
     },
+    announcement:{enabled:false,type:'info',title:'',desc:'',expire:''},
+    password:'sinyi2024',
     leadForm:{enabled:false,title:'想知道你的房子值多少？',desc:'留下聯絡方式，我們免費幫你評估'},
     disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
     // 首頁文字
@@ -802,6 +910,94 @@ function clearLeads(){
   localStorage.removeItem('rlandy_leads');renderLeads();toast('已清除客戶留資');
 }
 
+
+// ═══ PASSWORD ═══
+const DEFAULT_PW = 'sinyi2024';
+function getStoredPw(){return localStorage.getItem('rlandy_pw')||DEFAULT_PW;}
+function checkPw(){
+  const input=document.getElementById('pw-input').value;
+  if(input===getStoredPw()){
+    document.getElementById('pw-overlay').style.display='none';
+    sessionStorage.setItem('rlandy_auth','1');
+  } else {
+    document.getElementById('pw-error').style.display='block';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-input').focus();
+  }
+}
+function changePassword(){
+  const cur=document.getElementById('pw-current').value;
+  const nw=document.getElementById('pw-new').value;
+  const cf=document.getElementById('pw-confirm').value;
+  if(cur!==getStoredPw()){toast('目前密碼錯誤',true);return;}
+  if(nw.length<6){toast('新密碼至少需要 6 個字元',true);return;}
+  if(nw!==cf){toast('兩次密碼輸入不一致',true);return;}
+  localStorage.setItem('rlandy_pw',nw);
+  document.getElementById('pw-current').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-confirm').value='';
+  addLog('修改後台密碼');toast('密碼已修改 ✓');
+}
+function resetPassword(){
+  if(!confirm('確定重設為預設密碼 sinyi2024？'))return;
+  localStorage.removeItem('rlandy_pw');
+  addLog('重設密碼為預設值');toast('已重設為預設密碼 sinyi2024');
+}
+function logout(){
+  sessionStorage.removeItem('rlandy_auth');
+  location.reload();
+}
+// 初始化時檢查是否已登入
+(function(){
+  if(sessionStorage.getItem('rlandy_auth')==='1'){
+    document.getElementById('pw-overlay').style.display='none';
+  }
+  document.getElementById('pw-input')?.addEventListener('focus',function(){
+    document.getElementById('pw-error').style.display='none';
+  });
+})();
+
+// ═══ ANNOUNCEMENT ═══
+function toggleAnnouncement(){
+  const t=document.getElementById('toggle-announcement');
+  t.classList.toggle('on');
+  const on=t.classList.contains('on');
+  document.getElementById('announcement-status').textContent='目前：'+(on?'啟用中':'關閉');
+}
+function selectAnnType(btn){
+  document.querySelectorAll('.ann-type').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateAnnPreview();
+}
+function updateAnnPreview(){
+  const type=document.querySelector('.ann-type.active')?.dataset.type||'info';
+  const title=document.getElementById('ann-title')?.value||'公告標題';
+  const desc=document.getElementById('ann-desc')?.value||'';
+  const styles={
+    info:{bg:'#fffbeb',border:'#b8860b',icon:'📢'},
+    promo:{bg:'#f0f8f2',border:'#2e7d52',icon:'🎁'},
+    warn:{bg:'#fff8f8',border:'#C00000',icon:'⚠'}
+  };
+  const st=styles[type]||styles.info;
+  const prev=document.getElementById('ann-preview');
+  if(prev)prev.innerHTML=`<span>${st.icon}</span> <strong>${title}</strong>${desc?' &nbsp;'+desc:''}`;
+  if(prev){prev.style.background=st.bg;prev.style.borderLeft=`4px solid ${st.border}`;}
+}
+// 監聽預覽
+['ann-title','ann-desc'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('input',updateAnnPreview);
+});
+function saveAnnouncement(){
+  if(!cfg.announcement)cfg.announcement={};
+  cfg.announcement.enabled=document.getElementById('toggle-announcement').classList.contains('on');
+  cfg.announcement.type=document.querySelector('.ann-type.active')?.dataset.type||'info';
+  cfg.announcement.title=gV('ann-title');
+  cfg.announcement.desc=gV('ann-desc');
+  cfg.announcement.expire=gV('ann-expire');
+  saveConfigData(cfg);addLog('儲存「公告欄」設定');toast('已儲存 ✓ 首頁即時生效');
+}
+
 // ═══ FILL FORMS ═══
 function fillForms(){
   setV('cfg-brand',cfg.brand);setV('cfg-brandSubtitle',cfg.brandSubtitle);
@@ -847,6 +1043,14 @@ function fillForms(){
   // Lead form
   const lf=cfg.leadForm||{};
   setV('lead-title',lf.title);setV('lead-desc',lf.desc);
+  // 公告
+  const ann=cfg.announcement||{};
+  const annEnabled=ann.enabled||false;
+  document.getElementById('toggle-announcement').classList.toggle('on',annEnabled);
+  document.getElementById('announcement-status').textContent='目前：'+(annEnabled?'啟用中':'關閉');
+  setV('ann-title',ann.title);setV('ann-desc',ann.desc);setV('ann-expire',ann.expire);
+  if(ann.type){document.querySelectorAll('.ann-type').forEach(b=>{b.classList.toggle('active',b.dataset.type===ann.type);});}
+  updateAnnPreview();
   const lfe=lf.enabled||false;
   document.getElementById('toggle-lead-form').classList.toggle('on',lfe);
   document.getElementById('lead-form-status').textContent='目前：'+(lfe?'啟用中':'關閉');
