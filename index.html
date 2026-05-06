@@ -34,7 +34,11 @@
 
   .select-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:22px;font-weight:500;}
 
-  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:44px;} .tool-grid>a:last-child{grid-column:1/-1;display:grid !important;grid-template-columns:260px 1fr auto;flex-direction:row;}
+  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:44px;}
+  .tool-card-wide{grid-column:1/-1;display:grid;grid-template-columns:240px 1fr 130px;flex-direction:unset;}
+  .tool-card-wide .tc-top{border-radius:0;}
+  .tool-card-wide .tc-foot{align-self:stretch;display:flex;align-items:center;justify-content:center;min-width:unset;}
+  @media(max-width:620px){.tool-card-wide{grid-column:unset;display:flex;flex-direction:column;}}
 
   .tool-card{background:var(--white);border:1.5px solid var(--border);cursor:pointer;transition:all .25s;text-decoration:none;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);overflow:hidden;}
   .tool-card:hover{border-color:var(--red);box-shadow:var(--shadow-lg);transform:translateY(-4px);}
@@ -149,7 +153,41 @@
       </div>
     </a>
 
-    <a class="tool-card" href="mortgage.html" style="grid-column:1/-1;display:grid;grid-template-columns:280px 1fr auto;">
+    <a class="tool-card" href="holding-cost.html">
+      <div class="tc-top" style="background:#2e6b3e;">
+        <span class="tc-icon">🌿</span>
+        <div class="tc-name" id="card-hc-title">持有成本試算</div>
+        <div class="tc-law" id="card-hc-law">房屋稅・地價稅・貸款利息・管理費・租金收益</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-desc" id="card-hc-desc">幫你算清楚「繼續持有這間房每年要花多少錢」，看清隱性成本後再決定要不要賣。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">房屋稅地價稅</span><span class="tc-tag">貸款利息</span><span class="tc-tag">管理費</span><span class="tc-tag">租金收益</span><span class="tc-tag">逐年累積</span>
+        </div>
+      </div>
+      <div class="tc-foot" style="background:#f0f8f2;border-top-color:#b8dfc4;">
+        <span id="card-hc-btn" style="color:#2e6b3e;">開始試算 →</span>
+      </div>
+    </a>
+
+    <a class="tool-card" href="repurchase-refund.html">
+      <div class="tc-top" style="background:#8b4513;">
+        <span class="tc-icon">🔄</span>
+        <div class="tc-name" id="card-rr-title">重購退稅試算</div>
+        <div class="tc-law" id="card-rr-law">所得稅法 §4-5 第一項第三款</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-desc" id="card-rr-desc">換屋自住可以申請退回房地合一稅！試算你可以拿回多少，大換小按比例退、大換大全額退。</div>
+        <div class="tc-tags">
+          <span class="tc-tag">換屋退稅</span><span class="tc-tag">大換小按比例</span><span class="tc-tag">大換大全額</span><span class="tc-tag">2年內申請</span>
+        </div>
+      </div>
+      <div class="tc-foot" style="background:#fdf5ef;border-top-color:#e8c4a0;">
+        <span id="card-rr-btn" style="color:#8b4513;">開始試算 →</span>
+      </div>
+    </a>
+
+    <a class="tool-card tool-card-wide" href="mortgage.html">
       <div class="tc-top" style="background:#1a4a7a;border-radius:0;">
         <span class="tc-icon">🏦</span>
         <div class="tc-name" id="card-mortgage-title">房貸試算工具</div>
@@ -227,6 +265,12 @@ sa('table-title',h.tableTitle);sa('table-desc',h.tableDesc);
 const mt=c.mortgage||{};
 sa('card-mortgage-title',mt.cardTitle);sa('card-mortgage-law',mt.cardLaw);
 sa('card-mortgage-desc',mt.cardDesc);sa('card-mortgage-btn',mt.cardBtn);
+const hc=c.holdingCost||{};
+sa('card-hc-title',hc.cardTitle);sa('card-hc-law',hc.cardLaw);
+sa('card-hc-desc',hc.cardDesc);sa('card-hc-btn',hc.cardBtn);
+const rr=c.repurchaseRefund||{};
+sa('card-rr-title',rr.cardTitle);sa('card-rr-law',rr.cardLaw);
+sa('card-rr-desc',rr.cardDesc);sa('card-rr-btn',rr.cardBtn);
 </script>
 </body>
 </html>

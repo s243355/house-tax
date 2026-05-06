@@ -835,6 +835,16 @@ function calculate(){
   document.getElementById('r-after-loan').textContent='—';
   document.getElementById('loan-input').value='';
 
+  // 記錄統計
+  try{
+    const stats=JSON.parse(localStorage.getItem('rlandy_stats')||'{}');
+    stats.totalCalcs=(stats.totalCalcs||0)+1;
+    stats.tools=stats.tools||{};stats.tools['house-tax']=(stats.tools['house-tax']||0)+1;
+    stats.prices=stats.prices||[];if(sellPrice>0)stats.prices.push(sellPrice);if(stats.prices.length>200)stats.prices=stats.prices.slice(-200);
+    stats.types=stats.types||{};if(currentType)stats.types[currentType]=(stats.types[currentType]||0)+1;
+    localStorage.setItem('rlandy_stats',JSON.stringify(stats));
+  }catch(e){}
+
   window._calc={taxRate,selfuseApplied,exempt,cfg,totalCost,taxAmt,netAmt,taxableIncome};
 
   let d='';
@@ -972,6 +982,13 @@ renderProgress();
   sh('res-line',c.lineUrl);
   sa('footer-brand',c.brand);
   if(c.updatedDate)document.getElementById('footer-update').textContent='資料更新日期：'+c.updatedDate+' ・ 房地合一 2.0（2021/7/1 起）';
+  // 留資表單
+  const lf=c.leadForm||{};
+  if(lf.enabled){
+    document.getElementById('lead-form-wrap').style.display='block';
+    if(lf.title)document.getElementById('lead-form-title').textContent=lf.title;
+    if(lf.desc)document.getElementById('lead-form-desc').textContent=lf.desc;
+  }
   // 頁面文字
   const nt=c.newTax||{};
   sa('nt-banner-title',nt.bannerTitle);
@@ -982,6 +999,16 @@ renderProgress();
   sa('nt-result-label',nt.resultLabel);
   sa('nt-contact-title',nt.contactTitle);sa('nt-contact-desc',nt.contactDesc);
 })();
+function submitLead(tool){
+  const name=document.getElementById('lead-name').value.trim();
+  const phone=document.getElementById('lead-phone').value.trim();
+  if(!name||!phone){alert('請填入姓名和電話');return;}
+  const leads=JSON.parse(localStorage.getItem('rlandy_leads')||'[]');
+  leads.push({time:new Date().toLocaleString('zh-TW'),name,phone,tool,note:document.getElementById('lead-note').value.trim()});
+  localStorage.setItem('rlandy_leads',JSON.stringify(leads));
+  document.getElementById('lead-form-wrap').innerHTML='<div style="background:#f0f8f2;border:1.5px solid #b8dfc4;padding:20px 24px;text-align:center;"><div style="font-size:1.5rem;margin-bottom:8px;">✅</div><div style="font-family:'Noto Serif TC',serif;font-weight:700;color:#2e7d52;margin-bottom:4px;">已送出！</div><div style="font-size:.82rem;color:var(--text-muted);">我們會盡快與你聯繫</div></div>';
+}
+
 function generatePDF(){
   const cfg=getConfig();
   const c=window._calc;

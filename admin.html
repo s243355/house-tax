@@ -141,6 +141,9 @@
     <div class="nav-item" data-sec="text-new" onclick="switchSection(this)"><span class="nav-icon">📄</span>新制試算文字</div>
     <div class="nav-item" data-sec="text-old" onclick="switchSection(this)"><span class="nav-icon">📋</span>舊制試算文字</div>
     <div class="nav-item" data-sec="text-mortgage" onclick="switchSection(this)"><span class="nav-icon">🏦</span>房貸試算文字</div>
+    <div class="nav-group">數據</div>
+    <div class="nav-item" data-sec="stats" onclick="switchSection(this)"><span class="nav-icon">📊</span>試算統計</div>
+    <div class="nav-item" data-sec="leads" onclick="switchSection(this)"><span class="nav-icon">👥</span>客戶留資</div>
     <div class="nav-group">其他</div>
     <div class="nav-item" data-sec="legal" onclick="switchSection(this)"><span class="nav-icon">⚖️</span>免責聲明</div>
     <div class="nav-item" data-sec="seo" onclick="switchSection(this)"><span class="nav-icon">🔍</span>SEO / 分享預覽</div>
@@ -153,6 +156,8 @@
     <a href="house-tax.html" target="_blank">→ 新制試算</a>
     <a href="old-tax.html" target="_blank">→ 舊制試算</a>
     <a href="mortgage.html" target="_blank">→ 房貸試算</a>
+    <a href="holding-cost.html" target="_blank">→ 持有成本</a>
+    <a href="repurchase-refund.html" target="_blank">→ 重購退稅</a>
   </div>
 </aside>
 
@@ -396,6 +401,73 @@
     </div>
   </div>
 
+
+  <!-- ── 試算統計 ── -->
+  <div class="section" id="section-stats">
+    <div class="topbar"><span class="topbar-title">試算統計</span><div class="topbar-actions"><button class="btn btn-outline" onclick="clearStats()">清除統計資料</button></div></div>
+    <div class="section-wrap">
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;" id="stats-summary"></div>
+
+      <div class="card">
+        <div class="card-header">各工具使用次數</div>
+        <div class="card-body" id="stats-tools"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">新制試算 — 成交價分佈</div>
+        <div class="card-body" id="stats-price"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">新制試算 — 取得方式分佈</div>
+        <div class="card-body" id="stats-type"></div>
+      </div>
+
+      <p style="font-size:.75rem;color:var(--text-muted);padding:4px 0;">📌 統計資料儲存在瀏覽器 localStorage，僅記錄在此裝置上的試算紀錄。若客戶使用不同裝置，需整合後才能看到全貌。</p>
+    </div>
+  </div>
+
+  <!-- ── 客戶留資 ── -->
+  <div class="section" id="section-leads">
+    <div class="topbar"><span class="topbar-title">客戶留資管理</span><div class="topbar-actions">
+      <button class="btn btn-outline" onclick="exportLeads()">⬇ 匯出 CSV</button>
+      <button class="btn btn-danger" onclick="clearLeads()">清除資料</button>
+    </div></div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header">留資設定</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-label">啟用留資表單<small>試算結果頁底部顯示</small></div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="toggle" id="toggle-lead-form" onclick="toggleLeadForm()" style="cursor:pointer;"></div>
+              <span style="font-size:.82rem;color:var(--text-dim);" id="lead-form-status">目前：關閉</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">表單標題</div>
+            <input class="form-control" id="lead-title" placeholder="想知道你的房子值多少？">
+          </div>
+          <div class="form-row">
+            <div class="form-label">表單說明</div>
+            <input class="form-control" id="lead-desc" placeholder="留下聯絡方式，我們免費幫你評估">
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="saveLeadSettings()">儲存設定</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" id="leads-count-header">客戶留資記錄（0 筆）</div>
+        <div class="card-body" id="leads-table-wrap">
+          <p style="font-size:.82rem;color:var(--text-muted);">尚無留資資料。啟用表單後，客戶填寫的資料會在此顯示。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── 匯出匯入 ── -->
   <div class="section" id="section-export">
     <div class="topbar"><span class="topbar-title">匯出 / 匯入</span></div>
@@ -487,6 +559,21 @@ function getDefaultConfig(){
       contactTitle:'想了解實際可貸金額或利率？聯繫信義房屋 文心高工店',
       contactDesc:'協助你洽詢銀行、評估最有利的貸款方案'
     },
+    holdingCost:{
+      cardTitle:'持有成本試算',cardLaw:'房屋稅・地價稅・貸款利息・管理費・租金收益',
+      cardDesc:'幫你算清楚「繼續持有這間房每年要花多少錢」，看清隱性成本後再決定要不要賣。',
+      cardBtn:'開始試算 →',
+      contactTitle:'猶豫要不要賣？讓信義房屋 文心高工店 幫你分析',
+      contactDesc:'免費評估房屋現值，搭配稅務規劃給你最完整的建議'
+    },
+    repurchaseRefund:{
+      cardTitle:'重購退稅試算',cardLaw:'所得稅法 §4-5 第一項第三款',
+      cardDesc:'換屋自住可以申請退回房地合一稅！試算你可以拿回多少。',
+      cardBtn:'開始試算 →',
+      contactTitle:'想確認退稅資格？讓信義房屋 文心高工店 幫你確認',
+      contactDesc:'協助你準備申請文件，確保不漏掉這筆退稅'
+    },
+    leadForm:{enabled:false,title:'想知道你的房子值多少？',desc:'留下聯絡方式，我們免費幫你評估'},
     disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
     // 首頁文字
     home:{
@@ -572,6 +659,149 @@ function switchSection(el){
   if(sec==='seo')updateSeoPreview();
 }
 
+
+// ═══ STATS ═══
+function renderStats(){
+  const stats=JSON.parse(localStorage.getItem('rlandy_stats')||'{}');
+  const total=(stats.totalCalcs||0);
+  const tools=stats.tools||{};
+  const prices=stats.prices||[];
+  const types=stats.types||{};
+
+  // Summary
+  const avgPrice=prices.length>0?(prices.reduce((a,b)=>a+b,0)/prices.length).toFixed(0):'—';
+  document.getElementById('stats-summary').innerHTML=`
+    <div class="card"><div class="card-body" style="text-align:center;">
+      <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px;">總試算次數</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:2rem;color:var(--red);font-weight:700;">${total}</div>
+    </div></div>
+    <div class="card"><div class="card-body" style="text-align:center;">
+      <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px;">新制平均成交價</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:2rem;color:var(--text);font-weight:700;">${avgPrice==='—'?'—':avgPrice+' 萬'}</div>
+    </div></div>
+    <div class="card"><div class="card-body" style="text-align:center;">
+      <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px;">留資客戶數</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:2rem;color:var(--green);font-weight:700;">${JSON.parse(localStorage.getItem('rlandy_leads')||'[]').length}</div>
+    </div></div>`;
+
+  // Tools
+  const toolNames={'house-tax':'房地合一稅（新制）','old-tax':'財產交易所得稅（舊制）','mortgage':'房貸試算','holding-cost':'持有成本試算','repurchase-refund':'重購退稅試算'};
+  const maxTool=Math.max(...Object.values(tools),1);
+  let toolHtml='';
+  Object.entries(toolNames).forEach(([k,name])=>{
+    const cnt=tools[k]||0;
+    const pct=Math.max(cnt/maxTool*100,0);
+    toolHtml+=`<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;color:var(--text-dim);margin-bottom:6px;"><span>${name}</span><span style="font-weight:600;">${cnt} 次</span></div>
+      <div style="height:8px;background:var(--surface2);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--red);border-radius:2px;transition:width .4s;"></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('stats-tools').innerHTML=toolHtml||'<p style="font-size:.82rem;color:var(--text-muted);">尚無資料</p>';
+
+  // Price distribution
+  if(prices.length>0){
+    const buckets={'500萬以下':0,'500-1000萬':0,'1000-1500萬':0,'1500-2000萬':0,'2000萬以上':0};
+    prices.forEach(p=>{
+      if(p<500)buckets['500萬以下']++;
+      else if(p<1000)buckets['500-1000萬']++;
+      else if(p<1500)buckets['1000-1500萬']++;
+      else if(p<2000)buckets['1500-2000萬']++;
+      else buckets['2000萬以上']++;
+    });
+    const maxB=Math.max(...Object.values(buckets),1);
+    let priceHtml='';
+    Object.entries(buckets).forEach(([label,cnt])=>{
+      const pct=cnt/maxB*100;
+      priceHtml+=`<div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-dim);margin-bottom:4px;"><span>${label}</span><span>${cnt} 筆</span></div>
+        <div style="height:8px;background:var(--surface2);border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:#1a4a7a;border-radius:2px;"></div>
+        </div>
+      </div>`;
+    });
+    document.getElementById('stats-price').innerHTML=priceHtml;
+  } else {
+    document.getElementById('stats-price').innerHTML='<p style="font-size:.82rem;color:var(--text-muted);">尚無資料</p>';
+  }
+
+  // Type distribution
+  const typeNames={normal:'一般買賣',selfuse:'自住房地',inherit:'繼承取得',gift:'配偶贈與'};
+  const maxType=Math.max(...Object.values(types),1);
+  let typeHtml='';
+  Object.entries(typeNames).forEach(([k,name])=>{
+    const cnt=types[k]||0;
+    const pct=cnt/maxType*100;
+    typeHtml+=`<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-dim);margin-bottom:4px;"><span>${name}</span><span>${cnt} 筆</span></div>
+      <div style="height:8px;background:var(--surface2);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--red);border-radius:2px;"></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('stats-type').innerHTML=typeHtml||'<p style="font-size:.82rem;color:var(--text-muted);">尚無資料</p>';
+}
+
+function clearStats(){
+  if(!confirm('確定清除所有統計資料？'))return;
+  localStorage.removeItem('rlandy_stats');
+  renderStats();toast('已清除統計資料');
+}
+
+// ═══ LEADS ═══
+function renderLeads(){
+  const leads=JSON.parse(localStorage.getItem('rlandy_leads')||'[]');
+  document.getElementById('leads-count-header').textContent=`客戶留資記錄（${leads.length} 筆）`;
+  if(!leads.length){
+    document.getElementById('leads-table-wrap').innerHTML='<p style="font-size:.82rem;color:var(--text-muted);">尚無留資資料。啟用表單後，客戶填寫的資料會在此顯示。</p>';
+    return;
+  }
+  let html='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">';
+  html+='<thead><tr style="background:var(--red);"><th style="padding:9px 12px;text-align:left;font-size:.75rem;color:white;font-weight:500;">時間</th><th style="padding:9px 12px;text-align:left;font-size:.75rem;color:white;font-weight:500;">姓名</th><th style="padding:9px 12px;text-align:left;font-size:.75rem;color:white;font-weight:500;">電話</th><th style="padding:9px 12px;text-align:left;font-size:.75rem;color:white;font-weight:500;">工具</th><th style="padding:9px 12px;text-align:left;font-size:.75rem;color:white;font-weight:500;">備註</th></tr></thead><tbody>';
+  const toolNames={'house-tax':'新制試算','old-tax':'舊制試算','mortgage':'房貸試算','holding-cost':'持有成本','repurchase-refund':'重購退稅'};
+  leads.slice().reverse().forEach((l,i)=>{
+    html+=`<tr style="${i%2===0?'':'background:var(--surface2);'}"><td style="padding:9px 12px;font-size:.82rem;color:var(--text-muted);border-bottom:1px solid var(--border);">${l.time}</td><td style="padding:9px 12px;font-size:.82rem;font-weight:500;border-bottom:1px solid var(--border);">${l.name}</td><td style="padding:9px 12px;font-size:.82rem;border-bottom:1px solid var(--border);"><a href="tel:${l.phone}" style="color:var(--red);">${l.phone}</a></td><td style="padding:9px 12px;font-size:.82rem;color:var(--text-muted);border-bottom:1px solid var(--border);">${toolNames[l.tool]||l.tool}</td><td style="padding:9px 12px;font-size:.78rem;color:var(--text-muted);border-bottom:1px solid var(--border);">${l.note||''}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('leads-table-wrap').innerHTML=html;
+}
+
+function toggleLeadForm(){
+  const t=document.getElementById('toggle-lead-form');
+  t.classList.toggle('on');
+  const on=t.classList.contains('on');
+  document.getElementById('lead-form-status').textContent='目前：'+(on?'啟用中':'關閉');
+}
+
+function saveLeadSettings(){
+  const lf=cfg.leadForm||{};
+  lf.enabled=document.getElementById('toggle-lead-form').classList.contains('on');
+  lf.title=gV('lead-title');
+  lf.desc=gV('lead-desc');
+  cfg.leadForm=lf;
+  saveConfigData(cfg);addLog('儲存留資設定');toast('已儲存 ✓ 前台試算頁即時生效');
+}
+
+function exportLeads(){
+  const leads=JSON.parse(localStorage.getItem('rlandy_leads')||'[]');
+  if(!leads.length){toast('尚無留資資料',true);return;}
+  const toolNames={'house-tax':'新制試算','old-tax':'舊制試算','mortgage':'房貸試算','holding-cost':'持有成本','repurchase-refund':'重購退稅'};
+  let csv='時間,姓名,電話,使用工具,備註
+';
+  leads.forEach(l=>{csv+=`"${l.time}","${l.name}","${l.phone}","${toolNames[l.tool]||l.tool}","${l.note||''}"
+`;});
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`客戶留資_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  addLog('匯出客戶留資 CSV');
+}
+
+function clearLeads(){
+  if(!confirm('確定清除所有客戶留資？此動作無法復原。'))return;
+  localStorage.removeItem('rlandy_leads');renderLeads();toast('已清除客戶留資');
+}
+
 // ═══ FILL FORMS ═══
 function fillForms(){
   setV('cfg-brand',cfg.brand);setV('cfg-brandSubtitle',cfg.brandSubtitle);
@@ -610,6 +840,16 @@ function fillForms(){
   setV('mt-card-title',mt2.cardTitle);setV('mt-card-law',mt2.cardLaw);
   setV('mt-card-desc',mt2.cardDesc);setV('mt-card-btn',mt2.cardBtn);
   setV('mt-contact-title',mt2.contactTitle);setV('mt-contact-desc',mt2.contactDesc);
+  // 持有成本
+  const hc2=cfg.holdingCost||{};
+  // 重購退稅
+  const rr2=cfg.repurchaseRefund||{};
+  // Lead form
+  const lf=cfg.leadForm||{};
+  setV('lead-title',lf.title);setV('lead-desc',lf.desc);
+  const lfe=lf.enabled||false;
+  document.getElementById('toggle-lead-form').classList.toggle('on',lfe);
+  document.getElementById('lead-form-status').textContent='目前：'+(lfe?'啟用中':'關閉');
   updateContactPreview();renderRateTable();renderCpiGrid();
 }
 
@@ -787,6 +1027,8 @@ document.querySelectorAll('.nav-item').forEach(item=>{
     if(sec==='export')updateJsonPreview(cfg);
     if(sec==='log')renderLog();
     if(sec==='seo')updateSeoPreview();
+    if(sec==='stats')renderStats();
+    if(sec==='leads')renderLeads();
   });
 });
 
