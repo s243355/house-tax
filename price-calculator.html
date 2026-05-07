@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>議價試算工具｜信義房屋</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --red:#C00000; --red-d:#8a0000; --red-l:#fdf0f0; --red-m:#f5d5d5;
+  --ink:#1a1410; --paper:#faf8f5; --card:#ffffff;
+  --rule:#e8e2da; --rule-d:#d0c8be; --muted:#9a8e84; --dim:#5a4e44;
+  --gold:#b8860b; --gold-l:#fffbeb; --green:#2a6e46; --green-l:#f0f8f4;
+  --blue:#1a3f6e; --blue-l:#eef4fb;
+  --sh1:0 1px 3px rgba(0,0,0,.06); --sh2:0 4px 16px rgba(0,0,0,.08); --sh3:0 8px 32px rgba(0,0,0,.11);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;
+  font-weight:400;
+  min-height:100vh;
+  line-height:1.65;
+}
+
+/* ── Header ── */
+header{
+  background:var(--card);
+  border-bottom:3px solid var(--red);
+  padding:0 36px;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:var(--sh1);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:34px;height:34px;
+  background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.brand-name{
+  font-family:'Noto Serif TC',serif;
+  font-size:.95rem;font-weight:700;
+  color:var(--red);letter-spacing:.1em;
+  line-height:1.1;
+}
+.brand-name small{
+  display:block;font-size:.6rem;
+  color:var(--muted);font-weight:400;
+  font-family:'Noto Sans TC',sans-serif;
+  letter-spacing:.05em;
+}
+.hd{width:1px;height:22px;background:var(--rule);}
+.tool-badge{
+  font-size:.72rem;color:var(--dim);
+  background:var(--paper);
+  border:1px solid var(--rule-d);
+  padding:3px 10px;
+  letter-spacing:.06em;
+}
+.back-btn{
+  font-size:.76rem;color:var(--muted);
+  text-decoration:none;
+  display:flex;align-items:center;gap:5px;
+  transition:color .15s;
+}
+.back-btn:hover{color:var(--red);}
+
+/* ── Layout ── */
+.container{
+  max-width:960px;
+  margin:0 auto;
+  padding:36px 20px 80px;
+}
+
+.page-title{
+  font-family:'Noto Serif TC',serif;
+  font-size:1.5rem;font-weight:700;
+  color:var(--ink);
+  margin-bottom:4px;
+}
+.page-sub{
+  font-size:.82rem;color:var(--muted);
+  margin-bottom:28px;
+}
+
+/* ── Input Card ── */
+.input-card{
+  background:var(--card);
+  border:1.5px solid var(--rule);
+  padding:24px 28px;
+  margin-bottom:20px;
+  box-shadow:var(--sh1);
+}
+.card-heading{
+  font-size:.72rem;color:var(--red);
+  letter-spacing:.18em;text-transform:uppercase;
+  font-weight:500;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-heading::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,var(--red-m),transparent);
+}
+
+.input-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+.input-group{margin-bottom:0;}
+.input-label{
+  font-size:.76rem;color:var(--dim);
+  font-weight:500;margin-bottom:6px;
+  display:flex;align-items:center;gap:5px;
+}
+.input-label .required{
+  font-size:.6rem;color:var(--red);
+  border:1px solid var(--red-m);
+  background:var(--red-l);
+  padding:1px 4px;
+}
+.input-label .optional{
+  font-size:.6rem;color:var(--muted);
+  border:1px solid var(--rule-d);
+  padding:1px 4px;
+}
+.iw{
+  display:flex;align-items:center;
+  border:1.5px solid var(--rule);
+  background:var(--card);
+  transition:border-color .18s,box-shadow .18s;
+}
+.iw:focus-within{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px var(--red-l);
+}
+.iw input{
+  flex:1;border:none;outline:none;
+  padding:9px 12px;
+  color:var(--ink);font-size:.9rem;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:500;
+  background:transparent;
+  min-width:0;
+}
+.iw input::placeholder{
+  color:var(--muted);font-weight:400;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:.82rem;
+}
+.iw .unit{
+  padding:0 11px;
+  color:var(--muted);font-size:.76rem;
+  border-left:1px solid var(--rule);
+  white-space:nowrap;
+}
+.input-hint{font-size:.7rem;color:var(--muted);margin-top:4px;}
+
+/* 計算結果小結 */
+.quick-result{
+  margin-top:16px;padding-top:16px;
+  border-top:1px solid var(--rule);
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+.qr-item{
+  background:var(--paper);
+  border:1px solid var(--rule-d);
+  padding:10px 14px;
+}
+.qr-label{font-size:.68rem;color:var(--muted);letter-spacing:.08em;margin-bottom:4px;}
+.qr-val{
+  font-family:'Noto Serif TC',serif;
+  font-size:1.1rem;font-weight:600;
+  color:var(--ink);
+}
+.qr-val.red{color:var(--red);}
+.qr-val.green{color:var(--green);}
+
+/* Divider config */
+.config-row{
+  display:flex;align-items:center;gap:12px;
+  margin-top:14px;padding-top:14px;
+  border-top:1px solid var(--rule);
+  flex-wrap:wrap;
+}
+.config-label{font-size:.78rem;color:var(--dim);font-weight:500;}
+.config-iw{
+  display:flex;align-items:center;
+  border:1.5px solid var(--rule);background:var(--card);
+  width:90px;
+}
+.config-iw input{
+  width:100%;border:none;outline:none;
+  padding:7px 10px;font-size:.88rem;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:500;color:var(--ink);background:transparent;
+}
+.config-iw .unit{
+  padding:0 8px;font-size:.72rem;
+  color:var(--muted);border-left:1px solid var(--rule);
+}
+
+/* ── Calc Button ── */
+.calc-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:13px;
+  background:var(--red);border:none;
+  color:white;font-size:.9rem;
+  font-family:'Noto Serif TC',serif;
+  font-weight:700;letter-spacing:.1em;
+  cursor:pointer;transition:all .18s;
+  margin-top:18px;
+}
+.calc-btn:hover{background:var(--red-d);transform:translateY(-1px);box-shadow:0 4px 14px rgba(192,0,0,.25);}
+
+/* ── Result Section ── */
+#result-section{display:none;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* 條件摘要 */
+.condition-bar{
+  background:var(--ink);
+  padding:16px 24px;
+  display:flex;align-items:center;
+  gap:24px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.cb-item{display:flex;flex-direction:column;gap:2px;}
+.cb-label{font-size:.62rem;color:rgba(255,255,255,.5);letter-spacing:.12em;}
+.cb-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.92rem;font-weight:600;color:white;
+}
+.cb-divider{width:1px;height:32px;background:rgba(255,255,255,.12);}
+
+/* ── 表格 ── */
+.table-wrap{
+  background:var(--card);
+  border:1.5px solid var(--rule);
+  box-shadow:var(--sh2);
+  overflow-x:auto;
+  margin-bottom:14px;
+}
+
+.price-table{width:100%;border-collapse:collapse;}
+
+.price-table thead tr{background:var(--red);}
+.price-table thead th{
+  padding:11px 16px;
+  text-align:right;
+  font-size:.72rem;color:white;
+  font-weight:500;letter-spacing:.06em;
+  white-space:nowrap;
+}
+.price-table thead th:first-child{text-align:left;}
+.price-table thead th.center{text-align:center;}
+
+.price-table tbody tr{border-bottom:1px solid var(--rule);}
+.price-table tbody tr:last-child{border-bottom:none;}
+.price-table tbody tr:hover{background:#fdf8f5;}
+.price-table tbody tr.base-row{background:var(--red-l);border-left:3px solid var(--red);}
+.price-table tbody tr.base-row td{font-weight:600;}
+
+.price-table td{
+  padding:10px 16px;
+  font-size:.85rem;
+  color:var(--dim);
+  text-align:right;
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+.price-table td:first-child{
+  text-align:left;
+  font-family:'Noto Sans TC',sans-serif;
+  font-weight:500;
+  color:var(--ink);
+}
+.price-table td.rank{
+  text-align:center;
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:.7rem;
+}
+.price-table td .badge{
+  display:inline-block;
+  padding:2px 7px;
+  font-size:.64rem;
+  border-radius:2px;
+}
+.badge-base{background:var(--red-m);color:var(--red);}
+.badge-down{background:var(--paper);color:var(--muted);border:1px solid var(--rule-d);}
+
+.price-table td.total-price{color:var(--ink);font-weight:600;}
+.price-table td.commission{color:var(--gold);}
+.price-table td.net{color:var(--green);font-weight:600;}
+.price-table td.tax{color:var(--blue);}
+
+/* Colgroup highlight */
+.col-highlight{background:rgba(0,0,0,.018);}
+
+/* ── LINE 摘要區 ── */
+.line-section{
+  background:var(--card);
+  border:1.5px solid var(--rule);
+  margin-bottom:14px;
+  box-shadow:var(--sh1);
+  overflow:hidden;
+}
+.line-section-header{
+  background:#06C755;
+  padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.line-section-header-left{
+  display:flex;align-items:center;gap:10px;
+}
+.line-section-header h3{
+  font-family:'Noto Serif TC',serif;
+  font-size:.9rem;font-weight:700;color:white;
+}
+.line-section-header p{
+  font-size:.7rem;color:rgba(255,255,255,.8);margin-top:2px;
+}
+.line-section-body{padding:18px 20px;}
+.line-preview{
+  background:#f3fdf5;
+  border:1.5px solid #b8e8c4;
+  padding:16px 18px;
+  font-size:.79rem;
+  color:#1a3a20;
+  line-height:1.9;
+  white-space:pre-wrap;
+  word-break:break-all;
+  font-family:'Noto Sans TC',monospace;
+  max-height:400px;
+  overflow-y:auto;
+  margin-bottom:12px;
+}
+.line-actions{display:flex;gap:10px;}
+.line-btn{
+  flex:1;padding:11px;
+  font-size:.82rem;font-family:inherit;
+  font-weight:600;cursor:pointer;
+  transition:all .18s;border:none;
+}
+.line-btn-copy{background:#06C755;color:white;}
+.line-btn-copy:hover{background:#05a847;}
+.line-btn-copy.copied{background:#2e7d52;}
+.line-btn-open{
+  background:white;
+  border:1.5px solid #06C755;
+  color:#06C755;
+}
+.line-btn-open:hover{background:#f0faf2;}
+
+/* ── 操作列 ── */
+.action-row{
+  display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;
+}
+.act-btn{
+  padding:10px 20px;
+  font-size:.8rem;font-family:inherit;
+  cursor:pointer;transition:all .18s;
+  border:1.5px solid var(--rule-d);
+  background:var(--card);color:var(--dim);
+}
+.act-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
+
+/* ── Info boxes ── */
+.info-box{
+  background:var(--gold-l);
+  border:1.5px solid #fcd34d;
+  border-left:4px solid var(--gold);
+  padding:11px 14px;
+  font-size:.78rem;color:var(--dim);
+  line-height:1.65;margin-bottom:16px;
+}
+
+/* ── Mobile ── */
+/* 單價模式切換 */
+.mode-btn{
+  padding:4px 12px;
+  font-size:.72rem;font-family:inherit;
+  border:1.5px solid var(--rule-d);
+  background:var(--card);color:var(--muted);
+  cursor:pointer;transition:all .15s;
+  font-weight:400;
+}
+.mode-btn.active{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:white;font-weight:500;
+}
+.mode-btn:not(.active):hover{
+  border-color:var(--dim);color:var(--dim);
+}
+
+@media(max-width:680px){
+  header{padding:0 14px;height:52px;}
+  .hd,.tool-badge{display:none;}
+  .container{padding:20px 14px 60px;}
+  .input-grid{grid-template-columns:1fr 1fr;}
+  .quick-result{grid-template-columns:1fr;}
+  .config-row{gap:8px;}
+  .condition-bar{gap:14px;}
+  .cb-divider{display:none;}
+  .page-title{font-size:1.25rem;}
+}
+@media(max-width:420px){
+  .input-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="3" width="8" height="8" fill="white"/>
+        <rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/>
+        <rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/>
+        <rect x="13" y="13" width="8" height="8" fill="white"/>
+      </svg>
+    </div>
+    <div class="brand-name" id="brand-name">
+      信義房屋
+      <small id="brand-sub">文心高工店</small>
+    </div>
+    <div class="hd"></div>
+    <span class="tool-badge">議價試算</span>
+  </div>
+  <a class="back-btn" href="index.html">← 回主頁</a>
+</header>
+
+<div class="container">
+  <div class="page-title">議價試算工具</div>
+  <div class="page-sub">輸入單價與各項條件，自動產生多個級距的總價、服務費與實拿金額對照表</div>
+
+  <!-- INPUT CARD -->
+  <div class="input-card">
+    <div class="card-heading">🏠 建物條件</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">單價 <span class="required">必填</span></div>
+        <div class="iw">
+          <input type="number" id="unit-price" placeholder="例：30" step="0.5" oninput="liveCalc()">
+          <span class="unit" id="unit-price-unit">萬／坪</span>
+        </div>
+        <!-- 單價模式切換 -->
+        <div style="display:flex;gap:6px;margin-top:7px;">
+          <button type="button" class="mode-btn active" id="mode-with-park" onclick="setPriceMode('with')">含車單價</button>
+          <button type="button" class="mode-btn" id="mode-without-park" onclick="setPriceMode('without')">扣車單價</button>
+        </div>
+        <div class="input-hint" id="unit-price-hint">含車：總價 = 單價 × 總建坪</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">總建坪 <span class="required">必填</span></div>
+        <div class="iw">
+          <input type="number" id="building-area" placeholder="例：35.5" step="0.01" oninput="liveCalc()">
+          <span class="unit">坪</span>
+        </div>
+        <div class="input-hint">登記建物移轉總面積（含公設、含車位坪）</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">車位價格 <span class="optional">選填</span></div>
+        <div class="iw">
+          <input type="number" id="parking-price" placeholder="例：150" step="1" oninput="liveCalc()">
+          <span class="unit">萬</span>
+        </div>
+        <div class="input-hint">留空表示無車位</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">車位坪數 <span class="optional">選填</span></div>
+        <div class="iw">
+          <input type="number" id="parking-area" placeholder="例：8" step="0.01" oninput="liveCalc()">
+          <span class="unit">坪</span>
+        </div>
+        <div class="input-hint">車位登記坪數（從總建坪中扣除）</div>
+      </div>
+    </div>
+
+    <!-- 稅費 -->
+    <div class="card-heading" style="margin-top:18px;">💸 稅費與服務費</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">土地增值稅 <span class="optional">選填</span></div>
+        <div class="iw">
+          <input type="number" id="land-tax" placeholder="0" step="0.1" oninput="liveCalc()">
+          <span class="unit">萬</span>
+        </div>
+        <div class="input-hint">從稅單或試算取得</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">仲介服務費率</div>
+        <div class="iw">
+          <input type="number" id="commission-rate" value="4" placeholder="4" step="0.1" oninput="liveCalc()">
+          <span class="unit">%</span>
+        </div>
+        <div class="input-hint">依總價計算，預設 4%</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">其他費用 <span class="optional">選填</span></div>
+        <div class="iw">
+          <input type="number" id="other-cost" placeholder="0" step="0.1" oninput="liveCalc()">
+          <span class="unit">萬</span>
+        </div>
+        <div class="input-hint">代書費、規費等</div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">房地合一稅 <span class="optional">選填</span></div>
+        <div class="iw">
+          <input type="number" id="realty-tax" placeholder="0" step="0.1" oninput="liveCalc()">
+          <span class="unit">萬</span>
+        </div>
+        <div class="input-hint">留空或填 0 表示不扣</div>
+      </div>
+    </div>
+
+    <!-- 即時計算結果 -->
+    <div class="quick-result" id="quick-result" style="display:none;">
+      <div class="qr-item">
+        <div class="qr-label">成交總價（含車位）</div>
+        <div class="qr-val red" id="qr-total">—</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">仲介服務費</div>
+        <div class="qr-val" id="qr-commission">—</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-label">屋主實拿</div>
+        <div class="qr-val green" id="qr-net">—</div>
+      </div>
+    </div>
+
+    <!-- 級距設定 -->
+    <div class="config-row">
+      <span class="config-label">級距設定：</span>
+      <span class="config-label" style="color:var(--muted);">每格遞減</span>
+      <div class="config-iw">
+        <input type="number" id="step-size" value="0.5" step="0.5" min="0.1" max="5">
+        <span class="unit">萬</span>
+      </div>
+      <span class="config-label" style="color:var(--muted);">共顯示</span>
+      <div class="config-iw">
+        <input type="number" id="tier-count" value="6" step="1" min="3" max="20">
+        <span class="unit">個級距</span>
+      </div>
+      <span style="font-size:.72rem;color:var(--muted);">（含原始單價）</span>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">
+      ▶ 產生議價對照表
+    </button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-section">
+
+    <!-- 條件摘要bar -->
+    <div class="condition-bar" id="condition-bar"></div>
+
+    <!-- 說明 -->
+    <div class="info-box" id="price-info"></div>
+
+    <!-- 表格 -->
+    <div class="table-wrap">
+      <table class="price-table" id="price-table">
+        <colgroup id="table-colgroup"></colgroup>
+        <thead>
+          <tr id="table-head-row"></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- LINE 分享 -->
+    <div class="line-section">
+      <div class="line-section-header">
+        <div class="line-section-header-left">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          <div>
+            <h3>LINE 議價摘要</h3>
+            <p>複製後貼到 LINE 群組或個人對話與屋主確認</p>
+          </div>
+        </div>
+      </div>
+      <div class="line-section-body">
+        <div class="line-preview" id="line-text"></div>
+        <div class="line-actions">
+          <button class="line-btn line-btn-copy" id="copy-btn" onclick="copyLine()">📋 複製文字</button>
+          <button class="line-btn line-btn-open" onclick="openLine()">開啟 LINE →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="act-btn" onclick="window.print()">🖨 列印</button>
+      <button class="act-btn" onclick="resetAll()">🔄 重新試算</button>
+    </div>
+
+  </div><!-- /result-section -->
+
+</div><!-- /container -->
+
+<script>
+// ── helpers ──
+function n(id){return parseFloat(document.getElementById(id).value)||0;}
+function s(id){return document.getElementById(id).value||'';}
+function fmt1(v){return v.toFixed(1);}
+function fmt2(v){return v.toFixed(2);}
+function fmtMoney(v){return v.toFixed(1);}
+
+function getConfig(){
+  const cfg=localStorage.getItem('rlandy_config');
+  if(cfg){try{return JSON.parse(cfg);}catch(e){}}
+  return{};
+}
+
+// ── 單價模式：'with'=含車單價（預設）, 'without'=扣車單價 ──
+let priceMode='with';
+
+function setPriceMode(mode){
+  priceMode=mode;
+  document.getElementById('mode-with-park').classList.toggle('active',mode==='with');
+  document.getElementById('mode-without-park').classList.toggle('active',mode==='without');
+  const hint=document.getElementById('unit-price-hint');
+  if(mode==='with'){
+    hint.textContent='含車：含車總價 = 單價 × 總建坪';
+  } else {
+    hint.textContent='扣車：扣車總價 = 單價 × (總建坪 - 車位坪數)，再加車位價格';
+  }
+  liveCalc();
+}
+
+// ── 核心：給定含車單價，計算各項目 ──
+// 輸入：unitPrice（該級距的含車或扣車單價）
+// 輸出：{ grandTotal, buildOnlyTotal, splitUnitPrice, commission, net }
+function computeRow(unitPrice, totalArea, parkPrice, parkArea, commRate, landTax, realtyTax, otherCost){
+  const hasPark = parkPrice > 0 && parkArea > 0;
+  const pureArea = hasPark ? totalArea - parkArea : totalArea; // 純建物坪數
+
+  let grandTotal;
+  if(priceMode === 'with'){
+    // 含車單價模式：總價 = 單價 × 總建坪
+    grandTotal = +(unitPrice * totalArea).toFixed(2);
+  } else {
+    // 扣車單價模式：扣車總價 = 單價 × 純建物坪數，含車總價再加車位
+    const buildOnlyTotal = +(unitPrice * pureArea).toFixed(2);
+    grandTotal = +(buildOnlyTotal + (hasPark ? parkPrice : 0)).toFixed(2);
+  }
+
+  // 拆車單價 = (含車總價 - 車位價格) / (總建坪 - 車位坪數)
+  const splitUnitPrice = hasPark && pureArea > 0
+    ? +((grandTotal - parkPrice) / pureArea).toFixed(4)
+    : unitPrice;
+
+  // 含車單價（反推，用於扣車模式顯示）
+  const withParkUnitPrice = totalArea > 0
+    ? +(grandTotal / totalArea).toFixed(4)
+    : unitPrice;
+
+  const commission = +(grandTotal * commRate).toFixed(2);
+  const net = +(grandTotal - commission - landTax - realtyTax - otherCost).toFixed(2);
+
+  return { grandTotal, splitUnitPrice, withParkUnitPrice, commission, net };
+}
+
+// ── 即時預覽 ──
+function liveCalc(){
+  const unitPrice = n('unit-price');
+  const totalArea = n('building-area');
+  const parkPrice = n('parking-price');
+  const parkArea  = n('parking-area');
+  const commRate  = (n('commission-rate') || 4) / 100;
+  const landTax   = n('land-tax');
+  const realtyTax = n('realty-tax');
+  const otherCost = n('other-cost');
+
+  if(!unitPrice || !totalArea){
+    document.getElementById('quick-result').style.display='none';
+    return;
+  }
+
+  const r = computeRow(unitPrice, totalArea, parkPrice, parkArea, commRate, landTax, realtyTax, otherCost);
+  const hasPark = parkPrice > 0 && parkArea > 0;
+
+  document.getElementById('quick-result').style.display='grid';
+  document.getElementById('qr-total').textContent = fmtMoney(r.grandTotal) + ' 萬';
+  document.getElementById('qr-commission').textContent = fmtMoney(r.commission) + ' 萬';
+  document.getElementById('qr-net').textContent = fmtMoney(r.net) + ' 萬';
+
+  // 動態更新 quick result 第一格標籤
+  document.querySelector('#quick-result .qr-item:first-child .qr-label').textContent =
+    hasPark ? '含車總價' : '出售總價';
+}
+
+// ── 主計算 ──
+function calculate(){
+  const unitPrice = n('unit-price');
+  const totalArea = n('building-area');
+  const parkPrice = n('parking-price');
+  const parkArea  = n('parking-area');
+  const landTax   = n('land-tax');
+  const realtyTax = n('realty-tax');
+  const otherCost = n('other-cost');
+  const commRate  = (n('commission-rate') || 4) / 100;
+  const stepSize  = n('step-size') || 0.5;
+  const tierCount = parseInt(document.getElementById('tier-count').value) || 6;
+  const hasPark   = parkPrice > 0 && parkArea > 0;
+  const pureArea  = hasPark ? totalArea - parkArea : totalArea;
+
+  if(!unitPrice || !totalArea){
+    alert('請填入單價與總建坪');return;
+  }
+  if(hasPark && pureArea <= 0){
+    alert('車位坪數不能大於等於總建坪');return;
+  }
+
+  // 產生所有級距 (含基準)
+  const tiers = [];
+  for(let i = 0; i < tierCount; i++){
+    tiers.push(+(unitPrice - i * stepSize).toFixed(4));
+  }
+
+  // 建立 rows
+  const rows = tiers.map((up, idx) => {
+    const r = computeRow(up, totalArea, parkPrice, parkArea, commRate, landTax, realtyTax, otherCost);
+    return { idx, inputUnitPrice: up, ...r, isBase: idx === 0 };
+  });
+
+  // ── 條件摘要 ──
+  const cfg = getConfig();
+  const brand = cfg.brand || '信義房屋 文心高工店';
+  const modeLabel = priceMode === 'with' ? '含車單價' : '扣車單價';
+
+  const barHtml = `
+    <div class="cb-item"><div class="cb-label">基準單價（${modeLabel}）</div><div class="cb-val">${fmt2(unitPrice)} 萬/坪</div></div>
+    <div class="cb-divider"></div>
+    <div class="cb-item"><div class="cb-label">總建坪</div><div class="cb-val">${fmt2(totalArea)} 坪</div></div>
+    ${hasPark ? `<div class="cb-divider"></div><div class="cb-item"><div class="cb-label">車位</div><div class="cb-val">${fmtMoney(parkPrice)} 萬 / ${fmt2(parkArea)} 坪</div></div>` : ''}
+    ${hasPark ? `<div class="cb-divider"></div><div class="cb-item"><div class="cb-label">純建物坪數</div><div class="cb-val">${fmt2(pureArea)} 坪</div></div>` : ''}
+    <div class="cb-divider"></div>
+    <div class="cb-item"><div class="cb-label">服務費率</div><div class="cb-val">${(commRate*100).toFixed(1)}%</div></div>
+    ${landTax > 0 ? `<div class="cb-divider"></div><div class="cb-item"><div class="cb-label">土增稅</div><div class="cb-val">${fmtMoney(landTax)} 萬</div></div>` : ''}
+    ${realtyTax > 0 ? `<div class="cb-divider"></div><div class="cb-item"><div class="cb-label">房地合一</div><div class="cb-val">${fmtMoney(realtyTax)} 萬</div></div>` : ''}
+    ${otherCost > 0 ? `<div class="cb-divider"></div><div class="cb-item"><div class="cb-label">其他費用</div><div class="cb-val">${fmtMoney(otherCost)} 萬</div></div>` : ''}
+    <div class="cb-divider"></div>
+    <div class="cb-item"><div class="cb-label">遞減級距</div><div class="cb-val">↓ ${fmtMoney(stepSize)} 萬 × ${tierCount}</div></div>
+  `;
+  document.getElementById('condition-bar').innerHTML = barHtml;
+
+  // info
+  const modeDesc = priceMode === 'with'
+    ? `含車單價模式：含車總價 = 單價 × 總建坪（${fmt2(totalArea)} 坪）`
+    : `扣車單價模式：扣車總價 = 單價 × 純建物坪數（${fmt2(pureArea)} 坪），再加車位 ${fmtMoney(parkPrice)} 萬`;
+  document.getElementById('price-info').textContent =
+    `📌 ${modeDesc}。每格遞減 ${fmtMoney(stepSize)} 萬，共列出 ${tierCount} 個級距。` +
+    (hasPark ? ` 拆車單價 = （含車總價 - 車位 ${fmtMoney(parkPrice)} 萬）÷ 純建物坪數（${fmt2(pureArea)} 坪）。` : '');
+
+  // ── 表格欄位依模式動態調整 ──
+  // thead
+  const thead = document.getElementById('table-head-row');
+  thead.innerHTML = `
+    <th class="center">級距</th>
+    <th>${modeLabel}（萬/坪）</th>
+    ${hasPark && priceMode==='with' ? '<th>拆車單價（萬/坪）</th>' : ''}
+    ${hasPark && priceMode==='without' ? '<th>含車單價（萬/坪）</th>' : ''}
+    <th>${hasPark ? '含車總價（萬）' : '出售總價（萬）'}</th>
+    <th>仲介費（萬）</th>
+    ${landTax > 0 ? '<th>土增稅（萬）</th>' : ''}
+    ${realtyTax > 0 ? '<th>房地合一（萬）</th>' : ''}
+    ${otherCost > 0 ? '<th>其他（萬）</th>' : ''}
+    <th>屋主實拿（萬）</th>
+  `;
+
+  // tbody
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    if(r.isBase) tr.className = 'base-row';
+
+    // 顯示的補充單價欄
+    let altPrice = '—';
+    if(hasPark){
+      altPrice = priceMode === 'with'
+        ? fmt2(r.splitUnitPrice)   // 含車模式 → 顯示拆車單價
+        : fmt2(r.withParkUnitPrice); // 扣車模式 → 顯示含車單價
+    }
+
+    tr.innerHTML = `
+      <td class="rank"><span class="badge ${r.isBase?'badge-base':'badge-down'}">${r.isBase?'基準':'↓'+r.idx}</span></td>
+      <td><strong>${fmt2(r.inputUnitPrice)}</strong></td>
+      ${hasPark ? `<td>${altPrice}</td>` : ''}
+      <td class="total-price"><strong>${fmtMoney(r.grandTotal)}</strong></td>
+      <td class="commission">${fmtMoney(r.commission)}</td>
+      ${landTax > 0 ? `<td class="tax">${fmtMoney(landTax)}</td>` : ''}
+      ${realtyTax > 0 ? `<td class="tax">${fmtMoney(realtyTax)}</td>` : ''}
+      ${otherCost > 0 ? `<td>${fmtMoney(otherCost)}</td>` : ''}
+      <td class="net"><strong>${fmtMoney(r.net)}</strong></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // ── LINE 文字 ──
+  const today = new Date().toLocaleDateString('zh-TW');
+  let lineText = `📊 議價試算結果\n`;
+  lineText += `═══════════════════════\n`;
+  lineText += `【試算條件】\n`;
+  lineText += `總建坪：${fmt2(totalArea)} 坪`;
+  if(hasPark) lineText += `（車位 ${fmt2(parkArea)} 坪，純建物 ${fmt2(pureArea)} 坪）`;
+  lineText += `\n`;
+  lineText += `基準${modeLabel}：${fmt2(unitPrice)} 萬/坪\n`;
+  if(hasPark) lineText += `車位價格：${fmtMoney(parkPrice)} 萬\n`;
+  lineText += `服務費率：${(commRate*100).toFixed(1)}%\n`;
+  if(landTax > 0) lineText += `土地增值稅：${fmtMoney(landTax)} 萬\n`;
+  if(realtyTax > 0) lineText += `房地合一稅：${fmtMoney(realtyTax)} 萬\n`;
+  if(otherCost > 0) lineText += `其他費用：${fmtMoney(otherCost)} 萬\n`;
+  lineText += `\n`;
+  lineText += `【各級距試算（由高→低）】\n`;
+  lineText += `─────────────────────────\n`;
+
+  // 表頭
+  const w1=9, w2=hasPark?9:0, w3=10, w4=9, w5=11;
+  let header = pad(modeLabel,w1);
+  if(hasPark) header += pad(priceMode==='with'?'拆車單價':'含車單價', w2);
+  header += pad('含車總價',w3) + pad('服務費',w4) + pad('實拿',w5);
+  lineText += header + '\n';
+  lineText += `─────────────────────────\n`;
+
+  rows.forEach(r => {
+    const marker = r.isBase ? '★' : ' ';
+    let altP = hasPark
+      ? (priceMode==='with' ? fmt2(r.splitUnitPrice) : fmt2(r.withParkUnitPrice))
+      : '';
+    let line = marker + pad(fmt2(r.inputUnitPrice)+'萬', w1);
+    if(hasPark) line += pad(altP+'萬', w2);
+    line += pad(fmtMoney(r.grandTotal)+'萬', w3)
+          + pad(fmtMoney(r.commission)+'萬', w4)
+          + pad(fmtMoney(r.net)+'萬', w5);
+    lineText += line + '\n';
+  });
+
+  lineText += `─────────────────────────\n`;
+  lineText += `試算日期：${today}\n`;
+  lineText += `${brand}\n`;
+
+  document.getElementById('line-text').textContent = lineText;
+
+  // show
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('copy-btn').textContent = '📋 複製文字';
+  document.getElementById('copy-btn').classList.remove('copied');
+  setTimeout(() => {
+    document.getElementById('result-section').scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+}
+
+function pad(str, len){
+  const s = String(str);
+  return s + ' '.repeat(Math.max(0, len - s.length));
+}
+
+function copyLine(){
+  const text = document.getElementById('line-text').textContent;
+  const btn = document.getElementById('copy-btn');
+  const done = () => {
+    btn.textContent = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => {btn.textContent='📋 複製文字'; btn.classList.remove('copied');}, 3000);
+  };
+  navigator.clipboard.writeText(text).then(done).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); done();
+  });
+}
+
+function openLine(){
+  const text = document.getElementById('line-text').textContent;
+  window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text), '_blank');
+}
+
+function resetAll(){
+  document.querySelectorAll('input[type=number]').forEach(i => {
+    const defaults = {'commission-rate':'4','step-size':'0.5','tier-count':'6'};
+    i.value = defaults[i.id] || '';
+  });
+  setPriceMode('with');
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('quick-result').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Init brand
+(function(){
+  const c = getConfig();
+  if(c.brand){
+    const parts = (c.brand + ' ').split(/\s+/);
+    document.getElementById('brand-name').childNodes[0].textContent = parts[0] || '信義房屋';
+  }
+  if(c.brandSubtitle) document.getElementById('brand-sub').textContent = c.brandSubtitle;
+})();
+</script>
+</body>
+</html>

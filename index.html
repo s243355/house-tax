@@ -118,9 +118,9 @@
 <div id="announcement-bar" style="display:none;"></div>
 
 <main>
-  <div class="select-label">請選擇你的房子適用的制度</div>
-
-  <div class="tool-grid">
+  <!-- ── 稅務試算 ── -->
+  <div class="select-label">稅務試算工具</div>
+  <div class="tool-grid" style="margin-bottom:32px;">
     <a class="tool-card" href="house-tax.html">
       <div class="tc-top" style="background:var(--red);">
         <span class="tc-icon">🏠</span>
@@ -128,20 +128,11 @@
         <div class="tc-law" id="card-new-law">新制・所得稅法 §4-4・2021/7/1 房地合一 2.0</div>
       </div>
       <div class="tc-body">
-        <div class="tc-desc" id="card-new-desc">適用 <strong>民國 105 年 1 月 1 日以後</strong>完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</div>
-        <div class="tc-tags">
-          <span class="tc-tag">105年後取得</span>
-          <span class="tc-tag">分離課稅</span>
-          <span class="tc-tag">稅率15%～45%</span>
-          <span class="tc-tag">自住優惠</span>
-          <span class="tc-tag">繼承・配偶贈與</span>
-        </div>
+        <div class="tc-desc" id="card-new-desc">適用民國 105 年 1 月 1 日以後完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</div>
+        <div class="tc-tags"><span class="tc-tag">105年後取得</span><span class="tc-tag">分離課稅</span><span class="tc-tag">稅率15%～45%</span><span class="tc-tag">自住優惠</span><span class="tc-tag">繼承・配偶贈與</span></div>
       </div>
-      <div class="tc-foot">
-        <span id="card-new-btn" style="color:var(--red);">開始試算 →</span>
-      </div>
+      <div class="tc-foot"><span id="card-new-btn" style="color:var(--red);">開始試算 →</span></div>
     </a>
-
     <a class="tool-card brown" href="old-tax.html">
       <div class="tc-top" style="background:var(--brown);">
         <span class="tc-icon">📋</span>
@@ -149,20 +140,13 @@
         <div class="tc-law" id="card-old-law">舊制・所得稅法 §14 第七類・綜合所得稅</div>
       </div>
       <div class="tc-body">
-        <div class="tc-desc" id="card-old-desc">適用 <strong>民國 104 年 12 月 31 日以前</strong>完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</div>
-        <div class="tc-tags">
-          <span class="tc-tag">104年前取得</span>
-          <span class="tc-tag">併入綜所稅</span>
-          <span class="tc-tag">土地免稅</span>
-          <span class="tc-tag">核實認定</span>
-          <span class="tc-tag">標準認定</span>
-        </div>
+        <div class="tc-desc" id="card-old-desc">適用民國 104 年 12 月 31 日以前完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</div>
+        <div class="tc-tags"><span class="tc-tag">104年前取得</span><span class="tc-tag">併入綜所稅</span><span class="tc-tag">土地免稅</span><span class="tc-tag">核實認定</span><span class="tc-tag">標準認定</span></div>
       </div>
       <div class="tc-foot" style="background:var(--brown-light);border-top-color:#f0d0b0;">
         <span id="card-old-btn" style="color:var(--brown);">開始試算 →</span>
       </div>
     </a>
-
     <a class="tool-card" href="holding-cost.html">
       <div class="tc-top" style="background:#2e6b3e;">
         <span class="tc-icon">🌿</span>
@@ -171,15 +155,12 @@
       </div>
       <div class="tc-body">
         <div class="tc-desc" id="card-hc-desc">幫你算清楚「繼續持有這間房每年要花多少錢」，看清隱性成本後再決定要不要賣。</div>
-        <div class="tc-tags">
-          <span class="tc-tag">房屋稅地價稅</span><span class="tc-tag">貸款利息</span><span class="tc-tag">管理費</span><span class="tc-tag">租金收益</span><span class="tc-tag">逐年累積</span>
-        </div>
+        <div class="tc-tags"><span class="tc-tag">房屋稅地價稅</span><span class="tc-tag">貸款利息</span><span class="tc-tag">管理費</span><span class="tc-tag">租金收益</span><span class="tc-tag">逐年累積</span></div>
       </div>
       <div class="tc-foot" style="background:#f0f8f2;border-top-color:#b8dfc4;">
         <span id="card-hc-btn" style="color:#2e6b3e;">開始試算 →</span>
       </div>
     </a>
-
     <a class="tool-card" href="repurchase-refund.html">
       <div class="tc-top" style="background:#8b4513;">
         <span class="tc-icon">🔄</span>
@@ -187,16 +168,18 @@
         <div class="tc-law" id="card-rr-law">所得稅法 §4-5 第一項第三款</div>
       </div>
       <div class="tc-body">
-        <div class="tc-desc" id="card-rr-desc">換屋自住可以申請退回房地合一稅！試算你可以拿回多少，大換小按比例退、大換大全額退。</div>
-        <div class="tc-tags">
-          <span class="tc-tag">換屋退稅</span><span class="tc-tag">大換小按比例</span><span class="tc-tag">大換大全額</span><span class="tc-tag">2年內申請</span>
-        </div>
+        <div class="tc-desc" id="card-rr-desc">換屋自住可以申請退回房地合一稅！大換小按比例退、大換大全額退。</div>
+        <div class="tc-tags"><span class="tc-tag">換屋退稅</span><span class="tc-tag">大換小按比例</span><span class="tc-tag">大換大全額</span><span class="tc-tag">2年內申請</span></div>
       </div>
       <div class="tc-foot" style="background:#fdf5ef;border-top-color:#e8c4a0;">
         <span id="card-rr-btn" style="color:#8b4513;">開始試算 →</span>
       </div>
     </a>
+  </div>
 
+  <!-- ── 購屋・貸款・換屋 ── -->
+  <div class="select-label">購屋・貸款・換屋規劃</div>
+  <div class="tool-grid" style="margin-bottom:32px;">
     <a class="tool-card tool-card-wide" href="mortgage.html">
       <div class="tc-top" style="background:#1a4a7a;border-radius:0;">
         <span class="tc-icon">🏦</span>
@@ -205,35 +188,62 @@
       </div>
       <div class="tc-body" style="padding:22px 26px;">
         <div class="tc-desc" id="card-mortgage-desc">輸入房屋總價、自備款比例、利率，立即算出每月還款金額、總利息、年度還款明細，並比較不同貸款年限的差異。</div>
-        <div class="tc-tags">
-          <span class="tc-tag">等額本息</span><span class="tc-tag">等額本金</span><span class="tc-tag">寬限期</span><span class="tc-tag">年限比較</span>
-        </div>
+        <div class="tc-tags"><span class="tc-tag">等額本息</span><span class="tc-tag">等額本金</span><span class="tc-tag">寬限期</span><span class="tc-tag">年限比較</span></div>
       </div>
       <div class="tc-foot" style="background:#eef4fb;border-top-color:#c8ddf0;align-self:stretch;min-width:100px;justify-content:center;">
         <span id="card-mortgage-btn" style="color:#1a4a7a;">開始試算 →</span>
       </div>
     </a>
-  </div>
-
-  <!-- 換屋規劃 + 名片 快捷 -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-    <a href="home-buying.html" style="background:var(--white);border:1.5px solid var(--border);padding:18px 20px;text-decoration:none;display:flex;align-items:center;gap:14px;transition:all .2s;box-shadow:var(--shadow-sm);" onmouseover="this.style.borderColor='#4a1a7a'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="width:44px;height:44px;background:#4a1a7a;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border-radius:2px;">🔑</div>
-      <div>
-        <div style="font-family:'Noto Serif TC',serif;font-size:.92rem;font-weight:700;color:#4a1a7a;margin-bottom:3px;" id="card-hb-title">換屋資金規劃</div>
-        <div style="font-size:.75rem;color:var(--text-muted);" id="card-hb-desc">賣舊房→買新房　一條龍試算</div>
+    <a class="tool-card tool-card-wide" href="home-buying.html">
+      <div class="tc-top" style="background:#4a1a7a;border-radius:0;">
+        <span class="tc-icon">🔑</span>
+        <div class="tc-name" id="card-hb-title">換屋資金規劃</div>
+        <div class="tc-law" id="card-hb-law">賣舊房 → 扣稅費 → 算缺口 → 新房貸款</div>
       </div>
-    </a>
-    <a href="card.html" style="background:var(--white);border:1.5px solid var(--border);padding:18px 20px;text-decoration:none;display:flex;align-items:center;gap:14px;transition:all .2s;box-shadow:var(--shadow-sm);" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="width:44px;height:44px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border-radius:2px;">📇</div>
-      <div>
-        <div style="font-family:'Noto Serif TC',serif;font-size:.92rem;font-weight:700;color:var(--red);margin-bottom:3px;" id="card-vc-title">數位名片</div>
-        <div style="font-size:.75rem;color:var(--text-muted);" id="card-vc-desc">LINE QR Code・電話・工具總覽</div>
+      <div class="tc-body" style="padding:22px 26px;">
+        <div class="tc-desc" id="card-hb-desc">整合「賣掉舊房稅後實拿→扣剩餘貸款→可用資金→買新房自備款→新房貸款試算」，一條龍完整換屋計畫。</div>
+        <div class="tc-tags"><span class="tc-tag">資金缺口</span><span class="tc-tag">換屋時機</span><span class="tc-tag">新房月付</span><span class="tc-tag">LINE分享</span></div>
+      </div>
+      <div class="tc-foot" style="background:#f5eeff;border-top-color:#d4b8f0;align-self:stretch;min-width:100px;justify-content:center;">
+        <span id="card-hb-btn" style="color:#4a1a7a;">開始規劃 →</span>
       </div>
     </a>
   </div>
 
-  <div class="info-card">
+  <!-- ── 業務工具 ── -->
+  <div class="select-label">業務工具</div>
+  <div class="tool-grid" style="margin-bottom:32px;">
+    <a class="tool-card tool-card-wide" href="price-calculator.html">
+      <div class="tc-top" style="background:#1a1410;border-radius:0;">
+        <span class="tc-icon">📊</span>
+        <div class="tc-name" id="card-pc-title">議價試算工具</div>
+        <div class="tc-law" id="card-pc-law">含車/扣車單價・總價・服務費・實拿・多級距對照</div>
+      </div>
+      <div class="tc-body" style="padding:22px 26px;">
+        <div class="tc-desc" id="card-pc-desc">輸入單價與坪數，自動產生多個議價級距的含車總價、拆車單價、仲介服務費、屋主實拿對照表，並一鍵輸出 LINE 摘要。</div>
+        <div class="tc-tags"><span class="tc-tag">含車/扣車單價</span><span class="tc-tag">拆車計算</span><span class="tc-tag">0.5萬遞減</span><span class="tc-tag">LINE摘要</span></div>
+      </div>
+      <div class="tc-foot" style="background:#f5f3f0;border-top-color:#c8bfb5;align-self:stretch;min-width:100px;justify-content:center;">
+        <span id="card-pc-btn" style="color:#1a1410;">開始試算 →</span>
+      </div>
+    </a>
+    <a class="tool-card" href="card.html">
+      <div class="tc-top" style="background:var(--red);">
+        <span class="tc-icon">📇</span>
+        <div class="tc-name" id="card-vc-title">數位名片</div>
+        <div class="tc-law" id="card-vc-law">LINE QR Code・電話・工具總覽</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-desc" id="card-vc-desc">顯示你的 LINE QR Code 與聯絡方式，客戶掃碼即可加好友，可截圖傳送或印出來放桌上。</div>
+        <div class="tc-tags"><span class="tc-tag">LINE QR Code</span><span class="tc-tag">一鍵致電</span><span class="tc-tag">工具捷徑</span></div>
+      </div>
+      <div class="tc-foot" style="background:var(--red-light);border-top-color:var(--red-mid);">
+        <span id="card-vc-btn" style="color:var(--red);">查看名片 →</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="info-card">  <div class="info-card">
     <h3 id="table-title">🤔 不確定適用哪個制度？</h3>
     <p id="table-desc">判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
     <table>
@@ -299,10 +309,20 @@ sa('card-hc-desc',hc.cardDesc);sa('card-hc-btn',hc.cardBtn);
 const rr=c.repurchaseRefund||{};
 sa('card-rr-title',rr.cardTitle);sa('card-rr-law',rr.cardLaw);
 sa('card-rr-desc',rr.cardDesc);sa('card-rr-btn',rr.cardBtn);
-// 換屋、名片
-const hb=c.homeBuying||{};const vc=c.card||{};
+// 換屋
+const hb=c.homeBuying||{};
 sa('card-hb-title',hb.cardTitle);sa('card-hb-desc',hb.cardDesc);
-sa('card-vc-title',vc.cardTitle);sa('card-vc-desc',vc.cardDesc);
+if(hb.cardLaw)sa('card-hb-law',hb.cardLaw);
+if(hb.cardBtn)sa('card-hb-btn',hb.cardBtn);
+// 議價試算
+const pc=c.priceCalculator||{};
+sa('card-pc-title',pc.cardTitle);sa('card-pc-law',pc.cardLaw);
+sa('card-pc-desc',pc.cardDesc);sa('card-pc-btn',pc.cardBtn);
+// 名片
+const vc=c.card||{};
+sa('card-vc-title',vc.cardTitle);sa('card-vc-law',vc.cardLaw);
+sa('card-vc-desc',vc.cardDesc);sa('card-vc-btn',vc.cardBtn);
+
 // 公告欄
 const ann=c.announcement||{};
 if(ann.enabled&&ann.title){
