@@ -603,7 +603,8 @@ header{
     </div>
 
     <div class="action-row">
-      <button class="act-btn" onclick="window.print()">🖨 列印</button>
+      <button class="act-btn" onclick="generatePDF()">📄 下載 PDF 報告</button>
+    <button class="act-btn" onclick="window.print()">🖨 列印</button>
       <button class="act-btn" onclick="resetAll()">🔄 重新試算</button>
     </div>
 
@@ -853,6 +854,7 @@ function calculate(){
   lineText += `─────────────────────────\n`;
   lineText += `試算日期：${today}\n`;
   lineText += `${brand}\n`;
+  lineText+=`祐承店長 ${cfg.phoneLabel||'0933317625'}\n`;
 
   document.getElementById('line-text').textContent = lineText;
 
@@ -888,6 +890,62 @@ function copyLine(){
 function openLine(){
   const text = document.getElementById('line-text').textContent;
   window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text), '_blank');
+}
+
+function generatePDF(){
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const tbody=document.getElementById('table-body');
+  if(!tbody||!tbody.children.length){alert('請先產生議價對照表');return;}
+  const condBar=document.getElementById('condition-bar').innerText.replace(/\n/g,' ');
+  const tableHTML=document.querySelector('.table-wrap').outerHTML;
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;font-size:12px;}
+    .page{max-width:900px;margin:0 auto;padding:30px;}
+    .header{background:#1a1410;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .brand{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;color:white;}
+    .brand small{display:block;font-size:.65rem;color:rgba(255,255,255,.65);font-weight:400;margin-top:2px;}
+    .report-date{font-size:.7rem;color:rgba(255,255,255,.6);text-align:right;}
+    .report-date strong{display:block;font-size:.9rem;color:white;}
+    .cond-bar{background:#333;color:#eee;padding:10px 16px;font-size:.75rem;margin-bottom:14px;line-height:1.6;}
+    .table-wrap{overflow:visible;}
+    .price-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+    .price-table thead tr{background:#C00000;}
+    .price-table thead th{padding:8px 10px;text-align:right;font-size:.68rem;color:white;font-weight:500;white-space:nowrap;}
+    .price-table thead th:first-child{text-align:left;}
+    .price-table tbody tr{border-bottom:1px solid #e0dad3;}
+    .price-table tbody tr.base-row{background:#fdf0f0;font-weight:600;}
+    .price-table td{padding:7px 10px;text-align:right;font-family:monospace;white-space:nowrap;color:#5a4e44;}
+    .price-table td:first-child{text-align:left;font-family:sans-serif;color:#1a1410;}
+    .price-table td.total-price{color:#1a1410;font-weight:700;}
+    .price-table td.commission{color:#b8860b;}
+    .price-table td.net{color:#2a6e46;font-weight:700;}
+    .price-table td.tax{color:#1a3f6e;}
+    .badge{display:inline-block;padding:1px 6px;font-size:.62rem;border-radius:2px;}
+    .badge-base{background:#f5d5d5;color:#C00000;}
+    .badge-down{background:#f0ede8;color:#9a8e84;border:1px solid #e0dad3;}
+    .col-highlight{background:rgba(0,0,0,.015);}
+    .contact{background:#1a4a7a;padding:16px 24px;margin-top:14px;}
+    .cb{font-family:'Noto Serif TC',serif;font-size:.95rem;color:white;font-weight:700;margin-bottom:4px;}
+    .ci{font-size:.78rem;color:rgba(255,255,255,.8);}
+    .disc{padding:12px 0;font-size:.68rem;color:#9a8e84;line-height:1.7;}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+  </style></head><body><div class="page">
+    <div class="header"><div class="brand">${brand}<small>議價試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
+    <div class="cond-bar">${condBar}</div>
+    ${tableHTML}
+    <div class="contact"><div class="cb">${brand}</div><div class="ci">祐承店長 ${phone}　｜　LINE：${lineUrl}</div></div>
+    <div class="disc">⚠ 本試算報告僅供參考，實際數字以正式合約為準。</div>
+  </div></body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`議價試算報告_${today.replace(/\//g,'')}.html`;a.click();
+  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後按 Ctrl+P 存成 PDF。'),500);
 }
 
 function resetAll(){

@@ -919,6 +919,7 @@ ${'─'.repeat(22)}
 📞 ${brand}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
+祐承店長 ${phone}
 
 ⚠ 本試算僅供參考，實際稅額依國稅局核定為準`;
 
@@ -1006,7 +1007,7 @@ function submitLead(tool){
   const leads=JSON.parse(localStorage.getItem('rlandy_leads')||'[]');
   leads.push({time:new Date().toLocaleString('zh-TW'),name,phone,tool,note:document.getElementById('lead-note').value.trim()});
   localStorage.setItem('rlandy_leads',JSON.stringify(leads));
-  document.getElementById('lead-form-wrap').innerHTML='<div style="background:#f0f8f2;border:1.5px solid #b8dfc4;padding:20px 24px;text-align:center;"><div style="font-size:1.5rem;margin-bottom:8px;">✅</div><div style="font-family:'Noto Serif TC',serif;font-weight:700;color:#2e7d52;margin-bottom:4px;">已送出！</div><div style="font-size:.82rem;color:var(--text-muted);">我們會盡快與你聯繫</div></div>';
+  document.getElementById('lead-form-wrap').innerHTML=`<div style="background:#f0f8f2;border:1.5px solid #b8dfc4;padding:20px 24px;text-align:center;"><div style="font-size:1.5rem;margin-bottom:8px;">✅</div><div style="font-family:'Noto Serif TC',serif;font-weight:700;color:#2e7d52;margin-bottom:4px;">已送出！</div><div style="font-size:.82rem;color:var(--text-muted);">我們會盡快與你聯繫</div></div>`;
 }
 
 function generatePDF(){

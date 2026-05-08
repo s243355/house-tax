@@ -420,7 +420,7 @@
     </div>
 
     <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;" onclick="showLineShare()">📤 LINE 分享試算結果</button>
+      <div style="display:flex;gap:10px;"><button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="showLineShare()">📤 LINE 分享試算結果</button><button class="calc-btn" style="background:#1a4a7a;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="generatePDF()">📄 下載 PDF 報告</button></div>
     </div>
     <div class="info-box">
       ⚠ 本試算為估算參考，實際貸款金額、利率及條件依各銀行審核為準。建議洽詢專業人員取得正式報價。
@@ -660,6 +660,66 @@ function toggleSchedule(){
   buildSchedule(showMonthly);
 }
 
+function generatePDF(){
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const loanAmt=document.getElementById('r-loan-total').textContent;
+  const monthly=document.getElementById('r-monthly').textContent;
+  const totalInt=document.getElementById('r-total-interest').textContent;
+  const totalPay=document.getElementById('r-total-pay').textContent;
+  const downAmt=document.getElementById('r-down').textContent;
+  const rate=document.getElementById('rate-display').textContent;
+  const years=document.getElementById('loan-years').value;
+  const repayType=document.getElementById('repay-type').value==='equal-payment'?'等額本息':'等額本金';
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;}
+    .page{max-width:680px;margin:0 auto;padding:40px;}
+    .header{background:#1a4a7a;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;}
+    .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
+    .report-date{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
+    .report-date strong{display:block;font-size:1rem;color:white;}
+    .hero{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
+    .hero-val{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;}
+    .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
+    .section{padding:0 32px 24px;}
+    .sec-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
+    .contact{background:#1a4a7a;padding:20px 32px;}
+    .cb{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
+    .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
+    .disc{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+  </style></head><body><div class="page">
+    <div class="header"><div class="brand">${brand}<small>房貸試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
+    <div class="hero"><div class="hero-label">每月還款（本息）</div><div class="hero-val">${monthly} 元</div><div class="hero-sub">貸款 ${loanAmt} 萬・${years} 年・年利 ${rate}・${repayType}</div></div>
+    <div class="section">
+      <div class="sec-title">試算摘要</div>
+      <div class="data-grid">
+        <div class="data-card"><div class="data-label">貸款金額</div><div class="data-val">${loanAmt} 萬</div></div>
+        <div class="data-card"><div class="data-label">自備款</div><div class="data-val">${downAmt}</div></div>
+        <div class="data-card"><div class="data-label">每月還款</div><div class="data-val">${monthly} 元</div></div>
+        <div class="data-card"><div class="data-label">總利息</div><div class="data-val">${totalInt} 萬</div></div>
+        <div class="data-card"><div class="data-label">年利率</div><div class="data-val">${rate}</div></div>
+        <div class="data-card"><div class="data-label">還清後總支出</div><div class="data-val">${totalPay} 萬</div></div>
+      </div>
+    </div>
+    <div class="contact"><div class="cb">${brand}</div><div class="ci">祐承店長 ${phone}　｜　LINE：${lineUrl}</div></div>
+    <div class="disc">⚠ 本試算報告僅供參考，實際條件依銀行審核為準。</div>
+  </div></body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`房貸試算報告_${today.replace(/\//g,'')}.html`;a.click();
+  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後按 Ctrl+P 存成 PDF。'),500);
+}
+
 function showLineShare(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
@@ -694,6 +754,7 @@ ${'─'.repeat(22)}
 📞 ${brand}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
+祐承店長 ${phone}
 
 ⚠ 本試算僅供參考，實際條件依銀行審核為準`;
 

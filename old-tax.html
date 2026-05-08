@@ -345,34 +345,52 @@
       <select class="input-select" id="std-region" onchange="updateStdRate()">
         <option value="">-- 請選擇 --</option>
         <optgroup label="臺北市">
-          <option value="48">臺北市：中山、松山、中正、大安、信義區 (48%)</option>
-          <option value="46">臺北市：士林、內湖、大同、南港區 (46%)</option>
-          <option value="44">臺北市：文山、萬華、北投、中山其他 (44%)</option>
+          <option value="50">臺北市：中山、松山、中正、大安、信義區 (50%)</option>
+          <option value="48">臺北市：士林、內湖、大同、南港區 (48%)</option>
+          <option value="47">臺北市：北投、萬華、文山區 (47%)</option>
         </optgroup>
         <optgroup label="新北市">
-          <option value="44">新北市：板橋、永和、中和、三重、新店、蘆洲、新莊、土城區 (44%)</option>
-          <option value="41">新北市：新店、淡水、汐止、樹林、泰山 (41%)</option>
+          <option value="47">新北市：板橋、永和、中和、三重、新店、蘆洲、新莊、土城、林口區 (47%)</option>
+          <option value="42">新北市：淡水、汐止、樹林、泰山區 (42%)</option>
           <option value="36">新北市：其他地區 (36%)</option>
         </optgroup>
         <optgroup label="桃竹苗">
-          <option value="42">桃園市：中壢、桃園區 (42%)</option>
-          <option value="38">桃園市：其他地區 (38%)</option>
+          <option value="38">桃園市：桃園、中壢區 (38%)</option>
+          <option value="37">桃園市：八德區 (37%)</option>
+          <option value="35">桃園市：蘆竹、龜山區 (35%)</option>
+          <option value="30">桃園市：平鎮區 (30%)</option>
+          <option value="23">桃園市：其他地區 (23%)</option>
           <option value="40">新竹市 (40%)</option>
           <option value="35">新竹縣 (35%)</option>
           <option value="30">苗栗縣 (30%)</option>
         </optgroup>
         <optgroup label="中部">
-          <option value="45">臺中市：西屯、北屯、北區 (45%)</option>
-          <option value="42">臺中市：其他區 (42%)</option>
+          <option value="40">臺中市：西屯區 (40%)</option>
+          <option value="38">臺中市：南屯區 (38%)</option>
+          <option value="35">臺中市：南區 (35%)</option>
+          <option value="34">臺中市：北屯區 (34%)</option>
+          <option value="32">臺中市：西區、東區 (32%)</option>
+          <option value="30">臺中市：北區 (30%)</option>
+          <option value="29">臺中市：太平區 (29%)</option>
+          <option value="28">臺中市：中區 (28%)</option>
+          <option value="26">臺中市：烏日區、大里區 (26%)</option>
+          <option value="24">臺中市：豐原區 (24%)</option>
+          <option value="23">臺中市：潭子區、沙鹿區 (23%)</option>
+          <option value="22">臺中市：大雅區 (22%)</option>
+          <option value="21">臺中市：龍井區、大肚區、霧峰區 (21%)</option>
+          <option value="20">臺中市：后里區、神岡區 (20%)</option>
+          <option value="18">臺中市：其他區 (18%)</option>
           <option value="30">彰化縣 (30%)</option>
           <option value="28">南投縣 (28%)</option>
           <option value="30">雲林縣 (30%)</option>
         </optgroup>
         <optgroup label="南部">
-          <option value="40">臺南市：中西、東、南、北、安平、安南區 (40%)</option>
-          <option value="35">臺南市：其他區 (35%)</option>
+          <option value="41">臺南市：中西、東、南、北、安平、安南區 (41%)</option>
+          <option value="36">臺南市：永康、仁德區 (36%)</option>
+          <option value="30">臺南市：其他區 (30%)</option>
           <option value="43">高雄市：苓雅、前金、鼓山、三民、新興區 (43%)</option>
-          <option value="40">高雄市：其他區 (40%)</option>
+          <option value="40">高雄市：左營、楠梓、鳳山區 (40%)</option>
+          <option value="37">高雄市：其他區 (37%)</option>
           <option value="28">嘉義市 (28%)</option>
           <option value="25">嘉義縣 (25%)</option>
           <option value="25">屏東縣 (25%)</option>
@@ -419,14 +437,14 @@
 
   <div class="field-group">
     <div class="field-label">免稅額合計（個人 + 扶養人口）</div>
-    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：9.2" value="9.2"><span class="input-unit">萬</span></div>
-    <div class="field-tip">114 年度每人 9.2 萬（今年 115 年報稅：單身申報 9.2 萬，已婚各 9.2 萬）</div>
+    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：9.7" value="9.7"><span class="input-unit">萬</span></div>
+    <div class="field-tip">114 年度每人 9.7 萬（115年5月申報適用）。若有扶養人口，每人加 9.7 萬，已婚另含配偶 9.7 萬</div>
   </div>
 
   <div class="field-group">
     <div class="field-label">扣除額合計（標準 or 列舉 + 特別扣除額）</div>
-    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：27.6" value="27.6"><span class="input-unit">萬</span></div>
-    <div class="field-tip">標準扣除額 13.1 萬（已婚 26.2 萬）+ 薪資特別扣除額 22.8 萬（有薪水才能用）</div>
+    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：34.9" value="34.9"><span class="input-unit">萬</span></div>
+    <div class="field-tip">114 年度：標準扣除額 13.1 萬（已婚 26.2 萬）＋ 薪資特別扣除額 21.8 萬。預設值 34.9 萬為單身有薪資者，已婚有薪資者改填 48 萬</div>
   </div>
 
   <div class="nav-row">
@@ -482,7 +500,7 @@
   </div>
 
   <div class="income-note">
-    <h3>📌 綜合所得稅累進稅率說明</h3>
+    <h3>📌 114 年度綜合所得稅累進稅率（115年5月申報）</h3>
     <p>財產交易所得加入後，你的總所得可能跨越不同稅率級距。以下是你試算的情況：</p>
     <table class="bracket-table" id="bracket-table"></table>
   </div>
@@ -845,6 +863,7 @@ ${'─'.repeat(22)}
 📞 ${brand}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
+祐承店長 ${phone}
 
 ⚠ 本試算僅供參考，須於隔年5月申報綜所稅時申報`;
 
