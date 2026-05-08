@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>房產稅務試算｜信義房屋 文心高工店祐承店長0933-317625</title>
+<title>房產稅務試算｜信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{--red:#C00000;--red-dark:#9a0000;--red-light:#fdf0f0;--red-mid:#f5d5d5;--brown:#7a3000;--brown-light:#fff8f3;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;--border:#e0dad3;--border-dark:#c8bfb5;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);}
@@ -227,6 +227,21 @@
         <span id="card-pc-btn" style="color:#1a1410;">開始試算 →</span>
       </div>
     </a>
+    <a class="tool-card" href="transaction-planner.html">
+      <div class="tc-top" style="background:#2c3e50;">
+        <span class="tc-icon">📅</span>
+        <div class="tc-name" id="card-tp-title">買賣流程規劃</div>
+        <div class="tc-law" id="card-tp-law">簽約・完稅・交屋・款項分配・時程自動試算</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-desc" id="card-tp-desc">輸入簽約日期、總價與貸款成數，自動產出完整時程表、各階段款項分配、買方自備款試算與備忘清單。</div>
+        <div class="tc-tags"><span class="tc-tag">時程自動計算</span><span class="tc-tag">款項分配</span><span class="tc-tag">假日提示</span><span class="tc-tag">PDF報告</span></div>
+      </div>
+      <div class="tc-foot" style="background:#edf2f7;border-top-color:#cbd5e0;">
+        <span id="card-tp-btn" style="color:#2c3e50;">開始規劃 →</span>
+      </div>
+    </a>
+
     <a class="tool-card" href="card.html">
       <div class="tc-top" style="background:var(--red);">
         <span class="tc-icon">📇</span>
@@ -322,6 +337,9 @@ sa('card-pc-desc',pc.cardDesc);sa('card-pc-btn',pc.cardBtn);
 const vc=c.card||{};
 sa('card-vc-title',vc.cardTitle);sa('card-vc-law',vc.cardLaw);
 sa('card-vc-desc',vc.cardDesc);sa('card-vc-btn',vc.cardBtn);
+const tp=c.transactionPlanner||{};
+sa('card-tp-title',tp.cardTitle);sa('card-tp-law',tp.cardLaw);
+sa('card-tp-desc',tp.cardDesc);sa('card-tp-btn',tp.cardBtn);
 
 // 公告欄
 const ann=c.announcement||{};
