@@ -17,7 +17,19 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
 
-  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+
+  .hdr-home-btn{
+    display:flex;align-items:center;
+    height:100%;padding:0 18px;
+    font-size:.78rem;color:var(--text-dim);
+    text-decoration:none;font-weight:500;
+    border-right:1px solid var(--border);
+    transition:all .18s;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .hdr-home-btn:hover{color:var(--red);background:var(--red-light);}
+  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px 0 0;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
   .sinyi-emblem{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;}
   .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.15;}
   .sinyi-name small{display:block;font-size:.62rem;color:var(--text-muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
@@ -216,6 +228,7 @@
 <body>
 
 <header>
+  <a href="index.html" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">文心高工店</small></div>
@@ -348,6 +361,9 @@
 
   <!-- RESULT -->
   <div id="result-panel">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button onclick="goStep(1)" style="font-size:.78rem;color:var(--text-muted);background:var(--white);border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:inherit;border-radius:2px;transition:all .15s;" onmouseover="this.style.color='var(--pri)';this.style.borderColor='var(--pri)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">✏ 修改條件</button>
+    </div>
     <div class="steps-indicator" style="margin-bottom:14px;">
       <div class="step-ind done">① 資格確認</div>
       <div class="step-ind done">② 舊屋資料</div>

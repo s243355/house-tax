@@ -21,7 +21,19 @@
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:400;min-height:100vh;line-height:1.7;}
 
   /* Header */
-  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px 0 0;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+
+  .hdr-home-btn{
+    display:flex;align-items:center;
+    height:100%;padding:0 18px;
+    font-size:.78rem;color:var(--text-dim);
+    text-decoration:none;font-weight:500;
+    border-right:1px solid var(--border);
+    transition:all .18s;
+    white-space:nowrap;
+    letter-spacing:.04em;
+  }
+  .hdr-home-btn:hover{color:var(--red);background:var(--red-light);}
   .header-left{display:flex;align-items:center;gap:16px;}
   .sinyi-emblem{width:38px;height:38px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:0.1em;line-height:1.15;}
@@ -234,17 +246,18 @@
 <body>
 
 <header>
+  <a href="index.html" class="hdr-home-btn">← 首頁</a>
   <div class="header-left">
     <div class="sinyi-emblem">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
     </div>
-    <div class="sinyi-name">信義房屋<small>文心高工店</small></div>
+    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">文心高工店</small></div>
     <div class="hd"></div>
     <span class="tool-title">房地合一稅試算</span>
   </div>
   <div class="header-contact">
-    <a class="contact-btn btn-phone" href="tel:0933317625">📞 0933-317-625</a>
-    <a class="contact-btn btn-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+    <a class="contact-btn btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">0933-317-625</span></a>
+    <a class="contact-btn btn-line" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       加 LINE 好友
     </a>
@@ -549,6 +562,9 @@
 
 <!-- RESULT -->
 <div id="result-panel">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <button onclick="goBack()" style="font-size:.78rem;color:var(--text-muted);background:var(--white);border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:inherit;border-radius:2px;transition:all .15s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">✏ 修改條件</button>
+  </div>
   <div class="step-tag">試算結果</div>
   <div class="result-hero">
     <div class="result-hero-label" id="nt-result-label">應繳房地合一稅</div>
