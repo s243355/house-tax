@@ -1136,10 +1136,7 @@ async function generatePDF(){
         ['簽約款',fmt1(r.signAmt)+' 萬','#fcd34d'],
         ['完稅款',fmt1(r.taxPayAmt)+' 萬','#fcd34d'],
         ['銀行撥款',fmt1(r.loanAmt)+' 萬','#93c5fd'],
-      ].map(([l,v,col])=>`<div style="flex:1;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);">
-        <div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">${l}</div>
-        <div style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:${col};">${v}</div>
-      </div>`).join('')}
+      ].map(([l,v,col])=>'<div style="flex:1;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);"><div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
     </div>
     <div style="padding:20px 28px;">
       <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買賣交易時程</div>
@@ -1153,15 +1150,15 @@ async function generatePDF(){
         {s:'塗銷',d:fmtDate(r.cancelDate),t:'抵押塗銷・登記完成',m:'',mc:''},
         {s:'看屋',d:fmtDate(r.checkDate),t:'交屋前確認現況',m:'',mc:''},
         {s:'交屋',d:fmtDate(r.handoverDate),t:'交屋・銀行撥款',m:`銀行撥款 ${fmt1(r.loanAmt)} 萬`,mc:'#1a6e46'},
-      ].map((item,i)=>`
-        <div style="display:flex;border-bottom:1px solid #f0ede8;${[0,4,8].includes(i)?'background:#fdf5f0;':''}"'>
-          <div style="width:52px;padding:10px 8px;font-size:9px;font-weight:700;color:#C00000;border-right:1px solid #f0ede8;flex-shrink:0;">${item.s}</div>
-          <div style="width:80px;padding:10px 8px;font-size:10px;font-family:monospace;color:#5a4e44;border-right:1px solid #f0ede8;flex-shrink:0;">${item.d}</div>
-          <div style="padding:10px 12px;flex:1;">
-            <div style="font-size:11px;font-weight:600;color:#1a1410;margin-bottom:2px;">${item.t}</div>
-            ${item.m?`<div style="font-size:10px;font-weight:600;color:${item.mc};">💰 ${item.m}</div>`:''}
-          </div>
-        </div>`).join('')}
+      ].map((item,i)=>{
+        const bg=[0,4,8].includes(i)?'background:#fdf5f0;':'';
+        const moneyHtml=item.m?'<div style="font-size:10px;font-weight:600;color:'+item.mc+';">💰 '+item.m+'</div>':'';
+        return '<div style="display:flex;border-bottom:1px solid #f0ede8;'+bg+'">'
+          +'<div style="width:52px;padding:10px 8px;font-size:9px;font-weight:700;color:#C00000;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.s+'</div>'
+          +'<div style="width:80px;padding:10px 8px;font-size:10px;font-family:monospace;color:#5a4e44;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.d+'</div>'
+          +'<div style="padding:10px 12px;flex:1;"><div style="font-size:11px;font-weight:600;color:#1a1410;margin-bottom:2px;">'+item.t+'</div>'+moneyHtml+'</div>'
+          +'</div>';
+      }).join('')}
       <div style="height:20px;"></div>
       <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">款項分配明細</div>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
@@ -1183,14 +1180,11 @@ async function generatePDF(){
       <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買方資金規劃</div>
       <div style="display:flex;gap:10px;margin-bottom:16px;">
         ${[
-          ['貸款金額','${fmt1(r.loanAmt)} 萬','#1a3f6e'],
-          ['買方自備款','${fmt1(r.total-r.loanAmt)} 萬','#C00000'],
-          ['簽約時需備妥','${fmt1(r.signAmt+(r.sealAmt||0))} 萬','#b8860b'],
-          ['完稅時需備妥','${fmt1(r.taxPayAmt)} 萬','#b8860b'],
-        ].map(([l,v,col])=>`<div style="flex:1;background:#faf8f5;border:1px solid #e8e2da;padding:10px 12px;">
-          <div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">${l}</div>
-          <div style="font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:${col};">${v}</div>
-        </div>`).join('')}
+          ['貸款金額', fmt1(r.loanAmt)+' 萬', '#1a3f6e'],
+          ['買方自備款', fmt1(r.total-r.loanAmt)+' 萬', '#C00000'],
+          ['簽約時需備妥', fmt1(r.signAmt+(r.sealAmt||0))+' 萬', '#b8860b'],
+          ['完稅時需備妥', fmt1(r.taxPayAmt)+' 萬', '#b8860b'],
+        ].map(([l,v,col])=>'<div style="flex:1;background:#faf8f5;border:1px solid #e8e2da;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:14px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
       </div>
     </div>
     <div style="background:#1a4a7a;padding:16px 28px;">
