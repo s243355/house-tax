@@ -253,12 +253,12 @@
     <div class="sinyi-emblem">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
     </div>
-    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">文心高工店</small></div>
+    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
     <div class="hd"></div>
     <span class="tool-title">房地合一稅試算</span>
   </div>
   <div class="header-contact">
-    <a class="contact-btn btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">0933-317-625</span></a>
+    <a class="contact-btn btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
     <a class="contact-btn btn-line" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       加 LINE 好友
@@ -645,12 +645,12 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
     </div>
     <div>
-      <div class="footer-brand">信義房屋 文心高工店</div>
+      <div class="footer-brand">祐承店長 信義房屋 文心高工店</div>
       <div class="footer-info" id="footer-update">資料更新日期：2026-05-05 ・ 房地合一 2.0（2021/7/1 起）</div>
     </div>
   </div>
   <div class="footer-contact">
-    <a href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 0933-317-625</a>
+    <a href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 祐承店長 0933-317-625</a>
     <a href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
   </div>
 </footer>
@@ -882,7 +882,7 @@ function calcReverse(type){
 function showLineShare(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
   const typeLabel={normal:'一般買賣',selfuse:'自住房地',inherit:'繼承取得',gift:'配偶贈與'}[currentType]||'—';
@@ -965,7 +965,7 @@ renderProgress();
   function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
   // 品牌
   sa('hdr-branch',c.brandSubtitle);
-  const pl=c.phoneLabel||'0933-317-625';
+  const pl=c.phoneLabel||'祐承 0933-317-625';
   sa('hdr-phone-label',pl);
   document.getElementById('footer-phone').textContent='📞 '+pl;
   sh('hdr-phone','tel:'+(c.phone||'0933317625'));
@@ -1042,7 +1042,7 @@ async function generatePDF(){
   const c=window._calc;
   if(!c){alert('請先完成試算');return;}
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const tax=document.getElementById('r-tax').textContent;
   const net=document.getElementById('r-net').textContent;

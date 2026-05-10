@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>買賣流程規劃｜信義房屋 文心高工店</title>
+<title>買賣流程規劃｜祐承店長 信義房屋 文心高工店</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -414,12 +414,12 @@ footer{
         <rect x="13" y="13" width="8" height="8" fill="white"/>
       </svg>
     </div>
-    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">文心高工店</small></div>
+    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
     <div class="hdr-sep"></div>
     <span class="hdr-tool">買賣流程規劃</span>
   </div>
   <div class="hdr-right">
-    <a class="hdr-btn hdr-btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">0933-317-625</span></a>
+    <a class="hdr-btn hdr-btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
     <a class="hdr-btn hdr-btn-line" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       LINE
@@ -700,10 +700,10 @@ footer{
     <div class="sinyi-mark" style="width:26px;height:26px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
     </div>
-    <div><div class="fb" id="footer-brand">信義房屋 文心高工店</div><div class="fi">買賣流程規劃工具 · 僅供參考</div></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">買賣流程規劃工具 · 僅供參考</div></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
-    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 0933-317-625</a>
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
     <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:5px 12px;text-decoration:none;font-size:.76rem;font-weight:500;">LINE</a>
   </div>
 </footer>
@@ -762,7 +762,7 @@ function generate(){
 
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
 
   // ── 日期計算 ──
@@ -1006,7 +1006,7 @@ function showLine(mode='summary'){
   const r=lastResult;
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
 
@@ -1120,7 +1120,7 @@ async function generatePDF(){
   const r=lastResult;
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
   const pdfBtn = document.querySelector('.act-btn[onclick="generatePDF()"]');
@@ -1265,7 +1265,7 @@ async function renderToPDF(htmlContent, filename, btnId){
   function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
   function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
   sa('hdr-branch',c.brandSubtitle);
-  const pl=c.phoneLabel||'0933-317-625';
+  const pl=c.phoneLabel||'祐承 0933-317-625';
   sa('hdr-phone-label',pl);
   document.getElementById('footer-phone').textContent='📞 '+pl;
   sh('hdr-phone','tel:'+(c.phone||'0933317625'));

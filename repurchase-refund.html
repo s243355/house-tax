@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>重購退稅試算｜信義房屋 文心高工店</title>
+<title>重購退稅試算｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
@@ -233,12 +233,12 @@
   <a href="index.html" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">文心高工店</small></div>
+    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
     <div class="hd"></div>
     <span class="ht">重購退稅試算</span>
   </div>
   <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">0933-317-625</span></a>
+    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
     <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
       加 LINE 好友
@@ -247,7 +247,7 @@
 </header>
 
 <div class="hero">
-  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
+  <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
   <h1>重購退稅試算工具</h1>
   <p>換屋自住可以申請退回已繳的房地合一稅！符合條件的屋主不知道這筆錢，讓我們幫你算出可以退多少。</p>
 </div>
@@ -462,12 +462,12 @@
   <div style="display:flex;align-items:center;gap:12px;">
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
-      <div class="fb" id="footer-brand">信義房屋 文心高工店</div>
+      <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
       <div class="fi">重購退稅試算工具 · 僅供參考，實際退稅依國稅局審核為準</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
-    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 0933-317-625</a>
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 祐承店長 0933-317-625</a>
     <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
   </div>
 </footer>
@@ -573,7 +573,7 @@ function calculate(){
 function showLineShare(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
   if(!lastResult){alert('請先完成試算');return;}
@@ -657,7 +657,7 @@ async function generatePDF(){
   if(!lastResult){alert('請先完成試算');return;}
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
   const{oldSell,oldTaxPaid,newBuy,refundRatio,refundAmt,daysDiff}=lastResult;
@@ -729,7 +729,7 @@ function resetAll(){
   function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
   function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
   sa('hdr-branch',c.brandSubtitle);
-  const pl=c.phoneLabel||'0933-317-625';
+  const pl=c.phoneLabel||'祐承 0933-317-625';
   sa('hdr-phone-label',pl);
   document.getElementById('footer-phone').textContent='📞 '+pl;
   sh('hdr-phone','tel:'+(c.phone||'0933317625'));

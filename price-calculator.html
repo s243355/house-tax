@@ -447,7 +447,7 @@ header{
     </div>
     <div class="brand-name" id="brand-name">
       信義房屋
-      <small id="brand-sub">文心高工店</small>
+      <small id="brand-sub">祐承店長・文心高工店</small>
     </div>
     <div class="hd"></div>
     <span class="tool-badge">議價試算</span>
@@ -945,7 +945,7 @@ async function renderToPDF(htmlContent, filename){
 async function generatePDF(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
-  const phone=cfg.phoneLabel||'0933-317-625';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
   const tbody=document.getElementById('table-body');
