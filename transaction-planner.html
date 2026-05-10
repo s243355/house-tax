@@ -770,14 +770,14 @@ function generate(){
   const signToDays=n('sign-to-tax')||60;
   const taxToDays=n('tax-to-handover')||30;
 
-  const sealDate=nextWorkday(addDays(signDate,7));         // 用印：簽約+7天
-  const loanApplyDate=nextWorkday(addDays(sealDate,1));    // 申辦貸款：用印後
-  const loanApproveDate=nextWorkday(addDays(loanApplyDate,21)); // 銀行核准：21天
-  const taxDate=nextWorkday(addDays(signDate,signToDays)); // 完稅
-  const transferDate=nextWorkday(addDays(taxDate,7));      // 過戶登記（完稅+7天）
-  const cancelDate=nextWorkday(addDays(transferDate,7));   // 塗銷（過戶+7天）
-  const checkDate=nextWorkday(addDays(taxDate,14));        // 看屋無誤（完稅+14天）
-  const handoverDate=nextWorkday(addDays(taxDate,taxToDays)); // 交屋
+  const sealDate=nextWorkday(addDays(signDate,7));             // 用印：簽約+7天
+  const loanApplyDate=nextWorkday(addDays(sealDate,1));        // 申辦貸款：用印後
+  const taxDate=nextWorkday(addDays(signDate,signToDays));     // 完稅
+  const loanApproveDate=nextWorkday(addDays(taxDate,-1));      // 銀行對保：完稅前一天
+  const handoverDate=nextWorkday(addDays(taxDate,taxToDays));  // 交屋
+  const transferDate=nextWorkday(addDays(taxDate,7));          // 產權移轉登記完成：完稅+7天
+  const checkDate=nextWorkday(addDays(transferDate,1));        // 看屋確認＋銀行撥款代償：過戶後一天
+  const cancelDate=nextWorkday(addDays(handoverDate,-1));      // 抵押塗銷完成：交屋前一天
 
   // ── 款項計算 ──
   const signPct=n('sign-pct')/100||0.1;
@@ -826,8 +826,6 @@ function renderResult(r){
     <div class="mb-item"><div class="mb-label">完稅款</div><div class="mb-val gold">${fmt1(taxPayAmt)} 萬</div></div>
     <div class="mb-divider"></div>
     <div class="mb-item"><div class="mb-label">交屋尾款（銀行撥款）</div><div class="mb-val blue">${fmt1(loanAmt)} 萬</div></div>
-    <div class="mb-divider"></div>
-    <div class="mb-item"><div class="mb-label">賣方稅後實拿</div><div class="mb-val green">${fmt1(sellerNet)} 萬</div></div>
   `;
 
   // ── Timeline ──
@@ -863,7 +861,7 @@ function renderResult(r){
       date:loanApproveDate,milestone:false,
       stageClass:'stage-other',stageLabel:'銀行對保',
       title:'銀行核准・對保',
-      desc:'銀行完成審核，買方前往銀行完成對保簽約手續。',
+      desc:'銀行完成審核，買方前往銀行完成對保簽約手續。完稅前一天完成對保，確保資金準時到位。',
       money:[],
       buyer:['前往銀行完成對保手續','確認貸款核准金額是否足夠'],
       seller:[]
@@ -883,29 +881,29 @@ function renderResult(r){
     {
       date:transferDate,milestone:false,
       stageClass:'stage-transfer',stageLabel:'過戶',
-      title:'產權移轉登記',
+      title:'產權移轉登記完成',
       desc:'代書向地政事務所辦理所有權移轉登記，產權正式過戶至買方名下。',
       money:[],
       buyer:['配合代書辦理登記手續'],
       seller:['配合代書辦理塗銷手續（原貸款）']
     },
     {
-      date:cancelDate,milestone:false,
-      stageClass:'stage-transfer',stageLabel:'塗銷',
-      title:'抵押塗銷・登記完成',
-      desc:'賣方原有抵押設定辦理塗銷，產權乾淨完整移轉買方。',
-      money:[],
-      buyer:['確認取得新的土地及建物所有權狀'],
-      seller:[]
+      date:checkDate,milestone:false,
+      stageClass:'stage-handover',stageLabel:'撥款代償',
+      title:'看屋確認・銀行撥款代償原貸款',
+      desc:'買方確認房屋現況與合約相符，銀行撥款代償賣方原有貸款，完成產權清理。',
+      money:[{label:`銀行撥款代償 ${fmt1(loanAmt)} 萬`,cls:'bank'}],
+      buyer:['確認房屋現況與合約一致','確認設備清單（廚具、冷氣等）'],
+      seller:['確認銀行代償原貸款入帳','準備交屋設備清單']
     },
     {
-      date:checkDate,milestone:false,
-      stageClass:'stage-handover',stageLabel:'看屋確認',
-      title:'交屋前看屋確認',
-      desc:'買方確認房屋現況與合約相符，確認附贈設備清單，準備辦理交屋。',
+      date:cancelDate,milestone:false,
+      stageClass:'stage-transfer',stageLabel:'塗銷',
+      title:'抵押塗銷完成',
+      desc:'賣方原有抵押設定辦理塗銷完成，產權乾淨完整，準備次日交屋。',
       money:[],
-      buyer:['確認房屋現況與合約一致','確認設備清單（廚具、冷氣等）','安排搬家公司'],
-      seller:['完成搬遷清空','結清水電、管理費']
+      buyer:['確認取得新的土地及建物所有權狀'],
+      seller:['確認塗銷登記完成']
     },
     {
       date:handoverDate,milestone:true,
@@ -982,7 +980,7 @@ function renderResult(r){
     <div class="eq-item"><div class="eq-label">買方自備款</div><div class="eq-val ${needSelf>total*0.4?'warn':''}">${fmt1(needSelf)} 萬</div><div class="eq-sub">簽約款 + 完稅款合計</div></div>
     <div class="eq-item"><div class="eq-label">簽約時需備妥</div><div class="eq-val accent">${fmt1(signAmt+(sealAmt||0))} 萬</div><div class="eq-sub">簽約款${sealAmt>0?'+ 用印款':''}</div></div>
     <div class="eq-item"><div class="eq-label">完稅時需備妥</div><div class="eq-val accent">${fmt1(taxPayAmt)} 萬</div><div class="eq-sub">完稅款（${fmtDateShort(taxDate)}前）</div></div>
-    <div class="eq-item"><div class="eq-label">仲介服務費</div><div class="eq-val">${fmt1(r.commission)} 萬</div><div class="eq-sub">成交價 × ${(r.commRate*100).toFixed(1)}%（賣方）</div></div>
+    <div class="eq-item"><div class="eq-label">仲介服務費</div><div class="eq-val">${fmt1(r.total*0.01)} 萬</div><div class="eq-sub">成交價 × 1.0%（買方）</div></div>
   `;
 
   // ── 注意事項 ──
@@ -1025,8 +1023,11 @@ ${'═'.repeat(22)}
 【關鍵時程】
 ${'─'.repeat(22)}
 📋 簽　約：${fmtDate(r.signDate)}
-${r.sealAmt>0?`🖊  用　印：${fmtDate(r.sealDate)}\n`:''}💰 完　稅：${fmtDate(r.taxDate)}
-📑 過戶登記：${fmtDate(r.transferDate)}
+${r.sealAmt>0?`🖊  用　印：${fmtDate(r.sealDate)}\n`:''}🏦 銀行對保：${fmtDate(r.loanApproveDate)}（完稅前一天）
+💰 完　稅：${fmtDate(r.taxDate)}
+📑 產權移轉登記完成：${fmtDate(r.transferDate)}
+🏦 撥款代償原貸款：${fmtDate(r.checkDate)}
+📝 抵押塗銷完成：${fmtDate(r.cancelDate)}（交屋前一天）
 🔑 交　屋：${fmtDate(r.handoverDate)}
 
 【款項分配】
@@ -1144,11 +1145,11 @@ async function generatePDF(){
         {s:'簽約',d:fmtDate(r.signDate),t:'簽訂買賣契約書',m:`簽約款 ${fmt1(r.signAmt)} 萬`,mc:'#b8860b'},
         ...(r.sealAmt>0?[{s:'用印',d:fmtDate(r.sealDate),t:'用印・申辦貸款',m:`用印款 ${fmt1(r.sealAmt)} 萬`,mc:'#b8860b'}]:[]),
         {s:'申貸',d:fmtDate(r.loanApplyDate),t:'向銀行申辦房貸',m:'',mc:''},
-        {s:'對保',d:fmtDate(r.loanApproveDate),t:'銀行核准・完成對保',m:'',mc:''},
-        {s:'完稅',d:fmtDate(r.taxDate),t:'繳稅・完稅',m:`完稅款 ${fmt1(r.taxPayAmt)} 萬${r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''}`,mc:'#b8860b'},
-        {s:'過戶',d:fmtDate(r.transferDate),t:'產權移轉登記',m:'',mc:''},
-        {s:'塗銷',d:fmtDate(r.cancelDate),t:'抵押塗銷・登記完成',m:'',mc:''},
-        {s:'看屋',d:fmtDate(r.checkDate),t:'交屋前確認現況',m:'',mc:''},
+        {s:'對保',d:fmtDate(r.loanApproveDate),t:'銀行核准・對保（完稅前一天）',m:'',mc:''},
+        {s:'完稅',d:fmtDate(r.taxDate),t:'繳稅・完稅',m:'完稅款 '+fmt1(r.taxPayAmt)+' 萬'+(r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''),mc:'#b8860b'},
+        {s:'過戶',d:fmtDate(r.transferDate),t:'產權移轉登記完成',m:'',mc:''},
+        {s:'撥款代償',d:fmtDate(r.checkDate),t:'看屋確認・銀行撥款代償原貸款',m:'銀行撥款代償 '+fmt1(r.loanAmt)+' 萬',mc:'#1a6e46'},
+        {s:'塗銷',d:fmtDate(r.cancelDate),t:'抵押塗銷完成（交屋前一天）',m:'',mc:''},
         {s:'交屋',d:fmtDate(r.handoverDate),t:'交屋・銀行撥款',m:`銀行撥款 ${fmt1(r.loanAmt)} 萬`,mc:'#1a6e46'},
       ].map((item,i)=>{
         const bg=[0,4,8].includes(i)?'background:#fdf5f0;':'';
