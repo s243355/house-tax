@@ -31,7 +31,7 @@ body{
 header{
   background:var(--card);
   border-bottom:3px solid var(--red);
-  padding:0 36px;
+  padding:0 36px 0 0;
   height:58px;
   display:flex;
   align-items:center;
@@ -116,7 +116,7 @@ header{
   grid-template-columns:repeat(4,1fr);
   gap:14px;
 }
-.input-group{margin-bottom:0;}
+.input-group{margin-bottom:0;min-width:0;}
 .input-label{
   font-size:.76rem;color:var(--dim);
   font-weight:500;margin-bottom:6px;
@@ -418,16 +418,16 @@ header{
   .input-grid{grid-template-columns:1fr;}
 }
 
-  .hdr-home-btn{
-    display:flex;align-items:center;
-    height:100%;padding:0 18px;
-    font-size:.78rem;color:var(--dim);
-    text-decoration:none;font-weight:500;
-    border-right:1px solid var(--rule-d);
-    transition:all .18s;
-    white-space:nowrap;flex-shrink:0;
-  }
-  .hdr-home-btn:hover{color:var(--red);background:var(--red-l);}
+.hdr-home-btn{
+  display:flex;align-items:center;
+  height:100%;padding:0 18px;
+  font-size:.78rem;color:var(--dim);
+  text-decoration:none;font-weight:500;
+  border-right:1px solid var(--rule-d);
+  transition:all .18s;
+  white-space:nowrap;flex-shrink:0;
+}
+.hdr-home-btn:hover{color:var(--red);background:var(--red-l);}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -452,7 +452,6 @@ header{
     <div class="hd"></div>
     <span class="tool-badge">議價試算</span>
   </div>
-  <a class="back-btn" href="index.html">← 回主頁</a>
 </header>
 
 <div class="container">
@@ -498,7 +497,7 @@ header{
           <input type="number" id="parking-area" placeholder="例：8" step="0.01" oninput="liveCalc()">
           <span class="unit">坪</span>
         </div>
-        <div class="input-hint">車位登記坪數（從總建坪中扣除）</div>
+        <div class="input-hint">從總建坪中扣除</div>
       </div>
     </div>
 
@@ -535,7 +534,7 @@ header{
           <input type="number" id="realty-tax" placeholder="0" step="0.1" oninput="liveCalc()">
           <span class="unit">萬</span>
         </div>
-        <div class="input-hint">留空或填 0 表示不扣</div>
+        <div class="input-hint">留空或 0 不扣</div>
       </div>
     </div>
 
@@ -789,10 +788,10 @@ function calculate(){
   const thead = document.getElementById('table-head-row');
   thead.innerHTML = `
     <th class="center">級距</th>
+    <th>${hasPark ? '含車總價（萬）' : '出售總價（萬）'}</th>
     <th>${modeLabel}（萬/坪）</th>
     ${hasPark && priceMode==='with' ? '<th>拆車單價（萬/坪）</th>' : ''}
     ${hasPark && priceMode==='without' ? '<th>含車單價（萬/坪）</th>' : ''}
-    <th>${hasPark ? '含車總價（萬）' : '出售總價（萬）'}</th>
     <th>仲介費（萬）</th>
     ${landTax > 0 ? '<th>土增稅（萬）</th>' : ''}
     ${realtyTax > 0 ? '<th>房地合一（萬）</th>' : ''}
@@ -807,19 +806,18 @@ function calculate(){
     const tr = document.createElement('tr');
     if(r.isBase) tr.className = 'base-row';
 
-    // 顯示的補充單價欄
     let altPrice = '—';
     if(hasPark){
       altPrice = priceMode === 'with'
-        ? fmt2(r.splitUnitPrice)   // 含車模式 → 顯示拆車單價
-        : fmt2(r.withParkUnitPrice); // 扣車模式 → 顯示含車單價
+        ? fmt2(r.splitUnitPrice)
+        : fmt2(r.withParkUnitPrice);
     }
 
     tr.innerHTML = `
       <td class="rank"><span class="badge ${r.isBase?'badge-base':'badge-down'}">${r.isBase?'基準':'↓'+r.idx}</span></td>
+      <td class="total-price"><strong>${fmtMoney(r.grandTotal)}</strong></td>
       <td><strong>${fmt2(r.inputUnitPrice)}</strong></td>
       ${hasPark ? `<td>${altPrice}</td>` : ''}
-      <td class="total-price"><strong>${fmtMoney(r.grandTotal)}</strong></td>
       <td class="commission">${fmtMoney(r.commission)}</td>
       ${landTax > 0 ? `<td class="tax">${fmtMoney(landTax)}</td>` : ''}
       ${realtyTax > 0 ? `<td class="tax">${fmtMoney(realtyTax)}</td>` : ''}
@@ -847,11 +845,11 @@ function calculate(){
   lineText += `【各級距試算（由高→低）】\n`;
   lineText += `─────────────────────────\n`;
 
-  // 表頭
-  const w1=9, w2=hasPark?9:0, w3=10, w4=9, w5=11;
-  let header = pad(modeLabel,w1);
+  // 表頭：總價→含車/拆車單價→服務費→實拿
+  const w0=10, w1=9, w2=hasPark?9:0, w3=9, w4=11;
+  let header = pad('含車總價',w0) + pad(modeLabel,w1);
   if(hasPark) header += pad(priceMode==='with'?'拆車單價':'含車單價', w2);
-  header += pad('含車總價',w3) + pad('服務費',w4) + pad('實拿',w5);
+  header += pad('服務費',w3) + pad('實拿',w4);
   lineText += header + '\n';
   lineText += `─────────────────────────\n`;
 
@@ -860,11 +858,11 @@ function calculate(){
     let altP = hasPark
       ? (priceMode==='with' ? fmt2(r.splitUnitPrice) : fmt2(r.withParkUnitPrice))
       : '';
-    let line = marker + pad(fmt2(r.inputUnitPrice)+'萬', w1);
+    let line = marker + pad(fmtMoney(r.grandTotal)+'萬', w0)
+                      + pad(fmt2(r.inputUnitPrice)+'萬', w1);
     if(hasPark) line += pad(altP+'萬', w2);
-    line += pad(fmtMoney(r.grandTotal)+'萬', w3)
-          + pad(fmtMoney(r.commission)+'萬', w4)
-          + pad(fmtMoney(r.net)+'萬', w5);
+    line += pad(fmtMoney(r.commission)+'萬', w3)
+          + pad(fmtMoney(r.net)+'萬', w4);
     lineText += line + '\n';
   });
 

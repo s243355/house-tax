@@ -253,7 +253,7 @@
   <div class="method-grid">
     <div class="method-card" data-method="actual" onclick="selectMethod(this)">
       <div class="method-card-title" id="ot-m-actual-title">📄 核實認定（有買賣成本）</div>
-      <div class="method-card-desc" id="ot-m-actual-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：（賣價 - 買價 - 必要費用）× 房地比，所得併入綜所稅。</div>
+      <div class="method-card-desc" id="ot-m-actual-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：（賣價 - 買價 - 必要費用）× 區域財產交易稅率，所得併入綜所稅。</div>
     </div>
     <div class="method-card" data-method="standard" onclick="selectMethod(this)">
       <div class="method-card-title" id="ot-m-standard-title">📊 標準認定（無法舉證成本）</div>
@@ -275,7 +275,7 @@
 <div class="step-panel" id="step-actual">
   <div class="step-tag">STEP 02 · 核實認定</div>
   <h2>填入買賣成本與費用</h2>
-  <p class="step-desc">計算公式：（賣價 - 買價 - 必要費用）× 房地比</p>
+  <p class="step-desc">計算公式：（賣價 - 買價 - 必要費用）× 區域財產交易稅率</p>
 
   <div class="field-group">
     <div class="field-label">成交賣出價格（房地總價）<span class="field-required">必填</span></div>
@@ -306,7 +306,7 @@
   </div>
 
   <hr class="divider">
-  <div style="font-size:.85rem;color:var(--text-dim);font-weight:500;margin-bottom:16px;">房地比（計算房屋所得用）</div>
+  <div style="font-size:.85rem;color:var(--text-dim);font-weight:500;margin-bottom:16px;">區域財產交易稅率（計算房屋所得用）</div>
 
   <div class="field-group">
     <div class="field-label">出售時房屋評定現值<span class="field-required">必填</span></div>
@@ -321,7 +321,7 @@
     <div class="error-msg" id="act-land-val-err">請輸入土地公告現值</div>
   </div>
   <div class="auto-sum" id="ratio-display" style="display:none;">
-    <span class="auto-sum-label">房地比（房屋評定現值 / 總額）</span>
+    <span class="auto-sum-label">區域財產交易稅率</span>
     <span class="auto-sum-val" id="ratio-val">—</span>
   </div>
 
@@ -507,14 +507,9 @@
       <div class="result-card-val" id="r-net-income">—</div>
     </div>
     <div class="result-card">
-      <div class="result-card-label">房地比</div>
+      <div class="result-card-label">區域財產交易稅率</div>
       <div class="result-card-val" id="r-ratio">—</div>
     </div>
-  </div>
-
-  <div class="result-card highlight">
-    <div class="result-card-label">稅後實拿（賣價 - 土增稅 - 增加稅額）</div>
-    <div class="result-card-val" id="r-net">—</div>
   </div>
 
   <div class="income-note">
@@ -804,7 +799,7 @@ function calculate(){
     d+=`<div class="calc-row"><span>必要費用（${feesYuan.toLocaleString()} 元）</span><span>- ${fmt(feesYuan/10000)}</span></div>`;
     d+=`<div class="calc-row"><span>土地增值稅</span><span>- ${fmt(landTaxPaid)}</span></div>`;
     d+=`<div class="calc-row"><span>房地差額</span><span>${fmt(n('act-sell')-n('act-buy')-feesYuan/10000-landTaxPaid)}</span></div>`;
-    d+=`<div class="calc-row"><span>房地比（${(ratio*100).toFixed(2)}%）</span><span>× ${(ratio*100).toFixed(2)}%</span></div>`;
+    d+=`<div class="calc-row"><span>區域財產交易稅率（${(ratio*100).toFixed(2)}%）</span><span>× ${(ratio*100).toFixed(2)}%</span></div>`;
   }else{
     d+=`<div class="calc-row"><span>房屋評定現值</span><span>${fmt(n('std-house-val'))}</span></div>`;
     d+=`<div class="calc-row"><span>設算比率（${s('std-region')}%）</span><span>× ${s('std-region')}%</span></div>`;
@@ -821,7 +816,7 @@ function calculate(){
 
   document.getElementById('law-detail').innerHTML=`
     <div class="calc-row"><span>財產交易所得計算</span><span>所得稅法 §14 第七類</span></div>
-    <div class="calc-row"><span>核實認定公式</span><span>（賣價-買價-費用）× 房地比</span></div>
+    <div class="calc-row"><span>核實認定公式</span><span>（賣價-買價-費用）× 區域財產交易稅率</span></div>
     <div class="calc-row"><span>標準認定公式</span><span>房屋評定現值 × 財政部公告比率</span></div>
     <div class="calc-row"><span>土地部分免稅</span><span>平均地權條例</span></div>
     <div class="calc-row"><span>累進稅率 5%～40%</span><span>所得稅法 §5</span></div>
@@ -868,13 +863,12 @@ function showLineShare(){
   const msg=`📋 財產交易所得稅試算結果（舊制）
 ${'═'.repeat(22)}
 📝 申報方式：${methodLabel}
-🏠 房地比：${ratio}
+📊 區域財產交易稅率：${ratio}
 💰 財產交易所得：${propIncome}
 
 💸 增加稅額（估算）：${taxInc}
 📊 適用稅率：${rateOnly}
 
-✅ 稅後實拿（估算）：${net}
 ${'─'.repeat(22)}
 試算日期：${today}
 
@@ -1002,7 +996,7 @@ async function generatePDF(){
       <div class="section-title">試算概覽</div>
       <div class="data-grid">
         <div class="data-card"><div class="data-label">申報方式</div><div class="data-val">${methodLabel}</div></div>
-        <div class="data-card"><div class="data-label">房地比</div><div class="data-val">${ratio}</div></div>
+        <div class="data-card"><div class="data-label">區域財產交易稅率</div><div class="data-val">${ratio}</div></div>
         <div class="data-card"><div class="data-label">財產交易所得</div><div class="data-val">${propIncome}</div></div>
         <div class="data-card"><div class="data-label">綜合所得淨額</div><div class="data-val">${netIncome}</div></div>
         <div class="data-card"><div class="data-label">增加稅額</div><div class="data-val">${taxInc}</div></div>

@@ -584,32 +584,6 @@
     <div class="result-card-val" id="r-net">—</div>
   </div>
 
-  <div class="loan-section">
-    <h3>若你還有未繳清的房貸（可選填）</h3>
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-      <div class="input-wrap" style="max-width:200px;"><input type="number" id="loan-input" placeholder="0" oninput="updateLoan()"><span class="input-unit">萬</span></div>
-      <span style="font-size:.82rem;color:var(--text-muted);">扣貸後實拿：</span>
-      <span style="font-family:'Noto Serif TC',serif;font-size:1.2rem;color:var(--red);font-weight:700;" id="r-after-loan">—</span>
-    </div>
-  </div>
-
-  <div class="reverse-section">
-    <h3>🎯 反推賣價（議價神器）</h3>
-    <p>輸入你想達到的目標，系統立刻算出要賣多少</p>
-    <div class="reverse-row">
-      <label>想稅後實拿</label>
-      <div class="input-wrap" style="max-width:140px;"><input type="number" id="rev-net" placeholder="0" oninput="calcReverse('net')"><span class="input-unit">萬</span></div>
-      <span style="font-size:.82rem;color:var(--text-muted);">→ 賣價至少</span>
-      <div class="reverse-result" id="rev-net-result">—</div><span style="font-size:.78rem;color:var(--text-muted);">萬</span>
-    </div>
-    <div class="reverse-row">
-      <label>想稅後獲利</label>
-      <div class="input-wrap" style="max-width:140px;"><input type="number" id="rev-profit" placeholder="0" oninput="calcReverse('profit')"><span class="input-unit">萬</span></div>
-      <span style="font-size:.82rem;color:var(--text-muted);">→ 賣價至少</span>
-      <div class="reverse-result" id="rev-profit-result">—</div><span style="font-size:.78rem;color:var(--text-muted);">萬</span>
-    </div>
-  </div>
-
   <div class="accordion-header" onclick="toggleAccordion('calc-detail')"><span>計算過程明細</span><span>▾</span></div>
   <div class="accordion-content" id="calc-detail"></div>
   <div class="accordion-header" onclick="toggleAccordion('law-detail')"><span>法源依據</span><span>▾</span></div>
