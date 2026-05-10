@@ -398,6 +398,8 @@ footer{
   footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -647,7 +649,9 @@ footer{
     <div class="notice-box" id="notice-box"></div>
 
     <div class="result-actions">
-      <button class="act-btn primary" onclick="showLine()">📤 LINE 分享時程</button>
+      <button class="act-btn primary" onclick="showLine('summary')">📤 LINE 時程摘要</button>
+      <button class="act-btn primary" style="background:#06C755;border-color:#06C755;" onclick="showLine('buyer')">🏦 買方提醒</button>
+      <button class="act-btn primary" style="background:#1a4a7a;border-color:#1a4a7a;" onclick="showLine('seller')">🏠 賣方提醒</button>
       <button class="act-btn" onclick="generatePDF()">📄 下載 PDF 報告</button>
       <button class="act-btn" onclick="window.print()">🖨 列印</button>
       <button class="act-btn" onclick="resetAll()">🔄 重新規劃</button>
@@ -677,7 +681,7 @@ footer{
     <div class="lm-head">
       <div class="lm-head-left">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-        <div><h3>LINE 時程摘要</h3><p>複製後貼到 LINE 與客戶分享</p></div>
+        <div><h3 id="lm-modal-title">LINE 時程摘要</h3><p id="lm-modal-sub">複製後貼到 LINE 與客戶分享</p></div>
       </div>
       <button class="lm-close" onclick="closeLM()">✕</button>
     </div>
@@ -999,32 +1003,103 @@ function switchTab(tab,id){
   document.getElementById('panel-'+id).classList.add('active');
 }
 
-function showLine(){
+function showLine(mode='summary'){
   if(!lastResult)return alert('請先產出時程表');
   const r=lastResult;
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
-  let msg=`🏠 買賣流程時程規劃\n${'═'.repeat(22)}\n`;
-  msg+=`成交總價：${fmt1(r.total)} 萬\n`;
-  msg+=`貸款成數：${(r.loanRatio*100).toFixed(0)}成（${fmt1(r.loanAmt)} 萬）\n\n`;
-  msg+=`【關鍵時程】\n${'─'.repeat(22)}\n`;
-  msg+=`📋 簽　約：${fmtDate(r.signDate)}\n`;
-  if(r.sealAmt>0)msg+=`🖊  用　印：${fmtDate(r.sealDate)}\n`;
-  msg+=`💰 完　稅：${fmtDate(r.taxDate)}\n`;
-  msg+=`📑 過戶登記：${fmtDate(r.transferDate)}\n`;
-  msg+=`🔑 交　屋：${fmtDate(r.handoverDate)}\n\n`;
-  msg+=`【款項分配】\n${'─'.repeat(22)}\n`;
-  msg+=`簽約款：${fmt1(r.signAmt)} 萬\n`;
-  if(r.sealAmt>0)msg+=`用印款：${fmt1(r.sealAmt)} 萬\n`;
-  msg+=`完稅款：${fmt1(r.taxPayAmt)} 萬\n`;
-  msg+=`交屋尾款（銀行）：${fmt1(r.loanAmt)} 萬\n`;
-  msg+=`${'─'.repeat(22)}\n`;
-  msg+=`買方自備款合計：${fmt1(r.total-r.loanAmt)} 萬\n\n`;
-  msg+=`試算日期：${today}\n`;
-  msg+=`📞 ${r.brand}\n`;
-  msg+=`☎ ${r.phone}\n`;
-  msg+=`LINE 諮詢：${r.lineUrl}\n`;
-  msg+=`祐承店長 ${r.phone}`;
-  document.getElementById('lm-text').textContent=msg;
+
+  const signDateStr=fmtDate(r.signDate);
+  const signAmtStr=fmt1(r.signAmt);
+  const addr='台中市西區英才路530號28樓\n（信義房屋地政士聯合事務所）';
+
+  // ── 時程摘要（原版）──
+  const summaryMsg=`🏠 買賣流程時程規劃
+${'═'.repeat(22)}
+成交總價：${fmt1(r.total)} 萬
+貸款成數：${(r.loanRatio*100).toFixed(0)}成（${fmt1(r.loanAmt)} 萬）
+
+【關鍵時程】
+${'─'.repeat(22)}
+📋 簽　約：${fmtDate(r.signDate)}
+${r.sealAmt>0?`🖊  用　印：${fmtDate(r.sealDate)}\n`:''}💰 完　稅：${fmtDate(r.taxDate)}
+📑 過戶登記：${fmtDate(r.transferDate)}
+🔑 交　屋：${fmtDate(r.handoverDate)}
+
+【款項分配】
+${'─'.repeat(22)}
+簽約款：${fmt1(r.signAmt)} 萬
+${r.sealAmt>0?`用印款：${fmt1(r.sealAmt)} 萬\n`:''}完稅款：${fmt1(r.taxPayAmt)} 萬
+交屋尾款（銀行）：${fmt1(r.loanAmt)} 萬
+${'─'.repeat(22)}
+買方自備款合計：${fmt1(r.total-r.loanAmt)} 萬
+
+試算日期：${today}
+📞 ${brand}
+☎ ${phone}
+LINE 諮詢：${lineUrl}
+祐承店長 ${phone}`;
+
+  // ── 買方提醒 ──
+  const buyerMsg=`晚上好！提醒您明天簽約事宜 🏠
+
+📅 時間：${signDateStr}
+📍 地點：信義代書簽約中心
+${addr}
+
+⏱ 簽約時間約 1.5 小時
+🚗 大樓地下室可停車，附近路邊車格也方便
+
+📄 請買方準備以下文件：
+① 身份證正本
+② 便章（印章）
+　　如未備有，我們可協助代刻
+③ 簽約款 ${signAmtStr} 萬
+　　現金、即期支票均可
+　　或攜帶可轉帳之提款卡
+
+如有任何問題歡迎隨時聯繫，明天見！🙏
+${'─'.repeat(22)}
+📞 ${brand}
+☎ 祐承店長 ${phone}`;
+
+  // ── 賣方提醒 ──
+  const sellerMsg=`晚上好！提醒您明天簽約事宜 🏠
+
+📅 時間：${signDateStr}
+📍 地點：信義代書簽約中心
+${addr}
+
+⏱ 簽約時間約 1.5 小時
+🚗 大樓地下室可停車，附近路邊車格也方便
+
+📄 請賣方準備以下文件：
+① 身份證正本
+② 便章（印章）
+　　如未備有，我們可協助代刻
+③ 印鑑章（需與印鑑證明相符）
+④ 印鑑證明 2 份（3個月內，不動產登記用）
+⑤ 土地所有權狀正本
+⑥ 建物所有權狀正本
+
+如有任何問題歡迎隨時聯繫，明天見！🙏
+${'─'.repeat(22)}
+📞 ${brand}
+☎ 祐承店長 ${phone}`;
+
+  const msgs={summary:summaryMsg,buyer:buyerMsg,seller:sellerMsg};
+  const titles={
+    summary:['LINE 時程摘要','複製後貼到 LINE 與客戶分享'],
+    buyer:['買方簽約提醒','複製後傳給買方'],
+    seller:['賣方簽約提醒','複製後傳給賣方'],
+  };
+
+  document.getElementById('lm-text').textContent=msgs[mode];
+  document.getElementById('lm-modal-title').textContent=titles[mode][0];
+  document.getElementById('lm-modal-sub').textContent=titles[mode][1];
   document.getElementById('lm-overlay').classList.add('open');
   document.getElementById('lm-copy-btn').textContent='📋 複製文字';
   document.getElementById('lm-copy-btn').classList.remove('copied');
@@ -1039,7 +1114,7 @@ function copyLM(){
 }
 function openLineMsgLM(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('lm-text').textContent),'_blank');}
 
-function generatePDF(){
+async function generatePDF(){
   if(!lastResult)return alert('請先產出時程表');
   const r=lastResult;
   const cfg=getConfig();
@@ -1047,80 +1122,92 @@ function generatePDF(){
   const phone=cfg.phoneLabel||'0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
+  const pdfBtn = document.querySelector('.act-btn[onclick="generatePDF()"]');
+  if(pdfBtn){pdfBtn.textContent='⏳ 產生中...';pdfBtn.disabled=true;}
 
-  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;font-size:11px;}
-    .page{max-width:740px;margin:0 auto;padding:32px;}
-    .header{background:#C00000;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;}
-    .brand{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;color:white;}
-    .brand small{display:block;font-size:.65rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
-    .report-date{font-size:.68rem;color:rgba(255,255,255,.65);text-align:right;}
-    .report-date strong{display:block;font-size:.9rem;color:white;}
-    .summary-bar{background:#1a1410;padding:16px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:20px;}
-    .sb{padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);}
-    .sb:last-child{border-right:none;}
-    .sb-label{font-size:.58rem;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;}
-    .sb-val{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:white;}
-    .sb-val.gold{color:#fcd34d;}
-    .sec-title{font-size:.65rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;}
-    .tl{margin-bottom:18px;}
-    .tl-row{display:grid;grid-template-columns:80px 70px 1fr;gap:0;border-bottom:1px solid #f0ede8;align-items:start;}
-    .tl-row:last-child{border-bottom:none;}
-    .tl-stage-col{padding:8px 10px;font-size:.62rem;font-weight:600;color:#C00000;border-right:1px solid #f0ede8;}
-    .tl-date-col{padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#5a4e44;border-right:1px solid #f0ede8;}
-    .tl-content-col{padding:8px 10px;}
-    .tl-title{font-size:.8rem;font-weight:600;color:#1a1410;margin-bottom:2px;}
-    .tl-money{font-size:.7rem;color:#b8860b;font-weight:600;}
-    .pay-table{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:.78rem;}
-    .pay-table th{background:#C00000;color:white;padding:7px 10px;text-align:left;font-weight:500;font-size:.65rem;letter-spacing:.06em;}
-    .pay-table th:not(:first-child){text-align:right;}
-    .pay-table td{padding:8px 10px;border-bottom:1px solid #f0ede8;}
-    .pay-table td:not(:first-child){text-align:right;font-family:'JetBrains Mono',monospace;}
-    .pay-table tr.total{background:#eef4fb;font-weight:700;}
-    .contact{background:#1a4a7a;padding:14px 24px;margin-top:10px;}
-    .cb{font-family:'Noto Serif TC',serif;font-size:.9rem;color:white;font-weight:700;margin-bottom:4px;}
-    .ci{font-size:.75rem;color:rgba(255,255,255,.8);}
-    .disc{padding:12px 0;font-size:.65rem;color:#9a8e84;line-height:1.65;}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
-  </style></head><body><div class="page">
-    <div class="header"><div class="brand">${brand}<small>買賣流程時程規劃報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
-    <div class="summary-bar">
-      <div class="sb"><div class="sb-label">成交總價</div><div class="sb-val">${fmt1(r.total)} 萬</div></div>
-      <div class="sb"><div class="sb-label">簽約款</div><div class="sb-val gold">${fmt1(r.signAmt)} 萬</div></div>
-      <div class="sb"><div class="sb-label">完稅款</div><div class="sb-val gold">${fmt1(r.taxPayAmt)} 萬</div></div>
-      <div class="sb"><div class="sb-label">銀行撥款</div><div class="sb-val gold">${fmt1(r.loanAmt)} 萬</div></div>
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;padding:0;">
+    <div style="background:#C00000;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">買賣流程時程規劃報告</span></div>
+      <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
     </div>
-    <div class="sec-title">買賣交易時程</div>
-    <div class="tl">
-      <div class="tl-row"><div class="tl-stage-col">簽約</div><div class="tl-date-col">${fmtDate(r.signDate)}</div><div class="tl-content-col"><div class="tl-title">簽訂買賣契約書</div><div class="tl-money">簽約款 ${fmt1(r.signAmt)} 萬</div></div></div>
-      ${r.sealAmt>0?`<div class="tl-row"><div class="tl-stage-col">用印</div><div class="tl-date-col">${fmtDate(r.sealDate)}</div><div class="tl-content-col"><div class="tl-title">用印・申辦貸款</div><div class="tl-money">用印款 ${fmt1(r.sealAmt)} 萬</div></div></div>`:''}
-      <div class="tl-row"><div class="tl-stage-col">申貸</div><div class="tl-date-col">${fmtDate(r.loanApplyDate)}</div><div class="tl-content-col"><div class="tl-title">向銀行申辦房貸</div></div></div>
-      <div class="tl-row"><div class="tl-stage-col">對保</div><div class="tl-date-col">${fmtDate(r.loanApproveDate)}</div><div class="tl-content-col"><div class="tl-title">銀行核准・完成對保</div></div></div>
-      <div class="tl-row"><div class="tl-stage-col">完稅</div><div class="tl-date-col">${fmtDate(r.taxDate)}</div><div class="tl-content-col"><div class="tl-title">繳稅・完稅</div><div class="tl-money">完稅款 ${fmt1(r.taxPayAmt)} 萬${r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''}</div></div></div>
-      <div class="tl-row"><div class="tl-stage-col">過戶</div><div class="tl-date-col">${fmtDate(r.transferDate)}</div><div class="tl-content-col"><div class="tl-title">產權移轉登記</div></div></div>
-      <div class="tl-row"><div class="tl-stage-col">塗銷</div><div class="tl-date-col">${fmtDate(r.cancelDate)}</div><div class="tl-content-col"><div class="tl-title">抵押塗銷・登記完成</div></div></div>
-      <div class="tl-row"><div class="tl-stage-col">交屋</div><div class="tl-date-col">${fmtDate(r.handoverDate)}</div><div class="tl-content-col"><div class="tl-title">交屋・銀行撥款</div><div class="tl-money">銀行撥款 ${fmt1(r.loanAmt)} 萬</div></div></div>
+    <div style="background:#1a1410;padding:16px 28px;display:flex;gap:0;">
+      ${[
+        ['成交總價',fmt1(r.total)+' 萬','white'],
+        ['簽約款',fmt1(r.signAmt)+' 萬','#fcd34d'],
+        ['完稅款',fmt1(r.taxPayAmt)+' 萬','#fcd34d'],
+        ['銀行撥款',fmt1(r.loanAmt)+' 萬','#93c5fd'],
+      ].map(([l,v,col])=>`<div style="flex:1;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);">
+        <div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">${l}</div>
+        <div style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:${col};">${v}</div>
+      </div>`).join('')}
     </div>
-    <div class="sec-title">款項分配明細</div>
-    <table class="pay-table">
-      <thead><tr><th>付款階段</th><th>預計日期</th><th>金額（萬）</th><th>佔比</th></tr></thead>
-      <tbody>
-        <tr><td>簽約款</td><td>${fmtDate(r.signDate)}</td><td>${fmt1(r.signAmt)}</td><td>${(r.signAmt/r.total*100).toFixed(1)}%</td></tr>
-        ${r.sealAmt>0?`<tr><td>用印款</td><td>${fmtDate(r.sealDate)}</td><td>${fmt1(r.sealAmt)}</td><td>${(r.sealAmt/r.total*100).toFixed(1)}%</td></tr>`:''}
-        <tr><td>完稅款</td><td>${fmtDate(r.taxDate)}</td><td>${fmt1(r.taxPayAmt)}</td><td>${(r.taxPayAmt/r.total*100).toFixed(1)}%</td></tr>
-        <tr><td>交屋尾款（銀行撥款）</td><td>${fmtDate(r.handoverDate)}</td><td>${fmt1(r.loanAmt)}</td><td>${(r.loanAmt/r.total*100).toFixed(1)}%</td></tr>
-        <tr class="total"><td>合計</td><td></td><td>${fmt1(r.total)}</td><td>100%</td></tr>
-      </tbody>
-    </table>
-    <div class="contact"><div class="cb">${brand}</div><div class="ci">祐承店長 ${phone}　｜　LINE：${lineUrl}</div></div>
-    <div class="disc">⚠ 本規劃表僅供洽談參考，實際日期及金額依正式契約及代書作業為準。土地增值稅等稅費實際金額以地政士計算為準。</div>
-  </div></body></html>`;
+    <div style="padding:20px 28px;">
+      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買賣交易時程</div>
+      ${[
+        {s:'簽約',d:fmtDate(r.signDate),t:'簽訂買賣契約書',m:`簽約款 ${fmt1(r.signAmt)} 萬`,mc:'#b8860b'},
+        ...(r.sealAmt>0?[{s:'用印',d:fmtDate(r.sealDate),t:'用印・申辦貸款',m:`用印款 ${fmt1(r.sealAmt)} 萬`,mc:'#b8860b'}]:[]),
+        {s:'申貸',d:fmtDate(r.loanApplyDate),t:'向銀行申辦房貸',m:'',mc:''},
+        {s:'對保',d:fmtDate(r.loanApproveDate),t:'銀行核准・完成對保',m:'',mc:''},
+        {s:'完稅',d:fmtDate(r.taxDate),t:'繳稅・完稅',m:`完稅款 ${fmt1(r.taxPayAmt)} 萬${r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''}`,mc:'#b8860b'},
+        {s:'過戶',d:fmtDate(r.transferDate),t:'產權移轉登記',m:'',mc:''},
+        {s:'塗銷',d:fmtDate(r.cancelDate),t:'抵押塗銷・登記完成',m:'',mc:''},
+        {s:'看屋',d:fmtDate(r.checkDate),t:'交屋前確認現況',m:'',mc:''},
+        {s:'交屋',d:fmtDate(r.handoverDate),t:'交屋・銀行撥款',m:`銀行撥款 ${fmt1(r.loanAmt)} 萬`,mc:'#1a6e46'},
+      ].map((item,i)=>`
+        <div style="display:flex;border-bottom:1px solid #f0ede8;${[0,4,8].includes(i)?'background:#fdf5f0;':''}"'>
+          <div style="width:52px;padding:10px 8px;font-size:9px;font-weight:700;color:#C00000;border-right:1px solid #f0ede8;flex-shrink:0;">${item.s}</div>
+          <div style="width:80px;padding:10px 8px;font-size:10px;font-family:monospace;color:#5a4e44;border-right:1px solid #f0ede8;flex-shrink:0;">${item.d}</div>
+          <div style="padding:10px 12px;flex:1;">
+            <div style="font-size:11px;font-weight:600;color:#1a1410;margin-bottom:2px;">${item.t}</div>
+            ${item.m?`<div style="font-size:10px;font-weight:600;color:${item.mc};">💰 ${item.m}</div>`:''}
+          </div>
+        </div>`).join('')}
+      <div style="height:20px;"></div>
+      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">款項分配明細</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead><tr>
+          <th style="background:#C00000;color:white;padding:8px 10px;text-align:left;font-size:9px;font-weight:500;">付款階段</th>
+          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">日期</th>
+          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">金額（萬）</th>
+          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">佔比</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;">簽約款</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;">${fmtDate(r.signDate)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;font-weight:600;">${fmt1(r.signAmt)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;">${(r.signAmt/r.total*100).toFixed(1)}%</td></tr>
+          ${r.sealAmt>0?`<tr><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;">用印款</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;">${fmtDate(r.sealDate)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;font-weight:600;">${fmt1(r.sealAmt)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;">${(r.sealAmt/r.total*100).toFixed(1)}%</td></tr>`:''}
+          <tr><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;">完稅款</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;">${fmtDate(r.taxDate)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;font-weight:600;">${fmt1(r.taxPayAmt)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;">${(r.taxPayAmt/r.total*100).toFixed(1)}%</td></tr>
+          <tr><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;">交屋尾款（銀行撥款）</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;">${fmtDate(r.handoverDate)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;font-weight:600;">${fmt1(r.loanAmt)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;">${(r.loanAmt/r.total*100).toFixed(1)}%</td></tr>
+          <tr style="background:#eef4fb;font-weight:700;"><td style="padding:8px 10px;">合計</td><td></td><td style="padding:8px 10px;text-align:right;font-family:monospace;">${fmt1(r.total)}</td><td style="padding:8px 10px;text-align:right;">100%</td></tr>
+        </tbody>
+      </table>
+      <div style="height:16px;"></div>
+      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買方資金規劃</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        ${[
+          ['貸款金額','${fmt1(r.loanAmt)} 萬','#1a3f6e'],
+          ['買方自備款','${fmt1(r.total-r.loanAmt)} 萬','#C00000'],
+          ['簽約時需備妥','${fmt1(r.signAmt+(r.sealAmt||0))} 萬','#b8860b'],
+          ['完稅時需備妥','${fmt1(r.taxPayAmt)} 萬','#b8860b'],
+        ].map(([l,v,col])=>`<div style="flex:1;background:#faf8f5;border:1px solid #e8e2da;padding:10px 12px;">
+          <div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">${l}</div>
+          <div style="font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:${col};">${v}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div style="background:#1a4a7a;padding:16px 28px;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:14px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8);">祐承店長 ${phone}　｜　LINE：${lineUrl}</div>
+    </div>
+    <div style="padding:12px 28px;font-size:9px;color:#9a8e84;line-height:1.7;">
+      ⚠ 本規劃表僅供洽談參考，實際日期及金額依正式契約及代書作業為準。土地增值稅等稅費實際金額以地政士計算為準。
+    </div>
+  </div>`;
 
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`買賣流程規劃_${today.replace(/\//g,'')}.html`;a.click();
-  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後按 Ctrl+P 存成 PDF。'),500);
+  const today2=new Date().toLocaleDateString('zh-TW').replace(/\//g,'');
+  try {
+    await renderToPDF(html, `買賣流程規劃_${today2}.pdf`);
+  } finally {
+    if(pdfBtn){pdfBtn.textContent='📄 下載 PDF 報告';pdfBtn.disabled=false;}
+  }
 }
 
 function resetAll(){
@@ -1137,6 +1224,44 @@ function resetAll(){
   document.getElementById('amount-preview').style.display='none';
   lastResult=null;
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
+// ── 共用 PDF 產生函數 ──
+async function renderToPDF(htmlContent, filename, btnId){
+  const btn = btnId ? document.getElementById(btnId) : null;
+  if(btn){ btn.textContent='⏳ 產生中...'; btn.disabled=true; }
+  
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML = htmlContent;
+  document.body.appendChild(container);
+  await new Promise(r => setTimeout(r, 1000));
+
+  try {
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'px', format:'a4'});
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+
+    const canvas = await html2canvas(container, {
+      scale:2, useCORS:true, allowTaint:true,
+      backgroundColor:'#ffffff', logging:false, width:794
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const imgH = canvas.height * pdfW / canvas.width;
+    let y = 0, page = 0;
+    while(y < imgH){
+      if(page > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, -y, pdfW, imgH);
+      y += pdfH; page++;
+    }
+    pdf.save(filename);
+  } finally {
+    document.body.removeChild(container);
+    if(btn){ btn.textContent='📄 下載 PDF 報告'; btn.disabled=false; }
+  }
 }
 
 // Init config
