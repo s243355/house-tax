@@ -429,6 +429,8 @@ header{
   }
   .hdr-home-btn:hover{color:var(--red);background:var(--red-l);}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -907,7 +909,42 @@ function openLine(){
   window.open('https://line.me/R/msg/text/?' + encodeURIComponent(text), '_blank');
 }
 
-function generatePDF(){
+
+// ── PDF 產生輔助函數 ──
+async function renderToPDF(htmlContent, filename){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  document.body.appendChild(overlay);
+
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML=htmlContent;
+  document.body.appendChild(container);
+  await new Promise(r=>setTimeout(r,1000));
+
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const pdfW=pdf.internal.pageSize.getWidth();
+    const pdfH=pdf.internal.pageSize.getHeight();
+    const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
+    const imgData=canvas.toDataURL('image/jpeg',0.92);
+    const imgH=canvas.height*pdfW/canvas.width;
+    let y=0,page=0;
+    while(y<imgH){
+      if(page>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,-y,pdfW,imgH);
+      y+=pdfH;page++;
+    }
+    pdf.save(filename);
+  }finally{
+    document.body.removeChild(container);
+    document.body.removeChild(overlay);
+  }
+}
+
+async function generatePDF(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'0933-317-625';
@@ -957,10 +994,14 @@ function generatePDF(){
     <div class="contact"><div class="cb">${brand}</div><div class="ci">祐承店長 ${phone}　｜　LINE：${lineUrl}</div></div>
     <div class="disc">⚠ 本試算報告僅供參考，實際數字以正式合約為準。</div>
   </div></body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`議價試算報告_${today.replace(/\//g,'')}.html`;a.click();
-  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後按 Ctrl+P 存成 PDF。'),500);
+  const today2=new Date().toLocaleDateString('zh-TW').replace(/\/\//g,'');
+  const pdfBtn=document.querySelector('[onclick="generatePDF()"]');
+  if(pdfBtn){pdfBtn.textContent='⏳ 產生中...';pdfBtn.disabled=true;}
+  try{
+    await renderToPDF(html, `議價試算報告_${today.replace(/\//g,'')}.pdf`);
+  }finally{
+    if(pdfBtn){pdfBtn.textContent='📄 下載 PDF 報告';pdfBtn.disabled=false;}
+  }
 }
 
 function resetAll(){

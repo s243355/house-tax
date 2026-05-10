@@ -242,6 +242,8 @@
     .result-contact-strip{flex-direction:column;align-items:flex-start;}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -1026,7 +1028,42 @@ function submitLead(tool){
   document.getElementById('lead-form-wrap').innerHTML=`<div style="background:#f0f8f2;border:1.5px solid #b8dfc4;padding:20px 24px;text-align:center;"><div style="font-size:1.5rem;margin-bottom:8px;">✅</div><div style="font-family:'Noto Serif TC',serif;font-weight:700;color:#2e7d52;margin-bottom:4px;">已送出！</div><div style="font-size:.82rem;color:var(--text-muted);">我們會盡快與你聯繫</div></div>`;
 }
 
-function generatePDF(){
+
+// ── PDF 產生輔助函數 ──
+async function renderToPDF(htmlContent, filename){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  document.body.appendChild(overlay);
+
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML=htmlContent;
+  document.body.appendChild(container);
+  await new Promise(r=>setTimeout(r,1000));
+
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const pdfW=pdf.internal.pageSize.getWidth();
+    const pdfH=pdf.internal.pageSize.getHeight();
+    const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
+    const imgData=canvas.toDataURL('image/jpeg',0.92);
+    const imgH=canvas.height*pdfW/canvas.width;
+    let y=0,page=0;
+    while(y<imgH){
+      if(page>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,-y,pdfW,imgH);
+      y+=pdfH;page++;
+    }
+    pdf.save(filename);
+  }finally{
+    document.body.removeChild(container);
+    document.body.removeChild(overlay);
+  }
+}
+
+async function generatePDF(){
   const cfg=getConfig();
   const c=window._calc;
   if(!c){alert('請先完成試算');return;}
@@ -1108,15 +1145,14 @@ function generatePDF(){
     <div class="disclaimer">⚠ 本試算報告僅供參考，實際稅額依國稅局核定為準。正式報稅請洽會計師或各地國稅局（0800-000-321）。</div>
   </div>
   </body></html>`;
-
-  const blob=new Blob([html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=`房地合一稅試算報告_${today.replace(/\//g,'')}.html`;
-  a.click();
-  URL.revokeObjectURL(url);
-  setTimeout(()=>alert('✅ 報告已下載！\n用瀏覽器開啟後，按 Ctrl+P（Mac: ⌘+P）即可印出 PDF 或存成 PDF 檔案。'),500);
+  const today2=new Date().toLocaleDateString('zh-TW').replace(/\/\//g,'');
+  const pdfBtn=document.querySelector('[onclick="generatePDF()"]');
+  if(pdfBtn){pdfBtn.textContent='⏳ 產生中...';pdfBtn.disabled=true;}
+  try{
+    await renderToPDF(html, `房地合一稅試算報告_${today.replace(/\//g,'')}.pdf`);
+  }finally{
+    if(pdfBtn){pdfBtn.textContent='📄 下載 PDF 報告';pdfBtn.disabled=false;}
+  }
 }
 
 </script>
