@@ -275,22 +275,102 @@
 <div class="step-panel" id="step-actual">
   <div class="step-tag">STEP 02 · 核實認定</div>
   <h2>填入買賣成本與費用</h2>
-  <p class="step-desc">計算公式：（賣價 - 買價 - 必要費用）× 區域財產交易稅率</p>
 
-  <div class="field-group">
-    <div class="field-label">成交賣出價格（房地總價）<span class="field-required">必填</span></div>
-    <div class="input-wrap" id="act-sell-wrap"><input type="number" id="act-sell" placeholder="例：1500"><span class="input-unit">萬</span></div>
-    <div class="error-msg" id="act-sell-err">請輸入賣出價格</div>
-  </div>
-  <div class="field-group">
-    <div class="field-label">原始取得成本（買進時房地總價）<span class="field-required">必填</span></div>
-    <div class="input-wrap" id="act-buy-wrap"><input type="number" id="act-buy" placeholder="例：1000"><span class="input-unit">萬</span></div>
-    <div class="error-msg" id="act-buy-err">請輸入買入成本</div>
+  <!-- 賣出合約類型 -->
+  <div style="background:#f5f0eb;border:1.5px solid var(--border);padding:14px 16px;margin-bottom:12px;">
+    <div style="font-size:.78rem;font-weight:600;color:var(--pri);margin-bottom:8px;">📋 賣出合約：有分開載明房地價格？</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" id="btn-sell-split" onclick="setSellMode('split')"
+        style="padding:6px 14px;font-size:.78rem;font-family:inherit;border:1.5px solid var(--pri);background:var(--pri);color:white;cursor:pointer;border-radius:2px;">
+        有（直接填房屋價款）
+      </button>
+      <button type="button" id="btn-sell-total" onclick="setSellMode('total')"
+        style="padding:6px 14px;font-size:.78rem;font-family:inherit;border:1.5px solid var(--border-dark);background:white;color:var(--text-dim);cursor:pointer;border-radius:2px;">
+        沒有（只有總價）
+      </button>
+    </div>
   </div>
 
+  <!-- 買入合約類型 -->
+  <div style="background:#f5f0eb;border:1.5px solid var(--border);padding:14px 16px;margin-bottom:16px;">
+    <div style="font-size:.78rem;font-weight:600;color:var(--pri);margin-bottom:8px;">📋 買入合約：有分開載明房地價格？</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" id="btn-buy-split" onclick="setBuyMode('split')"
+        style="padding:6px 14px;font-size:.78rem;font-family:inherit;border:1.5px solid var(--pri);background:var(--pri);color:white;cursor:pointer;border-radius:2px;">
+        有（直接填房屋價款）
+      </button>
+      <button type="button" id="btn-buy-total" onclick="setBuyMode('total')"
+        style="padding:6px 14px;font-size:.78rem;font-family:inherit;border:1.5px solid var(--border-dark);background:white;color:var(--text-dim);cursor:pointer;border-radius:2px;">
+        沒有（只有總價）
+      </button>
+    </div>
+  </div>
+
+  <!-- 公式說明（動態更新）-->
+  <p class="step-desc" id="act-formula-desc">財產交易所得 ＝ 房屋賣出價款 − 房屋買入價款 − 必要費用</p>
+
+  <!-- 賣出欄位 -->
+  <!-- 賣出：有拆價 -->
+  <div id="sell-split-field">
+    <div class="field-group">
+      <div class="field-label">房屋賣出價款（合約載明）<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-sell-wrap"><input type="number" id="act-sell" placeholder="例：700（合約上房屋部分金額）"><span class="input-unit">萬</span></div>
+      <div class="field-tip">填合約書上「房屋」欄位的金額，不含土地</div>
+      <div class="error-msg" id="act-sell-err">請輸入房屋賣出價款</div>
+    </div>
+  </div>
+  <!-- 賣出：只有總價 -->
+  <div id="sell-total-field" style="display:none;">
+    <div class="field-group">
+      <div class="field-label">房地賣出總價<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-sell-total-wrap"><input type="number" id="act-sell-total" placeholder="例：1500（房屋＋土地合計）"><span class="input-unit">萬</span></div>
+      <div class="error-msg" id="act-sell-total-err" style="display:none;color:var(--red);font-size:.78rem;">請輸入賣出總價</div>
+    </div>
+  </div>
+
+  <!-- 買入欄位 -->
+  <!-- 買入：有拆價 -->
+  <div id="buy-split-field">
+    <div class="field-group">
+      <div class="field-label">房屋買入價款（合約載明）<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-buy-wrap"><input type="number" id="act-buy" placeholder="例：400（當初合約房屋部分）"><span class="input-unit">萬</span></div>
+      <div class="field-tip">填買入合約書上「房屋」欄位的金額</div>
+      <div class="error-msg" id="act-buy-err">請輸入房屋買入價款</div>
+    </div>
+  </div>
+  <!-- 買入：只有總價 -->
+  <div id="buy-total-field" style="display:none;">
+    <div class="field-group">
+      <div class="field-label">房地買入總價<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-buy-total-wrap"><input type="number" id="act-buy-total" placeholder="例：1000（房屋＋土地合計）"><span class="input-unit">萬</span></div>
+      <div class="error-msg" id="act-buy-total-err" style="display:none;color:var(--red);font-size:.78rem;">請輸入買入總價</div>
+    </div>
+  </div>
+
+  <!-- 房地比（出售時）：只有賣出或買入需要用總價時才需要 -->
+  <div id="ratio-section" style="background:#eef4fb;border:1.5px solid #c8ddf0;border-left:3px solid #1a3f6e;padding:14px 16px;margin:14px 0;display:none;">
+    <div style="font-size:.78rem;font-weight:600;color:#1a3f6e;margin-bottom:10px;">📐 房地比（出售時評定現值）— 用於拆算房屋所得比例</div>
+    <div class="field-group">
+      <div class="field-label">出售時房屋評定現值<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-house-val-wrap"><input type="number" id="act-house-val" placeholder="例：80" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
+      <div class="field-tip">從房屋稅單或地政事務所查詢</div>
+      <div class="error-msg" id="act-house-val-err">請輸入房屋評定現值</div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">出售時土地公告現值<span class="field-required">必填</span></div>
+      <div class="input-wrap" id="act-land-val-wrap"><input type="number" id="act-land-val" placeholder="例：500" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
+      <div class="field-tip">從地價稅單查詢</div>
+      <div class="error-msg" id="act-land-val-err">請輸入土地公告現值</div>
+    </div>
+    <div class="auto-sum" id="ratio-display" style="display:none;">
+      <span class="auto-sum-label">房地比（房屋評定現值 ÷ 總現值）</span>
+      <span class="auto-sum-val" id="ratio-val">—</span>
+    </div>
+  </div>
+
+  <!-- 必要費用（共用）-->
   <hr class="divider">
   <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">必要費用（可選填，能從所得扣除）</div>
-
   <div class="field-group"><div class="field-label">仲介費（買入時）</div><div class="input-wrap"><input type="number" id="act-buy-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
   <div class="field-group"><div class="field-label">仲介費（賣出時）</div><div class="input-wrap"><input type="number" id="act-sell-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
   <div class="field-group"><div class="field-label">代書費（含買入+賣出）</div><div class="input-wrap"><input type="number" id="act-agent-fee" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
@@ -299,30 +379,9 @@
   <div class="field-group"><div class="field-label">裝修改良費（有單據，增值性）</div><div class="input-wrap"><input type="number" id="act-reno" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
   <div class="field-group"><div class="field-label">土地增值稅（賣出時繳納）</div><div class="input-wrap"><input type="number" id="act-land-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">萬</span></div><div class="field-tip">土增稅以萬填入，可從所得扣除</div></div>
   <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="act-other" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-
   <div class="auto-sum">
-    <span class="auto-sum-label">必要費用合計（元，自動加總）</span>
+    <span class="auto-sum-label">必要費用合計（自動加總）</span>
     <span class="auto-sum-val" id="act-fee-sum">0 元</span>
-  </div>
-
-  <hr class="divider">
-  <div style="font-size:.85rem;color:var(--text-dim);font-weight:500;margin-bottom:16px;">區域財產交易稅率（計算房屋所得用）</div>
-
-  <div class="field-group">
-    <div class="field-label">出售時房屋評定現值<span class="field-required">必填</span></div>
-    <div class="input-wrap" id="act-house-val-wrap"><input type="number" id="act-house-val" placeholder="例：80" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
-    <div class="field-tip">可從房屋稅單或地政事務所查詢</div>
-    <div class="error-msg" id="act-house-val-err">請輸入房屋評定現值</div>
-  </div>
-  <div class="field-group">
-    <div class="field-label">出售時土地公告現值<span class="field-required">必填</span></div>
-    <div class="input-wrap" id="act-land-val-wrap"><input type="number" id="act-land-val" placeholder="例：500" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
-    <div class="field-tip">可從地價稅單查詢</div>
-    <div class="error-msg" id="act-land-val-err">請輸入土地公告現值</div>
-  </div>
-  <div class="auto-sum" id="ratio-display" style="display:none;">
-    <span class="auto-sum-label">區域財產交易稅率</span>
-    <span class="auto-sum-val" id="ratio-val">—</span>
   </div>
 
   <div class="nav-row">
@@ -640,15 +699,36 @@ function goNext(){
   const steps=getSteps();const curId=steps[stepIdx];
   if(curId==='step-1'){if(!currentMethod){alert('請選擇申報方式');return;}}
   if(curId==='step-actual'){
-    const sv=parseFloat(document.getElementById('act-sell').value);
-    const bv=parseFloat(document.getElementById('act-buy').value);
-    const hv=parseFloat(document.getElementById('act-house-val').value);
-    const lv=parseFloat(document.getElementById('act-land-val').value);
     let ok=true;
-    if(!sv||sv<=0){document.getElementById('act-sell-wrap').classList.add('error');document.getElementById('act-sell-err').style.display='block';ok=false;}else{document.getElementById('act-sell-wrap').classList.remove('error');document.getElementById('act-sell-err').style.display='none';}
-    if(!bv||bv<=0){document.getElementById('act-buy-wrap').classList.add('error');document.getElementById('act-buy-err').style.display='block';ok=false;}else{document.getElementById('act-buy-wrap').classList.remove('error');document.getElementById('act-buy-err').style.display='none';}
-    if(!hv||hv<=0){document.getElementById('act-house-val-wrap').classList.add('error');document.getElementById('act-house-val-err').style.display='block';ok=false;}else{document.getElementById('act-house-val-wrap').classList.remove('error');document.getElementById('act-house-val-err').style.display='none';}
-    if(!lv||lv<=0){document.getElementById('act-land-val-wrap').classList.add('error');document.getElementById('act-land-val-err').style.display='block';ok=false;}else{document.getElementById('act-land-val-wrap').classList.remove('error');document.getElementById('act-land-val-err').style.display='none';}
+    // 賣出驗證
+    if(sellMode==='split'){
+      const sv=parseFloat(document.getElementById('act-sell').value);
+      if(!sv||sv<=0){document.getElementById('act-sell-wrap').classList.add('error');document.getElementById('act-sell-err').style.display='block';ok=false;}
+      else{document.getElementById('act-sell-wrap').classList.remove('error');document.getElementById('act-sell-err').style.display='none';}
+    } else {
+      const sv=parseFloat(document.getElementById('act-sell-total').value);
+      if(!sv||sv<=0){document.getElementById('act-sell-total-err').style.display='block';ok=false;}
+      else{document.getElementById('act-sell-total-err').style.display='none';}
+    }
+    // 買入驗證
+    if(buyMode==='split'){
+      const bv=parseFloat(document.getElementById('act-buy').value);
+      if(!bv||bv<=0){document.getElementById('act-buy-wrap').classList.add('error');document.getElementById('act-buy-err').style.display='block';ok=false;}
+      else{document.getElementById('act-buy-wrap').classList.remove('error');document.getElementById('act-buy-err').style.display='none';}
+    } else {
+      const bv=parseFloat(document.getElementById('act-buy-total').value);
+      if(!bv||bv<=0){document.getElementById('act-buy-total-err').style.display='block';ok=false;}
+      else{document.getElementById('act-buy-total-err').style.display='none';}
+    }
+    // 若有任一邊是總價，需要房地比
+    if(sellMode==='total'||buyMode==='total'){
+      const hv=parseFloat(document.getElementById('act-house-val').value);
+      const lv=parseFloat(document.getElementById('act-land-val').value);
+      if(!hv||hv<=0){document.getElementById('act-house-val-wrap').classList.add('error');document.getElementById('act-house-val-err').style.display='block';ok=false;}
+      else{document.getElementById('act-house-val-wrap').classList.remove('error');document.getElementById('act-house-val-err').style.display='none';}
+      if(!lv||lv<=0){document.getElementById('act-land-val-wrap').classList.add('error');document.getElementById('act-land-val-err').style.display='block';ok=false;}
+      else{document.getElementById('act-land-val-wrap').classList.remove('error');document.getElementById('act-land-val-err').style.display='none';}
+    }
     if(!ok)return;
   }
   if(curId==='step-standard'){
@@ -716,6 +796,50 @@ function updateStdRate(){
   if(rate){document.getElementById('std-rate-display').style.display='flex';document.getElementById('std-rate-val').textContent=rate+'%';}
 }
 
+let sellMode='split'; // 'split'=賣出有拆價, 'total'=賣出只有總價
+let buyMode='split';  // 'split'=買入有拆價, 'total'=買入只有總價
+
+function setActMode(){
+  // 從按鈕點擊事件判斷是哪個按鈕 — 改用直接讀取狀態方式
+  // 由各按鈕各自呼叫
+}
+function setSellMode(mode){
+  sellMode=mode;
+  const isSplit=mode==='split';
+  document.getElementById('sell-split-field').style.display=isSplit?'block':'none';
+  document.getElementById('sell-total-field').style.display=isSplit?'none':'block';
+  const bS=document.getElementById('btn-sell-split');
+  const bT=document.getElementById('btn-sell-total');
+  bS.style.background=isSplit?'var(--pri)':'white';bS.style.color=isSplit?'white':'var(--text-dim)';bS.style.borderColor=isSplit?'var(--pri)':'var(--border-dark)';
+  bT.style.background=isSplit?'white':'var(--pri)';bT.style.color=isSplit?'var(--text-dim)':'white';bT.style.borderColor=isSplit?'var(--border-dark)':'var(--pri)';
+  updateActFormula();
+}
+function setBuyMode(mode){
+  buyMode=mode;
+  const isSplit=mode==='split';
+  document.getElementById('buy-split-field').style.display=isSplit?'block':'none';
+  document.getElementById('buy-total-field').style.display=isSplit?'none':'block';
+  const bS=document.getElementById('btn-buy-split');
+  const bT=document.getElementById('btn-buy-total');
+  bS.style.background=isSplit?'var(--pri)':'white';bS.style.color=isSplit?'white':'var(--text-dim)';bS.style.borderColor=isSplit?'var(--pri)':'var(--border-dark)';
+  bT.style.background=isSplit?'white':'var(--pri)';bT.style.color=isSplit?'var(--text-dim)':'white';bT.style.borderColor=isSplit?'var(--border-dark)':'var(--pri)';
+  updateActFormula();
+}
+function updateActFormula(){
+  // 只要有一邊是總價就需要房地比
+  const needRatio = (sellMode==='total' || buyMode==='total');
+  document.getElementById('ratio-section').style.display = needRatio?'block':'none';
+
+  const formulas = {
+    'split-split': '財產交易所得 ＝ 房屋賣出價款 − 房屋買入價款 − 必要費用',
+    'split-total': '財產交易所得 ＝（賣出總價×房地比）− 房屋買入價款 − 必要費用',
+    'total-split': '財產交易所得 ＝ 房屋賣出價款 −（買入總價×房地比）− 必要費用',
+    'total-total': '財產交易所得 ＝（賣出總價 − 買入總價 − 必要費用）× 房地比',
+  };
+  const key=sellMode+'-'+buyMode;
+  document.getElementById('act-formula-desc').textContent = formulas[key] || '';
+}
+
 function toggleAcc(id){document.getElementById(id).classList.toggle('open');}
 
 function calcTax(netIncome){
@@ -733,10 +857,16 @@ function getRateLabel(netIncome){
 function buildReview(){
   const rows=[['申報方式',currentMethod==='actual'?'核實認定':'標準認定']];
   if(currentMethod==='actual'){
-    rows.push(['賣出價格',s('act-sell')?s('act-sell')+' 萬':'—']);
-    rows.push(['原始取得成本',s('act-buy')?s('act-buy')+' 萬':'—']);
-    rows.push(['房屋評定現值',s('act-house-val')?s('act-house-val')+' 萬':'—']);
-    rows.push(['土地公告現值',s('act-land-val')?s('act-land-val')+' 萬':'—']);
+    const modeLabels={'split-split':'賣出拆價 / 買入拆價','split-total':'賣出拆價 / 買入總價','total-split':'賣出總價 / 買入拆價','total-total':'賣出總價 / 買入總價'};
+    rows.push(['合約模式', modeLabels[sellMode+'-'+buyMode]||'']);
+    if(sellMode==='split') rows.push(['房屋賣出價款',s('act-sell')?s('act-sell')+' 萬':'—']);
+    else rows.push(['房地賣出總價',s('act-sell-total')?s('act-sell-total')+' 萬':'—']);
+    if(buyMode==='split') rows.push(['房屋買入價款',s('act-buy')?s('act-buy')+' 萬':'—']);
+    else rows.push(['房地買入總價',s('act-buy-total')?s('act-buy-total')+' 萬':'—']);
+    if(sellMode==='total'||buyMode==='total'){
+      rows.push(['房屋評定現值',s('act-house-val')?s('act-house-val')+' 萬':'—']);
+      rows.push(['土地公告現值',s('act-land-val')?s('act-land-val')+' 萬':'—']);
+    }
   }else{
     rows.push(['房屋評定現值',s('std-house-val')?s('std-house-val')+' 萬':'—']);
     rows.push(['縣市區域',document.getElementById('std-region').options[document.getElementById('std-region').selectedIndex]?.text||'—']);
@@ -754,15 +884,29 @@ function calculate(){
   let propIncome=0,ratio=0,sellPrice=0,landTaxPaid=0;
 
   if(currentMethod==='actual'){
-    sellPrice=n('act-sell');
-    const buyPrice=n('act-buy');
     const feesYuan=n('act-buy-broker')+n('act-sell-broker')+n('act-agent-fee')+n('act-deed-tax')+n('act-stamp-tax')+n('act-reno')+n('act-other');
     const feesMillion=feesYuan/10000;
     landTaxPaid=n('act-land-tax');
-    const hv=n('act-house-val'),lv=n('act-land-val');
-    ratio=hv/(hv+lv);
-    const grossIncome=sellPrice-buyPrice-feesMillion-landTaxPaid;
-    propIncome=Math.max(grossIncome*ratio,0);
+    const hv=n('act-house-val'), lv=n('act-land-val');
+    ratio=(hv+lv)>0 ? hv/(hv+lv) : 0;
+
+    const sellSplit = n('act-sell');       // 賣出：房屋價款
+    const sellTotal = n('act-sell-total'); // 賣出：總價
+    const buySplit  = n('act-buy');        // 買入：房屋價款
+    const buyTotal  = n('act-buy-total');  // 買入：總價
+
+    // 換算賣出房屋收入
+    const sellHouseIncome = sellMode==='split'
+      ? sellSplit                          // 直接用房屋價款
+      : sellTotal * ratio;                 // 總價 × 房地比
+
+    // 換算買入房屋成本
+    const buyHouseCost = buyMode==='split'
+      ? buySplit                           // 直接用房屋價款
+      : buyTotal * ratio;                  // 總價 × 房地比
+
+    sellPrice = sellMode==='split' ? sellSplit : sellTotal;
+    propIncome = Math.max(sellHouseIncome - buyHouseCost - feesMillion - landTaxPaid, 0);
   }else{
     const hv=n('std-house-val');
     const rate=parseFloat(s('std-region'))||0;
@@ -813,13 +957,34 @@ function calculate(){
   let d='';
   if(currentMethod==='actual'){
     const feesYuan=n('act-buy-broker')+n('act-sell-broker')+n('act-agent-fee')+n('act-deed-tax')+n('act-stamp-tax')+n('act-reno')+n('act-other');
-    d+=`<div class="calc-row"><span>賣出價格</span><span>${fmt(n('act-sell'))}</span></div>`;
-    d+=`<div class="calc-row"><span>原始取得成本</span><span>- ${fmt(n('act-buy'))}</span></div>`;
-    d+=`<div class="calc-row"><span>必要費用（${feesYuan.toLocaleString()} 元）</span><span>- ${fmt(feesYuan/10000)}</span></div>`;
-    d+=`<div class="calc-row"><span>土地增值稅</span><span>- ${fmt(landTaxPaid)}</span></div>`;
-    d+=`<div class="calc-row"><span>房地差額</span><span>${fmt(n('act-sell')-n('act-buy')-feesYuan/10000-landTaxPaid)}</span></div>`;
-    d+=`<div class="calc-row"><span>房地比（${(ratio*100).toFixed(2)}%）</span><span>× ${(ratio*100).toFixed(2)}%</span></div>`;
-    d+=`<div class="calc-row sub"><span>　房屋評定現值÷（房屋評定現值＋土地公告現值）</span><span>${fmt(n('act-house-val'))}÷（${fmt(n('act-house-val'))}＋${fmt(n('act-land-val'))}）</span></div>`;
+    const hv=n('act-house-val'), lv=n('act-land-val');
+    const ratioStr=(ratio*100).toFixed(2)+'%';
+    const modeLabels={'split-split':'賣出拆價 / 買入拆價','split-total':'賣出拆價 / 買入總價','total-split':'賣出總價 / 買入拆價','total-total':'賣出總價 / 買入總價'};
+    d+=`<div class="calc-row sub"><span>合約模式</span><span>${modeLabels[sellMode+'-'+buyMode]||''}</span></div>`;
+
+    // 賣出部分
+    if(sellMode==='split'){
+      d+=`<div class="calc-row"><span>房屋賣出價款（合約）</span><span>${fmt(n('act-sell'))}</span></div>`;
+    } else {
+      d+=`<div class="calc-row"><span>房地賣出總價</span><span>${fmt(n('act-sell-total'))}</span></div>`;
+      d+=`<div class="calc-row sub"><span>　× 房地比（${ratioStr}）</span><span>= ${fmt(n('act-sell-total')*ratio)}</span></div>`;
+    }
+
+    // 買入部分
+    if(buyMode==='split'){
+      d+=`<div class="calc-row"><span>房屋買入價款（合約）</span><span>- ${fmt(n('act-buy'))}</span></div>`;
+    } else {
+      d+=`<div class="calc-row"><span>房地買入總價</span><span>- ${fmt(n('act-buy-total'))}</span></div>`;
+      d+=`<div class="calc-row sub"><span>　× 房地比（${ratioStr}）</span><span>= - ${fmt(n('act-buy-total')*ratio)}</span></div>`;
+    }
+
+    if(feesYuan>0) d+=`<div class="calc-row"><span>必要費用合計</span><span>- ${fmt(feesYuan/10000)}</span></div>`;
+    if(landTaxPaid>0) d+=`<div class="calc-row"><span>土地增值稅</span><span>- ${fmt(landTaxPaid)}</span></div>`;
+
+    // 若有用到房地比，補顯示計算公式
+    if(sellMode==='total'||buyMode==='total'){
+      d+=`<div class="calc-row sub"><span>　房地比計算</span><span>${fmt(hv)} ÷（${fmt(hv)}＋${fmt(lv)}）= ${ratioStr}</span></div>`;
+    }
   }else{
     d+=`<div class="calc-row"><span>房屋評定現值</span><span>${fmt(n('std-house-val'))}</span></div>`;
     d+=`<div class="calc-row"><span>設算比率（${s('std-region')}%）</span><span>× ${s('std-region')}%</span></div>`;
