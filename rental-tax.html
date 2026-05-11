@@ -238,7 +238,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
     <div class="field">
       <div class="field-label" id="rent-label">單月租金（含稅）<span class="req">必填</span></div>
       <div class="iw">
-        <input type="number" id="rent-input" placeholder="例：45000" oninput="liveCheck()">
+        <input type="number" id="rent-input" placeholder="例：45000" oninput="liveCheck();autoDeposit()" onchange="liveCheck();autoDeposit()">
         <span class="unit">元</span>
       </div>
       <div class="field-tip" id="rent-tip">輸入合約上的月租金金額</div>
@@ -265,8 +265,8 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
       </div>
       <div class="field">
         <div class="field-label">押金（保證金）</div>
-        <div class="iw"><input type="number" id="deposit" placeholder="0" oninput="calcNotary()"><span class="unit">元</span></div>
-        <div class="field-tip">未約定押金填 0</div>
+        <div class="iw"><input type="number" id="deposit" placeholder="自動帶入租金×2" oninput="calcNotary()"><span class="unit">元</span></div>
+        <div class="field-tip" id="deposit-tip">輸入月租金後自動帶入（可修改）</div>
       </div>
       <div class="field">
         <div class="field-label">房屋課稅現值</div>
@@ -690,6 +690,21 @@ function setEnforce(v){
   document.getElementById('btn-enforce-no').style.background = v ? 'var(--card)' : 'var(--pri)';
   document.getElementById('btn-enforce-no').style.color = v ? 'var(--dim)' : 'white';
   calcNotary();
+}
+
+function autoDeposit(){
+  const rent = parseFloat(document.getElementById('rent-input').value) || 0;
+  const depositEl = document.getElementById('deposit');
+  const tipEl = document.getElementById('deposit-tip');
+  if(rent > 0){
+    const auto = rent * 2;
+    depositEl.value = auto;
+    if(tipEl) tipEl.textContent = '已自動帶入月租金 × 2 = ' + fmtN(auto) + ' 元（可修改）';
+    calcNotary();
+  } else {
+    depositEl.value = '';
+    if(tipEl) tipEl.textContent = '輸入月租金後自動帶入（可修改）';
+  }
 }
 
 function calcNotary(){
