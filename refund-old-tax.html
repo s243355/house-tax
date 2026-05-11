@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>財交所得稅重購退稅｜祐承店長 信義房屋 文心高工店</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --pri:#7a3000;--pri-d:#5a2000;--pri-l:#fdf5ef;--pri-m:#e8c4a0;
+  --red:#C00000;--bg:#faf8f5;--card:#fff;--surface:#edeae6;
+  --border:#e0dad3;--border-d:#c8bfb5;
+  --text:#1a1410;--dim:#5a4e44;--muted:#9a8e84;
+  --green:#2a6e46;--green-l:#f0f8f4;--green-m:#b8dfc4;
+  --gold:#b8860b;--gold-l:#fffbeb;
+  --sh1:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
+
+header{background:var(--card);border-bottom:3px solid var(--red);height:58px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:var(--sh1);}
+.hdr-home{display:flex;align-items:center;height:100%;padding:0 18px;font-size:.78rem;color:var(--dim);text-decoration:none;font-weight:500;border-right:1px solid var(--border);transition:all .18s;white-space:nowrap;flex-shrink:0;}
+.hdr-home:hover{color:var(--red);background:var(--pri-l);}
+.hdr-mid{display:flex;align-items:center;gap:12px;flex:1;padding:0 20px;}
+.mark{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sname{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.1;}
+.sname small{display:block;font-size:.6rem;color:var(--muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
+.sep{width:1px;height:22px;background:var(--border);}
+.htool{font-size:.82rem;color:var(--dim);}
+.hbtns{display:flex;gap:8px;padding:0 20px;flex-shrink:0;}
+.hbtn{display:flex;align-items:center;gap:6px;padding:6px 13px;font-size:.74rem;font-family:inherit;font-weight:500;text-decoration:none;transition:all .18s;border-radius:2px;}
+.hbtn-r{background:var(--red);color:white;border:1.5px solid var(--red);}
+.hbtn-g{background:#06C755;color:white;border:1.5px solid #06C755;}
+
+.hero{background:var(--pri);padding:44px 40px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border:36px solid rgba(255,255,255,.05);border-radius:50%;}
+.hero-tag{font-size:.66rem;color:rgba(255,255,255,.6);letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:1;}
+.hero h1{font-family:'Noto Serif TC',serif;font-size:1.9rem;font-weight:700;color:white;margin-bottom:8px;position:relative;z-index:1;}
+.hero p{font-size:.87rem;color:rgba(255,255,255,.75);max-width:480px;margin:0 auto;position:relative;z-index:1;}
+.hero-law{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:10px;position:relative;z-index:1;font-family:'JetBrains Mono',monospace;}
+
+main{max-width:760px;margin:0 auto;padding:40px 20px 100px;}
+
+/* 資格確認 */
+.qualify-card{background:var(--card);border:1.5px solid var(--border);padding:24px 28px;margin-bottom:16px;box-shadow:var(--sh1);}
+.card-label{font-size:.68rem;color:var(--pri);letter-spacing:.18em;text-transform:uppercase;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--pri-m),transparent);}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.check-item:last-child{border-bottom:none;}
+.check-item:hover{background:var(--surface);margin:0 -4px;padding:11px 4px;}
+.check-box{width:20px;height:20px;border:1.5px solid var(--border-d);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--card);transition:all .18s;border-radius:2px;}
+.check-box.on{background:var(--green);border-color:var(--green);}
+.check-box.on::after{content:'✓';color:white;font-size:.7rem;font-weight:700;}
+.check-text{font-size:.84rem;color:var(--dim);line-height:1.6;}
+.check-text strong{color:var(--text);}
+.check-note{font-size:.72rem;color:var(--muted);margin-top:3px;}
+
+/* 輸入 */
+.input-card{background:var(--card);border:1.5px solid var(--border);padding:24px 28px;margin-bottom:16px;box-shadow:var(--sh1);}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field{margin-bottom:0;}
+.field-label{font-size:.8rem;color:var(--dim);font-weight:500;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.req{font-size:.6rem;background:var(--pri-l);color:var(--pri);border:1px solid var(--pri-m);padding:1px 5px;border-radius:2px;}
+.field-tip{font-size:.7rem;color:var(--muted);margin-top:4px;}
+.iw{display:flex;align-items:center;border:1.5px solid var(--border);background:var(--card);transition:border-color .18s,box-shadow .18s;}
+.iw:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-l);}
+.iw input{flex:1;border:none;outline:none;padding:10px 13px;color:var(--text);font-size:.92rem;font-family:'JetBrains Mono',monospace;font-weight:500;background:transparent;min-width:0;}
+.iw input::placeholder{color:var(--muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;font-size:.82rem;}
+.iw .unit{padding:0 12px;font-size:.76rem;color:var(--muted);border-left:1px solid var(--border);white-space:nowrap;}
+.iw select{flex:1;border:none;outline:none;padding:10px 13px;font-size:.88rem;font-family:inherit;background:transparent;cursor:pointer;}
+
+.info-box{background:var(--gold-l);border:1.5px solid var(--gold-m);border-left:4px solid var(--gold);padding:12px 16px;font-size:.8rem;color:var(--dim);line-height:1.65;margin-bottom:14px;}
+.warn-box{background:#fff8f8;border:1.5px solid #fca5a5;border-left:4px solid var(--red);padding:12px 16px;font-size:.8rem;color:var(--dim);line-height:1.65;margin-bottom:14px;}
+.success-box{background:var(--green-l);border:1.5px solid var(--green-m);border-left:4px solid var(--green);padding:12px 16px;font-size:.8rem;color:#1a3a20;line-height:1.65;margin-bottom:14px;}
+
+.calc-btn{width:100%;padding:14px;background:var(--pri);border:none;color:white;font-size:.92rem;font-family:'Noto Serif TC',serif;font-weight:700;cursor:pointer;transition:all .18s;margin-top:18px;letter-spacing:.08em;border-radius:2px;}
+.calc-btn:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 4px 14px rgba(122,48,0,.25);}
+
+/* 結果 */
+#result{display:none;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.result-hero{background:var(--green);padding:28px 32px;margin-bottom:14px;text-align:center;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.result-hero::before{content:'';position:absolute;right:-30px;top:-30px;width:140px;height:140px;border:24px solid rgba(255,255,255,.06);border-radius:50%;}
+.rh-label{font-size:.72rem;color:rgba(255,255,255,.65);letter-spacing:.18em;margin-bottom:8px;}
+.rh-val{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;margin-bottom:4px;position:relative;z-index:1;}
+.rh-sub{font-size:.8rem;color:rgba(255,255,255,.7);position:relative;z-index:1;}
+
+.detail-card{background:var(--card);border:1.5px solid var(--border);padding:22px 24px;margin-bottom:14px;box-shadow:var(--sh1);}
+.detail-title{font-size:.84rem;color:var(--dim);font-weight:600;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.calc-row:last-child{border-bottom:none;}
+.calc-row.total{color:var(--green);font-weight:700;font-size:.9rem;border-top:2px solid var(--green-m);border-bottom:none;padding-top:12px;margin-top:4px;}
+.calc-row.sub{color:var(--muted);font-size:.78rem;}
+.calc-row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:500;}
+
+.not-qualify{background:var(--card);border:1.5px solid var(--border);padding:32px;text-align:center;margin-bottom:14px;}
+.not-qualify h3{font-family:'Noto Serif TC',serif;font-size:1.1rem;color:var(--red);margin-bottom:10px;}
+.not-qualify p{font-size:.84rem;color:var(--dim);line-height:1.7;}
+
+/* LINE Modal */
+.lm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+.lm-overlay.open{display:flex;}
+.lm-box{background:var(--card);width:100%;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
+.lm-head{background:#06C755;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.lm-head h3{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:white;}
+.lm-head p{font-size:.7rem;color:rgba(255,255,255,.8);margin-top:2px;}
+.lm-close{background:rgba(255,255,255,.2);border:none;color:white;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:.9rem;}
+.lm-body{padding:18px 20px;}
+.lm-preview{background:#f3fdf5;border:1.5px solid #b8e8c4;padding:14px 16px;font-size:.78rem;color:#1a3a20;line-height:1.85;white-space:pre-wrap;word-break:break-all;max-height:340px;overflow-y:auto;margin-bottom:12px;}
+.lm-actions{display:flex;gap:10px;}
+.lm-btn{flex:1;padding:11px;font-size:.82rem;font-family:inherit;font-weight:600;cursor:pointer;border:none;border-radius:2px;}
+.lm-copy{background:#06C755;color:white;}
+.lm-copy.copied{background:#2e7d52;}
+.lm-open{background:var(--card);border:1.5px solid #06C755;color:#06C755;}
+
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+.act-btn{padding:10px 18px;font-size:.8rem;font-family:inherit;cursor:pointer;transition:all .18s;border:1.5px solid var(--border-d);background:var(--card);color:var(--dim);border-radius:2px;}
+.act-btn:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-l);}
+.act-btn.primary{background:var(--green);border-color:var(--green);color:white;font-weight:600;}
+.act-btn.primary:hover{background:#1e5c36;color:white;}
+
+.contact-strip{background:var(--red);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.cs-text strong{display:block;font-family:'Noto Serif TC',serif;font-size:.9rem;color:white;font-weight:700;margin-bottom:2px;}
+.cs-text span{font-size:.76rem;color:rgba(255,255,255,.75);}
+.cs-btns{display:flex;gap:8px;}
+.cs-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none;border:none;}
+.cs-phone{background:white;color:var(--red);}
+.cs-line{background:#06C755;color:white;}
+
+footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
+.fi{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:2px;}
+
+/* PDF 套件 */
+
+@media(max-width:640px){
+  header{height:52px;}.sep,.htool{display:none;}.hdr-mid{padding:0 12px;}.hbtns{padding:0 10px;gap:5px;}.hbtn{padding:5px 10px;font-size:.7rem;}
+  .hero{padding:32px 16px 28px;}.hero h1{font-size:1.5rem;}
+  main{padding:24px 14px 60px;}
+  .field-grid{grid-template-columns:1fr;}
+  .contact-strip{flex-direction:column;align-items:flex-start;}
+  footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="hdr-home">← 首頁</a>
+  <div class="hdr-mid">
+    <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
+    <div class="sep"></div>
+    <span class="htool">財交所得稅重購退稅</span>
+  </div>
+  <div class="hbtns">
+    <a class="hbtn hbtn-r" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="hbtn hbtn-g" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
+  <h1>財產交易所得稅<br>重購退稅試算</h1>
+  <p>出售自用住宅後 2 年內重購，且新屋總價 ≥ 舊屋售價<br>可申請退還因財產交易所得增加的所得稅額</p>
+  <div class="hero-law">所得稅法 §17-2</div>
+</div>
+
+<main>
+
+  <!-- STEP 1：資格確認 -->
+  <div class="qualify-card">
+    <div class="card-label">✅ 退稅資格確認（4 項需全符合）</div>
+    <div class="info-box">💡 以下 4 項需全部符合才能申請。逐一勾選確認後，系統才開放試算。</div>
+    <div id="checks">
+      <div class="check-item" onclick="toggleCheck(this,0)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <strong>出售的是自用住宅</strong>
+          <div class="check-note">本人、配偶或直系親屬在該地址辦竣戶籍登記，且出售前 1 年無出租或供營業用</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,1)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <strong>在 2 年內重購自用住宅</strong>
+          <div class="check-note">先賣後買：賣屋完成過戶後 2 年內完成新屋過戶；先買後賣：買屋後 2 年內完成舊屋過戶</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,2)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <strong>新屋總價 ≥ 舊屋出售價格</strong>
+          <div class="check-note">以實際買賣價格（非公告現值）計算。新屋價格需超過舊屋售價才可全額退稅</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,3)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <strong>已申報並繳納財產交易所得稅</strong>
+          <div class="check-note">適用舊制（104/12/31 以前取得之房地），且當年度已於綜合所得稅申報財產交易所得</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2：輸入資料 -->
+  <div class="input-card" id="input-section" style="display:none;">
+    <div class="card-label">💰 試算資料輸入</div>
+    <div class="field-grid">
+      <div class="field">
+        <div class="field-label">舊屋出售總價 <span class="req">必填</span></div>
+        <div class="iw"><input type="number" id="old-price" placeholder="例：1050"><span class="unit">萬</span></div>
+      </div>
+      <div class="field">
+        <div class="field-label">新屋購入總價 <span class="req">必填</span></div>
+        <div class="iw"><input type="number" id="new-price" placeholder="例：1500"><span class="unit">萬</span></div>
+        <div class="field-tip">需 ≥ 舊屋售價才符合退稅條件</div>
+      </div>
+      <div class="field">
+        <div class="field-label">因財交所得增加稅額 <span class="req">必填</span></div>
+        <div class="iw"><input type="number" id="tax-paid" placeholder="例：8.5" step="0.1"><span class="unit">萬</span></div>
+        <div class="field-tip">從「舊制試算」結果取得，或查所得稅繳款書</div>
+      </div>
+      <div class="field">
+        <div class="field-label">兩屋間距</div>
+        <div style="display:flex;gap:8px;">
+          <div class="iw" style="flex:1;"><input type="number" id="gap-days" placeholder="自動計算" readonly style="color:var(--muted);cursor:default;"></div>
+          <span style="font-size:.78rem;color:var(--muted);align-self:center;">天</span>
+        </div>
+        <div class="field-tip">可選填：輸入出售日期和購入日期後自動計算</div>
+      </div>
+      <div class="field">
+        <div class="field-label">舊屋過戶日</div>
+        <div class="iw"><input type="date" id="old-date" onchange="calcDays()"></div>
+      </div>
+      <div class="field">
+        <div class="field-label">新屋過戶日</div>
+        <div class="iw"><input type="date" id="new-date" onchange="calcDays()"></div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calculate()">計算可退稅額</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result">
+    <div id="eligible-result">
+      <div class="result-hero">
+        <div class="rh-label">可申請退稅金額</div>
+        <div class="rh-val" id="r-refund">— 萬</div>
+        <div class="rh-sub" id="r-refund-sub">因財產交易所得增加的綜合所得稅額（全額退還）</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-title">📋 計算過程</div>
+        <div id="calc-detail"></div>
+      </div>
+      <div class="success-box" id="apply-note">
+        ✅ <strong>申請方式</strong>：於重購自用住宅完成產權移轉登記的<strong>年度</strong>，辦理綜合所得稅結算申報時，在申報書上填寫重購自用住宅相關欄位，從應納稅額中扣抵或申請退還。<br><br>
+        📋 <strong>需準備文件</strong>：舊屋買賣契約書、新屋買賣契約書、兩屋戶籍謄本、財產交易所得稅繳款書或完稅證明
+      </div>
+    </div>
+    <div id="not-eligible-result" style="display:none;">
+      <div class="not-qualify">
+        <h3>⚠ 不符合退稅條件</h3>
+        <p id="not-qualify-reason">請確認是否符合所有條件。</p>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="act-btn primary" onclick="showLine()">📤 LINE 分享</button>
+      <button class="act-btn" onclick="generatePDF()">📄 下載 PDF</button>
+      <button class="act-btn" onclick="resetAll()">🔄 重新試算</button>
+    </div>
+    <div class="contact-strip">
+      <div class="cs-text">
+        <strong id="cs-title">確認退稅資格？讓信義房屋 文心高工店 幫你確認</strong>
+        <span id="cs-desc">協助準備申請文件，確保不漏掉這筆退稅</span>
+      </div>
+      <div class="cs-btns">
+        <a class="cs-btn cs-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
+        <a class="cs-btn cs-line" id="res-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LINE Modal -->
+<div class="lm-overlay" id="lm-overlay" onclick="if(event.target===this)closeLM()">
+  <div class="lm-box">
+    <div class="lm-head">
+      <div><h3>LINE 試算摘要</h3><p>複製後貼到 LINE 與客戶分享</p></div>
+      <button class="lm-close" onclick="closeLM()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div class="lm-preview" id="lm-text"></div>
+      <div class="lm-actions">
+        <button class="lm-btn lm-copy" id="lm-btn" onclick="copyLM()">📋 複製文字</button>
+        <button class="lm-btn lm-open" onclick="openLineLM()">開啟 LINE →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark" style="width:26px;height:26px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">財交所得稅重購退稅試算 · 僅供參考</div></div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
+    <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:5px 12px;text-decoration:none;font-size:.76rem;font-weight:500;">LINE</a>
+  </div>
+</footer>
+
+<script>
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
+function n(id){return parseFloat(document.getElementById(id).value)||0;}
+function fmt(v){return v.toFixed(2);}
+let lastResult=null;
+const checks=[false,false,false,false];
+
+function toggleCheck(item,idx){
+  checks[idx]=!checks[idx];
+  item.querySelector('.check-box').classList.toggle('on',checks[idx]);
+  // 全部勾選才顯示輸入區
+  if(checks.every(c=>c)){
+    document.getElementById('input-section').style.display='block';
+    document.getElementById('input-section').scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    document.getElementById('input-section').style.display='none';
+    document.getElementById('result').style.display='none';
+  }
+}
+
+function calcDays(){
+  const d1=document.getElementById('old-date').value;
+  const d2=document.getElementById('new-date').value;
+  if(d1&&d2){
+    const diff=Math.abs((new Date(d2)-new Date(d1))/(1000*60*60*24));
+    document.getElementById('gap-days').value=Math.round(diff);
+  }
+}
+
+function calculate(){
+  const oldPrice=n('old-price');
+  const newPrice=n('new-price');
+  const taxPaid=n('tax-paid');
+  const gapDays=n('gap-days');
+
+  if(!oldPrice||!newPrice||!taxPaid){alert('請填入舊屋售價、新屋購入價及已繳稅額');return;}
+
+  document.getElementById('result').style.display='block';
+
+  // 判斷是否符合：新屋 >= 舊屋
+  const qualifies=newPrice>=oldPrice;
+  // 若有填天數，判斷是否在 2 年內
+  const withinTime=gapDays===0||gapDays<=730;
+
+  if(!qualifies){
+    document.getElementById('eligible-result').style.display='none';
+    document.getElementById('not-eligible-result').style.display='block';
+    document.getElementById('not-qualify-reason').textContent=
+      `新屋購入總價（${fmt(newPrice)} 萬）未達舊屋出售總價（${fmt(oldPrice)} 萬），不符合重購退稅條件。若新屋價格 ≥ 舊屋售價，才可申請全額退稅。`;
+    lastResult=null;
+    return;
+  }
+  if(!withinTime){
+    document.getElementById('eligible-result').style.display='none';
+    document.getElementById('not-eligible-result').style.display='block';
+    document.getElementById('not-qualify-reason').textContent=
+      `兩屋過戶間距 ${gapDays} 天（約 ${(gapDays/365).toFixed(1)} 年），超過法定 2 年期限，不符合退稅資格。`;
+    lastResult=null;
+    return;
+  }
+
+  // 符合：退全額
+  document.getElementById('eligible-result').style.display='block';
+  document.getElementById('not-eligible-result').style.display='none';
+  document.getElementById('r-refund').textContent=fmt(taxPaid)+' 萬';
+  document.getElementById('r-refund-sub').textContent='因財產交易所得增加稅額（符合條件，全額退還）';
+
+  let detail='';
+  detail+=`<div class="calc-row"><span>舊屋出售總價</span><span>${fmt(oldPrice)} 萬</span></div>`;
+  detail+=`<div class="calc-row"><span>新屋購入總價</span><span>${fmt(newPrice)} 萬</span></div>`;
+  detail+=`<div class="calc-row sub"><span>價格比較</span><span>新屋 ${fmt(newPrice)} ≥ 舊屋 ${fmt(oldPrice)} ✓</span></div>`;
+  detail+=`<div class="calc-row"><span>已繳財交所得稅增加額</span><span>${fmt(taxPaid)} 萬</span></div>`;
+  if(gapDays>0)detail+=`<div class="calc-row sub"><span>兩屋間距</span><span>${gapDays} 天（${(gapDays/365).toFixed(1)} 年）✓</span></div>`;
+  detail+=`<div class="calc-row total"><span>可申請退稅</span><span>${fmt(taxPaid)} 萬</span></div>`;
+  document.getElementById('calc-detail').innerHTML=detail;
+
+  lastResult={oldPrice,newPrice,taxPaid,gapDays};
+  saveHistory('refund-old-tax','財交所得稅重購退稅',
+    `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬・可退 ${fmt(taxPaid)} 萬`,
+    {oldPrice,newPrice,taxPaid}
+  );
+
+  window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
+}
+
+function showLine(){
+  if(!lastResult){alert('請先完成試算');return;}
+  const cfg=getConfig();
+  const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const {oldPrice,newPrice,taxPaid,gapDays}=lastResult;
+  const msg=`📋 財交所得稅重購退稅試算
+${'═'.repeat(22)}
+法源：所得稅法 §17-2
+
+🏠 舊屋出售總價：${fmt(oldPrice)} 萬
+🏡 新屋購入總價：${fmt(newPrice)} 萬
+${gapDays>0?`📅 兩屋間距：${gapDays} 天（${(gapDays/365).toFixed(1)} 年）\n`:''}
+💸 已繳財交所得稅增加額：${fmt(taxPaid)} 萬
+
+✅ 可申請退稅：${fmt(taxPaid)} 萬（全額退還）
+${'─'.repeat(22)}
+申請時機：重購完成過戶年度，於綜所稅申報時辦理
+試算日期：${today}
+
+📞 ${brand}
+☎ ${phone}
+LINE 諮詢：${lineUrl}
+祐承店長 ${phone}`;
+  document.getElementById('lm-text').textContent=msg;
+  document.getElementById('lm-overlay').classList.add('open');
+  document.getElementById('lm-btn').textContent='📋 複製文字';
+  document.getElementById('lm-btn').classList.remove('copied');
+}
+function closeLM(){document.getElementById('lm-overlay').classList.remove('open');}
+function copyLM(){
+  const text=document.getElementById('lm-text').textContent;
+  const btn=document.getElementById('lm-btn');
+  const done=()=>{btn.textContent='✅ 已複製！';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 複製文字';btn.classList.remove('copied');},3000);};
+  navigator.clipboard.writeText(text).then(done).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();});
+}
+function openLineLM(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('lm-text').textContent),'_blank');}
+
+async function generatePDF(){
+  if(!lastResult){alert('請先完成試算');return;}
+  const cfg=getConfig();
+  const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const {oldPrice,newPrice,taxPaid}=lastResult;
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;">
+    <div style="background:#7a3000;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">財交所得稅重購退稅試算報告</span></div>
+      <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
+    </div>
+    <div style="background:#2a6e46;padding:22px 28px;margin-bottom:20px;">
+      <div style="font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-bottom:6px;">可申請退稅金額</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:36px;font-weight:700;color:white;">${fmt(taxPaid)} 萬</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:4px;">因財產交易所得增加稅額（全額退還）・所得稅法 §17-2</div>
+    </div>
+    <div style="padding:0 28px 20px;">
+      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">試算資料</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">舊屋出售總價</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt(oldPrice)} 萬</div></div>
+        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">新屋購入總價</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt(newPrice)} 萬</div></div>
+        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">已繳財交所得稅增加額</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt(taxPaid)} 萬</div></div>
+        <div style="border:1.5px solid #2a6e46;background:#f0f8f4;padding:12px 14px;"><div style="font-size:9px;color:#2a6e46;margin-bottom:4px;">可申請退稅</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:#2a6e46;">${fmt(taxPaid)} 萬</div></div>
+      </div>
+      <div style="background:#f0f8f4;border:1px solid #b8dfc4;border-left:3px solid #2a6e46;padding:12px 14px;font-size:10px;color:#1a3a20;line-height:1.7;">
+        申請時機：於重購自用住宅完成產權移轉登記的年度，辦理綜合所得稅結算申報時，從應納稅額中扣抵或申請退還。<br>
+        需準備文件：舊屋買賣契約書、新屋買賣契約書、兩屋戶籍謄本、財產交易所得稅繳款書
+      </div>
+    </div>
+    <div style="background:#1a4a7a;padding:14px 28px;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:13px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8);">${phone}　｜　LINE：${lineUrl}</div>
+    </div>
+    <div style="padding:10px 28px;font-size:9px;color:#9a8e84;line-height:1.65;">⚠ 本試算報告僅供參考，實際退稅金額依國稅局審核為準。建議洽詢會計師或各地國稅局（0800-000-321）確認申請資格。</div>
+  </div>`;
+  const btn=document.querySelector('.act-btn[onclick="generatePDF()"]');
+  if(btn){btn.textContent='⏳ 產生中...';btn.disabled=true;}
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML=html;document.body.appendChild(container);
+  await new Promise(r=>setTimeout(r,800));
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const pdfW=pdf.internal.pageSize.getWidth();
+    const pdfH=pdf.internal.pageSize.getHeight();
+    const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
+    const imgData=canvas.toDataURL('image/jpeg',0.92);
+    const imgH=canvas.height*pdfW/canvas.width;
+    let y=0,page=0;
+    while(y<imgH){if(page>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,-y,pdfW,imgH);y+=pdfH;page++;}
+    pdf.save(`財交所得稅重購退稅報告_${today.replace(/\//g,'')}.pdf`);
+  }finally{
+    document.body.removeChild(container);
+    if(btn){btn.textContent='📄 下載 PDF';btn.disabled=false;}
+  }
+}
+
+function resetAll(){
+  document.querySelectorAll('input').forEach(i=>i.value='');
+  checks.fill(false);
+  document.querySelectorAll('.check-box').forEach(c=>c.classList.remove('on'));
+  document.getElementById('input-section').style.display='none';
+  document.getElementById('result').style.display='none';
+  lastResult=null;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function saveHistory(tool,title,summary,params){
+  try{const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');h.unshift({id:Date.now(),tool,title,summary,date:new Date().toLocaleDateString('zh-TW'),time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),params});if(h.length>50)h.pop();localStorage.setItem('rlandy_history',JSON.stringify(h));}catch(e){}
+}
+
+(function(){
+  const c=getConfig();
+  function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+  function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+  sa('hdr-branch',c.brandSubtitle);sa('hdr-brand',c.brand);
+  const pl=c.phoneLabel||'祐承 0933-317-625';
+  sa('hdr-phone-label',pl);
+  sa('footer-phone','📞 '+pl);
+  sh('hdr-phone','tel:'+(c.phone||'0933317625'));sh('footer-phone','tel:'+(c.phone||'0933317625'));
+  sh('hdr-line',c.lineUrl);sh('footer-line',c.lineUrl);
+  sh('res-phone','tel:'+(c.phone||'0933317625'));sh('res-line',c.lineUrl);
+  sa('footer-brand',c.brand);
+})();
+</script>
+</body>
+</html>

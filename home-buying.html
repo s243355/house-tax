@@ -484,6 +484,19 @@
 </footer>
 
 <script>
+
+// ── 歷史試算記錄 ──
+function saveHistory(tool,title,summary,params){
+  try{
+    const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+    h.unshift({id:Date.now(),tool,title,summary,
+      date:new Date().toLocaleDateString('zh-TW'),
+      time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+      params});
+    if(h.length>50)h.pop();
+    localStorage.setItem('rlandy_history',JSON.stringify(h));
+  }catch(e){}
+}
 function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
 function n(id){return parseFloat(document.getElementById(id).value)||0;}
 function s(id){return document.getElementById(id).value||'';}
@@ -584,7 +597,12 @@ function calculate(){
 
   lastResult={oldPrice,oldLoan,oldFees,available,newPrice,newDown,newLoan,newMisc,newReno,newTotalNeeded,gap,monthly,totalInt,loanYears,rate,newDownRatio};
 
-  document.getElementById('result-section').style.display='block';
+  document.getElementById('result-section').style.display='block'
+  // 儲存歷史記錄
+  saveHistory('home-buying','換屋資金規劃',
+    `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬 ・ ${gap>=0?'結餘':'缺口'} ${fmt(Math.abs(gap))} 萬`,
+    {oldPrice,newPrice,loanRatio:+document.getElementById('new-down-ratio').value}
+  );;
   const fmt=v=>v.toFixed(1)+' 萬';
 
   document.getElementById('r-old-price').textContent=fmt(oldPrice);
@@ -812,6 +830,44 @@ function resetAll(){
   lastResult=null;updateFlowBar();
   document.getElementById('old-net-preview').textContent='—';
   document.getElementById('old-fee-total').textContent='— 萬';
+}
+
+
+function showHistory(){
+  const toolNames={'house-tax':'房地合一稅','old-tax':'財交所得稅','mortgage':'房貸試算',
+    'holding-cost':'持有成本','repurchase-refund':'重購退稅',
+    'home-buying':'換屋規劃','price-calculator':'議價試算',
+    'transaction-planner':'買賣流程規劃'};
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  const el=document.getElementById('history-list');
+  if(!h.length){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+  } else {
+    el.innerHTML=h.map((r,i)=>`
+      <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+          </div>
+          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+        </div>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+      </div>`).join('');
+  }
+  document.getElementById('history-overlay').style.display='flex';
+}
+function closeHistory(){document.getElementById('history-overlay').style.display='none';}
+function deleteHistory(id){
+  let h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  h=h.filter(r=>r.id!==id);
+  localStorage.setItem('rlandy_history',JSON.stringify(h));
+  showHistory();
+}
+function clearAllHistory(){
+  if(!confirm('確定清除所有試算記錄？'))return;
+  localStorage.removeItem('rlandy_history');
+  showHistory();
 }
 
 // Init config

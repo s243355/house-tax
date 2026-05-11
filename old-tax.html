@@ -594,6 +594,19 @@ const TAX_BRACKETS=[
   {max:Infinity,rate:40,diff:91.218}
 ];
 
+
+// ── 歷史試算記錄 ──
+function saveHistory(tool,title,summary,params){
+  try{
+    const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+    h.unshift({id:Date.now(),tool,title,summary,
+      date:new Date().toLocaleDateString('zh-TW'),
+      time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+      params});
+    if(h.length>50)h.pop();
+    localStorage.setItem('rlandy_history',JSON.stringify(h));
+  }catch(e){}
+}
 function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{brand:'信義房屋 文心高工店',brandSubtitle:'文心高工店',phone:'0933317625',phoneLabel:'0933-317-625',lineUrl:'https://line.me/ti/p/EfDsNa26Xw',updatedDate:'2026-05-05',disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異，法規改了或國稅局核定結果也會不同。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。'};}
 
 let currentMethod=null,stepIdx=0;
@@ -772,6 +785,11 @@ function calculate(){
 
   const fmt=v=>v.toFixed(2)+' 萬';
   document.getElementById('r-tax-inc').textContent=fmt(taxIncrease);
+  // 儲存歷史記錄
+  saveHistory('old-tax','財產交易所得稅試算',
+    `${currentMethod==='actual'?'核實認定':'標準認定'} ・ 增加稅額 ${fmt(taxIncrease)} 萬`,
+    {method:currentMethod}
+  );
   document.getElementById('r-rate-label').textContent='適用稅率：'+getRateLabel(netIncome)+'（累進稅率）';
   document.getElementById('r-prop-income').textContent=fmt(propIncome);
   document.getElementById('r-method').textContent=currentMethod==='actual'?'核實認定':'標準認定';
@@ -834,6 +852,44 @@ function resetAll(){
   document.querySelectorAll('.method-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('result-panel').style.display='none';
   showStep('step-1');
+}
+
+
+function showHistory(){
+  const toolNames={'house-tax':'房地合一稅','old-tax':'財交所得稅','mortgage':'房貸試算',
+    'holding-cost':'持有成本','repurchase-refund':'重購退稅',
+    'home-buying':'換屋規劃','price-calculator':'議價試算',
+    'transaction-planner':'買賣流程規劃'};
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  const el=document.getElementById('history-list');
+  if(!h.length){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+  } else {
+    el.innerHTML=h.map((r,i)=>`
+      <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+          </div>
+          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+        </div>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+      </div>`).join('');
+  }
+  document.getElementById('history-overlay').style.display='flex';
+}
+function closeHistory(){document.getElementById('history-overlay').style.display='none';}
+function deleteHistory(id){
+  let h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  h=h.filter(r=>r.id!==id);
+  localStorage.setItem('rlandy_history',JSON.stringify(h));
+  showHistory();
+}
+function clearAllHistory(){
+  if(!confirm('確定清除所有試算記錄？'))return;
+  localStorage.removeItem('rlandy_history');
+  showHistory();
 }
 
 // Init config

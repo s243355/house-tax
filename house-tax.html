@@ -607,6 +607,7 @@
     <button class="btn-action primary-action" onclick="generatePDF()">📄 下載 PDF 報告</button>
     <button class="btn-action" onclick="window.print()">🖨 列印</button>
     <button class="btn-action" onclick="showLineShare()">📤 LINE 分享摘要</button>
+    <button class="btn-action" onclick="showHistory()">📋 試算記錄</button>
     <button class="btn-action" onclick="resetAll()">🔄 重新試算</button>
   </div>
 
@@ -637,6 +638,26 @@
   </div>
 </div>
 
+<!-- 歷史記錄 Modal -->
+<div id="history-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeHistory()">
+  <div style="background:white;width:100%;max-width:600px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.18);">
+    <div style="background:var(--red);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:1.1rem;">📋</span>
+        <div>
+          <div style="font-family:'Noto Serif TC',serif;font-size:.92rem;font-weight:700;color:white;">歷史試算記錄</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.75);margin-top:2px;">最近 50 筆，儲存於此裝置</div>
+        </div>
+      </div>
+      <button onclick="closeHistory()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div id="history-list" style="overflow-y:auto;flex:1;"></div>
+    <div style="padding:12px 16px;border-top:1px solid #e0dad3;display:flex;gap:8px;flex-shrink:0;">
+      <button onclick="clearAllHistory()" style="padding:8px 16px;font-size:.78rem;font-family:inherit;border:1.5px solid #e0dad3;background:white;color:#9a8e84;cursor:pointer;border-radius:2px;">清除全部記錄</button>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <footer>
@@ -656,6 +677,19 @@
 </footer>
 
 <script>
+
+// ── 歷史試算記錄 ──
+function saveHistory(tool,title,summary,params){
+  try{
+    const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+    h.unshift({id:Date.now(),tool,title,summary,
+      date:new Date().toLocaleDateString('zh-TW'),
+      time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+      params});
+    if(h.length>50)h.pop();
+    localStorage.setItem('rlandy_history',JSON.stringify(h));
+  }catch(e){}
+}
 function getConfig(){
   const s=localStorage.getItem('rlandy_config');
   if(s){try{return JSON.parse(s);}catch(e){}}
@@ -837,6 +871,18 @@ function calculate(){
     localStorage.setItem('rlandy_stats',JSON.stringify(stats));
   }catch(e){}
 
+  // 儲存歷史記錄
+  try{
+    const tax=document.getElementById('r-tax').textContent;
+    const net=document.getElementById('r-net')?.textContent||'';
+    const sell=document.getElementById('r-sell').textContent;
+    const typeMap={normal:'一般買賣',selfuse:'自住房地',inherit:'繼承取得',gift:'配偶贈與'};
+    saveHistory('house-tax','房地合一稅試算',
+      `${typeMap[currentType]||''} ・ 成交 ${sell} ・ 應繳 ${tax}`,
+      {type:currentType, sell:sellPrice, cost:costPrice}
+    );
+  }catch(e){}
+
   window._calc={taxRate,selfuseApplied,exempt,cfg,totalCost,taxAmt,netAmt,taxableIncome};
 
   let d='';
@@ -877,6 +923,64 @@ function calcReverse(type){
   const base=selfuseApplied?totalCost+exempt:totalCost;
   const sell=(neededNet-base*r)/(1-r);
   document.getElementById(`rev-${type}-result`).textContent=sell>0?sell.toFixed(1):'—';
+}
+
+
+function showHistory(){
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  const toolNames={'house-tax':'房地合一稅','old-tax':'財交所得稅','mortgage':'房貸試算',
+    'holding-cost':'持有成本','repurchase-refund':'重購退稅',
+    'home-buying':'換屋規劃','price-calculator':'議價試算'};
+  const el=document.getElementById('history-list');
+  if(!h.length){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+  } else {
+    el.innerHTML=h.map((r,i)=>`
+      <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+          </div>
+          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          ${r.tool==='house-tax'?`<button onclick="loadHistory(${r.id})" style="padding:5px 12px;font-size:.74rem;font-family:inherit;background:#C00000;border:none;color:white;cursor:pointer;border-radius:2px;">載入</button>`:''}
+          <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;">刪除</button>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('history-overlay').style.display='flex';
+}
+
+function closeHistory(){document.getElementById('history-overlay').style.display='none';}
+
+function deleteHistory(id){
+  let h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  h=h.filter(r=>r.id!==id);
+  localStorage.setItem('rlandy_history',JSON.stringify(h));
+  showHistory();
+}
+
+function clearAllHistory(){
+  if(!confirm('確定清除所有試算記錄？'))return;
+  localStorage.removeItem('rlandy_history');
+  showHistory();
+}
+
+function loadHistory(id){
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  const r=h.find(x=>x.id===id);
+  if(!r||!r.params)return;
+  // 關閉 modal，回到第一步
+  closeHistory();
+  resetAll();
+  // 載入參數後觸發計算
+  setTimeout(()=>{
+    if(r.params.sell)document.getElementById('sell-price-input').value=r.params.sell;
+    if(r.params.cost)document.getElementById('cost-price-input')&&(document.getElementById('cost-price-input').value=r.params.cost);
+    if(r.params.type)selectType(document.querySelector(`[data-type="${r.params.type}"]`));
+  },300);
 }
 
 function showLineShare(){

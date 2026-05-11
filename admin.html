@@ -165,6 +165,7 @@
     <div class="nav-item" data-sec="text-old" onclick="switchSection(this)"><span class="nav-icon">📋</span>舊制試算文字</div>
     <div class="nav-item" data-sec="text-mortgage" onclick="switchSection(this)"><span class="nav-icon">🏦</span>房貸試算文字</div>
     <div class="nav-group">數據</div>
+    <div class="nav-item" data-sec="history" onclick="switchSection(this)"><span class="nav-icon">📋</span>試算歷史記錄</div>
     <div class="nav-item" data-sec="stats" onclick="switchSection(this)"><span class="nav-icon">📊</span>試算統計</div>
     <div class="nav-item" data-sec="leads" onclick="switchSection(this)"><span class="nav-icon">👥</span>客戶留資</div>
     <div class="nav-group">其他</div>
@@ -508,6 +509,27 @@
   </div>
 
 
+
+  <!-- ── 歷史記錄 ── -->
+  <div class="section" id="section-history">
+    <div class="topbar">
+      <span class="topbar-title">試算歷史記錄</span>
+      <div class="topbar-actions">
+        <button class="btn btn-outline" onclick="exportHistoryCSV()">⬇ 匯出 CSV</button>
+        <button class="btn btn-danger" onclick="clearHistory()">清除全部</button>
+      </div>
+    </div>
+    <div class="section-wrap">
+      <div class="card">
+        <div class="card-header" id="history-count-header">試算記錄（載入中...）</div>
+        <div class="card-body" id="history-table-wrap">
+          <p style="font-size:.82rem;color:var(--text-muted);">載入中...</p>
+        </div>
+      </div>
+      <p style="font-size:.75rem;color:var(--text-muted);padding:4px 0;">📌 記錄儲存在瀏覽器 localStorage，僅限此裝置。客戶在自己裝置上的試算記錄不會顯示在這裡。</p>
+    </div>
+  </div>
+
   <!-- ── 試算統計 ── -->
   <div class="section" id="section-stats">
     <div class="topbar"><span class="topbar-title">試算統計</span><div class="topbar-actions"><button class="btn btn-outline" onclick="clearStats()">清除統計資料</button></div></div>
@@ -768,6 +790,98 @@ function switchSection(el){
 }
 
 
+
+// ═══ HISTORY ═══
+function renderHistory(){
+  const toolNames={
+    'house-tax':'房地合一稅試算','old-tax':'財交所得稅試算',
+    'mortgage':'房貸試算','holding-cost':'持有成本試算',
+    'repurchase-refund':'重購退稅試算','home-buying':'換屋資金規劃',
+    'price-calculator':'議價試算','transaction-planner':'買賣流程規劃'
+  };
+  const toolColors={
+    'house-tax':'var(--red)','old-tax':'#8b4513','mortgage':'#1a4a7a',
+    'holding-cost':'#2e6b3e','repurchase-refund':'#8b4513',
+    'home-buying':'#4a1a7a','price-calculator':'#1a1410',
+    'transaction-planner':'#2c3e50'
+  };
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  document.getElementById('history-count-header').textContent=`試算記錄（${h.length} 筆）`;
+
+  if(!h.length){
+    document.getElementById('history-table-wrap').innerHTML='<p style="font-size:.82rem;color:var(--text-muted);">尚無試算記錄。在各工具試算後會自動儲存。</p>';
+    return;
+  }
+
+  // 工具統計
+  const toolCounts={};
+  h.forEach(r=>{toolCounts[r.tool]=(toolCounts[r.tool]||0)+1;});
+  let statsHtml='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;">';
+  Object.entries(toolCounts).sort((a,b)=>b[1]-a[1]).forEach(([tool,cnt])=>{
+    statsHtml+=`<div style="background:${toolColors[tool]||'#666'};color:white;padding:4px 12px;font-size:.75rem;border-radius:2px;">${toolNames[tool]||tool} <strong>${cnt}</strong></div>`;
+  });
+  statsHtml+='</div>';
+
+  // 記錄列表
+  let tableHtml='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">';
+  tableHtml+='<thead><tr style="background:var(--red);">';
+  tableHtml+='<th style="padding:9px 12px;text-align:left;font-size:.73rem;color:white;font-weight:500;">時間</th>';
+  tableHtml+='<th style="padding:9px 12px;text-align:left;font-size:.73rem;color:white;font-weight:500;">工具</th>';
+  tableHtml+='<th style="padding:9px 12px;text-align:left;font-size:.73rem;color:white;font-weight:500;">試算摘要</th>';
+  tableHtml+='<th style="padding:9px 12px;text-align:center;font-size:.73rem;color:white;font-weight:500;">操作</th>';
+  tableHtml+='</tr></thead><tbody>';
+
+  h.forEach((r,i)=>{
+    const bg=i%2===0?'':'background:var(--surface2);';
+    tableHtml+=`<tr style="${bg}">
+      <td style="padding:9px 12px;font-size:.75rem;color:var(--text-muted);white-space:nowrap;border-bottom:1px solid var(--border);">${r.date} ${r.time||''}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid var(--border);">
+        <span style="font-size:.68rem;background:${toolColors[r.tool]||'#666'};color:white;padding:2px 7px;border-radius:2px;">${toolNames[r.tool]||r.tool}</span>
+      </td>
+      <td style="padding:9px 12px;font-size:.82rem;color:var(--text-dim);border-bottom:1px solid var(--border);">${r.summary||'—'}</td>
+      <td style="padding:9px 12px;text-align:center;border-bottom:1px solid var(--border);">
+        <button onclick="deleteHistoryAdmin(${r.id})" style="font-size:.72rem;padding:3px 10px;border:1px solid var(--border-dark);background:white;color:var(--text-muted);cursor:pointer;border-radius:2px;">刪除</button>
+      </td>
+    </tr>`;
+  });
+  tableHtml+='</tbody></table></div>';
+
+  document.getElementById('history-table-wrap').innerHTML = statsHtml + tableHtml;
+}
+
+function deleteHistoryAdmin(id){
+  let h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  h=h.filter(r=>r.id!==id);
+  localStorage.setItem('rlandy_history',JSON.stringify(h));
+  renderHistory();
+}
+
+function clearHistory(){
+  if(!confirm('確定清除所有試算記錄？'))return;
+  localStorage.removeItem('rlandy_history');
+  renderHistory();
+  toast('已清除所有試算記錄');
+}
+
+function exportHistoryCSV(){
+  const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+  if(!h.length){toast('尚無記錄',true);return;}
+  const toolNames={
+    'house-tax':'房地合一稅試算','old-tax':'財交所得稅試算',
+    'mortgage':'房貸試算','holding-cost':'持有成本試算',
+    'repurchase-refund':'重購退稅試算','home-buying':'換屋資金規劃',
+    'price-calculator':'議價試算','transaction-planner':'買賣流程規劃'
+  };
+  let csv='日期,時間,工具,試算摘要\n';
+  h.forEach(r=>{
+    csv+='"'+r.date+'","'+(r.time||'')+'",'+'"'+(toolNames[r.tool]||r.tool)+'","'+(r.summary||'')+'"\n';
+  });
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`試算記錄_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  addLog('匯出試算歷史 CSV');
+}
+
 // ═══ STATS ═══
 function renderStats(){
   const stats=JSON.parse(localStorage.getItem('rlandy_stats')||'{}');
@@ -895,10 +1009,8 @@ function exportLeads(){
   const leads=JSON.parse(localStorage.getItem('rlandy_leads')||'[]');
   if(!leads.length){toast('尚無留資資料',true);return;}
   const toolNames={'house-tax':'新制試算','old-tax':'舊制試算','mortgage':'房貸試算','holding-cost':'持有成本','repurchase-refund':'重購退稅'};
-  let csv='時間,姓名,電話,使用工具,備註
-';
-  leads.forEach(l=>{csv+=`"${l.time}","${l.name}","${l.phone}","${toolNames[l.tool]||l.tool}","${l.note||''}"
-`;});
+  let csv='時間,姓名,電話,使用工具,備註\n';
+  leads.forEach(l=>{csv+='"'+l.time+'","'+l.name+'","'+l.phone+'","'+(toolNames[l.tool]||l.tool)+'","'+(l.note||'')+'"\n';});
   const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=`客戶留資_${new Date().toISOString().slice(0,10)}.csv`;a.click();
@@ -1231,6 +1343,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{
     if(sec==='export')updateJsonPreview(cfg);
     if(sec==='log')renderLog();
     if(sec==='seo')updateSeoPreview();
+    if(sec==='history')renderHistory();
     if(sec==='stats')renderStats();
     if(sec==='leads')renderLeads();
   });

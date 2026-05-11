@@ -621,7 +621,8 @@ header{
     <div class="action-row">
       <button class="act-btn" onclick="generatePDF()">📄 下載 PDF 報告</button>
     <button class="act-btn" onclick="window.print()">🖨 列印</button>
-      <button class="act-btn" onclick="resetAll()">🔄 重新試算</button>
+      <button class="act-btn" onclick="resetAll()">📋 試算記錄</button>
+      <button class="btn-action" onclick="resetAll()">🔄 重新試算</button>
     </div>
 
   </div><!-- /result-section -->
@@ -636,6 +637,19 @@ function fmt1(v){return v.toFixed(1);}
 function fmt2(v){return v.toFixed(2);}
 function fmtMoney(v){return v.toFixed(1);}
 
+
+// ── 歷史試算記錄 ──
+function saveHistory(tool,title,summary,params){
+  try{
+    const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
+    h.unshift({id:Date.now(),tool,title,summary,
+      date:new Date().toLocaleDateString('zh-TW'),
+      time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+      params});
+    if(h.length>50)h.pop();
+    localStorage.setItem('rlandy_history',JSON.stringify(h));
+  }catch(e){}
+}
 function getConfig(){
   const cfg=localStorage.getItem('rlandy_config');
   if(cfg){try{return JSON.parse(cfg);}catch(e){}}
