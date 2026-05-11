@@ -386,6 +386,21 @@
         <div class="rc-label">寬限期後月付</div>
         <div class="rc-val accent" id="r-after-grace">—</div>
       </div>
+      <div class="result-card" style="border-color:#b8dfc4;background:#f0f8f4;">
+        <div class="rc-label" style="color:#2a6e46;">首月還款・本金部分</div>
+        <div class="rc-val" id="r-first-principal" style="color:#2a6e46;">—</div>
+        <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">有效償還債務的部分</div>
+      </div>
+      <div class="result-card" style="border-color:#fcd34d;background:#fffbeb;">
+        <div class="rc-label" style="color:#b8860b;">首月還款・利息部分</div>
+        <div class="rc-val" id="r-first-interest" style="color:#b8860b;">—</div>
+        <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">付給銀行的成本，不計入本金</div>
+      </div>
+      <div class="result-card" style="border-color:#c8ddf0;background:#eef4fb;">
+        <div class="rc-label" style="color:#1a4a7a;">利息佔月付比例（首月）</div>
+        <div class="rc-val" id="r-interest-ratio" style="color:#1a4a7a;">—</div>
+        <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">比例越高，初期「付利息」越多</div>
+      </div>
     </div>
 
     <!-- 多情境比較 -->
@@ -594,6 +609,23 @@ function calcMortgage(){
   document.getElementById('r-down').textContent = housePrice>0 ? (housePrice*downRatio/100).toFixed(0)+' 萬' : '—';
   document.getElementById('r-grace-monthly').textContent = graceMonths>0 ? Math.round(graceMonthlyAmt).toLocaleString()+' 元' : '無寬限期';
   document.getElementById('r-after-grace').textContent = graceMonths>0 ? Math.round(actualMonthly).toLocaleString()+' 元' : '—';
+
+  // 首月本金 / 利息拆解
+  const firstNonGrace = scheduleData.find(d=>!d.isGrace);
+  if(firstNonGrace){
+    const fp = Math.round(firstNonGrace.principal);
+    const fi = Math.round(firstNonGrace.interest);
+    const ratio = firstNonGrace.payment > 0 ? (fi/firstNonGrace.payment*100).toFixed(1) : '—';
+    document.getElementById('r-first-principal').textContent = fp.toLocaleString()+' 元';
+    document.getElementById('r-first-interest').textContent = fi.toLocaleString()+' 元';
+    document.getElementById('r-interest-ratio').textContent = ratio+'%';
+  } else {
+    // 寬限期無本金還款
+    const fi = Math.round(loan * annualRate / 12);
+    document.getElementById('r-first-principal').textContent = '0 元（寬限期）';
+    document.getElementById('r-first-interest').textContent = fi.toLocaleString()+' 元';
+    document.getElementById('r-interest-ratio').textContent = '100%（寬限期）';
+  }
 
   // Compare table
   buildCompareTable(loanMillion, annualRate);

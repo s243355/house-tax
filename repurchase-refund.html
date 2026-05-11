@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>重購退稅試算｜祐承店長 信義房屋 文心高工店</title>
+<title>房地合一重購退稅｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
@@ -235,7 +235,7 @@
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
     <div class="hd"></div>
-    <span class="ht">重購退稅試算</span>
+    <span class="ht">房地合一重購退稅</span>
   </div>
   <div class="hc">
     <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
@@ -248,7 +248,7 @@
 
 <div class="hero">
   <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
-  <h1>重購退稅試算工具</h1>
+  <h1>房地合一重購退稅工具</h1>
   <p>換屋自住可以申請退回已繳的房地合一稅！符合條件的屋主不知道這筆錢，讓我們幫你算出可以退多少。</p>
 </div>
 
@@ -463,7 +463,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">重購退稅試算工具 · 僅供參考，實際退稅依國稅局審核為準</div>
+      <div class="fi">房地合一重購退稅工具 · 僅供參考，實際退稅依國稅局審核為準</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -553,7 +553,7 @@ function calculate(){
   document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('result-panel').style.display='block'
   // 儲存歷史記錄
-  saveHistory('repurchase-refund','重購退稅試算',
+  saveHistory('repurchase-refund','房地合一重購退稅',
     `舊屋 ${oldSell} 萬 → 可退稅 ${refundAmt.toFixed(1)} 萬（${(refundRatio*100).toFixed(0)}%）`,
     {oldSell,oldTaxPaid,newBuy}
   );;
@@ -597,7 +597,7 @@ function showLineShare(){
   if(!lastResult){alert('請先完成試算');return;}
   const{oldSell,oldTaxPaid,newBuy,refundRatio,refundAmt,daysDiff,within2Years}=lastResult;
 
-  const msg=`🏡 重購退稅試算結果
+  const msg=`🏡 房地合一重購退稅結果
 ${'═'.repeat(22)}
 🏠 舊屋成交價：${oldSell.toFixed(0)} 萬
 💸 已繳房地合一稅：${oldTaxPaid.toFixed(2)} 萬
@@ -704,7 +704,7 @@ async function generatePDF(){
     .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
     .disc{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
   </style></head><body><div class="page">
-    <div class="header"><div class="brand">${brand}<small>重購退稅試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
+    <div class="header"><div class="brand">${brand}<small>房地合一重購退稅報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
     <div class="hero"><div class="hero-label">估算可申請退稅金額</div><div class="hero-val">${refundAmt.toFixed(2)} 萬元</div><div class="hero-sub">${refundRatio>=1?'全額退稅':'按比例退稅 '+((refundRatio*100).toFixed(1))+'%'}</div></div>
     <div class="section">
       <div class="sec-title">試算資料</div>
@@ -727,7 +727,7 @@ async function generatePDF(){
   const pdfBtn=document.querySelector('[onclick="generatePDF()"]');
   if(pdfBtn){pdfBtn.textContent='⏳ 產生中...';pdfBtn.disabled=true;}
   try{
-    await renderToPDF(html, `重購退稅試算報告_${today.replace(/\//g,'')}.pdf`);
+    await renderToPDF(html, `房地合一重購退稅報告_${today.replace(/\//g,'')}.pdf`);
   }finally{
     if(pdfBtn){pdfBtn.textContent='📄 下載 PDF 報告';pdfBtn.disabled=false;}
   }
