@@ -834,8 +834,10 @@ function calculate(){
 
   document.getElementById('law-detail').innerHTML=`
     <div class="calc-row"><span>財產交易所得計算</span><span>所得稅法 §14 第七類</span></div>
-    <div class="calc-row"><span>核實認定公式</span><span>（賣價-買價-費用）× 區域財產交易稅率</span></div>
-    <div class="calc-row"><span>標準認定公式</span><span>房屋評定現值 × 財政部公告比率</span></div>
+    <div class="calc-row"><span>核實認定公式</span><span>（賣價 − 買價 − 必要費用）× 房地比</span></div>
+    <div class="calc-row sub"><span>　房地比</span><span>= 房屋評定現值 ÷（房屋評定現值 ＋ 土地公告現值）</span></div>
+    <div class="calc-row"><span>標準認定公式</span><span>房屋評定現值 × 區域財產交易稅率</span></div>
+    <div class="calc-row sub"><span>　區域財產交易稅率</span><span>財政部每年公告，依各縣市區域不同</span></div>
     <div class="calc-row"><span>土地部分免稅</span><span>平均地權條例</span></div>
     <div class="calc-row"><span>累進稅率 5%～40%</span><span>所得稅法 §5</span></div>
     <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--pri);">財政部稅務入口網 →</a></div>`;
@@ -845,7 +847,7 @@ function calculate(){
 
 function resetAll(){
   currentMethod=null;stepIdx=0;
-  document.querySelectorAll('input[type=number]').forEach(i=>{if(i.id==='inc-exempt')i.value='9.2';else if(i.id==='inc-deduction')i.value='27.6';else i.value='';});
+  document.querySelectorAll('input[type=number]').forEach(i=>{if(i.id==='inc-exempt')i.value='9.7';else if(i.id==='inc-deduction')i.value='34.9';else i.value='';});
   document.getElementById('std-region').value='';
   document.getElementById('std-rate-display').style.display='none';
   document.getElementById('ratio-display').style.display='none';
