@@ -633,6 +633,7 @@ function showStep(id){
   document.getElementById('result-panel').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
   renderProgress();
+  if(id==='step-review') buildReview();
 }
 
 function goNext(){
@@ -795,7 +796,7 @@ function calculate(){
   document.getElementById('r-method').textContent=currentMethod==='actual'?'核實認定':'標準認定';
   document.getElementById('r-net-income').textContent=fmt(netIncome);
   document.getElementById('r-ratio').textContent=currentMethod==='actual'?(ratio*100).toFixed(2)+'%':(parseFloat(s('std-region'))||0)+'%（設算）';
-  document.getElementById('r-net').textContent=sellPrice>0?fmt(netGet):'—（未填賣出價格）';
+  // r-net 已移除（稅後實拿欄位已移除）
 
   // Bracket table
   const brackets=[{label:'≤ 59.4 萬',rate:5},{label:'59.4～133 萬',rate:12},{label:'133～266 萬',rate:20},{label:'266～498 萬',rate:30},{label:'> 498 萬',rate:40}];
@@ -817,7 +818,8 @@ function calculate(){
     d+=`<div class="calc-row"><span>必要費用（${feesYuan.toLocaleString()} 元）</span><span>- ${fmt(feesYuan/10000)}</span></div>`;
     d+=`<div class="calc-row"><span>土地增值稅</span><span>- ${fmt(landTaxPaid)}</span></div>`;
     d+=`<div class="calc-row"><span>房地差額</span><span>${fmt(n('act-sell')-n('act-buy')-feesYuan/10000-landTaxPaid)}</span></div>`;
-    d+=`<div class="calc-row"><span>區域財產交易稅率（${(ratio*100).toFixed(2)}%）</span><span>× ${(ratio*100).toFixed(2)}%</span></div>`;
+    d+=`<div class="calc-row"><span>房地比（${(ratio*100).toFixed(2)}%）</span><span>× ${(ratio*100).toFixed(2)}%</span></div>`;
+    d+=`<div class="calc-row sub"><span>　房屋評定現值÷（房屋評定現值＋土地公告現值）</span><span>${fmt(n('act-house-val'))}÷（${fmt(n('act-house-val'))}＋${fmt(n('act-land-val'))}）</span></div>`;
   }else{
     d+=`<div class="calc-row"><span>房屋評定現值</span><span>${fmt(n('std-house-val'))}</span></div>`;
     d+=`<div class="calc-row"><span>設算比率（${s('std-region')}%）</span><span>× ${s('std-region')}%</span></div>`;
@@ -914,7 +916,7 @@ function showLineShare(){
   const taxInc=document.getElementById('r-tax-inc').textContent;
   const propIncome=document.getElementById('r-prop-income').textContent;
   const rateLabel=document.getElementById('r-rate-label').textContent;
-  const net=document.getElementById('r-net').textContent;
+  const net='—';
   const ratio=document.getElementById('r-ratio').textContent;
   const rateOnly=rateLabel.replace('適用稅率：','').trim();
 
@@ -1008,7 +1010,7 @@ async function generatePDF(){
   const rateLabel=document.getElementById('r-rate-label').textContent;
   const netIncome=document.getElementById('r-net-income').textContent;
   const ratio=document.getElementById('r-ratio').textContent;
-  const net=document.getElementById('r-net').textContent;
+  const net='—';
 
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8">
   <style>
