@@ -217,35 +217,114 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
   <!-- STEP 2：輸入資料 -->
   <div class="input-card" id="input-section" style="display:none;">
     <div class="card-label">💰 試算資料輸入</div>
-    <div class="info-box">
-      📐 <strong>房屋價額如何拆算？</strong><br>
-      若買賣契約書只有「總價」，請依下列公式換算：<br>
-      房屋價額 ＝ 總價 × 房屋評定現值 ÷（房屋評定現值 ＋ 土地公告現值）<br>
-      評定現值可向各縣市稅捐稽徵處或地政事務所查詢，也可請代書協助計算。
+
+    <!-- 舊屋房屋價額 -->
+    <div style="background:var(--pri-l);border:1.5px solid var(--pri-m);border-left:4px solid var(--pri);padding:16px 18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--pri);">🏠 舊屋「房屋價額」</div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" class="mode-toggle active" id="old-mode-direct" onclick="setMode('old','direct')" style="font-size:.72rem;padding:4px 12px;border:1.5px solid var(--pri);background:var(--pri);color:white;cursor:pointer;border-radius:2px;font-family:inherit;">契約有分開載明</button>
+          <button type="button" class="mode-toggle" id="old-mode-calc" onclick="setMode('old','calc')" style="font-size:.72rem;padding:4px 12px;border:1.5px solid var(--pri-m);background:white;color:var(--pri);cursor:pointer;border-radius:2px;font-family:inherit;">契約只有總價（拆算）</button>
+        </div>
+      </div>
+      <!-- 直接填入 -->
+      <div id="old-direct">
+        <div class="field">
+          <div class="field-label" style="color:var(--pri);font-weight:600;">舊屋建物（房屋）價額 <span class="req">必填</span></div>
+          <div class="iw" style="border-color:var(--pri);"><input type="number" id="old-price" placeholder="例：350（契約載明的房屋部分）" step="0.01"><span class="unit" style="color:var(--pri);">萬</span></div>
+          <div class="field-tip">填契約書上「建物」或「房屋」欄位的金額，不含土地</div>
+        </div>
+      </div>
+      <!-- 拆算 -->
+      <div id="old-calc" style="display:none;">
+        <div class="field-grid">
+          <div class="field">
+            <div class="field-label">舊屋買賣總價</div>
+            <div class="iw"><input type="number" id="old-total" placeholder="例：1050" oninput="calcHousePrice('old')"><span class="unit">萬</span></div>
+          </div>
+          <div class="field">
+            <div class="field-label">房屋評定現值</div>
+            <div class="iw"><input type="number" id="old-building-val" placeholder="例：180" oninput="calcHousePrice('old')"><span class="unit">萬</span></div>
+            <div class="field-tip">向稅捐稽徵處查詢，或看稅單</div>
+          </div>
+          <div class="field">
+            <div class="field-label">土地公告現值合計</div>
+            <div class="iw"><input type="number" id="old-land-pub" placeholder="例：320" oninput="calcHousePrice('old')"><span class="unit">萬</span></div>
+            <div class="field-tip">公告現值 × 持分面積（平方公尺）</div>
+          </div>
+          <div class="field">
+            <div class="field-label" style="color:var(--pri);font-weight:600;">→ 換算後房屋價額</div>
+            <div class="iw" style="border-color:var(--pri);background:var(--pri-l);">
+              <input type="number" id="old-price-calc" placeholder="自動帶入" step="0.01" readonly style="color:var(--pri);font-weight:600;cursor:default;">
+              <span class="unit" style="color:var(--pri);">萬</span>
+            </div>
+            <div class="field-tip">總價 × 評定現值 ÷（評定現值＋公告現值）</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="field-grid">
-      <div class="field">
-        <div class="field-label">舊屋「房屋價額」<span class="req">必填</span></div>
-        <div class="iw"><input type="number" id="old-price" placeholder="例：1050"><span class="unit">萬</span></div>
+
+    <!-- 新屋房屋價額 -->
+    <div style="background:#f0f8f4;border:1.5px solid var(--green-m);border-left:4px solid var(--green);padding:16px 18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--green);">🏡 新屋「房屋價額」</div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" id="new-mode-direct" onclick="setMode('new','direct')" style="font-size:.72rem;padding:4px 12px;border:1.5px solid var(--green);background:var(--green);color:white;cursor:pointer;border-radius:2px;font-family:inherit;">契約有分開載明</button>
+          <button type="button" id="new-mode-calc" onclick="setMode('new','calc')" style="font-size:.72rem;padding:4px 12px;border:1.5px solid var(--green-m);background:white;color:var(--green);cursor:pointer;border-radius:2px;font-family:inherit;">契約只有總價（拆算）</button>
+        </div>
       </div>
-      <div class="field">
-        <div class="field-label">新屋「房屋價額」<span class="req">必填</span></div>
-        <div class="iw"><input type="number" id="new-price" placeholder="例：1500"><span class="unit">萬</span></div>
-        <div class="field-tip">需 ≥ 舊屋房屋價額才符合退稅條件。僅比較「房屋」價額，不含土地。</div>
+      <!-- 直接填入 -->
+      <div id="new-direct">
+        <div class="field">
+          <div class="field-label" style="color:var(--green);font-weight:600;">新屋建物（房屋）價額 <span class="req">必填</span></div>
+          <div class="iw" style="border-color:var(--green);"><input type="number" id="new-price" placeholder="例：500（契約載明的房屋部分）" step="0.01"><span class="unit" style="color:var(--green);">萬</span></div>
+          <div class="field-tip">需 ≥ 舊屋房屋價額才符合退稅條件</div>
+        </div>
       </div>
-      <div class="field">
-        <div class="field-label">因財交所得增加稅額 <span class="req">必填</span></div>
-        <div class="iw"><input type="number" id="tax-paid" placeholder="例：8.5" step="0.1"><span class="unit">萬</span></div>
-        <div class="field-tip">從「舊制試算」結果取得，或查所得稅繳款書</div>
+      <!-- 拆算 -->
+      <div id="new-calc" style="display:none;">
+        <div class="field-grid">
+          <div class="field">
+            <div class="field-label">新屋買賣總價</div>
+            <div class="iw"><input type="number" id="new-total" placeholder="例：1500" oninput="calcHousePrice('new')"><span class="unit">萬</span></div>
+          </div>
+          <div class="field">
+            <div class="field-label">房屋評定現值</div>
+            <div class="iw"><input type="number" id="new-building-val" placeholder="例：220" oninput="calcHousePrice('new')"><span class="unit">萬</span></div>
+            <div class="field-tip">向稅捐稽徵處查詢，或看稅單</div>
+          </div>
+          <div class="field">
+            <div class="field-label">土地公告現值合計</div>
+            <div class="iw"><input type="number" id="new-land-pub" placeholder="例：380" oninput="calcHousePrice('new')"><span class="unit">萬</span></div>
+            <div class="field-tip">公告現值 × 持分面積（平方公尺）</div>
+          </div>
+          <div class="field">
+            <div class="field-label" style="color:var(--green);font-weight:600;">→ 換算後房屋價額</div>
+            <div class="iw" style="border-color:var(--green);background:#f0f8f4;">
+              <input type="number" id="new-price-calc" placeholder="自動帶入" step="0.01" readonly style="color:var(--green);font-weight:600;cursor:default;">
+              <span class="unit" style="color:var(--green);">萬</span>
+            </div>
+            <div class="field-tip">總價 × 評定現值 ÷（評定現值＋公告現值）</div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- 第一區：資格判斷（必填）-->
+    <div style="background:var(--pri-l);border:1.5px solid var(--pri-m);padding:14px 16px;margin-bottom:6px;border-radius:2px;">
+      <div style="font-size:.76rem;font-weight:600;color:var(--pri);margin-bottom:4px;">第一步：判斷是否符合退稅資格</div>
+      <div style="font-size:.75rem;color:var(--dim);">只需填入兩屋房屋價額，即可判斷是否符合條件。</div>
+    </div>
+    <div class="field-grid" style="margin-bottom:16px;">
       <div class="field">
         <div class="field-label">兩屋間距</div>
         <div style="display:flex;gap:8px;">
           <div class="iw" style="flex:1;"><input type="number" id="gap-days" placeholder="自動計算" readonly style="color:var(--muted);cursor:default;"></div>
           <span style="font-size:.78rem;color:var(--muted);align-self:center;">天</span>
         </div>
-        <div class="field-tip">可選填：輸入出售日期和購入日期後自動計算</div>
+        <div class="field-tip">輸入過戶日期後自動計算</div>
       </div>
+      <div></div>
       <div class="field">
         <div class="field-label">舊屋過戶日</div>
         <div class="iw"><input type="date" id="old-date" onchange="calcDays()"></div>
@@ -253,21 +332,51 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
       <div class="field">
         <div class="field-label">新屋過戶日</div>
         <div class="iw"><input type="date" id="new-date" onchange="calcDays()"></div>
+        <div class="field-tip">先買後賣：可填預計過戶日；尚未確定可留空</div>
       </div>
     </div>
-    <button class="calc-btn" onclick="calculate()">計算可退稅額</button>
+
+    <!-- 第二區：退稅金額（選填）-->
+    <div style="background:var(--green-l);border:1.5px solid var(--green-m);padding:14px 16px;margin-bottom:6px;border-radius:2px;">
+      <div style="font-size:.76rem;font-weight:600;color:var(--green);margin-bottom:4px;">第二步：試算可退稅額（選填）</div>
+      <div style="font-size:.75rem;color:var(--dim);">已知繳納的財交所得稅增加額，才能算出可退多少。<br>先買後賣者通常尚未繳稅，可從「舊制財交稅試算」取得預估值，或賣屋報稅後再填。</div>
+    </div>
+    <div class="field-grid" style="margin-bottom:16px;">
+      <div class="field">
+        <div class="field-label">因財交所得增加稅額 <span style="font-size:.6rem;background:var(--green-l);color:var(--green);border:1px solid var(--green-m);padding:1px 5px;border-radius:2px;">選填</span></div>
+        <div class="iw"><input type="number" id="tax-paid" placeholder="留空則只判斷資格" step="0.1"><span class="unit">萬</span></div>
+        <div class="field-tip">先買後賣尚未報稅者可留空，只看是否符合退稅資格</div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">▶ 判斷退稅資格</button>
   </div>
 
   <!-- 結果 -->
   <div id="result">
     <div id="eligible-result">
-      <div class="result-hero">
-        <div class="rh-label">可申請退稅金額</div>
-        <div class="rh-val" id="r-refund">— 萬</div>
-        <div class="rh-sub" id="r-refund-sub">因財產交易所得增加的綜合所得稅額（全額退還）</div>
+      <!-- 資格符合：有稅額 -->
+      <div id="result-with-tax">
+        <div class="result-hero">
+          <div class="rh-label">可申請退稅金額</div>
+          <div class="rh-val" id="r-refund">— 萬</div>
+          <div class="rh-sub" id="r-refund-sub">因財產交易所得增加的綜合所得稅額（全額退還）</div>
+        </div>
+      </div>
+      <!-- 資格符合：無稅額（先買後賣預判）-->
+      <div id="result-no-tax" style="display:none;">
+        <div class="result-hero" style="background:#2a6e46;">
+          <div class="rh-label">✅ 符合退稅資格</div>
+          <div class="rh-val" style="font-size:1.6rem;">新屋房屋價額 ≥ 舊屋房屋價額</div>
+          <div class="rh-sub">待賣屋完成並申報所得稅後，可申請退還因財交所得增加的稅額</div>
+        </div>
+        <div class="info-box">
+          💡 <strong>先買後賣的申請時機</strong>：完成舊屋過戶、申報出售年度綜合所得稅時，在申報書填寫重購自用住宅欄位，即可從當年應納稅額中扣抵或申請退還。<br><br>
+          若要預估退稅金額，請至「<a href="old-tax.html" style="color:var(--pri);font-weight:600;">財交所得稅試算</a>」輸入舊屋資料，取得「因財交所得增加稅額」後填入本工具。
+        </div>
       </div>
       <div class="detail-card">
-        <div class="detail-title">📋 計算過程</div>
+        <div class="detail-title">📋 資格判斷與計算過程</div>
         <div id="calc-detail"></div>
       </div>
       <div class="success-box" id="apply-note">
@@ -349,6 +458,47 @@ function toggleCheck(item,idx){
   }
 }
 
+function setMode(side, mode){
+  const direct = document.getElementById(side+'-direct');
+  const calc   = document.getElementById(side+'-calc');
+  const btnD   = document.getElementById(side+'-mode-direct');
+  const btnC   = document.getElementById(side+'-mode-calc');
+  const color  = side==='old' ? 'var(--pri)' : 'var(--green)';
+  const colorM = side==='old' ? 'var(--pri-m)' : 'var(--green-m)';
+
+  if(mode==='direct'){
+    direct.style.display='block'; calc.style.display='none';
+    btnD.style.background=color; btnD.style.color='white'; btnD.style.borderColor=color;
+    btnC.style.background='white'; btnC.style.color=color; btnC.style.borderColor=colorM;
+  } else {
+    direct.style.display='none'; calc.style.display='block';
+    btnC.style.background=color; btnC.style.color='white'; btnC.style.borderColor=color;
+    btnD.style.background='white'; btnD.style.color=color; btnD.style.borderColor=colorM;
+  }
+}
+
+function getHousePrice(side){
+  // 判斷目前哪個 mode
+  const calcDiv = document.getElementById(side+'-calc');
+  if(calcDiv.style.display==='none'){
+    // 直接填入模式
+    return parseFloat(document.getElementById(side+'-price').value)||0;
+  } else {
+    // 拆算模式
+    return parseFloat(document.getElementById(side+'-price-calc').value)||0;
+  }
+}
+
+function calcHousePrice(side){
+  const total    = parseFloat(document.getElementById(side+'-total').value)||0;
+  const building = parseFloat(document.getElementById(side+'-building-val').value)||0;
+  const land     = parseFloat(document.getElementById(side+'-land-pub').value)||0;
+  if(total>0 && (building+land)>0){
+    const houseAmt = total * building / (building + land);
+    document.getElementById(side+'-price-calc').value = houseAmt.toFixed(2);
+  }
+}
+
 function calcDays(){
   const d1=document.getElementById('old-date').value;
   const d2=document.getElementById('new-date').value;
@@ -359,26 +509,27 @@ function calcDays(){
 }
 
 function calculate(){
-  const oldPrice=n('old-price');
-  const newPrice=n('new-price');
-  const taxPaid=n('tax-paid');
-  const gapDays=n('gap-days');
+  const oldPrice = getHousePrice('old');
+  const newPrice = getHousePrice('new');
+  const taxPaid  = n('tax-paid');  // 選填，0 表示未填
+  const gapDays  = n('gap-days');
+  const hasTax   = taxPaid > 0;
 
-  if(!oldPrice||!newPrice||!taxPaid){alert('請填入舊屋售價、新屋購入價及已繳稅額');return;}
+  if(!oldPrice || !newPrice){alert('請填入舊屋與新屋的房屋價額');return;}
 
   document.getElementById('result').style.display='block';
 
-  // 判斷是否符合：新屋 >= 舊屋
-  const qualifies=newPrice>=oldPrice;
-  // 若有填天數，判斷是否在 2 年內
-  const withinTime=gapDays===0||gapDays<=730;
+  // ── 判斷資格 ──
+  const qualifies  = newPrice >= oldPrice;
+  const withinTime = gapDays === 0 || gapDays <= 730;  // 未填日期=不判斷天數
 
   if(!qualifies){
     document.getElementById('eligible-result').style.display='none';
     document.getElementById('not-eligible-result').style.display='block';
     document.getElementById('not-qualify-reason').textContent=
-      `新屋購入總價（${fmt(newPrice)} 萬）未達舊屋出售總價（${fmt(oldPrice)} 萬），不符合重購退稅條件。若新屋價格 ≥ 舊屋售價，才可申請全額退稅。`;
+      `新屋房屋價額（${fmt(newPrice)} 萬）未達舊屋房屋價額（${fmt(oldPrice)} 萬），不符合重購退稅條件。新屋房屋價額需 ≥ 舊屋房屋價額，才可申請退稅。`;
     lastResult=null;
+    window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
     return;
   }
   if(!withinTime){
@@ -387,30 +538,48 @@ function calculate(){
     document.getElementById('not-qualify-reason').textContent=
       `兩屋過戶間距 ${gapDays} 天（約 ${(gapDays/365).toFixed(1)} 年），超過法定 2 年期限，不符合退稅資格。`;
     lastResult=null;
+    window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
     return;
   }
 
-  // 符合：退全額
+  // ── 符合退稅資格 ──
   document.getElementById('eligible-result').style.display='block';
   document.getElementById('not-eligible-result').style.display='none';
-  document.getElementById('r-refund').textContent=fmt(taxPaid)+' 萬';
-  document.getElementById('r-refund-sub').textContent='因財產交易所得增加稅額（符合條件，全額退還）';
 
+  if(hasTax){
+    // 有稅額：顯示可退金額
+    document.getElementById('result-with-tax').style.display='block';
+    document.getElementById('result-no-tax').style.display='none';
+    document.getElementById('r-refund').textContent = fmt(taxPaid)+' 萬';
+    document.getElementById('r-refund-sub').textContent = '因財產交易所得增加稅額（符合條件，全額退還）';
+  } else {
+    // 無稅額：只顯示資格符合
+    document.getElementById('result-with-tax').style.display='none';
+    document.getElementById('result-no-tax').style.display='block';
+  }
+
+  // ── 計算過程明細 ──
   let detail='';
-  detail+=`<div class="calc-row"><span>舊屋出售總價</span><span>${fmt(oldPrice)} 萬</span></div>`;
-  detail+=`<div class="calc-row"><span>新屋購入總價</span><span>${fmt(newPrice)} 萬</span></div>`;
-  detail+=`<div class="calc-row sub"><span>價格比較</span><span>新屋 新屋房屋價額 ${fmt(newPrice)} ≥ 舊屋 ${fmt(oldPrice)} ✓（僅比較房屋部分）</span></div>`;
-  detail+=`<div class="calc-row"><span>已繳財交所得稅增加額</span><span>${fmt(taxPaid)} 萬</span></div>`;
-  if(gapDays>0)detail+=`<div class="calc-row sub"><span>兩屋間距</span><span>${gapDays} 天（${(gapDays/365).toFixed(1)} 年）✓</span></div>`;
-  detail+=`<div class="calc-row total"><span>可申請退稅</span><span>${fmt(taxPaid)} 萬</span></div>`;
+  detail+=`<div class="calc-row"><span>舊屋房屋價額</span><span>${fmt(oldPrice)} 萬</span></div>`;
+  detail+=`<div class="calc-row"><span>新屋房屋價額</span><span>${fmt(newPrice)} 萬</span></div>`;
+  detail+=`<div class="calc-row sub"><span>價格比較</span><span>新屋 ${fmt(newPrice)} 萬 ≥ 舊屋 ${fmt(oldPrice)} 萬 ✓</span></div>`;
+  if(gapDays>0) detail+=`<div class="calc-row sub"><span>兩屋間距</span><span>${gapDays} 天（${(gapDays/365).toFixed(1)} 年）✓</span></div>`;
+  if(hasTax){
+    detail+=`<div class="calc-row"><span>已繳財交所得稅增加額</span><span>${fmt(taxPaid)} 萬</span></div>`;
+    detail+=`<div class="calc-row total"><span>可申請退稅</span><span>${fmt(taxPaid)} 萬</span></div>`;
+  } else {
+    detail+=`<div class="calc-row sub" style="color:var(--green);"><span>退稅資格判斷</span><span>✅ 符合（待賣屋報稅後確認退稅金額）</span></div>`;
+    detail+=`<div class="calc-row sub"><span>因財交所得增加稅額</span><span>尚未填入（選填）</span></div>`;
+  }
   document.getElementById('calc-detail').innerHTML=detail;
 
-  lastResult={oldPrice,newPrice,taxPaid,gapDays};
+  lastResult={oldPrice,newPrice,taxPaid,gapDays,hasTax};
   saveHistory('refund-old-tax','財交所得稅重購退稅',
-    `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬・可退 ${fmt(taxPaid)} 萬`,
+    hasTax
+      ? `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬・可退 ${fmt(taxPaid)} 萬`
+      : `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬・符合退稅資格`,
     {oldPrice,newPrice,taxPaid}
   );
-
   window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
 }
 
@@ -421,7 +590,7 @@ function showLine(){
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
   const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
   const today=new Date().toLocaleDateString('zh-TW');
-  const {oldPrice,newPrice,taxPaid,gapDays}=lastResult;
+  const {oldPrice,newPrice,taxPaid,gapDays,hasTax}=lastResult;
   const msg=`📋 財交所得稅重購退稅試算
 ${'═'.repeat(22)}
 法源：所得稅法 §17-2
@@ -429,9 +598,10 @@ ${'═'.repeat(22)}
 🏠 舊屋房屋價額：${fmt(oldPrice)} 萬
 🏡 新屋房屋價額：${fmt(newPrice)} 萬
 ${gapDays>0?`📅 兩屋間距：${gapDays} 天（${(gapDays/365).toFixed(1)} 年）\n`:''}
-💸 已繳財交所得稅增加額：${fmt(taxPaid)} 萬
-
-✅ 可申請退稅：${fmt(taxPaid)} 萬（全額退還）
+${hasTax
+  ? `💸 已繳財交所得稅增加額：${fmt(taxPaid)} 萬\n\n✅ 可申請退稅：${fmt(taxPaid)} 萬（全額退還）`
+  : `✅ 符合退稅資格\n（待賣屋完成並申報所得稅後，可申請退還因財交所得增加的稅額）`
+}
 ${'─'.repeat(22)}
 申請時機：重購完成過戶年度，於綜所稅申報時辦理
 試算日期：${today}
