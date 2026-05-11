@@ -179,29 +179,36 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
       <div class="check-item" onclick="toggleCheck(this,0)">
         <div class="check-box"></div>
         <div class="check-text">
-          <strong>出售的是自用住宅</strong>
-          <div class="check-note">本人、配偶或直系親屬在該地址辦竣戶籍登記，且出售前 1 年無出租或供營業用</div>
+          <strong>房屋登記在本人或配偶名下</strong>
+          <div class="check-note">出售及重購的房屋，均須以「納稅義務人本人」或「配偶」名義登記，不可為子女或其他親屬名義</div>
         </div>
       </div>
       <div class="check-item" onclick="toggleCheck(this,1)">
         <div class="check-box"></div>
         <div class="check-text">
-          <strong>在 2 年內重購自用住宅</strong>
-          <div class="check-note">先賣後買：賣屋完成過戶後 2 年內完成新屋過戶；先買後賣：買屋後 2 年內完成舊屋過戶</div>
+          <strong>出售的是自用住宅（舊制，104/12/31 以前取得）</strong>
+          <div class="check-note">本人、配偶或直系親屬（108年11月後不限受扶養）在該地址辦竣戶籍登記，且出售前 1 年無出租或供營業用</div>
         </div>
       </div>
       <div class="check-item" onclick="toggleCheck(this,2)">
         <div class="check-box"></div>
         <div class="check-text">
-          <strong>新屋總價 ≥ 舊屋出售價格</strong>
-          <div class="check-note">以實際買賣價格（非公告現值）計算。新屋價格需超過舊屋售價才可全額退稅</div>
+          <strong>新屋「房屋價額」≥ 舊屋「房屋價額」</strong>
+          <div class="check-note">⚠ 比較基準是「房屋價額」，不含土地！契約若只有總價，需依房屋評定現值占（房屋評定現值＋土地公告現值）的比例拆算</div>
         </div>
       </div>
       <div class="check-item" onclick="toggleCheck(this,3)">
         <div class="check-box"></div>
         <div class="check-text">
-          <strong>已申報並繳納財產交易所得稅</strong>
-          <div class="check-note">適用舊制（104/12/31 以前取得之房地），且當年度已於綜合所得稅申報財產交易所得</div>
+          <strong>2 年內完成重購（先賣後買 或 先買後賣均可）</strong>
+          <div class="check-note">以兩次「完成所有權移轉登記日」計算，相距不超過 2 年。先買後賣亦適用。</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this,4)">
+        <div class="check-box"></div>
+        <div class="check-text">
+          <strong>已申報並繳納財產交易所得稅（舊制）</strong>
+          <div class="check-note">104/12/31 以前取得之房地適用舊制，且出售年度已於綜合所得稅申報財產交易所得並繳稅</div>
         </div>
       </div>
     </div>
@@ -210,15 +217,21 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
   <!-- STEP 2：輸入資料 -->
   <div class="input-card" id="input-section" style="display:none;">
     <div class="card-label">💰 試算資料輸入</div>
+    <div class="info-box">
+      📐 <strong>房屋價額如何拆算？</strong><br>
+      若買賣契約書只有「總價」，請依下列公式換算：<br>
+      房屋價額 ＝ 總價 × 房屋評定現值 ÷（房屋評定現值 ＋ 土地公告現值）<br>
+      評定現值可向各縣市稅捐稽徵處或地政事務所查詢，也可請代書協助計算。
+    </div>
     <div class="field-grid">
       <div class="field">
-        <div class="field-label">舊屋出售總價 <span class="req">必填</span></div>
+        <div class="field-label">舊屋「房屋價額」<span class="req">必填</span></div>
         <div class="iw"><input type="number" id="old-price" placeholder="例：1050"><span class="unit">萬</span></div>
       </div>
       <div class="field">
-        <div class="field-label">新屋購入總價 <span class="req">必填</span></div>
+        <div class="field-label">新屋「房屋價額」<span class="req">必填</span></div>
         <div class="iw"><input type="number" id="new-price" placeholder="例：1500"><span class="unit">萬</span></div>
-        <div class="field-tip">需 ≥ 舊屋售價才符合退稅條件</div>
+        <div class="field-tip">需 ≥ 舊屋房屋價額才符合退稅條件。僅比較「房屋」價額，不含土地。</div>
       </div>
       <div class="field">
         <div class="field-label">因財交所得增加稅額 <span class="req">必填</span></div>
@@ -258,8 +271,9 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
         <div id="calc-detail"></div>
       </div>
       <div class="success-box" id="apply-note">
-        ✅ <strong>申請方式</strong>：於重購自用住宅完成產權移轉登記的<strong>年度</strong>，辦理綜合所得稅結算申報時，在申報書上填寫重購自用住宅相關欄位，從應納稅額中扣抵或申請退還。<br><br>
-        📋 <strong>需準備文件</strong>：舊屋買賣契約書、新屋買賣契約書、兩屋戶籍謄本、財產交易所得稅繳款書或完稅證明
+        ✅ <strong>申請方式</strong>：於重購自用住宅完成產權移轉登記的<strong>年度</strong>，辦理綜合所得稅結算申報時，從應納稅額中扣抵或申請退還。向戶籍所在地國稅局辦理。<br><br>
+        📋 <strong>需準備文件</strong>：戶口名簿影本、房屋所有權狀影本（新舊各一）、重購及出售房屋買賣契約書及收付價款證明、財產交易所得稅繳款書<br><br>
+        ⚠ <strong>注意</strong>：退稅金額上限為「出售年度含財交所得之應納稅額」減去「不含財交所得之應納稅額」的差額，即因財交所得實際增加的稅額。
       </div>
     </div>
     <div id="not-eligible-result" style="display:none;">
@@ -320,7 +334,7 @@ function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{ret
 function n(id){return parseFloat(document.getElementById(id).value)||0;}
 function fmt(v){return v.toFixed(2);}
 let lastResult=null;
-const checks=[false,false,false,false];
+const checks=[false,false,false,false,false];
 
 function toggleCheck(item,idx){
   checks[idx]=!checks[idx];
@@ -385,7 +399,7 @@ function calculate(){
   let detail='';
   detail+=`<div class="calc-row"><span>舊屋出售總價</span><span>${fmt(oldPrice)} 萬</span></div>`;
   detail+=`<div class="calc-row"><span>新屋購入總價</span><span>${fmt(newPrice)} 萬</span></div>`;
-  detail+=`<div class="calc-row sub"><span>價格比較</span><span>新屋 ${fmt(newPrice)} ≥ 舊屋 ${fmt(oldPrice)} ✓</span></div>`;
+  detail+=`<div class="calc-row sub"><span>價格比較</span><span>新屋 新屋房屋價額 ${fmt(newPrice)} ≥ 舊屋 ${fmt(oldPrice)} ✓（僅比較房屋部分）</span></div>`;
   detail+=`<div class="calc-row"><span>已繳財交所得稅增加額</span><span>${fmt(taxPaid)} 萬</span></div>`;
   if(gapDays>0)detail+=`<div class="calc-row sub"><span>兩屋間距</span><span>${gapDays} 天（${(gapDays/365).toFixed(1)} 年）✓</span></div>`;
   detail+=`<div class="calc-row total"><span>可申請退稅</span><span>${fmt(taxPaid)} 萬</span></div>`;
@@ -412,8 +426,8 @@ function showLine(){
 ${'═'.repeat(22)}
 法源：所得稅法 §17-2
 
-🏠 舊屋出售總價：${fmt(oldPrice)} 萬
-🏡 新屋購入總價：${fmt(newPrice)} 萬
+🏠 舊屋房屋價額：${fmt(oldPrice)} 萬
+🏡 新屋房屋價額：${fmt(newPrice)} 萬
 ${gapDays>0?`📅 兩屋間距：${gapDays} 天（${(gapDays/365).toFixed(1)} 年）\n`:''}
 💸 已繳財交所得稅增加額：${fmt(taxPaid)} 萬
 
