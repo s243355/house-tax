@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>租賃稅務試算｜祐承店長 信義房屋 文心高工店</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --pri:#1a6e46;--pri-d:#0f4a2f;--pri-l:#f0f8f4;--pri-m:#b8dfc4;
+  --red:#C00000;--bg:#faf8f5;--card:#fff;--surface:#edeae6;
+  --border:#e0dad3;--border-d:#c8bfb5;
+  --text:#1a1410;--dim:#5a4e44;--muted:#9a8e84;
+  --green:#2a6e46;--green-l:#f0f8f4;--green-m:#b8dfc4;
+  --gold:#b8860b;--gold-l:#fffbeb;--gold-m:#fcd34d;
+  --blue:#1a3f6e;--blue-l:#eef4fb;--blue-m:#c8ddf0;
+  --orange:#c2410c;--orange-l:#fff7ed;--orange-m:#fed7aa;
+  --sh1:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
+
+header{background:var(--card);border-bottom:3px solid var(--red);height:58px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:var(--sh1);}
+.hdr-home{display:flex;align-items:center;height:100%;padding:0 18px;font-size:.78rem;color:var(--dim);text-decoration:none;font-weight:500;border-right:1px solid var(--border);transition:all .18s;white-space:nowrap;flex-shrink:0;}
+.hdr-home:hover{color:var(--red);background:var(--pri-l);}
+.hdr-mid{display:flex;align-items:center;gap:12px;flex:1;padding:0 20px;}
+.mark{width:32px;height:32px;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sname{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.1;}
+.sname small{display:block;font-size:.6rem;color:var(--muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
+.sep{width:1px;height:22px;background:var(--border);}
+.htool{font-size:.82rem;color:var(--dim);}
+.hbtns{display:flex;gap:8px;padding:0 20px;flex-shrink:0;}
+.hbtn{display:flex;align-items:center;gap:6px;padding:6px 13px;font-size:.74rem;font-family:inherit;font-weight:500;text-decoration:none;border-radius:2px;}
+.hbtn-r{background:var(--red);color:white;}
+.hbtn-g{background:#06C755;color:white;}
+
+.hero{background:var(--pri);padding:40px 40px 36px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border:36px solid rgba(255,255,255,.05);border-radius:50%;}
+.hero-tag{font-size:.66rem;color:rgba(255,255,255,.6);letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:1;}
+.hero h1{font-family:'Noto Serif TC',serif;font-size:1.9rem;font-weight:700;color:white;margin-bottom:8px;position:relative;z-index:1;}
+.hero p{font-size:.87rem;color:rgba(255,255,255,.75);max-width:500px;margin:0 auto;position:relative;z-index:1;}
+.hero-law{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:10px;position:relative;z-index:1;font-family:'JetBrains Mono',monospace;}
+
+main{max-width:780px;margin:0 auto;padding:36px 20px 100px;}
+
+/* 身份選擇卡片 */
+.identity-section{background:var(--card);border:1.5px solid var(--border);padding:22px 24px;margin-bottom:14px;box-shadow:var(--sh1);}
+.sec-label{font-size:.68rem;color:var(--pri);letter-spacing:.18em;text-transform:uppercase;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--pri-m),transparent);}
+.id-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.id-btn{padding:12px 16px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;text-align:left;font-family:inherit;transition:all .18s;border-radius:2px;}
+.id-btn:hover{border-color:var(--pri);background:var(--pri-l);}
+.id-btn.active{border-color:var(--pri);background:var(--pri-l);box-shadow:0 0 0 2px var(--pri-m);}
+.id-btn-title{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+.id-btn.active .id-btn-title{color:var(--pri);}
+.id-btn-sub{font-size:.72rem;color:var(--muted);line-height:1.5;}
+
+/* 輸入卡 */
+.input-card{background:var(--card);border:1.5px solid var(--border);padding:22px 24px;margin-bottom:14px;box-shadow:var(--sh1);}
+.field{margin-bottom:14px;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:.8rem;color:var(--dim);font-weight:500;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.req{font-size:.6rem;background:var(--pri-l);color:var(--pri);border:1px solid var(--pri-m);padding:1px 5px;border-radius:2px;}
+.field-tip{font-size:.7rem;color:var(--muted);margin-top:4px;line-height:1.6;}
+.iw{display:flex;align-items:center;border:1.5px solid var(--border);background:var(--card);transition:border-color .18s,box-shadow .18s;}
+.iw:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-l);}
+.iw input{flex:1;border:none;outline:none;padding:10px 13px;color:var(--text);font-size:.92rem;font-family:'JetBrains Mono',monospace;font-weight:500;background:transparent;min-width:0;}
+.iw input::placeholder{color:var(--muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;font-size:.82rem;}
+.iw .unit{padding:0 12px;font-size:.76rem;color:var(--muted);border-left:1px solid var(--border);white-space:nowrap;}
+
+/* 含稅/未稅切換 */
+.tax-toggle{display:flex;gap:0;border:1.5px solid var(--border);overflow:hidden;border-radius:2px;}
+.tax-toggle-btn{flex:1;padding:9px;font-size:.82rem;font-family:inherit;font-weight:500;border:none;background:var(--card);color:var(--dim);cursor:pointer;transition:all .18s;border-right:1px solid var(--border);}
+.tax-toggle-btn:last-child{border-right:none;}
+.tax-toggle-btn.active{background:var(--pri);color:white;}
+
+.info-box{background:var(--gold-l);border:1.5px solid var(--gold-m);border-left:4px solid var(--gold);padding:12px 16px;font-size:.8rem;color:var(--dim);line-height:1.65;margin-bottom:14px;}
+.warn-box{background:#fff8f8;border:1.5px solid #fca5a5;border-left:4px solid var(--red);padding:12px 16px;font-size:.8rem;color:var(--dim);line-height:1.65;margin-bottom:14px;}
+.no-need-box{background:var(--blue-l);border:1.5px solid var(--blue-m);border-left:4px solid var(--blue);padding:16px 18px;margin-bottom:14px;}
+
+.calc-btn{width:100%;padding:14px;background:var(--pri);border:none;color:white;font-size:.92rem;font-family:'Noto Serif TC',serif;font-weight:700;cursor:pointer;transition:all .18s;margin-top:4px;letter-spacing:.08em;border-radius:2px;}
+.calc-btn:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,110,70,.25);}
+
+/* 結果 */
+#result{display:none;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* 主要金額 bar */
+.money-bar{background:#1a1410;padding:20px 24px;display:flex;flex-wrap:wrap;gap:0;margin-bottom:14px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.money-bar::before{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border:20px solid rgba(255,255,255,.04);border-radius:50%;}
+.mb-item{flex:1;min-width:140px;padding:8px 16px;border-right:1px solid rgba(255,255,255,.08);position:relative;z-index:1;}
+.mb-item:last-child{border-right:none;}
+.mb-label{font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:5px;}
+.mb-val{font-family:'Noto Serif TC',serif;font-size:1.3rem;font-weight:700;color:white;}
+.mb-val.green{color:#4ade80;}
+.mb-val.gold{color:#fcd34d;}
+.mb-val.red{color:#fca5a5;}
+.mb-val.blue{color:#93c5fd;}
+
+/* 明細卡 */
+.detail-card{background:var(--card);border:1.5px solid var(--border);padding:20px 24px;margin-bottom:14px;box-shadow:var(--sh1);}
+.detail-title{font-size:.84rem;color:var(--dim);font-weight:600;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.calc-row:last-child{border-bottom:none;}
+.calc-row.total{color:var(--green);font-weight:700;font-size:.9rem;border-top:2px solid var(--green-m);border-bottom:none;padding-top:12px;margin-top:4px;}
+.calc-row.sub{color:var(--muted);font-size:.78rem;}
+.calc-row.deduct{color:var(--red);}
+.calc-row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:500;}
+
+/* 繳納說明 */
+.deadline-card{background:var(--blue-l);border:1.5px solid var(--blue-m);padding:16px 20px;margin-bottom:14px;border-radius:2px;}
+.deadline-title{font-size:.8rem;font-weight:600;color:var(--blue);margin-bottom:10px;}
+.deadline-item{display:flex;gap:10px;font-size:.8rem;color:var(--dim);padding:5px 0;border-bottom:1px solid rgba(26,63,110,.1);}
+.deadline-item:last-child{border-bottom:none;}
+.deadline-item .tag{font-size:.66rem;background:var(--blue);color:white;padding:1px 7px;border-radius:2px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+
+/* LINE Modal */
+.lm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+.lm-overlay.open{display:flex;}
+.lm-box{background:var(--card);width:100%;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.18);}
+.lm-head{background:#06C755;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.lm-head h3{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:700;color:white;}
+.lm-head p{font-size:.7rem;color:rgba(255,255,255,.8);margin-top:2px;}
+.lm-close{background:rgba(255,255,255,.2);border:none;color:white;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:.9rem;}
+.lm-body{padding:18px 20px;}
+.lm-preview{background:#f3fdf5;border:1.5px solid #b8e8c4;padding:14px 16px;font-size:.78rem;color:#1a3a20;line-height:1.85;white-space:pre-wrap;word-break:break-all;max-height:340px;overflow-y:auto;margin-bottom:12px;}
+.lm-actions{display:flex;gap:10px;}
+.lm-btn{flex:1;padding:11px;font-size:.82rem;font-family:inherit;font-weight:600;cursor:pointer;border:none;border-radius:2px;}
+.lm-copy{background:#06C755;color:white;}
+.lm-copy.copied{background:#2e7d52;}
+.lm-open{background:var(--card);border:1.5px solid #06C755;color:#06C755;}
+
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+.act-btn{padding:10px 18px;font-size:.8rem;font-family:inherit;cursor:pointer;transition:all .18s;border:1.5px solid var(--border-d);background:var(--card);color:var(--dim);border-radius:2px;}
+.act-btn:hover{border-color:var(--pri);color:var(--pri);background:var(--pri-l);}
+.act-btn.primary{background:var(--pri);border-color:var(--pri);color:white;font-weight:600;}
+
+.contact-strip{background:var(--red);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.cs-text strong{display:block;font-family:'Noto Serif TC',serif;font-size:.9rem;color:white;font-weight:700;margin-bottom:2px;}
+.cs-text span{font-size:.76rem;color:rgba(255,255,255,.75);}
+.cs-btns{display:flex;gap:8px;}
+.cs-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none;border:none;}
+.cs-phone{background:white;color:var(--red);}
+.cs-line{background:#06C755;color:white;}
+
+footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
+.fi{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:2px;}
+
+@media(max-width:640px){
+  header{height:52px;}.sep,.htool{display:none;}.hdr-mid{padding:0 12px;}.hbtns{padding:0 10px;gap:5px;}.hbtn{padding:5px 10px;font-size:.7rem;}
+  .hero{padding:30px 16px 26px;}.hero h1{font-size:1.5rem;}
+  main{padding:24px 14px 60px;}
+  .id-grid{grid-template-columns:1fr;}
+  .money-bar{flex-direction:column;}.mb-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);}
+  .contact-strip{flex-direction:column;align-items:flex-start;}
+  footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="hdr-home">← 首頁</a>
+  <div class="hdr-mid">
+    <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
+    <div class="sep"></div>
+    <span class="htool">租賃稅務試算</span>
+  </div>
+  <div class="hbtns">
+    <a class="hbtn hbtn-r" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="hbtn hbtn-g" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
+  <h1>租賃稅務試算</h1>
+  <p>依出租方、承租方身份與租金金額，自動計算<br>扣繳稅款、二代健保補充保費與房東實際收到租金</p>
+  <div class="hero-law">所得稅法 §88 · §89 · 健保法 §2</div>
+</div>
+
+<main>
+
+  <!-- 出租方身份 -->
+  <div class="identity-section">
+    <div class="sec-label">🏠 出租方身份</div>
+    <div class="id-grid">
+      <button class="id-btn active" id="lessor-person" onclick="setLessor('person')">
+        <div class="id-btn-title">👤 自然人（個人）</div>
+        <div class="id-btn-sub">房東為個人，租賃所得須申報綜合所得稅</div>
+      </button>
+      <button class="id-btn" id="lessor-corp" onclick="setLessor('corp')">
+        <div class="id-btn-title">🏢 法人（公司）</div>
+        <div class="id-btn-sub">房東為公司、行號等，無預扣所得稅及二代健保問題</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 承租方身份 -->
+  <div class="identity-section">
+    <div class="sec-label">🏪 承租方身份</div>
+    <div class="id-grid">
+      <button class="id-btn active" id="lessee-biz" onclick="setLessee('biz')">
+        <div class="id-btn-title">🏢 公司／法人／機關</div>
+        <div class="id-btn-sub">供營業使用，為扣繳義務人，需辦理扣繳</div>
+      </button>
+      <button class="id-btn" id="lessee-person" onclick="setLessee('person')">
+        <div class="id-btn-title">👤 自然人（住宅用）</div>
+        <div class="id-btn-sub">個人承租供住宅使用，無需辦理扣繳</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 不需扣繳提示（動態顯示）-->
+  <div class="no-need-box" id="no-need-box" style="display:none;">
+    <div style="font-size:.88rem;font-weight:600;color:var(--blue);margin-bottom:6px;">ℹ 此情況不需辦理扣繳</div>
+    <div style="font-size:.82rem;color:var(--dim);line-height:1.7;" id="no-need-reason"></div>
+  </div>
+
+  <!-- 租金輸入 -->
+  <div class="input-card" id="input-section">
+    <div class="sec-label">💰 租金資料</div>
+
+    <!-- 含稅/未稅 -->
+    <div class="field">
+      <div class="field-label">租金類型</div>
+      <div class="tax-toggle">
+        <button class="tax-toggle-btn active" id="btn-tax-inc" onclick="setTaxMode('inc')">含稅（合約租金直接扣）</button>
+        <button class="tax-toggle-btn" id="btn-tax-exc" onclick="setTaxMode('exc')">未稅（房東實拿金額，倒算）</button>
+      </div>
+      <div class="field-tip" id="tax-mode-tip">合約上的租金為「含稅」── 直接從租金中扣除預扣所得稅及二代健保，剩餘金額匯給房東</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label" id="rent-label">單月租金（含稅）<span class="req">必填</span></div>
+      <div class="iw">
+        <input type="number" id="rent-input" placeholder="例：45000" oninput="liveCheck()">
+        <span class="unit">元</span>
+      </div>
+      <div class="field-tip" id="rent-tip">輸入合約上的月租金金額</div>
+    </div>
+
+    <!-- 門檻提示（動態）-->
+    <div id="threshold-note" style="display:none;"></div>
+
+    <!-- 公證費用試算 -->
+    <hr style="border:none;border-top:1px dashed var(--border);margin:16px 0;">
+    <div class="sec-label">📝 租約公證費試算（選填）</div>
+    <div class="info-box" style="margin-bottom:12px;">
+      📐 <strong>計算公式（公證法施行細則 §84）</strong>：取以下兩者較高值，再加押金，對照費率表。<br>
+      　①  月租金 × 租期月數　②  房屋課稅現值（查房屋稅稅單）<br>
+      若附加強制執行條款，公證費再加收 1/2。
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="field">
+        <div class="field-label">租期</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div class="iw" style="flex:1;"><input type="number" id="lease-years" placeholder="1" min="0" oninput="calcNotary()"><span class="unit">年</span></div>
+          <div class="iw" style="flex:1;"><input type="number" id="lease-months" placeholder="0" min="0" max="11" oninput="calcNotary()"><span class="unit">月</span></div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">押金（保證金）</div>
+        <div class="iw"><input type="number" id="deposit" placeholder="0" oninput="calcNotary()"><span class="unit">元</span></div>
+        <div class="field-tip">未約定押金填 0</div>
+      </div>
+      <div class="field">
+        <div class="field-label">房屋課稅現值</div>
+        <div class="iw"><input type="number" id="house-tax-val" placeholder="例：450000" oninput="calcNotary()"><span class="unit">元</span></div>
+        <div class="field-tip">查最新一期房屋稅稅單上的「房屋課稅現值」</div>
+      </div>
+      <div class="field">
+        <div class="field-label">附加強制執行條款</div>
+        <div style="display:flex;gap:0;border:1.5px solid var(--border);overflow:hidden;border-radius:2px;">
+          <button type="button" id="btn-enforce-yes" onclick="setEnforce(true)"
+            style="flex:1;padding:8px;font-size:.78rem;font-family:inherit;border:none;background:var(--pri);color:white;cursor:pointer;">是（建議加）</button>
+          <button type="button" id="btn-enforce-no" onclick="setEnforce(false)"
+            style="flex:1;padding:8px;font-size:.78rem;font-family:inherit;border:none;background:var(--card);color:var(--dim);cursor:pointer;">否</button>
+        </div>
+        <div class="field-tip">加強制執行可直接聲請執行，無需訴訟</div>
+      </div>
+    </div>
+    <div id="notary-result" style="display:none;background:var(--green-l);border:1.5px solid var(--green-m);border-left:4px solid var(--green);padding:13px 16px;font-size:.84rem;line-height:1.8;"></div>
+    <input type="hidden" id="notary-fee" value="0">
+
+    <button class="calc-btn" onclick="calculate()">▶ 試算扣繳金額</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result">
+
+    <!-- 主要金額 bar -->
+    <div class="money-bar" id="money-bar"></div>
+
+    <!-- 計算明細 -->
+    <div class="detail-card">
+      <div class="detail-title">📋 計算明細</div>
+      <div id="calc-detail"></div>
+    </div>
+
+    <!-- 繳納期限說明 -->
+    <div class="deadline-card" id="deadline-card" style="display:none;">
+      <div class="deadline-title">📅 扣繳義務人（承租方）繳納期限</div>
+      <div class="deadline-item">
+        <span class="tag">扣繳稅款</span>
+        <span>於給付租金日之<strong>次月 10 日前</strong>向國庫繳納，並於次年 1 月底前申報扣繳憑單</span>
+      </div>
+      <div class="deadline-item">
+        <span class="tag">二代健保</span>
+        <span>於給付租金日之<strong>次月底前</strong>向健保署繳納</span>
+      </div>
+      <div class="deadline-item">
+        <span class="tag">注意</span>
+        <span>未依規定扣繳，承租人最高可處應扣繳金額之 3 倍罰鍰（所得稅法 §114、健保法 §85）</span>
+      </div>
+    </div>
+
+    <!-- 注意事項 -->
+    <div class="info-box" id="result-note"></div>
+
+    <div class="result-actions">
+      <button class="act-btn primary" onclick="showLine()">📤 LINE 分享</button>
+      <button class="act-btn" onclick="generatePDF()">📄 下載 PDF</button>
+      <button class="act-btn" onclick="resetAll()">🔄 重新試算</button>
+    </div>
+
+    <div class="contact-strip">
+      <div class="cs-text">
+        <strong id="cs-title">租賃稅務有疑問？祐承店長 信義房屋 文心高工店</strong>
+        <span>協助確認扣繳義務與實際匯款金額</span>
+      </div>
+      <div class="cs-btns">
+        <a class="cs-btn cs-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
+        <a class="cs-btn cs-line" id="res-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LINE Modal -->
+<div class="lm-overlay" id="lm-overlay" onclick="if(event.target===this)closeLM()">
+  <div class="lm-box">
+    <div class="lm-head">
+      <div><h3>LINE 試算摘要</h3><p>複製後貼到 LINE 與客戶分享</p></div>
+      <button class="lm-close" onclick="closeLM()">✕</button>
+    </div>
+    <div class="lm-body">
+      <div class="lm-preview" id="lm-text"></div>
+      <div class="lm-actions">
+        <button class="lm-btn lm-copy" id="lm-btn" onclick="copyLM()">📋 複製文字</button>
+        <button class="lm-btn lm-open" onclick="openLineLM()">開啟 LINE →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark" style="width:26px;height:26px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">租賃稅務試算 · 僅供參考</div></div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
+    <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:5px 12px;text-decoration:none;font-size:.76rem;font-weight:500;">LINE</a>
+  </div>
+</footer>
+
+<script>
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
+function fmtN(v){return Math.round(v).toLocaleString();}
+function fmtF(v){return v.toFixed(2);}
+
+let lessor='person'; // 'person' | 'corp'
+let lessee='biz';   // 'biz' | 'person'
+let taxMode='inc';  // 'inc'=含稅 | 'exc'=未稅（實拿）
+let lastResult=null;
+
+// ── 身份切換 ──
+function setLessor(v){
+  lessor=v;
+  document.getElementById('lessor-person').classList.toggle('active',v==='person');
+  document.getElementById('lessor-corp').classList.toggle('active',v==='corp');
+  updateCondition();
+}
+function setLessee(v){
+  lessee=v;
+  document.getElementById('lessee-biz').classList.toggle('active',v==='biz');
+  document.getElementById('lessee-person').classList.toggle('active',v==='person');
+  updateCondition();
+}
+function setTaxMode(v){
+  taxMode=v;
+  document.getElementById('btn-tax-inc').classList.toggle('active',v==='inc');
+  document.getElementById('btn-tax-exc').classList.toggle('active',v==='exc');
+  const label=document.getElementById('rent-label');
+  const tip=document.getElementById('rent-tip');
+  if(v==='inc'){
+    label.innerHTML='單月租金（含稅）<span class="req">必填</span>';
+    tip.textContent='合約上的月租金，承租方直接從此金額中扣除稅費後匯款';
+    document.getElementById('tax-mode-tip').textContent='合約上的租金為「含稅」── 直接從租金中扣除預扣所得稅及二代健保，剩餘金額匯給房東';
+  } else {
+    label.innerHTML='房東實拿金額（未稅）<span class="req">必填</span>';
+    tip.textContent='房東希望每月實際入帳的金額，系統自動倒算出含稅租金';
+    document.getElementById('tax-mode-tip').textContent='房東「實拿」金額為「未稅」── 由系統倒算出含稅租金，承租方實際給付金額會高於此數字';
+  }
+  liveCheck();
+}
+
+function updateCondition(){
+  const noNeed = lessor==='corp' || lessee==='person';
+  document.getElementById('no-need-box').style.display = noNeed?'block':'none';
+  document.getElementById('result').style.display = 'none';
+  lastResult=null;
+  if(noNeed){
+    let reason='';
+    if(lessor==='corp') reason='出租方為法人（公司），租賃所得非個人所得稅範疇，不適用預扣所得稅 10% 及二代健保補充保費 2.11% 之規定。';
+    else if(lessee==='person') reason='承租方為自然人且供住宅使用，不屬於扣繳義務人，無需辦理扣繳。房客可於報稅時以租金支出列舉扣除額（最高 12 萬元）。';
+    document.getElementById('no-need-reason').textContent=reason;
+  }
+  liveCheck();
+}
+
+function liveCheck(){
+  if(lessor==='corp'||lessee==='person'){
+    document.getElementById('threshold-note').style.display='none';
+    return;
+  }
+  const rent=parseFloat(document.getElementById('rent-input').value)||0;
+  if(!rent){document.getElementById('threshold-note').style.display='none';return;}
+
+  // 換算含稅租金
+  const totalRent = taxMode==='inc' ? rent : rent/0.8789;
+
+  let html='';
+  if(totalRent < 20000){
+    html=`<div class="warn-box">⚠ 月租金未達 2 萬元（${fmtN(totalRent)} 元），<strong>不需要</strong>扣繳預扣所得稅及二代健保補充保費。</div>`;
+  } else if(Math.abs(totalRent - 20000) < 1){
+    html=`<div class="info-box">📌 月租金剛好 2 萬元，<strong>只需扣二代健保補充保費（2.11%）</strong>，不需扣 10% 預扣所得稅。</div>`;
+  } else {
+    html=`<div style="background:var(--pri-l);border:1.5px solid var(--pri-m);border-left:4px solid var(--pri);padding:10px 14px;font-size:.78rem;color:var(--dim);margin-bottom:0;">✅ 月租金超過 2 萬元，<strong>同時適用預扣所得稅 10% 及二代健保補充保費 2.11%</strong>。</div>`;
+  }
+  document.getElementById('threshold-note').style.display='block';
+  document.getElementById('threshold-note').innerHTML=html;
+}
+
+function calculate(){
+  const rent=parseFloat(document.getElementById('rent-input').value)||0;
+  const notaryFee=parseFloat(document.getElementById('notary-fee').value)||0;
+  if(!rent){alert('請填入月租金');return;}
+
+  // ── 判斷是否需要扣繳 ──
+  const needWithhold = (lessor==='person' && lessee==='biz');
+
+  // ── 計算含稅給付總額 ──
+  let totalRent, withhold, nhi, landlordNet;
+
+  if(!needWithhold){
+    totalRent = rent;
+    withhold = 0;
+    nhi = 0;
+    landlordNet = rent;
+  } else if(taxMode==='inc'){
+    // 含稅模式：租金即為給付總額
+    totalRent = rent;
+    if(totalRent < 20000){
+      withhold = 0; nhi = 0;
+    } else if(Math.abs(totalRent-20000)<0.01){
+      withhold = 0; nhi = totalRent*0.0211;
+    } else {
+      withhold = totalRent*0.10; nhi = totalRent*0.0211;
+    }
+    landlordNet = totalRent - withhold - nhi;
+  } else {
+    // 未稅模式：倒算
+    if(rent < 20000/0.8789 && rent < 20000){
+      // 實拿低於門檻換算
+      totalRent = rent;
+      withhold = 0; nhi = 0;
+      landlordNet = rent;
+    } else if(Math.abs(rent - 20000/(1-0.0211)) < 1){
+      // 僅健保門檻
+      totalRent = rent/(1-0.0211);
+      withhold = 0; nhi = totalRent*0.0211;
+      landlordNet = rent;
+    } else {
+      totalRent = rent/0.8789;
+      withhold = totalRent*0.10; nhi = totalRent*0.0211;
+      landlordNet = rent;
+    }
+  }
+
+  // 扣繳稅額低於 2000 元免扣繳（但仍須列單申報）
+  const withholdExempt = (withhold>0 && withhold<2000);
+
+  // ── 渲染結果 ──
+  document.getElementById('result').style.display='block';
+
+  // money bar
+  let barHtml='';
+  if(needWithhold){
+    barHtml+=`<div class="mb-item"><div class="mb-label">給付總額（含稅）</div><div class="mb-val">${fmtN(totalRent)} 元</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">預扣所得稅（10%）</div><div class="mb-val red">${fmtN(withhold)} 元</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">二代健保（2.11%）</div><div class="mb-val gold">${fmtN(nhi)} 元</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">房東實際收到租金</div><div class="mb-val green">${fmtN(landlordNet)} 元</div></div>`;
+  } else {
+    barHtml+=`<div class="mb-item"><div class="mb-label">月租金</div><div class="mb-val">${fmtN(totalRent)} 元</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">預扣所得稅</div><div class="mb-val">— 不需扣繳</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">二代健保</div><div class="mb-val">— 不需扣繳</div></div>`;
+    barHtml+=`<div class="mb-item"><div class="mb-label">房東實際收款</div><div class="mb-val green">${fmtN(landlordNet)} 元</div></div>`;
+  }
+  document.getElementById('money-bar').innerHTML=barHtml;
+
+  // 計算明細
+  let d='';
+  const lessorLabel = lessor==='person'?'自然人（個人）':'法人（公司）';
+  const lesseeLabel = lessee==='biz'?'公司／法人（營業用）':'自然人（住宅用）';
+  d+=`<div class="calc-row sub"><span>出租方</span><span>${lessorLabel}</span></div>`;
+  d+=`<div class="calc-row sub"><span>承租方</span><span>${lesseeLabel}</span></div>`;
+  d+=`<div class="calc-row sub"><span>租金類型</span><span>${taxMode==='inc'?'含稅（給付總額）':'未稅（房東實拿，倒算）'}</span></div>`;
+  d+=`<div class="calc-row"><span>給付總額（含稅租金）</span><span>${fmtN(totalRent)} 元</span></div>`;
+  if(taxMode==='exc' && needWithhold){
+    d+=`<div class="calc-row sub"><span>　倒算公式</span><span>${fmtN(rent)} ÷ 0.8789 = ${fmtN(totalRent)} 元</span></div>`;
+  }
+  if(needWithhold){
+    if(withhold>0){
+      d+=`<div class="calc-row deduct"><span>預扣所得稅（10%）</span><span>− ${fmtN(withhold)} 元</span></div>`;
+      if(withholdExempt) d+=`<div class="calc-row sub"><span>　扣繳稅額未達 2,000 元</span><span>免扣繳，但仍須列單申報</span></div>`;
+    } else if(totalRent>=20000){
+      d+=`<div class="calc-row sub"><span>預扣所得稅</span><span>月租金剛好 2 萬，不適用 10% 扣繳</span></div>`;
+    } else {
+      d+=`<div class="calc-row sub"><span>預扣所得稅</span><span>月租金未達 2 萬元，免扣繳</span></div>`;
+    }
+    if(nhi>0){
+      d+=`<div class="calc-row deduct"><span>二代健保補充保費（2.11%）</span><span>− ${fmtN(nhi)} 元</span></div>`;
+    } else {
+      d+=`<div class="calc-row sub"><span>二代健保補充保費</span><span>月租金未達 2 萬元，免扣繳</span></div>`;
+    }
+    d+=`<div class="calc-row total"><span>房東實際收到租金</span><span>${fmtN(landlordNet)} 元</span></div>`;
+  } else {
+    d+=`<div class="calc-row total"><span>房東實際收款金額</span><span>${fmtN(landlordNet)} 元</span></div>`;
+    d+=`<div class="calc-row sub"><span>原因</span><span>${lessor==='corp'?'出租方為法人，無需扣繳':'承租方為自然人住宅用，無需扣繳'}</span></div>`;
+  }
+  if(notaryFee>0){
+    d+=`<div class="calc-row" style="border-top:1px dashed var(--border);margin-top:4px;padding-top:13px;"><span>公證費用（另列）</span><span>${fmtN(notaryFee)} 元</span></div>`;
+    d+=`<div class="calc-row sub"><span>　公證費不計入租金，雙方另行約定負擔</span><span></span></div>`;
+  }
+  document.getElementById('calc-detail').innerHTML=d;
+
+  // 繳納期限
+  document.getElementById('deadline-card').style.display = (needWithhold&&(withhold>0||nhi>0))?'block':'none';
+
+  // 注意事項
+  let note='';
+  if(needWithhold&&withhold>0&&nhi>0){
+    note=`📌 <strong>承租方為扣繳義務人</strong>，每月給付租金時應主動扣除預扣稅款及二代健保，分別在次月 10 日及次月底前繳納，並於次年 1 月底前申報扣繳憑單。未依規定辦理最高可處 3 倍罰鍰。`;
+  } else if(!needWithhold && lessee==='person'){
+    note=`💡 個人承租住宅用途，房客可在年度綜合所得稅申報時，以<strong>房租支出列舉扣除額</strong>（每戶最高 12 萬元），房東則依租賃所得申報個人綜合所得稅。`;
+  } else if(!needWithhold && lessor==='corp'){
+    note=`💡 出租方為法人，租賃收入歸入公司營業收入課徵<strong>營利事業所得稅</strong>，承租方無需辦理預扣。`;
+  }
+  document.getElementById('result-note').innerHTML=note;
+
+  lastResult={lessor,lessee,taxMode,rent,totalRent,withhold,nhi,landlordNet,notaryFee,needWithhold};
+  saveHistory('rental-tax','租賃稅務試算',
+    `${lessor==='person'?'自然人':'法人'}出租・${lessee==='biz'?'公司承租':'個人承租'}・${taxMode==='inc'?'含稅':'未稅'} ${fmtN(rent)}元 → 房東實拿 ${fmtN(landlordNet)}元`,
+    {lessor,lessee,taxMode,rent}
+  );
+  setTimeout(()=>document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+function showLine(){
+  if(!lastResult){alert('請先完成試算');return;}
+  const cfg=getConfig();
+  const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const {lessor,lessee,taxMode,rent,totalRent,withhold,nhi,landlordNet,notaryFee,needWithhold}=lastResult;
+  const lessorLabel=lessor==='person'?'自然人（個人）':'法人（公司）';
+  const lesseeLabel=lessee==='biz'?'公司／法人（營業用）':'自然人（住宅用）';
+
+  let msg=`🏠 租賃稅務試算結果\n${'═'.repeat(22)}\n`;
+  msg+=`出租方：${lessorLabel}\n`;
+  msg+=`承租方：${lesseeLabel}\n`;
+  msg+=`租金類型：${taxMode==='inc'?'含稅':'未稅（房東實拿）'}\n`;
+  msg+=`輸入金額：${fmtN(rent)} 元\n\n`;
+  msg+=`【計算結果】\n${'─'.repeat(22)}\n`;
+  msg+=`給付總額（含稅）：${fmtN(totalRent)} 元\n`;
+  if(needWithhold){
+    msg+=`預扣所得稅（10%）：− ${fmtN(withhold)} 元\n`;
+    msg+=`二代健保（2.11%）：− ${fmtN(nhi)} 元\n`;
+    msg+=`${'─'.repeat(22)}\n`;
+    msg+=`✅ 房東實際收到租金：${fmtN(landlordNet)} 元\n`;
+  } else {
+    msg+=`✅ 房東實際收款金額：${fmtN(landlordNet)} 元\n`;
+    msg+=`（${lessor==='corp'?'出租方為法人，無需扣繳':'承租方為自然人住宅用，無需扣繳'}）\n`;
+  }
+  if(notaryFee>0) msg+=`公證費用（另列）：${fmtN(notaryFee)} 元\n`;
+  msg+=`\n試算日期：${today}\n📞 ${brand}\n☎ ${phone}\nLINE：${lineUrl}\n祐承店長 ${phone}`;
+  document.getElementById('lm-text').textContent=msg;
+  document.getElementById('lm-overlay').classList.add('open');
+  document.getElementById('lm-btn').textContent='📋 複製文字';
+  document.getElementById('lm-btn').classList.remove('copied');
+}
+function closeLM(){document.getElementById('lm-overlay').classList.remove('open');}
+function copyLM(){
+  const text=document.getElementById('lm-text').textContent;
+  const btn=document.getElementById('lm-btn');
+  const done=()=>{btn.textContent='✅ 已複製！';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 複製文字';btn.classList.remove('copied');},3000);};
+  navigator.clipboard.writeText(text).then(done).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();});
+}
+function openLineLM(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('lm-text').textContent),'_blank');}
+
+async function generatePDF(){
+  if(!lastResult){alert('請先完成試算');return;}
+  const cfg=getConfig();
+  const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const today=new Date().toLocaleDateString('zh-TW');
+  const {lessor,lessee,taxMode,rent,totalRent,withhold,nhi,landlordNet,notaryFee,needWithhold}=lastResult;
+  const lessorLabel=lessor==='person'?'自然人（個人）':'法人（公司）';
+  const lesseeLabel=lessee==='biz'?'公司／法人（營業用）':'自然人（住宅用）';
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;">
+    <div style="background:#1a6e46;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">租賃稅務試算報告</span></div>
+      <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
+    </div>
+    <div style="background:#1a1410;padding:16px 28px;display:flex;flex-wrap:wrap;gap:0;">
+      ${[
+        ['給付總額（含稅）',fmtN(totalRent)+' 元','white'],
+        ['預扣所得稅（10%）',needWithhold&&withhold>0?fmtN(withhold)+' 元':'—','#fca5a5'],
+        ['二代健保（2.11%）',needWithhold&&nhi>0?fmtN(nhi)+' 元':'—','#fcd34d'],
+        ['房東實際收到租金',fmtN(landlordNet)+' 元','#4ade80'],
+      ].map(([l,v,col])=>'<div style="flex:1;min-width:120px;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);"><div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:15px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
+    </div>
+    <div style="padding:20px 28px;">
+      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">試算條件</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">出租方身份</div><div style="font-size:13px;font-weight:600;">${lessorLabel}</div></div>
+        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">承租方身份</div><div style="font-size:13px;font-weight:600;">${lesseeLabel}</div></div>
+        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">租金類型</div><div style="font-size:13px;font-weight:600;">${taxMode==='inc'?'含稅':'未稅（倒算）'}</div></div>
+        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">輸入金額</div><div style="font-size:13px;font-weight:600;">${fmtN(rent)} 元</div></div>
+      </div>
+      ${needWithhold?`<div style="background:#f0f8f4;border:1px solid #b8dfc4;border-left:3px solid #1a6e46;padding:12px 14px;font-size:10px;color:#1a3a20;line-height:1.7;">
+        扣繳義務人（承租方）應於給付日次月 10 日前繳納扣繳稅款，次月底前繳納二代健保補充保費，並於次年 1 月底前申報扣繳憑單。
+      </div>`:''}
+      ${notaryFee>0?`<div style="margin-top:12px;padding:10px 14px;border:1px solid #e0dad3;font-size:11px;color:#5a4e44;">公證費用（另列）：${fmtN(notaryFee)} 元</div>`:''}
+    </div>
+    <div style="background:#1a4a7a;padding:14px 28px;">
+      <div style="font-family:'Noto Serif TC',serif;font-size:13px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8);">${phone}　｜　LINE：${lineUrl}</div>
+    </div>
+    <div style="padding:10px 28px;font-size:9px;color:#9a8e84;line-height:1.65;">⚠ 本試算報告僅供參考，實際扣繳金額依國稅局及健保署規定為準。</div>
+  </div>`;
+  const btn=document.querySelector('.act-btn[onclick="generatePDF()"]');
+  if(btn){btn.textContent='⏳ 產生中...';btn.disabled=true;}
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML=html;document.body.appendChild(container);
+  await new Promise(r=>setTimeout(r,800));
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const pdfW=pdf.internal.pageSize.getWidth(),pdfH=pdf.internal.pageSize.getHeight();
+    const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
+    const imgData=canvas.toDataURL('image/jpeg',0.92);
+    const imgH=canvas.height*pdfW/canvas.width;
+    let y=0,page=0;
+    while(y<imgH){if(page>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,-y,pdfW,imgH);y+=pdfH;page++;}
+    pdf.save(`租賃稅務試算_${today.replace(/\//g,'')}.pdf`);
+  }finally{
+    document.body.removeChild(container);
+    if(btn){btn.textContent='📄 下載 PDF';btn.disabled=false;}
+  }
+}
+
+// ── 公證費計算 ──
+let withEnforce = true;
+
+function setEnforce(v){
+  withEnforce = v;
+  document.getElementById('btn-enforce-yes').style.background = v ? 'var(--pri)' : 'var(--card)';
+  document.getElementById('btn-enforce-yes').style.color = v ? 'white' : 'var(--dim)';
+  document.getElementById('btn-enforce-no').style.background = v ? 'var(--card)' : 'var(--pri)';
+  document.getElementById('btn-enforce-no').style.color = v ? 'var(--dim)' : 'white';
+  calcNotary();
+}
+
+function calcNotary(){
+  const rent = parseFloat(document.getElementById('rent-input').value) || 0;
+  const yrs  = parseFloat(document.getElementById('lease-years').value) || 0;
+  const mos  = parseFloat(document.getElementById('lease-months').value) || 0;
+  const dep  = parseFloat(document.getElementById('deposit').value) || 0;
+  const htv  = parseFloat(document.getElementById('house-tax-val').value) || 0;
+
+  const totalMonths = yrs * 12 + mos;
+  if(!rent || !totalMonths){ document.getElementById('notary-result').style.display='none'; return; }
+
+  const base1 = rent * totalMonths;        // 計算標準一：租金總額
+  const base2 = htv;                        // 計算標準二：課稅現值
+  const baseHigher = Math.max(base1, base2) + dep;
+
+  // 費率表（標的價額上限, 基本公證費）
+  const RATE = [
+    [200000, 1000],[500000,2000],[1000000,3000],[2000000,4000],
+    [5000000,5000],[10000000,6000],[20000000,8000],[30000000,10000],
+    [40000000,12000],[50000000,14000],[60000000,15000],[70000000,16000],
+    [80000000,17000],[90000000,18000],[100000000,19000]
+  ];
+  let baseFee = 19000;
+  for(const [max, fee] of RATE){
+    if(baseHigher <= max){ baseFee = fee; break; }
+  }
+  // 超過1億：每1千萬加1000
+  if(baseHigher > 100000000){
+    baseFee = 19000 + Math.ceil((baseHigher - 100000000) / 10000000) * 1000;
+  }
+
+  const notaryFee = withEnforce ? Math.round(baseFee * 1.5) : baseFee;
+  document.getElementById('notary-fee').value = notaryFee;
+
+  const chosenBase = base1 >= base2 ? '計算標準一（租金總額）' : '計算標準二（課稅現值）';
+  document.getElementById('notary-result').style.display = 'block';
+  document.getElementById('notary-result').innerHTML =
+    `<strong>試算公證費：${notaryFee.toLocaleString()} 元</strong>（${withEnforce?'含強制執行條款':'不含強制執行條款'}）<br>
+    　採用：${chosenBase}（${Math.round(baseHigher).toLocaleString()} 元） → 基本費 ${baseFee.toLocaleString()} 元${withEnforce?' × 1.5 = '+notaryFee.toLocaleString()+' 元':''}<br>
+    　標準一：租金 ${fmtN(rent)} × ${totalMonths} 月 = ${fmtN(base1)} 元（加押金 ${fmtN(dep)} 元）<br>
+    ${htv > 0 ? `　標準二：課稅現值 ${fmtN(htv)} 元（加押金 ${fmtN(dep)} 元）<br>` : ''}
+    <span style="font-size:.72rem;color:var(--muted);">⚠ 本試算僅供參考，實際費用依公證人核定為準</span>`;
+}
+
+function resetAll(){
+  document.getElementById('rent-input').value='';
+  ['lease-years','lease-months','deposit','house-tax-val'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('notary-fee').value='0';
+  document.getElementById('notary-result').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('threshold-note').style.display='none';
+  lastResult=null;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function saveHistory(tool,title,summary,params){
+  try{const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');h.unshift({id:Date.now(),tool,title,summary,date:new Date().toLocaleDateString('zh-TW'),time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),params});if(h.length>50)h.pop();localStorage.setItem('rlandy_history',JSON.stringify(h));}catch(e){}
+}
+
+(function(){
+  const c=getConfig();
+  function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+  function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+  sa('hdr-branch',c.brandSubtitle);
+  const pl=c.phoneLabel||'祐承 0933-317-625';
+  sa('hdr-phone-label',pl);
+  sh('hdr-phone','tel:'+(c.phone||'0933317625'));
+  sh('hdr-line',c.lineUrl);sh('footer-line',c.lineUrl);
+  sh('res-phone','tel:'+(c.phone||'0933317625'));sh('res-line',c.lineUrl);
+  sa('footer-brand',c.brand);
+  sa('footer-phone','📞 祐承店長 '+(pl||'0933-317-625'));
+})();
+</script>
+</body>
+</html>
