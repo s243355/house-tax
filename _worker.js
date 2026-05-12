@@ -25,7 +25,8 @@ export default {
       return handleScrapeProp(request, env, cors);
     }
 
-return env.ASSETS.fetch(request);
+    // 所有其他請求：交給靜態資產處理
+    return env.ASSETS.fetch(request);
   }
 };
 
