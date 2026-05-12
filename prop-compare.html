@@ -204,7 +204,13 @@ function parseText(text){
 
 async function fetchProp(p){
   var pageUrl="https://www.sinyi.com.tw/buy/house/"+p.code+"/243355?openExternalBrowser=1";
-  var prompt="請讀取這個信義房屋物件網頁並提取資料，只回傳 JSON 不要其他說明。URL: "+pageUrl+" 頁面 meta-description 格式：案名位於城市地區路段，格局總價X萬... 頁面正文包含：建坪XX坪、X房X廳X衛、XX年（大樓）、X樓/XX樓、車位類型、管理費約X元/月。請回傳JSON：{\"title\":\"案名\",\"community\":\"社區名\",\"address\":\"路段路名\",\"price\":數字,\"area\":數字,\"mainArea\":數字,\"rooms\":\"格局\",\"age\":數字,\"floor\":數字,\"totalFloor\":數字,\"hasPark\":true或false,\"parkType\":\"車位類型\",\"mgmtFee\":數字或0}";
+  var prompt="請搜尋這個信義房屋物件並從搜尋結果的 meta-description 和 og:title 中提取資料。"
+    +"搜尋：sinyi.com.tw/buy/house/"+p.code+" "
+    +"或直接搜尋物件編號："+p.code+" 信義房屋"
+    +"\n\nmeta-description 格式範例：「【專任】近中山醫三房平車位於台中市南區工學北路，3房2廳2衛總價1938萬...」"
+    +"\nog:title 格式範例：「【專任】近中山醫三房平車｜親家M3｜台中市南區大樓房屋出售 - 信義房屋」"
+    +"\n\n從上述資訊提取並只回傳 JSON（不要任何說明文字）："
+    +'{"title":"案名（og:title 第一個｜之前的部分，例如【專任】近中山醫三房平車）","community":"社區名（og:title 第二個｜之間，例如親家M3）","address":"路段（meta-description 中「位於台中市XX區」後的路名，例如工學北路）","price":數字,"area":數字,"rooms":"格局（例如3房2廳2衛）","age":0,"floor":0,"totalFloor":0,"hasPark":true,"parkType":"平車"}';
   try{
     var res=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
@@ -242,6 +248,211 @@ async function fetchProp(p){
     return {title:p.title,community:"",address:p.address,price:p.price,area:p.area,
       mainArea:0,rooms:"",age:0,floor:0,totalFloor:0,
       hasPark:p.hasPark,parkType:"",mgmtFee:0};
+  }
+}
+
+async function startAll(){
+  var text=document.getElementById("paste").value;
+  var list=parseText(text);
+  if(!list.length){alert("未偵測到有效物件訊息");return;}
+  document.getElementById("overlay").classList.add("on");
+  document.getElementById("prog-wrap").style.display="block";
+  var fill=document.getElementById("prog-fill");
+  var lbl=document.getElementById("prog-label");
+  props=[];
+  for(var i=0;i<list.length;i++){
+    var p=list[i];
+    document.getElementById("ov-sub").textContent=(i+1)+"/"+list.length+" 讀取 "+p.code+"...";
+    lbl.textContent="讀取中 "+(i+1)+"/"+list.length+"："+p.code;
+    fill.style.width=((i/list.length)*100)+"%";
+    var api=await fetchProp(p);
+    props.push(Object.assign({},p,api,{parkArea:0,parkPrice:0,img:"https://res.sinyi.com.tw/buy/"+p.code+"/bigimg/A.JPG"}));
+  }
+  fill.style.width="100%";
+  document.getElementById("overlay").classList.remove("on");
+  renderReport();
+}
+
+function calcD(p){
+  var pA=p.parkArea||0,pP=p.parkPrice||0;
+  var pureArea=pA>0?p.area-pA:p.area;
+  var withParkUnit=p.area>0?p.price/p.area:0;
+  var unitPrice=pureArea>0&&pA>0?(p.price-pP)/pureArea:withParkUnit;
+  return Object.assign({},p,{pureArea:pureArea,withParkUnit:withParkUnit,unitPrice:unitPrice});
+}
+
+function sortData(arr){
+  var k=sortKey;
+  return arr.slice().sort(function(a,b){
+    var da=calcD(a),db=calcD(b);
+    var av=da[k]!=null?da[k]:0,bv=db[k]!=null?db[k]:0;
+    return sortAsc?av-bv:bv-av;
+  });
+}
+
+function renderReport(){
+  var data=sortData(props).map(calcD);
+  var prices=data.map(function(d){return d.price;}).filter(Boolean);
+  var units=data.map(function(d){return d.unitPrice;}).filter(Boolean);
+  var avg=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
+  document.getElementById("summary").innerHTML=
+    "<div class='sb'><div class='sb-l'>比較物件數</div><div class='sb-v'>"+data.length+" 件</div></div>"+
+    "<div class='sb'><div class='sb-l'>總價範圍</div><div class='sb-v y'>"+Math.min.apply(null,prices).toFixed(0)+"～"+Math.max.apply(null,prices).toFixed(0)+" 萬</div></div>"+
+    "<div class='sb'><div class='sb-l'>平均扣車單價</div><div class='sb-v g'>"+avg(units).toFixed(1)+" 萬/坪</div></div>"+
+    "<div class='sb'><div class='sb-l'>最低扣車單價</div><div class='sb-v y'>"+Math.min.apply(null,units).toFixed(1)+" 萬/坪</div></div>";
+
+  var minU=Math.min.apply(null,units),minP=Math.min.apply(null,prices);
+  var cols=[
+    {k:"img",l:"照片",s:false},{k:"title",l:"案名",s:false},{k:"address",l:"路段",s:false},
+    {k:"price",l:"總價（萬）",s:true},{k:"area",l:"總建坪",s:true},
+    {k:"withParkUnit",l:"含車單價",s:true},{k:"unitPrice",l:"扣車單價",s:true},
+    {k:"age",l:"屋齡",s:true},{k:"floor",l:"樓別",s:true},
+    {k:"parkType",l:"車位",s:false},{k:"mgmtFee",l:"管理費/月",s:true},{k:"link",l:"連結",s:false}
+  ];
+  var thead="<thead><tr>"+cols.map(function(c){
+    var isAct=c.s&&sortKey===c.k;
+    var arrows=c.s?"<span class='arrows'><span style='opacity:"+(isAct&&!sortAsc?1:.2)+"'>▲</span><span style='opacity:"+(isAct&&sortAsc?1:.2)+"'>▼</span></span>":"";
+    var dataKey=c.s?" data-sort='"+c.k+"'":"";
+    return "<th class='"+(c.s?"s":"")+(isAct?" act":"")+"'"+dataKey+"><div style='display:flex;align-items:center;justify-content:center;gap:3px;'>"+c.l+arrows+"</div></th>";
+  }).join("")+"</tr></thead>";
+
+  var tbody="<tbody>"+data.map(function(p){
+    var isBU=Math.abs(p.unitPrice-minU)<0.01,isBP=p.price===minP;
+    var flr=p.floor&&p.totalFloor?p.floor+"F／"+p.totalFloor+"F":p.floor?p.floor+"F":"—";
+    var mgmt=p.mgmtFee>0?p.mgmtFee.toLocaleString()+" 元":"—";
+    var pk=p.parkType&&p.parkType!=="無"?p.parkType:p.hasPark?"有":"無";
+    return "<tr class='"+(isBU?"best":"")+"'>"+
+      "<td class='td-img'><img src='"+p.img+"' onerror=\"this.style.display='none'\" alt=''>"+
+      (isBU?"<div class='badge-best'>★ 最優</div>":"")+"</td>"+
+      "<td class='td-name'><div class='n-title'>"+p.title+"</div>"+
+      (p.community?"<div class='n-comm'>"+p.community+"</div>":"")+
+      "<div class='n-code'>"+p.code+"</div>"+
+      (p.rooms?"<div class='n-rooms'>"+p.rooms+"</div>":"")+"</td>"+
+      "<td class='td-road'>"+(p.address||"—")+"</td>"+
+      "<td class='td-n "+(isBP?"bp":"")+"'><strong>"+p.price+"</strong>"+(isBP?"<div class='bm bm-r'>最低</div>":"")+"</td>"+
+      "<td class='td-n'>"+p.area+"</td>"+
+      "<td class='td-n'>"+p.withParkUnit.toFixed(1)+"</td>"+
+      "<td class='td-n "+(isBU?"bu":"")+"'><strong>"+p.unitPrice.toFixed(1)+"</strong>"+(isBU?"<div class='bm bm-g'>最低</div>":"")+"</td>"+
+      "<td class='td-n'>"+(p.age||"—")+"</td>"+
+      "<td class='td-n'>"+flr+"</td>"+
+      "<td class='td-n' style='font-size:.74rem;'>"+pk+"</td>"+
+      "<td class='td-n' style='font-size:.74rem;'>"+mgmt+"</td>"+
+      "<td class='td-link'><a href='"+p.url+"' target='_blank'>查看 ↗</a></td>"+
+      "</tr>";
+  }).join("")+"</tbody>";
+
+  document.getElementById("table").innerHTML=thead+tbody;
+  document.querySelectorAll("th[data-sort]").forEach(function(th){
+    th.addEventListener("click",function(){doSort(this.getAttribute("data-sort"));});
+  });
+  document.getElementById("report-wrap").style.display="block";
+  document.getElementById("report-wrap").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function doSort(k){
+  if(sortKey===k){sortAsc=!sortAsc;}else{sortKey=k;sortAsc=true;}
+  renderReport();
+}
+
+function shareReport(){
+  var payload={props:props,agent:document.getElementById("agent").value,phone:document.getElementById("phone").value,client:document.getElementById("client").value,note:document.getElementById("note").value};
+  var enc=btoa(encodeURIComponent(JSON.stringify(payload)));
+  var url=location.href.split("?")[0]+"?r="+enc;
+  document.getElementById("share-url").textContent=url;
+  document.getElementById("share-box").style.display="block";
+}
+function copyUrl(){navigator.clipboard.writeText(document.getElementById("share-url").textContent).then(function(){alert("已複製！");});}
+
+function loadFromUrl(){
+  var p=new URLSearchParams(location.search).get("r");
+  if(!p)return;
+  try{
+    var pl=JSON.parse(decodeURIComponent(atob(p)));
+    props=pl.props;
+    ["agent","phone","client","note"].forEach(function(k){if(pl[k])document.getElementById(k).value=pl[k];});
+    document.getElementById("input-card").style.display="none";
+    renderReport();
+  }catch(e){}
+}
+
+async function genPDF(){
+  var el=document.getElementById("report-wrap");
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(10,110,63,.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;";
+  ov.innerHTML="<div style='width:38px;height:38px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;'></div><div style='color:white;font-size:.88rem;'>PDF 產生中...</div>";
+  document.body.appendChild(ov);
+  await new Promise(function(r){setTimeout(r,200);});
+  try{
+    var jsPDF=window.jspdf.jsPDF;
+    var pdf=new jsPDF({orientation:"landscape",unit:"px",format:"a4"});
+    var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+    var canvas=await html2canvas(el,{scale:1.4,useCORS:true,allowTaint:true,backgroundColor:"#faf8f5"});
+    var imgData=canvas.toDataURL("image/jpeg",.88);
+    var imgH=canvas.height*pW/canvas.width;
+    var y=0,pg=0;
+    while(y<imgH){if(pg>0)pdf.addPage();pdf.addImage(imgData,"JPEG",0,-y,pW,imgH);y+=pH;pg++;}
+    var c=document.getElementById("client").value||"客戶";
+    pdf.save("物件比較報告_"+c+"_"+new Date().toLocaleDateString("zh-TW").replace(/\//g,"")+".pdf");
+  }finally{document.body.removeChild(ov);}
+}
+
+function resetAll(){
+  props=[];
+  document.getElementById("paste").value="";
+  document.getElementById("chips").innerHTML="";
+  document.getElementById("report-wrap").style.display="none";
+  document.getElementById("prog-wrap").style.display="none";
+  document.getElementById("input-card").style.display="block";
+  document.getElementById("go-btn").disabled=true;
+  document.getElementById("go-btn").textContent="🔍 分析物件（請先貼入物件訊息）";
+  document.getElementById("share-box").style.display="none";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+window.addEventListener("load",loadFromUrl);
+</script>
+</body>
+</html// ── fetchProp：呼叫 Cloudflare Worker，由 Worker 使用 Browser Rendering 抓信義頁面 ──
+// Worker 端點：/api/scrape-prop（你的 workers.dev 網域）
+var WORKER_URL = "https://house-tax.s243355.workers.dev/api/scrape-prop";
+
+async function fetchProp(p) {
+  try {
+    var res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: p.code })
+    });
+    if (!res.ok) throw new Error("Worker 回應錯誤：" + res.status);
+    var data = await res.json();
+    if (data.error) throw new Error(data.error);
+    // 優先用 Worker 抓到的資料，fallback 用已解析的文字資料
+    return {
+      title: (data.title && data.title.length > 2) ? data.title : p.title,
+      community: data.community || "",
+      address: (data.address && data.address.length > 1) ? data.address : p.address,
+      price: data.price || p.price,
+      area: data.area || p.area,
+      mainArea: data.mainArea || 0,
+      rooms: data.rooms || "",
+      age: data.age || 0,
+      floor: data.floor || 0,
+      totalFloor: data.totalFloor || 0,
+      hasPark: data.hasPark != null ? data.hasPark : p.hasPark,
+      parkType: data.parkType || "",
+      mgmtFee: data.mgmtFee || 0,
+      img: "https://res.sinyi.com.tw/buy/" + p.code + "/bigimg/A.JPG"
+    };
+  } catch (err) {
+    console.warn("fetchProp failed for " + p.code + ":", err.message);
+    // fallback：只用貼入文字的資料
+    return {
+      title: p.title, community: "", address: p.address,
+      price: p.price, area: p.area, mainArea: 0, rooms: "",
+      age: 0, floor: 0, totalFloor: 0,
+      hasPark: p.hasPark, parkType: "", mgmtFee: 0,
+      img: "https://res.sinyi.com.tw/buy/" + p.code + "/bigimg/A.JPG"
+    };
   }
 }
 
