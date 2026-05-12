@@ -25,7 +25,7 @@ export default {
       return handleScrapeProp(request, env, cors);
     }
 
-    return new Response('Not Found', { status: 404 });
+return env.ASSETS.fetch(request);
   }
 };
 
