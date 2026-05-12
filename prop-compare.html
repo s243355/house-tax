@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物件比較分析｜信義房屋 文心高工店</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --sinyi:#0a6e3f;--sinyi-d:#064d2b;--sinyi-l:#f0f8f4;--sinyi-m:#b8dfc4;
+  --red:#C00000;--ink:#1a1410;--paper:#faf8f5;--card:#fff;
+  --border:#e0dad3;--border-d:#c8bfb5;--muted:#9a8e84;--dim:#5a4e44;
+  --gold:#b8860b;--gold-l:#fffbeb;--gold-m:#fcd34d;
+  --sh1:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 20px rgba(0,0,0,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);color:var(--ink);font-family:"Noto Sans TC",sans-serif;min-height:100vh;}
+header{background:var(--sinyi);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:30px;height:30px;background:white;display:flex;align-items:center;justify-content:center;}
+.logo-name{font-family:"Noto Serif TC",serif;font-size:.92rem;font-weight:700;color:white;letter-spacing:.08em;line-height:1.1;}
+.logo-name small{display:block;font-size:.58rem;color:rgba(255,255,255,.7);font-weight:400;}
+main{max-width:1100px;margin:0 auto;padding:28px 18px 80px;}
+.input-card{background:var(--card);border:1.5px solid var(--border);padding:24px;margin-bottom:18px;box-shadow:var(--sh1);}
+.sec-label{font-size:.68rem;color:var(--sinyi);letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sec-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--sinyi-m),transparent);}
+textarea.paste{width:100%;min-height:130px;border:1.5px solid var(--border);padding:12px;font-size:.83rem;font-family:"Noto Sans TC",sans-serif;color:var(--ink);resize:vertical;outline:none;line-height:1.75;background:var(--card);}
+textarea.paste:focus{border-color:var(--sinyi);box-shadow:0 0 0 3px var(--sinyi-l);}
+textarea.paste::placeholder{color:var(--muted);font-size:.78rem;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:20px;}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--sinyi-l);border:1px solid var(--sinyi-m);padding:3px 10px;font-size:.7rem;color:var(--sinyi);font-family:"JetBrains Mono",monospace;border-radius:2px;}
+.go-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:var(--sinyi);border:none;color:white;font-family:"Noto Serif TC",serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .18s;margin-top:14px;letter-spacing:.06em;}
+.go-btn:hover:not(:disabled){background:var(--sinyi-d);}
+.go-btn:disabled{background:var(--muted);cursor:not-allowed;}
+.prog-wrap{margin-top:10px;display:none;}
+.prog-bar{height:4px;background:var(--sinyi-m);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--sinyi);width:0%;transition:width .4s ease;}
+.prog-label{font-size:.72rem;color:var(--sinyi);margin-top:5px;text-align:center;}
+.summary{background:var(--ink);padding:16px 22px;display:flex;flex-wrap:wrap;margin-bottom:14px;box-shadow:var(--sh2);}
+.sb{flex:1;min-width:130px;padding:6px 14px;border-right:1px solid rgba(255,255,255,.08);}
+.sb:last-child{border-right:none;}
+.sb-l{font-size:.6rem;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:3px;}
+.sb-v{font-family:"Noto Serif TC",serif;font-size:1.2rem;font-weight:700;color:white;}
+.sb-v.g{color:#4ade80;}.sb-v.y{color:#fcd34d;}
+.sort-tip{font-size:.73rem;color:var(--muted);margin-bottom:10px;}
+.tbl-wrap{overflow-x:auto;}
+table.cmp{width:100%;border-collapse:collapse;background:var(--card);box-shadow:var(--sh1);font-size:.81rem;}
+table.cmp thead tr{background:var(--sinyi);}
+table.cmp th{padding:9px 11px;text-align:center;font-weight:600;font-size:.73rem;letter-spacing:.04em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.12);color:white;}
+table.cmp th:last-child{border-right:none;}
+table.cmp th.s{cursor:pointer;user-select:none;}
+table.cmp th.s:hover,table.cmp th.act{background:var(--sinyi-d);}
+.arrows{display:inline-flex;flex-direction:column;font-size:.52rem;line-height:1;margin-left:3px;}
+table.cmp tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+table.cmp tbody tr:hover{background:#f5faf7;}
+table.cmp tbody tr.best{background:var(--sinyi-l);}
+table.cmp tbody tr.best:hover{background:#e0f0e8;}
+.td-img{padding:7px;width:96px;position:relative;}
+.td-img img{display:block;width:82px;height:58px;object-fit:cover;}
+.badge-best{position:absolute;top:9px;left:9px;background:var(--sinyi);color:white;font-size:.58rem;font-weight:700;padding:2px 5px;}
+.td-name{padding:8px 11px;min-width:120px;max-width:180px;}
+.n-title{font-weight:600;font-size:.81rem;color:var(--ink);line-height:1.35;margin-bottom:1px;}
+.n-comm{font-size:.67rem;color:var(--sinyi);font-weight:500;margin-bottom:1px;}
+.n-code{font-size:.63rem;color:var(--muted);font-family:"JetBrains Mono",monospace;}
+.n-rooms{font-size:.68rem;color:var(--dim);margin-top:1px;}
+.td-road{padding:8px 11px;font-size:.77rem;color:var(--dim);min-width:70px;max-width:100px;}
+.td-n{padding:8px 11px;text-align:center;font-family:"JetBrains Mono",monospace;white-space:nowrap;}
+.bp{color:var(--red);font-weight:700;}.bu{color:var(--sinyi);font-weight:700;}
+.bm{font-size:.58rem;font-weight:700;padding:1px 5px;margin-top:2px;display:inline-block;border-radius:2px;}
+.bm-r{background:var(--red);color:white;}.bm-g{background:var(--sinyi);color:white;}
+.td-link a{display:inline-block;padding:4px 9px;font-size:.7rem;color:var(--sinyi);border:1px solid var(--sinyi-m);text-decoration:none;border-radius:2px;white-space:nowrap;transition:all .15s;}
+.td-link a:hover{background:var(--sinyi);color:white;}
+.report-meta{background:var(--card);border:1.5px solid var(--border);padding:18px 22px;margin-top:14px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.mf label{font-size:.7rem;color:var(--muted);display:block;margin-bottom:4px;}
+.mf input{width:100%;border:1.5px solid var(--border);padding:7px 11px;font-size:.83rem;font-family:inherit;color:var(--ink);outline:none;transition:border-color .15s;}
+.mf input:focus{border-color:var(--sinyi);}
+.act-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{padding:9px 18px;font-size:.78rem;font-family:inherit;cursor:pointer;border-radius:2px;transition:all .15s;border:1.5px solid;font-weight:500;}
+.btn-p{background:var(--sinyi);border-color:var(--sinyi);color:white;}
+.btn-p:hover{background:var(--sinyi-d);}
+.btn-o{background:var(--card);border-color:var(--border-d);color:var(--dim);}
+.btn-o:hover{border-color:var(--sinyi);color:var(--sinyi);}
+.share-box{display:none;margin-top:10px;padding:9px 13px;background:var(--sinyi-l);border:1px solid var(--sinyi-m);font-size:.76rem;word-break:break-all;}
+.overlay{position:fixed;inset:0;background:rgba(10,110,63,.93);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.overlay.on{display:flex;}
+.spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ov-text{color:white;font-size:.9rem;font-weight:500;}
+.ov-sub{color:rgba(255,255,255,.6);font-size:.75rem;}
+@media(max-width:640px){
+  header{padding:0 12px;height:50px;}
+  main{padding:16px 10px 60px;}
+  .sb{min-width:45%;}
+  .meta-grid{grid-template-columns:1fr;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="2" y="2" width="9" height="9"/><rect x="13" y="2" width="9" height="9" opacity=".5"/><rect x="2" y="13" width="9" height="9" opacity=".5"/><rect x="13" y="13" width="9" height="9"/></svg></div>
+    <div class="logo-name">信義房屋<small>文心高工店・祐承店長</small></div>
+  </div>
+  <div style="font-size:.78rem;color:rgba(255,255,255,.75);">物件比較分析報告</div>
+</header>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <div class="ov-text" id="ov-text">正在讀取物件資料...</div>
+  <div class="ov-sub" id="ov-sub">請稍候</div>
+</div>
+
+<main>
+<div class="input-card" id="input-card">
+  <div class="sec-label">貼上物件訊息</div>
+  <textarea class="paste" id="paste" placeholder="將信義房屋業務傳給你的物件訊息直接貼上，可貼多筆
+
+推薦：[專任仁美居園道視野附平車]忠明南路
+登記坪數：約56.20坪
+總價：2380萬
+銷售編號：5946NX
+網址：https://sinyi.in/o/5946NX/243355" oninput="detect()"></textarea>
+  <div class="chips" id="chips"></div>
+  <button class="go-btn" id="go-btn" onclick="startAll()" disabled>🔍 分析物件（請先貼入物件訊息）</button>
+  <div class="prog-wrap" id="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="prog-label" id="prog-label"></div>
+  </div>
+</div>
+
+<div id="report-wrap" style="display:none;">
+  <div class="summary" id="summary"></div>
+  <p class="sort-tip">💡 點擊欄位標題排序，再點一次切換升降序</p>
+  <div class="tbl-wrap"><table class="cmp" id="table"></table></div>
+  <div class="report-meta">
+    <div class="sec-label">報告資訊</div>
+    <div class="meta-grid">
+      <div class="mf"><label>業務員</label><input id="agent" value="祐承店長"></div>
+      <div class="mf"><label>聯絡電話</label><input id="phone" value="0933-317-625"></div>
+      <div class="mf"><label>客戶姓名</label><input id="client" placeholder="例：王先生"></div>
+      <div class="mf"><label>備註</label><input id="note" placeholder="以下為您推薦的比較物件"></div>
+    </div>
+    <div class="act-row">
+      <button class="btn btn-p" onclick="shareReport()">🔗 產生分享連結</button>
+      <button class="btn btn-p" onclick="genPDF()">📄 下載 PDF</button>
+      <button class="btn btn-o" onclick="resetAll()">🔄 重新分析</button>
+    </div>
+    <div class="share-box" id="share-box">
+      <strong style="color:var(--sinyi);">分享連結：</strong><br>
+      <span id="share-url" style="font-family:monospace;"></span>
+      <button onclick="copyUrl()" style="margin-left:8px;padding:2px 9px;font-size:.7rem;background:var(--sinyi);color:white;border:none;cursor:pointer;border-radius:2px;">複製</button>
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+var props=[], sortKey="unitPrice", sortAsc=true;
+
+function detect(){
+  var t=document.getElementById("paste").value;
+  var re=/銷售編號[：:]\s*([A-Z0-9]{6})|sinyi\.in\/o\/([A-Z0-9]{6})/g;
+  var codes=new Set(),m;
+  while((m=re.exec(t))!==null) codes.add(m[1]||m[2]);
+  document.getElementById("chips").innerHTML=[...codes].map(function(c){
+    return "<div class='chip'>"+c+" <a href='https://www.sinyi.com.tw/buy/house/"+c+"' target='_blank' style='color:inherit;opacity:.55;font-size:.62rem;'>↗</a></div>";
+  }).join("");
+  var btn=document.getElementById("go-btn");
+  if(codes.size>0){btn.disabled=false;btn.textContent="🔍 分析 "+codes.size+" 件物件";}
+  else{btn.disabled=true;btn.textContent="🔍 分析物件（請先貼入物件訊息）";}
+}
+
+function parseText(text){
+  var list=[];
+  text.split(/(?=推薦[：:])/).forEach(function(blk){
+    if(!blk.trim())return;
+    var firstLine=blk.split("\n")[0];
+    var line=firstLine.replace(/推薦[：:]/,"").trim();
+    var titleM=line.match(/^[\[【]([^\]】]+)[\]】]/);
+    var title=titleM?titleM[1].trim():line.replace(/\s+\S+[路街道巷弄]\s*$/,"").trim();
+    var roadM=line.match(/[\]】]\s*([^\s\[【\]】]+[路街道巷弄])\s*$/);
+    var road=roadM?roadM[1].trim():"";
+    var area=(blk.match(/登記坪數[：:]\s*約?([\d.]+)/)||[,""])[1];
+    var price=(blk.match(/總價[：:]\s*([\d,]+)/)||[,""])[1];
+    var code=(blk.match(/銷售編號[：:]\s*([A-Z0-9]{6})/)||[,""])[1];
+    var urlM=blk.match(/https:\/\/sinyi\.in\/o\/\S+/);
+    var url=urlM?urlM[0].trim():"";
+    if(!code&&!url)return;
+    var c=code||(url.match(/\/o\/([A-Z0-9]{6})/)||[,""])[1];
+    list.push({code:c,title:title||c,address:road,
+      area:parseFloat(area)||0,price:parseFloat(price.replace(/,/g,""))||0,
+      url:url||"https://sinyi.in/o/"+c+"/243355",
+      rooms:"",age:0,floor:0,totalFloor:0,community:"",parkType:"",
+      hasPark:title.includes("車")||title.includes("坡道"),
+      parkArea:0,parkPrice:0,mgmtFee:0,
+      img:"https://res.sinyi.com.tw/buy/"+c+"/bigimg/A.JPG"});
+  });
+  return list;
+}
+
+async function fetchProp(p){
+  var pageUrl="https://www.sinyi.com.tw/buy/house/"+p.code+"/243355?openExternalBrowser=1";
+  var prompt="請讀取這個信義房屋物件網頁並提取資料，只回傳 JSON 不要其他說明。URL: "+pageUrl+" 頁面 meta-description 格式：案名位於城市地區路段，格局總價X萬... 頁面正文包含：建坪XX坪、X房X廳X衛、XX年（大樓）、X樓/XX樓、車位類型、管理費約X元/月。請回傳JSON：{\"title\":\"案名\",\"community\":\"社區名\",\"address\":\"路段路名\",\"price\":數字,\"area\":數字,\"mainArea\":數字,\"rooms\":\"格局\",\"age\":數字,\"floor\":數字,\"totalFloor\":數字,\"hasPark\":true或false,\"parkType\":\"車位類型\",\"mgmtFee\":數字或0}";
+  try{
+    var res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:600,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    var data=await res.json();
+    var textBlock=data.content&&data.content.find(function(b){return b.type==="text";});
+    if(!textBlock) throw new Error("no text");
+    var jsonM=textBlock.text.match(/\{[\s\S]*\}/);
+    if(!jsonM) throw new Error("no json");
+    var parsed=JSON.parse(jsonM[0]);
+    return {
+      title:(parsed.title&&parsed.title.length>2)?parsed.title:p.title,
+      community:parsed.community||"",
+      address:(parsed.address&&parsed.address.length>1)?parsed.address:p.address,
+      price:parsed.price||p.price,
+      area:parsed.area||p.area,
+      mainArea:parsed.mainArea||0,
+      rooms:parsed.rooms||"",
+      age:parsed.age||0,
+      floor:parsed.floor||0,
+      totalFloor:parsed.totalFloor||0,
+      hasPark:parsed.hasPark!=null?parsed.hasPark:p.hasPark,
+      parkType:parsed.parkType||"",
+      mgmtFee:parsed.mgmtFee||0
+    };
+  }catch(e){
+    console.warn("fetchProp fallback",p.code,e);
+    return {title:p.title,community:"",address:p.address,price:p.price,area:p.area,
+      mainArea:0,rooms:"",age:0,floor:0,totalFloor:0,
+      hasPark:p.hasPark,parkType:"",mgmtFee:0};
+  }
+}
+
+async function startAll(){
+  var text=document.getElementById("paste").value;
+  var list=parseText(text);
+  if(!list.length){alert("未偵測到有效物件訊息");return;}
+  document.getElementById("overlay").classList.add("on");
+  document.getElementById("prog-wrap").style.display="block";
+  var fill=document.getElementById("prog-fill");
+  var lbl=document.getElementById("prog-label");
+  props=[];
+  for(var i=0;i<list.length;i++){
+    var p=list[i];
+    document.getElementById("ov-sub").textContent=(i+1)+"/"+list.length+" 讀取 "+p.code+"...";
+    lbl.textContent="讀取中 "+(i+1)+"/"+list.length+"："+p.code;
+    fill.style.width=((i/list.length)*100)+"%";
+    var api=await fetchProp(p);
+    props.push(Object.assign({},p,api,{parkArea:0,parkPrice:0,img:"https://res.sinyi.com.tw/buy/"+p.code+"/bigimg/A.JPG"}));
+  }
+  fill.style.width="100%";
+  document.getElementById("overlay").classList.remove("on");
+  renderReport();
+}
+
+function calcD(p){
+  var pA=p.parkArea||0,pP=p.parkPrice||0;
+  var pureArea=pA>0?p.area-pA:p.area;
+  var withParkUnit=p.area>0?p.price/p.area:0;
+  var unitPrice=pureArea>0&&pA>0?(p.price-pP)/pureArea:withParkUnit;
+  return Object.assign({},p,{pureArea:pureArea,withParkUnit:withParkUnit,unitPrice:unitPrice});
+}
+
+function sortData(arr){
+  var k=sortKey;
+  return arr.slice().sort(function(a,b){
+    var da=calcD(a),db=calcD(b);
+    var av=da[k]!=null?da[k]:0,bv=db[k]!=null?db[k]:0;
+    return sortAsc?av-bv:bv-av;
+  });
+}
+
+function renderReport(){
+  var data=sortData(props).map(calcD);
+  var prices=data.map(function(d){return d.price;}).filter(Boolean);
+  var units=data.map(function(d){return d.unitPrice;}).filter(Boolean);
+  var avg=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
+  document.getElementById("summary").innerHTML=
+    "<div class='sb'><div class='sb-l'>比較物件數</div><div class='sb-v'>"+data.length+" 件</div></div>"+
+    "<div class='sb'><div class='sb-l'>總價範圍</div><div class='sb-v y'>"+Math.min.apply(null,prices).toFixed(0)+"～"+Math.max.apply(null,prices).toFixed(0)+" 萬</div></div>"+
+    "<div class='sb'><div class='sb-l'>平均扣車單價</div><div class='sb-v g'>"+avg(units).toFixed(1)+" 萬/坪</div></div>"+
+    "<div class='sb'><div class='sb-l'>最低扣車單價</div><div class='sb-v y'>"+Math.min.apply(null,units).toFixed(1)+" 萬/坪</div></div>";
+
+  var minU=Math.min.apply(null,units),minP=Math.min.apply(null,prices);
+  var cols=[
+    {k:"img",l:"照片",s:false},{k:"title",l:"案名",s:false},{k:"address",l:"路段",s:false},
+    {k:"price",l:"總價（萬）",s:true},{k:"area",l:"總建坪",s:true},
+    {k:"withParkUnit",l:"含車單價",s:true},{k:"unitPrice",l:"扣車單價",s:true},
+    {k:"age",l:"屋齡",s:true},{k:"floor",l:"樓別",s:true},
+    {k:"parkType",l:"車位",s:false},{k:"mgmtFee",l:"管理費/月",s:true},{k:"link",l:"連結",s:false}
+  ];
+  var thead="<thead><tr>"+cols.map(function(c){
+    var isAct=c.s&&sortKey===c.k;
+    var arrows=c.s?"<span class='arrows'><span style='opacity:"+(isAct&&!sortAsc?1:.2)+"'>▲</span><span style='opacity:"+(isAct&&sortAsc?1:.2)+"'>▼</span></span>":"";
+    var dataKey=c.s?" data-sort='"+c.k+"'":"";
+    return "<th class='"+(c.s?"s":"")+(isAct?" act":"")+"'"+dataKey+"><div style='display:flex;align-items:center;justify-content:center;gap:3px;'>"+c.l+arrows+"</div></th>";
+  }).join("")+"</tr></thead>";
+
+  var tbody="<tbody>"+data.map(function(p){
+    var isBU=Math.abs(p.unitPrice-minU)<0.01,isBP=p.price===minP;
+    var flr=p.floor&&p.totalFloor?p.floor+"F／"+p.totalFloor+"F":p.floor?p.floor+"F":"—";
+    var mgmt=p.mgmtFee>0?p.mgmtFee.toLocaleString()+" 元":"—";
+    var pk=p.parkType&&p.parkType!=="無"?p.parkType:p.hasPark?"有":"無";
+    return "<tr class='"+(isBU?"best":"")+"'>"+
+      "<td class='td-img'><img src='"+p.img+"' onerror=\"this.style.display='none'\" alt=''>"+
+      (isBU?"<div class='badge-best'>★ 最優</div>":"")+"</td>"+
+      "<td class='td-name'><div class='n-title'>"+p.title+"</div>"+
+      (p.community?"<div class='n-comm'>"+p.community+"</div>":"")+
+      "<div class='n-code'>"+p.code+"</div>"+
+      (p.rooms?"<div class='n-rooms'>"+p.rooms+"</div>":"")+"</td>"+
+      "<td class='td-road'>"+(p.address||"—")+"</td>"+
+      "<td class='td-n "+(isBP?"bp":"")+"'><strong>"+p.price+"</strong>"+(isBP?"<div class='bm bm-r'>最低</div>":"")+"</td>"+
+      "<td class='td-n'>"+p.area+"</td>"+
+      "<td class='td-n'>"+p.withParkUnit.toFixed(1)+"</td>"+
+      "<td class='td-n "+(isBU?"bu":"")+"'><strong>"+p.unitPrice.toFixed(1)+"</strong>"+(isBU?"<div class='bm bm-g'>最低</div>":"")+"</td>"+
+      "<td class='td-n'>"+(p.age||"—")+"</td>"+
+      "<td class='td-n'>"+flr+"</td>"+
+      "<td class='td-n' style='font-size:.74rem;'>"+pk+"</td>"+
+      "<td class='td-n' style='font-size:.74rem;'>"+mgmt+"</td>"+
+      "<td class='td-link'><a href='"+p.url+"' target='_blank'>查看 ↗</a></td>"+
+      "</tr>";
+  }).join("")+"</tbody>";
+
+  document.getElementById("table").innerHTML=thead+tbody;
+  document.querySelectorAll("th[data-sort]").forEach(function(th){
+    th.addEventListener("click",function(){doSort(this.getAttribute("data-sort"));});
+  });
+  document.getElementById("report-wrap").style.display="block";
+  document.getElementById("report-wrap").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function doSort(k){
+  if(sortKey===k){sortAsc=!sortAsc;}else{sortKey=k;sortAsc=true;}
+  renderReport();
+}
+
+function shareReport(){
+  var payload={props:props,agent:document.getElementById("agent").value,phone:document.getElementById("phone").value,client:document.getElementById("client").value,note:document.getElementById("note").value};
+  var enc=btoa(encodeURIComponent(JSON.stringify(payload)));
+  var url=location.href.split("?")[0]+"?r="+enc;
+  document.getElementById("share-url").textContent=url;
+  document.getElementById("share-box").style.display="block";
+}
+function copyUrl(){navigator.clipboard.writeText(document.getElementById("share-url").textContent).then(function(){alert("已複製！");});}
+
+function loadFromUrl(){
+  var p=new URLSearchParams(location.search).get("r");
+  if(!p)return;
+  try{
+    var pl=JSON.parse(decodeURIComponent(atob(p)));
+    props=pl.props;
+    ["agent","phone","client","note"].forEach(function(k){if(pl[k])document.getElementById(k).value=pl[k];});
+    document.getElementById("input-card").style.display="none";
+    renderReport();
+  }catch(e){}
+}
+
+async function genPDF(){
+  var el=document.getElementById("report-wrap");
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(10,110,63,.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;";
+  ov.innerHTML="<div style='width:38px;height:38px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;'></div><div style='color:white;font-size:.88rem;'>PDF 產生中...</div>";
+  document.body.appendChild(ov);
+  await new Promise(function(r){setTimeout(r,200);});
+  try{
+    var jsPDF=window.jspdf.jsPDF;
+    var pdf=new jsPDF({orientation:"landscape",unit:"px",format:"a4"});
+    var pW=pdf.internal.pageSize.getWidth(),pH=pdf.internal.pageSize.getHeight();
+    var canvas=await html2canvas(el,{scale:1.4,useCORS:true,allowTaint:true,backgroundColor:"#faf8f5"});
+    var imgData=canvas.toDataURL("image/jpeg",.88);
+    var imgH=canvas.height*pW/canvas.width;
+    var y=0,pg=0;
+    while(y<imgH){if(pg>0)pdf.addPage();pdf.addImage(imgData,"JPEG",0,-y,pW,imgH);y+=pH;pg++;}
+    var c=document.getElementById("client").value||"客戶";
+    pdf.save("物件比較報告_"+c+"_"+new Date().toLocaleDateString("zh-TW").replace(/\//g,"")+".pdf");
+  }finally{document.body.removeChild(ov);}
+}
+
+function resetAll(){
+  props=[];
+  document.getElementById("paste").value="";
+  document.getElementById("chips").innerHTML="";
+  document.getElementById("report-wrap").style.display="none";
+  document.getElementById("prog-wrap").style.display="none";
+  document.getElementById("input-card").style.display="block";
+  document.getElementById("go-btn").disabled=true;
+  document.getElementById("go-btn").textContent="🔍 分析物件（請先貼入物件訊息）";
+  document.getElementById("share-box").style.display="none";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+window.addEventListener("load",loadFromUrl);
+</script>
+</body>
+</html>
