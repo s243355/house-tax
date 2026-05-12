@@ -28,8 +28,16 @@ export default {
       return handleScrapeProp(request, env, cors);
     }
 
-    // ── 其他路徑：serving static files（你原本的 Worker 邏輯）──
-    // 如果你的 Worker 有處理靜態檔案，把原本的邏輯加在這裡
+    // 靜態資產：自動補 .html（讓 /prop-compare 能找到 prop-compare.html）
+    if (env.ASSETS) {
+      if (!url.pathname.includes('.')) {
+        const newUrl = new URL(request.url);
+        newUrl.pathname = url.pathname.replace(/\/?$/, '.html');
+        const res = await env.ASSETS.fetch(new Request(newUrl.toString(), request));
+        if (res.status !== 404) return res;
+      }
+      return env.ASSETS.fetch(request);
+    }
     return new Response('Not Found', { status: 404 });
   }
 };
