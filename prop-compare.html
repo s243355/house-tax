@@ -203,51 +203,37 @@ function parseText(text){
 }
 
 async function fetchProp(p){
-  var pageUrl="https://www.sinyi.com.tw/buy/house/"+p.code+"/243355?openExternalBrowser=1";
-  var prompt="請搜尋這個信義房屋物件並從搜尋結果的 meta-description 和 og:title 中提取資料。"
-    +"搜尋：sinyi.com.tw/buy/house/"+p.code+" "
-    +"或直接搜尋物件編號："+p.code+" 信義房屋"
-    +"\n\nmeta-description 格式範例：「【專任】近中山醫三房平車位於台中市南區工學北路，3房2廳2衛總價1938萬...」"
-    +"\nog:title 格式範例：「【專任】近中山醫三房平車｜親家M3｜台中市南區大樓房屋出售 - 信義房屋」"
-    +"\n\n從上述資訊提取並只回傳 JSON（不要任何說明文字）："
-    +'{"title":"案名（og:title 第一個｜之前的部分，例如【專任】近中山醫三房平車）","community":"社區名（og:title 第二個｜之間，例如親家M3）","address":"路段（meta-description 中「位於台中市XX區」後的路名，例如工學北路）","price":數字,"area":數字,"rooms":"格局（例如3房2廳2衛）","age":0,"floor":0,"totalFloor":0,"hasPark":true,"parkType":"平車"}';
   try{
-    var res=await fetch("https://api.anthropic.com/v1/messages",{
+    var res=await fetch("/api/scrape-prop",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:600,
-        tools:[{type:"web_search_20250305",name:"web_search"}],
-        messages:[{role:"user",content:prompt}]
-      })
+      body:JSON.stringify({code:p.code})
     });
+    if(!res.ok) throw new Error("Worker 回應 "+res.status);
     var data=await res.json();
-    var textBlock=data.content&&data.content.find(function(b){return b.type==="text";});
-    if(!textBlock) throw new Error("no text");
-    var jsonM=textBlock.text.match(/\{[\s\S]*\}/);
-    if(!jsonM) throw new Error("no json");
-    var parsed=JSON.parse(jsonM[0]);
+    if(data.error) throw new Error(data.error);
     return {
-      title:(parsed.title&&parsed.title.length>2)?parsed.title:p.title,
-      community:parsed.community||"",
-      address:(parsed.address&&parsed.address.length>1)?parsed.address:p.address,
-      price:parsed.price||p.price,
-      area:parsed.area||p.area,
-      mainArea:parsed.mainArea||0,
-      rooms:parsed.rooms||"",
-      age:parsed.age||0,
-      floor:parsed.floor||0,
-      totalFloor:parsed.totalFloor||0,
-      hasPark:parsed.hasPark!=null?parsed.hasPark:p.hasPark,
-      parkType:parsed.parkType||"",
-      mgmtFee:parsed.mgmtFee||0
+      title:(data.title&&data.title.length>2)?data.title:p.title,
+      community:data.community||"",
+      address:(data.address&&data.address.length>1)?data.address:p.address,
+      price:data.price||p.price,
+      area:data.area||p.area,
+      mainArea:data.mainArea||0,
+      rooms:data.rooms||"",
+      age:data.age||0,
+      floor:data.floor||0,
+      totalFloor:data.totalFloor||0,
+      hasPark:data.hasPark!=null?data.hasPark:p.hasPark,
+      parkType:data.parkType||"",
+      mgmtFee:data.mgmtFee||0,
+      img:"https://res.sinyi.com.tw/buy/"+p.code+"/bigimg/A.JPG"
     };
   }catch(e){
     console.warn("fetchProp fallback",p.code,e);
     return {title:p.title,community:"",address:p.address,price:p.price,area:p.area,
       mainArea:0,rooms:"",age:0,floor:0,totalFloor:0,
-      hasPark:p.hasPark,parkType:"",mgmtFee:0};
+      hasPark:p.hasPark,parkType:"",mgmtFee:0,
+      img:"https://res.sinyi.com.tw/buy/"+p.code+"/bigimg/A.JPG"};
   }
 }
 
