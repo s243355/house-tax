@@ -499,20 +499,6 @@
       <div class="block-note" style="padding:12px 24px 20px;" id="compare-note">同本金、年限、寬限期與還款方式；一般房貸採固定利率假設，非銀行報價。</div>
     </div>
 
-    <!-- 年度還款明細 -->
-    <div class="schedule-card">
-      <div class="schedule-header">
-        <span>📋 新青安年度還款明細</span>
-        <button class="show-more-btn" id="toggle-btn" onclick="toggleSchedule()">顯示每月明細</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="rtable">
-          <thead id="sched-head"></thead>
-          <tbody id="sched-body"></tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- 聯絡 -->
     <div class="contact-strip">
       <div class="cs-text">
@@ -554,6 +540,24 @@
           <button class="lm-btn lm-btn-open" onclick="openLineApp()">開啟 LINE →</button>
         </div>
         <div class="lm-tip">複製後切換到 LINE，貼上即可分享給家人或朋友討論</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="line-modal-overlay" id="img-modal" onclick="closeImgModal(event)">
+    <div class="line-modal" style="max-width:560px;">
+      <div class="lm-header" style="background:#0b8a43;">
+        <div class="lm-header-left"><span style="font-size:1.1rem;">🖼</span><div><h3>試算報告圖片</h3><p>手機長按圖片存檔・電腦點下方下載</p></div></div>
+        <button class="lm-close" onclick="closeImgModal()">✕</button>
+      </div>
+      <div class="lm-body">
+        <div style="text-align:center;max-height:60vh;overflow-y:auto;border:1px solid var(--border);border-radius:4px;background:#f5f3f0;padding:8px;margin-bottom:14px;">
+          <img id="img-preview" src="" alt="新青安試算報告" style="width:100%;height:auto;display:block;border-radius:2px;">
+        </div>
+        <div class="lm-actions">
+          <a class="lm-btn lm-btn-copy" id="img-download" download style="background:#0b8a43;text-align:center;text-decoration:none;line-height:1.5;">⬇ 下載圖片</a>
+        </div>
+        <div class="lm-tip">📱 手機：長按上方圖片 →「加入照片 / 儲存影像」<br>💻 電腦：點「下載圖片」存成 PNG</div>
       </div>
     </div>
   </div>
@@ -772,8 +776,6 @@ function calc(){
   const qtype=quota===1500?'育有未成年子女':(quota===1200?'新婚 2 年內':'一般首購');
   document.getElementById('r-quota-type').textContent=qtype+(max80<quota?'・受 8 成成數限制':'');
 
-  buildScheduleTable(false);
-
   // ── 超額混合方案（新青安 + 一般房貸超額）供報告圖片使用 ──
   const genLoanWan=gap;                                   // 一般房貸（超額）金額
   const totalLoanWan=principalWan+genLoanWan;             // 總核貸
@@ -808,31 +810,6 @@ function calc(){
   saveHistory('new-qingan','新青安3.0試算',`本金 ${principalWan.toFixed(0)}萬・前3年月付 ${yen(qFirstPay)}元・${vTitle}`,{price,principalWan,years});
 }
 
-function buildScheduleTable(monthly){
-  const head=monthly
-    ? '<tr><th>期數</th><th>年利率</th><th>月付（元）</th><th>本金（元）</th><th>利息（元）</th><th>餘額（萬）</th></tr>'
-    : '<tr><th>年度</th><th>年利率</th><th>年付（萬）</th><th>還本金（萬）</th><th>還利息（萬）</th><th>年底餘額（萬）</th></tr>';
-  document.getElementById('sched-head').innerHTML=head;
-  const L=monthly?['期數','年利率','月付（元）','本金（元）','利息（元）','餘額（萬）']
-                 :['年度','年利率','年付（萬）','還本金（萬）','還利息（萬）','年底餘額（萬）'];
-  let html='';
-  if(monthly){
-    schedule.forEach(d=>{
-      html+=`<tr${d.inGrace?' class="stage-grace"':''}><td data-label="${L[0]}">${d.month}${d.inGrace?' <span class="tag-mini tag-grace">寬限</span>':''}</td><td data-label="${L[1]}">${d.annual.toFixed(3)}%</td><td data-label="${L[2]}">${yen(d.payment)}</td><td data-label="${L[3]}">${yen(d.principal)}</td><td data-label="${L[4]}">${yen(d.interest)}</td><td data-label="${L[5]}">${(d.balance/10000).toFixed(1)}</td></tr>`;
-    });
-  }else{
-    const yrs=Math.ceil(schedule.length/12);
-    for(let y=0;y<yrs;y++){
-      const c=schedule.slice(y*12,(y+1)*12);
-      const pay=c.reduce((a,d)=>a+d.payment,0),pri=c.reduce((a,d)=>a+d.principal,0),intg=c.reduce((a,d)=>a+d.interest,0);
-      const lastBal=c[c.length-1]?.balance||0;const hasGrace=c.some(d=>d.inGrace);
-      const rate=c[0].annual.toFixed(3)+'%';
-      html+=`<tr${hasGrace?' class="stage-grace"':''}><td data-label="${L[0]}">${y+1} 年${hasGrace?' <span class="tag-mini tag-grace">寬限</span>':''}</td><td data-label="${L[1]}">${rate}</td><td data-label="${L[2]}">${(pay/10000).toFixed(2)}</td><td data-label="${L[3]}">${(pri/10000).toFixed(2)}</td><td data-label="${L[4]}">${(intg/10000).toFixed(2)}</td><td data-label="${L[5]}">${(lastBal/10000).toFixed(1)}</td></tr>`;
-    }
-  }
-  document.getElementById('sched-body').innerHTML=html;
-}
-function toggleSchedule(){showMonthly=!showMonthly;document.getElementById('toggle-btn').textContent=showMonthly?'切換為年度明細':'顯示每月明細';buildScheduleTable(showMonthly);}
 function scrollToInput(){document.querySelector('.input-card').scrollIntoView({behavior:'smooth',block:'start'});}
 
 // ── LINE 分享 ──
@@ -1002,13 +979,16 @@ async function generateImage(){
     ? `說明：混合方案前 ${R.graceYears} 年因新青安部分為寬限期（僅繳息、本金未攤還），與全額一般房貸之付款基礎不同；新青安寬限期結束後其本金將於剩餘年限攤還，故其後合計月付金將提高。兩筆貸款之寬限與年限各自獨立，實際仍以承貸銀行核准條件為準。`
     : `說明：新青安採 3+3 補貼機制，前 3 年利率最低（${R.r0}%），第 4 年起每年減半碼、第 7 年起回到原貸款利率，故月付金將逐段提高。實際仍以承貸銀行核准條件為準。`;
 
-  const wm=encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="260"><text x="180" y="150" font-family="'Noto Sans TC',sans-serif" font-size="21" font-weight="700" fill="#0b8a43" fill-opacity="0.05" text-anchor="middle" transform="rotate(-24 180 130)">信義房屋 SINYI REALTY</text></svg>`);
+  let wmSpans='';
+  for(let row=0;row<16;row++)for(let col=0;col<4;col++){wmSpans+=`<span style="position:absolute;left:${col*250-50}px;top:${row*150+30}px;transform:rotate(-24deg);transform-origin:center;font-family:'Noto Sans TC',sans-serif;font-size:19px;font-weight:700;color:#0b8a43;opacity:.05;white-space:nowrap;">信義房屋 SINYI REALTY</span>`;}
 
   const html=`
   <div class="rep-root">
     <style>
-      .rep-root{width:880px;background:#fff;background-image:url("data:image/svg+xml,${wm}");font-family:'Noto Sans TC',sans-serif;color:#1f2d24;padding:44px 48px 30px;position:relative;}
+      .rep-root{width:880px;background:#fff;font-family:'Noto Sans TC',sans-serif;color:#1f2d24;padding:44px 48px 30px;position:relative;overflow:hidden;}
       .rep-root *{box-sizing:border-box;}
+      .rep-wm{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+      .rep-root>*:not(.rep-wm){position:relative;z-index:1;}
       .rep-h{display:flex;justify-content:space-between;align-items:flex-start;}
       .rep-title{font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:#0b8a43;line-height:1.2;}
       .rep-credit{font-size:.74rem;color:#7a857e;margin-top:8px;}
@@ -1053,6 +1033,7 @@ async function generateImage(){
       .rep-disc{background:#f7f8f8;border:1px solid #e5e9e6;border-radius:6px;padding:14px 18px;font-size:.72rem;color:#7a857e;line-height:1.75;margin-bottom:20px;}
       .rep-foot{display:flex;justify-content:space-between;font-size:.72rem;color:#9aa49e;padding-top:14px;border-top:1px solid #e5e9e6;}
     </style>
+    <div class="rep-wm">${wmSpans}</div>
     <div class="rep-h">
       <div>
         <div class="rep-title">新青安 3.0 貸款試算報告</div>
@@ -1103,20 +1084,28 @@ async function generateImage(){
   overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">🖼</div><div style="font-size:.9rem;color:#5a4e44;">報告圖片產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
   const container=document.createElement('div');
-  container.style.cssText='position:fixed;left:-9999px;top:0;width:880px;background:#fff;z-index:-1;';
+  container.style.cssText='position:fixed;left:0;top:0;width:880px;background:#fff;z-index:-1;opacity:0;pointer-events:none;';
   container.innerHTML=html;document.body.appendChild(container);
-  await new Promise(r=>setTimeout(r,800));
   const btn=document.querySelector('[onclick="generateImage()"]');const btnTxt=btn?btn.textContent:'';
   if(btn){btn.textContent='⏳ 產生中...';btn.disabled=true;}
   try{
-    const canvas=await html2canvas(container.firstElementChild||container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false});
+    // 等字型與版面就緒（手機端字型未就緒是空白/失敗主因）
+    if(document.fonts&&document.fonts.ready){try{await document.fonts.ready;}catch(e){}}
+    await new Promise(r=>setTimeout(r,700));
+    // 手機降低解析度，避免 canvas 記憶體上限導致失敗
+    const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||Math.min(window.innerWidth,window.innerHeight)<700;
+    const scale=isMobile?1.5:2;
+    const target=container.querySelector('.rep-root')||container.firstElementChild||container;
+    const canvas=await html2canvas(target,{scale,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:880,windowWidth:880});
     const url=canvas.toDataURL('image/png');
-    const a=document.createElement('a');
-    a.href=url;a.download=`新青安3.0試算報告_${today.replace(/\//g,'')}.png`;
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-  }catch(e){alert('圖片產生失敗，請重試');console.error(e);}
+    const fname=`新青安3.0試算報告_${today.replace(/\//g,'')}.png`;
+    const img=document.getElementById('img-preview');if(img)img.src=url;
+    const dl=document.getElementById('img-download');if(dl){dl.href=url;dl.download=fname;}
+    document.getElementById('img-modal').classList.add('open');
+  }catch(e){alert('圖片產生失敗，請重試一次。若仍失敗，可改用「下載 PDF」');console.error(e);}
   finally{document.body.removeChild(container);document.body.removeChild(overlay);if(btn){btn.textContent=btnTxt;btn.disabled=false;}}
 }
+function closeImgModal(e){if(!e||e.target===document.getElementById('img-modal'))document.getElementById('img-modal').classList.remove('open');}
 
 // ── Init config ──
 (function(){
