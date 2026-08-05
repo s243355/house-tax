@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新青安3.0試算｜祐承店長 信義房屋 文心高工店</title>
+<meta name="description" content="新青安3.0（青安貸款3.0）資格快篩、額度估算、3+3階梯利率與月付變化試算，並輸出 LINE 摘要與 PDF 報告。祐承店長 信義房屋 文心高工店 0933-317-625">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+  :root{
+    --pri:#1a4a7a;--pri-dark:#0f3260;--pri-light:#eef4fb;--pri-mid:#c8ddf0;
+    --red:#C00000;--red-light:#fdf0f0;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
+    --border:#e0dad3;--border-dark:#c8bfb5;
+    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
+    --green:#2e7d52;--gold:#b8860b;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
+
+  .hdr-home-btn{display:flex;align-items:center;height:100%;padding:0 18px;font-size:.78rem;color:var(--text-dim);text-decoration:none;font-weight:500;border-right:1px solid var(--border);transition:all .18s;white-space:nowrap;flex-shrink:0;}
+  .hdr-home-btn:hover{color:var(--red);background:var(--red-light);}
+  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px 0 0;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  .sinyi-emblem{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;}
+  .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.15;}
+  .sinyi-name small{display:block;font-size:.62rem;color:var(--text-muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
+  .hl{display:flex;align-items:center;gap:13px;}
+  .hd{width:1px;height:26px;background:var(--border);}
+  .ht{font-size:.88rem;color:var(--text-dim);}
+  .hc{display:flex;gap:8px;}
+  .cb{display:flex;align-items:center;gap:7px;padding:7px 14px;font-size:.78rem;font-family:inherit;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;border-radius:2px;}
+  .bp{background:var(--red);color:white;border:1.5px solid var(--red);}
+  .bp:hover{background:#9a0000;transform:translateY(-1px);}
+  .bl{background:#06C755;color:white;border:1.5px solid #06C755;}
+  .bl:hover{background:#05a847;transform:translateY(-1px);}
+
+  .hero{background:var(--pri);padding:48px 40px 44px;text-align:center;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border:36px solid rgba(255,255,255,.05);border-radius:50%;}
+  .hero::after{content:'';position:absolute;bottom:-30px;left:-30px;width:150px;height:150px;border:24px solid rgba(255,255,255,.04);border-radius:50%;}
+  .hero-tag{font-size:.68rem;color:rgba(255,255,255,.6);letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px;position:relative;z-index:1;}
+  .hero h1{font-family:'Noto Serif TC',serif;font-size:2rem;font-weight:700;color:white;margin-bottom:10px;position:relative;z-index:1;}
+  .hero p{font-size:.9rem;color:rgba(255,255,255,.75);position:relative;z-index:1;}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:5px 14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;font-size:.72rem;color:rgba(255,255,255,.9);position:relative;z-index:1;}
+
+  main{max-width:800px;margin:0 auto;padding:48px 24px 100px;}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--pri);text-decoration:none;margin-bottom:28px;font-weight:500;}
+  .back-link:hover{text-decoration:underline;}
+
+  .input-card{background:var(--white);border:1.5px solid var(--border);padding:32px;margin-bottom:20px;box-shadow:var(--shadow-sm);}
+  .card-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--pri);display:flex;align-items:center;gap:10px;}
+  .card-sub{font-size:.75rem;color:var(--text-muted);font-weight:400;margin-left:auto;}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .field-group{margin-bottom:0;}
+  .field-label{font-size:.82rem;color:var(--text-dim);margin-bottom:8px;font-weight:500;}
+  .field-tip{font-size:.73rem;color:var(--text-muted);margin-top:5px;}
+  .input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);background:var(--white);transition:border-color .2s;box-shadow:var(--shadow-sm);}
+  .input-wrap:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-light);}
+  .input-wrap input{flex:1;background:transparent;border:none;outline:none;padding:11px 14px;color:var(--text);font-size:.95rem;font-family:inherit;font-weight:500;width:100%;}
+  .input-wrap input::placeholder{color:var(--text-muted);font-weight:400;}
+  .input-unit{padding:0 14px;color:var(--text-muted);font-size:.82rem;border-left:1px solid var(--border);white-space:nowrap;}
+  .input-select{width:100%;background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:11px 14px;font-size:.9rem;font-family:inherit;outline:none;transition:all .2s;box-shadow:var(--shadow-sm);appearance:none;cursor:pointer;border-radius:0;}
+  .input-select:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-light);}
+  .select-wrap{position:relative;}
+  .select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;}
+  .section-divider{margin-top:22px;padding-top:22px;border-top:1px solid var(--border);}
+  .section-divider-label{font-size:.8rem;color:var(--text-dim);font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+  .calc-btn{width:100%;padding:15px;background:var(--pri);border:none;color:white;font-size:1rem;font-family:inherit;font-weight:700;cursor:pointer;transition:all .2s;margin-top:28px;letter-spacing:.08em;border-radius:2px;}
+  .calc-btn:hover{background:var(--pri-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,74,122,.3);}
+
+  #result-section{display:none;animation:fadeUp .4s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  /* 資格判定 banner */
+  .verdict{padding:20px 24px;margin-bottom:16px;border:1.5px solid var(--border);display:flex;align-items:flex-start;gap:16px;box-shadow:var(--shadow-sm);}
+  .verdict-pass{background:#f0f8f4;border-color:#b8dfc4;}
+  .verdict-warn{background:#fffbeb;border-color:#fcd34d;}
+  .verdict-fail{background:#fdf0f0;border-color:#f0c0c0;}
+  .verdict-icon{font-size:1.8rem;line-height:1;flex-shrink:0;margin-top:2px;}
+  .verdict-body{flex:1;}
+  .verdict-title{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;margin-bottom:6px;}
+  .verdict-pass .verdict-title{color:#2a6e46;}
+  .verdict-warn .verdict-title{color:#b8860b;}
+  .verdict-fail .verdict-title{color:var(--red);}
+  .verdict-items{list-style:none;margin-top:8px;}
+  .verdict-items li{font-size:.82rem;color:var(--text-dim);padding:3px 0 3px 20px;position:relative;line-height:1.55;}
+  .verdict-items li::before{position:absolute;left:0;top:3px;}
+  .verdict-items li.ok::before{content:'✓';color:var(--green);}
+  .verdict-items li.wr::before{content:'!';color:var(--gold);font-weight:700;}
+  .verdict-items li.no::before{content:'✕';color:var(--red);}
+
+  .result-hero{background:var(--pri);padding:32px 36px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+  .result-hero::before{content:'';position:absolute;right:-30px;top:-30px;width:150px;height:150px;border:28px solid rgba(255,255,255,.05);border-radius:50%;}
+  .rh-item{text-align:center;position:relative;z-index:1;}
+  .rh-label{font-size:.72rem;color:rgba(255,255,255,.65);letter-spacing:.1em;margin-bottom:6px;}
+  .rh-val{font-family:'Noto Serif TC',serif;font-size:2.2rem;font-weight:700;color:white;line-height:1.1;}
+  .rh-val-sm{font-family:'Noto Serif TC',serif;font-size:1.4rem;font-weight:700;color:white;}
+  .rh-unit{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
+  .rh-divider{width:1px;height:60px;background:rgba(255,255,255,.15);}
+
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  .result-card{background:var(--white);border:1.5px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
+  .rc-label{font-size:.72rem;color:var(--text-muted);letter-spacing:.08em;margin-bottom:6px;}
+  .rc-val{font-family:'Noto Serif TC',serif;font-size:1.35rem;color:var(--text);font-weight:600;}
+  .rc-val.accent{color:var(--pri);}
+  .rc-val.warn{color:var(--gold);}
+  .rc-val.green{color:var(--green);}
+  .rc-sub{font-size:.72rem;color:var(--text-muted);margin-top:4px;}
+
+  .block-card{background:var(--white);border:1.5px solid var(--border);padding:24px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  .block-title{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .block-note{font-size:.75rem;color:var(--text-muted);margin-top:12px;line-height:1.6;}
+
+  table{width:100%;border-collapse:collapse;}
+  th{background:var(--pri);color:white;padding:10px 14px;font-size:.74rem;font-weight:500;text-align:right;}
+  th:first-child{text-align:left;}
+  td{padding:9px 14px;font-size:.82rem;border-bottom:1px solid var(--border);text-align:right;color:var(--text-dim);}
+  td:first-child{text-align:left;color:var(--text);font-weight:500;}
+  tr:last-child td{border-bottom:none;}
+  tr.highlight td{background:var(--pri-light);color:var(--pri);}
+  tr.stage-grace td{background:#fffbeb;}
+  .up{color:var(--red);font-weight:600;}
+  .flat{color:var(--text-muted);}
+  .tag-mini{font-size:.62rem;padding:1px 6px;border-radius:2px;margin-left:5px;background:var(--pri-light);color:var(--pri);}
+  .tag-grace{background:#fef3c7;color:var(--gold);}
+
+  .schedule-card{background:var(--white);border:1.5px solid var(--border);margin-bottom:16px;box-shadow:var(--shadow-sm);overflow:hidden;}
+  .schedule-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .schedule-header span{font-size:.85rem;color:var(--text-dim);font-weight:500;}
+  .show-more-btn{font-size:.78rem;color:var(--pri);background:none;border:1px solid var(--pri-mid);padding:5px 12px;cursor:pointer;font-family:inherit;border-radius:2px;}
+  .show-more-btn:hover{background:var(--pri-light);}
+
+  .contact-strip{background:var(--red);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .cs-text strong{display:block;font-family:'Noto Serif TC',serif;font-size:.95rem;color:white;font-weight:700;margin-bottom:3px;}
+  .cs-text span{font-size:.78rem;color:rgba(255,255,255,.75);}
+  .cs-btns{display:flex;gap:10px;}
+  .cs-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .2s;font-family:inherit;border:none;}
+  .cs-btn-phone{background:white;color:var(--red);}
+  .cs-btn-phone:hover{background:#fff0f0;transform:translateY(-1px);}
+  .cs-btn-line{background:#06C755;color:white;}
+  .cs-btn-line:hover{background:#05a847;transform:translateY(-1px);}
+
+  .info-box{background:#fffbeb;border:1.5px solid #fcd34d;border-left:4px solid var(--gold);padding:13px 16px;font-size:.8rem;color:var(--text-dim);line-height:1.65;margin-bottom:20px;}
+
+  footer{background:var(--text);border-top:3px solid var(--red);padding:22px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  .fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
+  .fi{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
+
+  /* LINE Modal */
+  .line-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .line-modal-overlay.open{display:flex;animation:fadeInM .2s ease;}
+  @keyframes fadeInM{from{opacity:0}to{opacity:1}}
+  .line-modal{background:var(--white);width:100%;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.18);animation:slideUpM .25s ease;}
+  @keyframes slideUpM{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .lm-header{background:#06C755;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .lm-header-left{display:flex;align-items:center;gap:10px;}
+  .lm-header h3{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:white;}
+  .lm-header p{font-size:.72rem;color:rgba(255,255,255,.8);margin-top:2px;}
+  .lm-close{background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+  .lm-close:hover{background:rgba(255,255,255,.35);}
+  .lm-body{padding:20px 22px;}
+  .lm-preview{background:#f0faf2;border:1.5px solid #b8e8c4;padding:16px 18px;font-size:.82rem;color:#1a3a20;line-height:1.85;white-space:pre-wrap;word-break:break-all;margin-bottom:16px;min-height:120px;max-height:320px;overflow-y:auto;}
+  .lm-actions{display:flex;gap:10px;}
+  .lm-btn{flex:1;padding:12px;font-size:.85rem;font-family:inherit;font-weight:600;cursor:pointer;transition:all .2s;border:none;border-radius:2px;}
+  .lm-btn-copy{background:#06C755;color:white;}
+  .lm-btn-copy:hover{background:#05a847;}
+  .lm-btn-copy.copied{background:#2e7d52;}
+  .lm-btn-open{background:var(--white);border:1.5px solid #06C755;color:#06C755;}
+  .lm-btn-open:hover{background:#f0faf2;}
+  .lm-tip{font-size:.72rem;color:var(--text-muted);margin-top:10px;text-align:center;line-height:1.6;}
+
+  @media(max-width:640px){
+    header{padding:0 12px;height:52px;}
+    .ht,.hd{display:none;}
+    .sinyi-name{font-size:.9rem;}
+    .sinyi-name small{font-size:.58rem;}
+    .sinyi-emblem{width:30px;height:30px;}
+    .hc{gap:5px;}
+    .cb{padding:6px 10px;font-size:.72rem;gap:5px;border-radius:2px;}
+    .cb svg{width:11px;height:11px;}
+    .hero{padding:28px 16px 24px;}
+    .hero h1{font-size:1.45rem;}
+    .hero p{font-size:.82rem;}
+    .hero-tag{font-size:.6rem;}
+    main{padding:20px 14px 60px;}
+    .back-link{margin-bottom:18px;}
+    .input-card{padding:18px 16px;}
+    .card-title{font-size:.9rem;margin-bottom:16px;padding-bottom:10px;}
+    .card-sub{display:none;}
+    .field-grid{grid-template-columns:1fr;}
+    .input-wrap input{padding:10px 12px;font-size:.88rem;}
+    .input-unit{padding:0 10px;font-size:.78rem;}
+    .input-select{padding:10px 12px;font-size:.85rem;}
+    .result-hero{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:14px;}
+    .rh-divider{display:none;}
+    .rh-val{font-size:1.6rem;}
+    .rh-val-sm{font-size:1.1rem;}
+    .result-grid{grid-template-columns:1fr 1fr;}
+    .result-card{padding:14px;}
+    .rc-val{font-size:1.1rem;}
+    .block-card{padding:16px;overflow-x:auto;}
+    .schedule-card{overflow-x:auto;}
+    table{min-width:460px;}
+    .contact-strip{flex-direction:column;align-items:flex-start;padding:16px;}
+    .cs-btns{gap:8px;}
+    .cs-btn{padding:8px 14px;font-size:.78rem;}
+    footer{padding:16px 14px;flex-direction:column;align-items:flex-start;gap:10px;}
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <div class="hl">
+    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
+    <div class="hd"></div>
+    <span class="ht">新青安3.0試算</span>
+  </div>
+  <div class="hc">
+    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+      加 LINE 好友
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
+  <h1>新青安3.0 貸款試算</h1>
+  <p>先快篩資格，再算額度、3+3階梯利率與每月還款怎麼跳</p>
+  <div class="hero-badge">🗓 2026/08/01 上路・辦理至 2029/07/31・前3年 1.775%</div>
+</div>
+
+<main>
+  <a class="back-link" href="index.html">← 回主頁</a>
+
+  <!-- 資格快篩 -->
+  <div class="input-card">
+    <div class="card-title">📋 資格快篩<span class="card-sub">6 個關鍵欄位・僅供初判</span></div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">申請人實足年齡</div>
+        <div class="input-wrap"><input type="number" id="age" placeholder="例：38" oninput="calc()"><span class="input-unit">歲</span></div>
+        <div class="field-tip">須未滿 50 歲，且年齡＋年限 ≤ 80</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">本人年所得</div>
+        <div class="select-wrap">
+          <select class="input-select" id="income" onchange="calc()">
+            <option value="ok" selected>200 萬以下（符合）</option>
+            <option value="no">超過 200 萬</option>
+            <option value="unsure">不確定</option>
+          </select>
+        </div>
+        <div class="field-tip">看本人，不是夫妻合併</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">本人／配偶／未成年子女名下住宅</div>
+        <div class="select-wrap">
+          <select class="input-select" id="own" onchange="calc()">
+            <option value="none" selected>都沒有住宅</option>
+            <option value="share">只有共有持分</option>
+            <option value="has">有住宅</option>
+            <option value="unsure">不確定</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">是否曾核貸青安（一生一次）</div>
+        <div class="select-wrap">
+          <select class="input-select" id="prior" onchange="calc()">
+            <option value="none" selected>沒有用過</option>
+            <option value="used">曾核貸青安／新青安</option>
+            <option value="unsure">不確定</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">家庭類型（決定額度上限）</div>
+        <div class="select-wrap">
+          <select class="input-select" id="family" onchange="calc()">
+            <option value="1000" selected>一般首購 → 1,000 萬</option>
+            <option value="1200">新婚 2 年內 → 1,200 萬</option>
+            <option value="1500">育有未成年子女 → 1,500 萬</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">房屋所在縣市（決定房價上限）</div>
+        <div class="select-wrap">
+          <select class="input-select" id="region" onchange="calc()">
+            <option value="2000" selected>其他縣市 → 上限 2,000 萬</option>
+            <option value="2500">新北市／新竹市／新竹縣 → 2,500 萬</option>
+            <option value="3500">臺北市 → 3,500 萬</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 房價與貸款設定 -->
+  <div class="input-card">
+    <div class="card-title">🏠 房價與貸款設定</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">成交總價</div>
+        <div class="input-wrap"><input type="number" id="price" placeholder="例：1200" oninput="syncAppraise();calc()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">成交價與鑑價都須 ≤ 區域上限</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">銀行鑑價（可留空＝同成交價）</div>
+        <div class="input-wrap"><input type="number" id="appraise" placeholder="預設同成交價" oninput="calc()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">成數取「成交價、鑑價孰低」× 8 成</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">自備款（可留空＝用最低自備款）</div>
+        <div class="input-wrap"><input type="number" id="down" placeholder="留空自動估" oninput="calc()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">填越多，未涵蓋金額越少</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">貸款年限</div>
+        <div class="select-wrap">
+          <select class="input-select" id="years" onchange="calc()">
+            <option value="20">20 年</option>
+            <option value="25">25 年</option>
+            <option value="30">30 年</option>
+            <option value="35">35 年</option>
+            <option value="40" selected>40 年（上限）</option>
+          </select>
+        </div>
+        <div class="field-tip">年齡＋年限不得超過 80</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">寬限期（前幾年只還息）</div>
+        <div class="select-wrap">
+          <select class="input-select" id="grace" onchange="calc()">
+            <option value="0" selected>無寬限期</option>
+            <option value="1">1 年</option>
+            <option value="2">2 年</option>
+            <option value="3">3 年</option>
+            <option value="5">5 年（上限）</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">還款方式</div>
+        <div class="select-wrap">
+          <select class="input-select" id="repay" onchange="calc()">
+            <option value="equal-payment" selected>本息平均攤還</option>
+            <option value="equal-principal">本金平均攤還</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">
+      <div class="section-divider-label">⚙ 利率設定（可依銀行實際核定調整）</div>
+      <div class="field-grid">
+        <div class="field-group">
+          <div class="field-label">新青安起始利率</div>
+          <div class="input-wrap"><input type="number" id="rate0" value="1.775" step="0.005" oninput="calc()"><span class="input-unit">%</span></div>
+          <div class="field-tip">前3年；第4年起每年 +0.125 至 +0.5</div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">一般房貸比較利率</div>
+          <div class="input-wrap"><input type="number" id="rateGen" value="2.3" step="0.05" oninput="calc()"><span class="input-unit">%</span></div>
+          <div class="field-tip">用來對比「若走一般首購」的月付</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="window._scroll=true;calc()">📊 立即試算</button>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result-section">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button onclick="scrollToInput()" style="font-size:.78rem;color:var(--text-muted);background:var(--white);border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:inherit;border-radius:2px;transition:all .15s;" onmouseover="this.style.color='var(--pri)';this.style.borderColor='var(--pri)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">✏ 修改條件</button>
+    </div>
+
+    <!-- 資格判定 -->
+    <div class="verdict" id="verdict">
+      <div class="verdict-icon" id="verdict-icon">✓</div>
+      <div class="verdict-body">
+        <div class="verdict-title" id="verdict-title">符合估算條件</div>
+        <div style="font-size:.8rem;color:var(--text-dim);" id="verdict-desc"></div>
+        <ul class="verdict-items" id="verdict-items"></ul>
+      </div>
+    </div>
+
+    <!-- 主結果 -->
+    <div class="result-hero">
+      <div class="rh-item">
+        <div class="rh-label">新青安預估本金</div>
+        <div class="rh-val" id="r-principal">—</div>
+        <div class="rh-unit">萬元</div>
+      </div>
+      <div class="rh-divider"></div>
+      <div class="rh-item">
+        <div class="rh-label">前3年月付</div>
+        <div class="rh-val-sm" id="r-m1">—</div>
+        <div class="rh-unit">元／月（1.775%）</div>
+      </div>
+      <div class="rh-divider"></div>
+      <div class="rh-item">
+        <div class="rh-label">補貼退場後月付</div>
+        <div class="rh-val-sm" id="r-m7">—</div>
+        <div class="rh-unit">元／月（第7年起）</div>
+      </div>
+      <div class="rh-divider"></div>
+      <div class="rh-item">
+        <div class="rh-label">全期總利息</div>
+        <div class="rh-val-sm" id="r-int">—</div>
+        <div class="rh-unit">萬元</div>
+      </div>
+    </div>
+
+    <!-- 貸款組成 -->
+    <div class="block-card">
+      <div class="block-title">🧩 房價與貸款組成</div>
+      <div class="result-grid">
+        <div class="result-card">
+          <div class="rc-label">最高成數金額（8成）</div>
+          <div class="rc-val" id="r-max80">—</div>
+          <div class="rc-sub">成交價、鑑價孰低 × 80%</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">新青安本金</div>
+          <div class="rc-val accent" id="r-principal2">—</div>
+          <div class="rc-sub">成數、額度、需求取小</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">最低自備款</div>
+          <div class="rc-val warn" id="r-down">—</div>
+          <div class="rc-sub">成交價 − 最高成數金額</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">未涵蓋金額</div>
+          <div class="rc-val" id="r-gap">—</div>
+          <div class="rc-sub">需自備或搭一般房貸</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">區域房價上限</div>
+          <div class="rc-val" id="r-cap">—</div>
+          <div class="rc-sub" id="r-cap-status">—</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">家庭額度上限</div>
+          <div class="rc-val" id="r-quota">—</div>
+          <div class="rc-sub" id="r-quota-type">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3+3 階梯利率月付 -->
+    <div class="block-card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 24px 0;">
+        <div class="block-title">📈 3+3 階梯利率・月付會怎麼跳</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>期間</th><th>年利率</th><th>本息月付</th><th>月付變化</th></tr></thead>
+          <tbody id="stage-tbody"></tbody>
+        </table>
+      </div>
+      <div class="block-note" style="padding:0 24px 20px;">前3年享滿額 2 碼補貼 1.775%；滿 3 年後每年減半碼（+0.125），第 7 年起回到原貸款利率。本息平均攤還在每次調息時，會就「剩餘本金、剩餘年期」重算月付，所以金額會逐段往上跳。</div>
+    </div>
+
+    <!-- 新青安 vs 一般房貸 -->
+    <div class="block-card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 24px 0;">
+        <div class="block-title">⚖ 新青安 vs 一般首購房貸</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>方案</th><th>前3年月付</th><th>前6年總繳</th><th>全期利息</th></tr></thead>
+          <tbody id="compare-tbody"></tbody>
+        </table>
+      </div>
+      <div class="block-note" style="padding:12px 24px 20px;" id="compare-note">同本金、年限、寬限期與還款方式；一般房貸採固定利率假設，非銀行報價。</div>
+    </div>
+
+    <!-- 年度還款明細 -->
+    <div class="schedule-card">
+      <div class="schedule-header">
+        <span>📋 新青安年度還款明細</span>
+        <button class="show-more-btn" id="toggle-btn" onclick="toggleSchedule()">顯示每月明細</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead id="sched-head"></thead>
+          <tbody id="sched-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 聯絡 -->
+    <div class="contact-strip">
+      <div class="cs-text">
+        <strong id="cs-title">想確認實際可貸額度與利率？聯繫信義房屋 文心高工店</strong>
+        <span id="cs-desc">協助你洽詢公股行庫、評估最有利的購屋與貸款方案</span>
+      </div>
+      <div class="cs-btns">
+        <a class="cs-btn cs-btn-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
+        <a class="cs-btn cs-btn-line" id="res-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          加 LINE 好友
+        </a>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;flex:1;margin-top:0;" onclick="showLineShare()">📤 LINE 分享試算結果</button>
+      <button class="calc-btn" style="background:#1a4a7a;border:none;padding:12px;font-size:.85rem;flex:1;margin-top:0;" onclick="generatePDF()">📄 下載 PDF 報告</button>
+    </div>
+    <div class="info-box">
+      ⚠ 本工具只做資格初篩與還款情境估算，<strong>不是資格核定、核貸承諾或銀行報價</strong>。1.775% 非 40 年固定利率；郵儲指標利率調整時各階段會一起變動。實際額度、利率、鑑價與撥款仍由承辦公股銀行核定。
+    </div>
+  </div>
+
+  <div class="line-modal-overlay" id="line-modal" onclick="closeLineModal(event)">
+    <div class="line-modal">
+      <div class="lm-header">
+        <div class="lm-header-left">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+          <div><h3>LINE 試算摘要</h3><p>複製後貼到 LINE 群組或個人對話</p></div>
+        </div>
+        <button class="lm-close" onclick="closeLineModal()">✕</button>
+      </div>
+      <div class="lm-body">
+        <div class="lm-preview" id="line-preview-text"></div>
+        <div class="lm-actions">
+          <button class="lm-btn lm-btn-copy" id="copy-btn" onclick="copyLineText()">📋 複製文字</button>
+          <button class="lm-btn lm-btn-open" onclick="openLineApp()">開啟 LINE →</button>
+        </div>
+        <div class="lm-tip">複製後切換到 LINE，貼上即可分享給家人或朋友討論</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+    <div>
+      <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
+      <div class="fi">新青安3.0試算工具 · 僅供參考，實際條件依銀行審核</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 祐承店長 0933-317-625</a>
+    <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
+  </div>
+</footer>
+
+<script>
+let showMonthly=false;
+let schedule=[];      // 新青安逐月
+let lastResult=null;  // 供 LINE / PDF 使用
+
+// ── 共用 ──
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{};}
+function saveHistory(tool,title,summary,params){try{const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');h.unshift({id:Date.now(),tool,title,summary,date:new Date().toLocaleDateString('zh-TW'),time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),params});if(h.length>50)h.pop();localStorage.setItem('rlandy_history',JSON.stringify(h));}catch(e){}}
+const num=v=>{const n=parseFloat(v);return isNaN(n)?0:n;};
+const yen=n=>Math.round(n).toLocaleString();
+const wan=n=>(n/10000).toFixed(1);
+
+function syncAppraise(){/* 佔位：鑑價留空時計算端自動視為同成交價 */}
+
+// ── 3+3 階梯利率（回傳年利率 %，m 為撥款起第幾個月）──
+function ladderRate(r0,m){
+  if(m<=36)return r0;        // 第1-3年
+  if(m<=48)return r0+0.125;  // 第4年
+  if(m<=60)return r0+0.25;   // 第5年
+  if(m<=72)return r0+0.375;  // 第6年
+  return r0+0.5;             // 第7年起
+}
+
+// ── 逐月攤還（含寬限期＋逐段調息重算）──
+function buildSchedule(loan,r0,totalMonths,graceMonths,repayType){
+  const s=[];let bal=loan,level=0,lastR=null;
+  const repayMonths=totalMonths-graceMonths;
+  for(let m=1;m<=totalMonths;m++){
+    const annual=ladderRate(r0,m);const mr=annual/100/12;
+    const inGrace=m<=graceMonths;
+    let interest=bal*mr,principal=0,payment=0;
+    if(inGrace){payment=interest;principal=0;}
+    else{
+      const remaining=totalMonths-m+1;
+      if(repayType==='equal-payment'){
+        if(annual!==lastR){
+          level = mr===0 ? bal/remaining : bal*mr*Math.pow(1+mr,remaining)/(Math.pow(1+mr,remaining)-1);
+          lastR=annual;
+        }
+        payment=level;principal=payment-interest;
+      }else{
+        principal=loan/repayMonths;payment=principal+interest;
+      }
+    }
+    bal-=principal;if(bal<0.5)bal=0;
+    s.push({month:m,annual,payment,principal,interest,balance:bal,inGrace});
+  }
+  return s;
+}
+
+// 固定利率攤還（一般房貸比較用）
+function buildFixed(loan,rate,totalMonths,graceMonths,repayType){
+  const s=[];let bal=loan;const mr=rate/100/12;const repayMonths=totalMonths-graceMonths;
+  let level = mr===0 ? loan/repayMonths : loan*mr*Math.pow(1+mr,repayMonths)/(Math.pow(1+mr,repayMonths)-1);
+  for(let m=1;m<=totalMonths;m++){
+    const inGrace=m<=graceMonths;let interest=bal*mr,principal=0,payment=0;
+    if(inGrace){payment=interest;}
+    else if(repayType==='equal-payment'){payment=level;principal=payment-interest;}
+    else{principal=loan/repayMonths;payment=principal+interest;}
+    bal-=principal;if(bal<0.5)bal=0;
+    s.push({month:m,payment,principal,interest,balance:bal,inGrace});
+  }
+  return s;
+}
+
+function calc(){
+  const age=num(document.getElementById('age').value);
+  const income=document.getElementById('income').value;
+  const own=document.getElementById('own').value;
+  const prior=document.getElementById('prior').value;
+  const quota=num(document.getElementById('family').value);      // 額度上限（萬）
+  const cap=num(document.getElementById('region').value);        // 房價上限（萬）
+  const price=num(document.getElementById('price').value);       // 成交價（萬）
+  const appraiseRaw=num(document.getElementById('appraise').value);
+  const appraise=appraiseRaw>0?appraiseRaw:price;               // 鑑價（萬）
+  const downRaw=num(document.getElementById('down').value);      // 自備款（萬）
+  const years=parseInt(document.getElementById('years').value);
+  const graceYears=parseInt(document.getElementById('grace').value);
+  const repay=document.getElementById('repay').value;
+  const r0=num(document.getElementById('rate0').value)||1.775;
+  const rGen=num(document.getElementById('rateGen').value)||2.3;
+
+  if(price<=0){document.getElementById('result-section').style.display='none';return;}
+
+  // ── 額度組成 ──
+  const base=Math.min(price,appraise);          // 成交/鑑價孰低
+  const max80=base*0.8;                          // 最高成數金額
+  const principalWan=Math.min(max80,quota);      // 新青安本金（萬）
+  const minDown=Math.max(price-max80,0);         // 最低自備款
+  const down=downRaw>0?downRaw:minDown;          // 實際自備款
+  const gap=Math.max(price-down-principalWan,0); // 未涵蓋金額
+
+  // ── 資格判定 ──
+  const items=[];let fail=false,warn=false;
+  // 年齡
+  if(age>0){
+    if(age>=50){items.push({s:'no',t:`年齡 ${age} 歲：須未滿 50 歲，不符合`});fail=true;}
+    else if(age+years>80){items.push({s:'wr',t:`年齡 ${age}＋年限 ${years} = ${age+years} > 80，需縮短年限至 ${80-age} 年內`});warn=true;}
+    else items.push({s:'ok',t:`年齡 ${age} 歲，年齡＋年限 ${age+years} ≤ 80，符合`});
+  }else items.push({s:'wr',t:'未填年齡，無法檢查年齡與年限門檻'});
+  // 所得
+  if(income==='ok')items.push({s:'ok',t:'本人年所得 200 萬以下，符合'});
+  else if(income==='no'){items.push({s:'no',t:'本人年所得超過 200 萬，不符合'});fail=true;}
+  else{items.push({s:'wr',t:'年所得尚未確認'});warn=true;}
+  // 名下住宅
+  if(own==='none')items.push({s:'ok',t:'名下無自有住宅，符合'});
+  else if(own==='has'){items.push({s:'no',t:'名下已有住宅，不符合首購精神（需再確認）'});fail=true;}
+  else if(own==='share'){items.push({s:'wr',t:'僅共有持分，需向銀行確認是否影響'});warn=true;}
+  else{items.push({s:'wr',t:'名下住宅狀況尚未確認'});warn=true;}
+  // 一生一次
+  if(prior==='none')items.push({s:'ok',t:'未曾使用青安，符合一生一次'});
+  else if(prior==='used'){items.push({s:'no',t:'曾核貸青安，受一生一次限制'});fail=true;}
+  else{items.push({s:'wr',t:'是否用過青安尚未確認'});warn=true;}
+  // 區域房價上限
+  if(base>cap){items.push({s:'no',t:`成交/鑑價 ${base} 萬 > 區域上限 ${cap} 萬，不適用新青安`});fail=true;}
+  else items.push({s:'ok',t:`成交/鑑價 ${base} 萬 ≤ 區域上限 ${cap} 萬，符合`});
+
+  let vClass='verdict-pass',vIcon='✓',vTitle='符合估算條件',vDesc='目前初步未發現衝突，可用下方試算金額與家人討論；仍須由銀行正式核定。';
+  if(fail){vClass='verdict-fail';vIcon='✕';vTitle='有項目不符合';vDesc='下列以 ✕ 標示者會影響新青安資格，請先釐清再進一步試算。';}
+  else if(warn){vClass='verdict-warn';vIcon='!';vTitle='需再確認';vDesc='部分項目尚未確認（! 標示），下方試算先以「符合」情境估算。';}
+
+  const vEl=document.getElementById('verdict');
+  vEl.className='verdict '+vClass;
+  document.getElementById('verdict-icon').textContent=vIcon;
+  document.getElementById('verdict-title').textContent=vTitle;
+  document.getElementById('verdict-desc').textContent=vDesc;
+  document.getElementById('verdict-items').innerHTML=items.map(i=>`<li class="${i.s}">${i.t}</li>`).join('');
+
+  // ── 新青安逐月 ──
+  const loan=principalWan*10000;
+  const totalMonths=years*12,graceMonths=graceYears*12;
+  schedule=buildSchedule(loan,r0,totalMonths,graceMonths,repay);
+  const totalInterest=schedule.reduce((a,d)=>a+d.interest,0);
+
+  // 各階段代表月付（該階段首月）
+  const stageDefs=[
+    {label:'第1-3年',start:1,end:36},
+    {label:'第4年',start:37,end:48},
+    {label:'第5年',start:49,end:60},
+    {label:'第6年',start:61,end:72},
+    {label:'第7年起',start:73,end:totalMonths}
+  ];
+  let prevPay=null,stageRows='';
+  const m1=schedule.find(d=>!d.inGrace&&d.month<=36);
+  stageDefs.forEach(st=>{
+    if(st.start>totalMonths)return;
+    const row=schedule[st.start-1];
+    const rate=row.annual.toFixed(3)+'%';
+    let payTxt,chg;
+    if(row.inGrace){payTxt='<span style="color:var(--gold)">'+yen(row.payment)+'</span>';chg='<span class="tag-mini tag-grace">寬限純息</span>';}
+    else{
+      payTxt=yen(row.payment);
+      if(prevPay===null)chg='<span class="flat">—</span>';
+      else{const d=Math.round(row.payment-prevPay);chg = d>0?`<span class="up">+${d.toLocaleString()}</span>`:(d<0?`<span class="flat">${d.toLocaleString()}</span>`:'<span class="flat">±0</span>');}
+      prevPay=row.payment;
+    }
+    const endTxt=st.end>=totalMonths?`（至第${years}年）`:'';
+    stageRows+=`<tr${row.inGrace?' class="stage-grace"':''}><td>${st.label}${endTxt}</td><td>${rate}</td><td>${payTxt} 元</td><td>${chg}</td></tr>`;
+  });
+  document.getElementById('stage-tbody').innerHTML=stageRows;
+
+  // 前3年 / 第7年起 代表月付
+  const firstRepay=schedule.find(d=>!d.inGrace)||schedule[0];
+  const y7=schedule.find(d=>d.month===73)||schedule[schedule.length-1];
+
+  // ── 一般房貸比較（同本金）──
+  const fixed=buildFixed(loan,rGen,totalMonths,graceMonths,repay);
+  const qFirst3=schedule.filter(d=>!d.inGrace&&d.month<=36).reduce((a,d)=>a+d.payment,0)+schedule.filter(d=>d.inGrace).reduce((a,d)=>a+d.payment,0);
+  const q6=schedule.filter(d=>d.month<=72).reduce((a,d)=>a+d.payment,0);
+  const g6=fixed.filter(d=>d.month<=72).reduce((a,d)=>a+d.payment,0);
+  const gInterest=fixed.reduce((a,d)=>a+d.interest,0);
+  const qFirstPay=firstRepay.payment;
+  const gFirst=fixed.find(d=>!d.inGrace)||fixed[0];
+  document.getElementById('compare-tbody').innerHTML=`
+    <tr class="highlight"><td>新青安3.0</td><td>${yen(qFirstPay)} 元</td><td>${wan(q6)} 萬</td><td>${wan(totalInterest)} 萬</td></tr>
+    <tr><td>一般首購 ${rGen}%</td><td>${yen(gFirst.payment)} 元</td><td>${wan(g6)} 萬</td><td>${wan(gInterest)} 萬</td></tr>`;
+  const saveInt=(gInterest-totalInterest)/10000;
+  document.getElementById('compare-note').innerHTML=`同本金 ${principalWan.toFixed(0)} 萬、${years} 年、寬限 ${graceYears} 年、${repay==='equal-payment'?'本息平均攤還':'本金平均攤還'}；一般房貸採固定 ${rGen}% 假設，非銀行報價。<strong>全期利息新青安約可少繳 ${saveInt.toFixed(1)} 萬</strong>（僅比補貼利益，不含其他費用）。`;
+
+  // ── 主結果卡 ──
+  document.getElementById('r-principal').textContent=principalWan.toFixed(0);
+  document.getElementById('r-principal2').textContent=principalWan.toFixed(0)+' 萬';
+  document.getElementById('r-m1').textContent=yen(qFirstPay);
+  document.getElementById('r-m7').textContent=yen(y7.payment);
+  document.getElementById('r-int').textContent=wan(totalInterest);
+  document.getElementById('r-max80').textContent=max80.toFixed(0)+' 萬';
+  document.getElementById('r-down').textContent=down.toFixed(0)+' 萬';
+  document.getElementById('r-gap').textContent=gap.toFixed(0)+' 萬';
+  document.getElementById('r-cap').textContent=cap.toLocaleString()+' 萬';
+  document.getElementById('r-cap-status').textContent=base>cap?'⚠ 已超過上限':'✓ 未逾上限';
+  document.getElementById('r-cap-status').style.color=base>cap?'var(--red)':'var(--green)';
+  document.getElementById('r-quota').textContent=quota.toLocaleString()+' 萬';
+  const qtype=quota===1500?'育有未成年子女':(quota===1200?'新婚 2 年內':'一般首購');
+  document.getElementById('r-quota-type').textContent=qtype+(max80<quota?'・受 8 成成數限制':'');
+
+  buildScheduleTable(false);
+
+  lastResult={verdict:vTitle,cap,base,price,appraise,principalWan,minDown,down,gap,quota:qtype,
+    years,graceYears,repay,r0,qFirstPay,y7pay:y7.payment,totalInterest,saveInt,rGen,
+    m4:schedule[36]?schedule[36].payment:0};
+
+  document.getElementById('result-section').style.display='block';
+  if(window._scroll){window.scrollTo({top:document.getElementById('result-section').offsetTop-20,behavior:'smooth'});window._scroll=false;}
+
+  saveHistory('new-qingan','新青安3.0試算',`本金 ${principalWan.toFixed(0)}萬・前3年月付 ${yen(qFirstPay)}元・${vTitle}`,{price,principalWan,years});
+}
+
+function buildScheduleTable(monthly){
+  const head=monthly
+    ? '<tr><th>期數</th><th>年利率</th><th>月付（元）</th><th>本金（元）</th><th>利息（元）</th><th>餘額（萬）</th></tr>'
+    : '<tr><th>年度</th><th>年利率</th><th>年付（萬）</th><th>還本金（萬）</th><th>還利息（萬）</th><th>年底餘額（萬）</th></tr>';
+  document.getElementById('sched-head').innerHTML=head;
+  let html='';
+  if(monthly){
+    schedule.forEach(d=>{
+      html+=`<tr${d.inGrace?' class="stage-grace"':''}><td>${d.month}${d.inGrace?' <span class="tag-mini tag-grace">寬限</span>':''}</td><td>${d.annual.toFixed(3)}%</td><td>${yen(d.payment)}</td><td>${yen(d.principal)}</td><td>${yen(d.interest)}</td><td>${(d.balance/10000).toFixed(1)}</td></tr>`;
+    });
+  }else{
+    const yrs=Math.ceil(schedule.length/12);
+    for(let y=0;y<yrs;y++){
+      const c=schedule.slice(y*12,(y+1)*12);
+      const pay=c.reduce((a,d)=>a+d.payment,0),pri=c.reduce((a,d)=>a+d.principal,0),intg=c.reduce((a,d)=>a+d.interest,0);
+      const lastBal=c[c.length-1]?.balance||0;const hasGrace=c.some(d=>d.inGrace);
+      const rate=c[0].annual.toFixed(3)+'%';
+      html+=`<tr${hasGrace?' class="stage-grace"':''}><td>${y+1} 年${hasGrace?' <span class="tag-mini tag-grace">寬限</span>':''}</td><td>${rate}</td><td>${(pay/10000).toFixed(2)}</td><td>${(pri/10000).toFixed(2)}</td><td>${(intg/10000).toFixed(2)}</td><td>${(lastBal/10000).toFixed(1)}</td></tr>`;
+    }
+  }
+  document.getElementById('sched-body').innerHTML=html;
+}
+function toggleSchedule(){showMonthly=!showMonthly;document.getElementById('toggle-btn').textContent=showMonthly?'切換為年度明細':'顯示每月明細';buildScheduleTable(showMonthly);}
+function scrollToInput(){document.querySelector('.input-card').scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ── LINE 分享 ──
+function showLineShare(){
+  if(!lastResult)return;
+  const cfg=getConfig();
+  const brand=cfg.brand||'信義房屋 文心高工店';
+  const phone=cfg.phoneLabel||'祐承 0933-317-625';
+  const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const R=lastResult;const today=new Date().toLocaleDateString('zh-TW');
+  const msg=`🏠 新青安3.0 試算摘要
+${'═'.repeat(22)}
+📌 資格初判：${R.verdict}
+💰 成交總價：${R.price} 萬（${R.quota}）
+🏦 新青安本金：${R.principalWan.toFixed(0)} 萬
+💵 最低自備款：${R.minDown.toFixed(0)} 萬
+📎 未涵蓋金額：${R.gap.toFixed(0)} 萬（需自備或搭一般房貸）
+${'─'.repeat(22)}
+📅 ${R.years} 年・寬限 ${R.graceYears} 年・${R.repay==='equal-payment'?'本息攤還':'本金攤還'}
+📈 月付變化（本息）
+　前3年 ${R.r0}%：${yen(R.qFirstPay)} 元
+　第4年起逐段升 → 第7年 ${yen(R.y7pay)} 元
+💸 新青安全期利息：${(R.totalInterest/10000).toFixed(1)} 萬
+✅ 較一般房貸約少繳：${R.saveInt.toFixed(1)} 萬
+${'─'.repeat(22)}
+試算日期：${today}
+
+📞 ${brand}
+祐承店長 ${phone}
+LINE：${lineUrl}
+
+⚠ 僅供估算，實際額度利率依銀行核定`;
+  document.getElementById('line-preview-text').textContent=msg;
+  document.getElementById('line-modal').classList.add('open');
+  document.getElementById('copy-btn').textContent='📋 複製文字';
+  document.getElementById('copy-btn').classList.remove('copied');
+}
+function closeLineModal(e){if(!e||e.target===document.getElementById('line-modal'))document.getElementById('line-modal').classList.remove('open');}
+function copyLineText(){
+  const text=document.getElementById('line-preview-text').textContent;const btn=document.getElementById('copy-btn');
+  const done=()=>{btn.textContent='✅ 已複製！';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 複製文字';btn.classList.remove('copied');},3000);};
+  navigator.clipboard.writeText(text).then(done).catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();});
+}
+function openLineApp(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('line-preview-text').textContent),'_blank');}
+
+// ── PDF ──
+async function renderToPDF(htmlContent,filename){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  document.body.appendChild(overlay);
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
+  container.innerHTML=htmlContent;document.body.appendChild(container);
+  await new Promise(r=>setTimeout(r,1000));
+  try{
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
+    const pdfW=pdf.internal.pageSize.getWidth(),pdfH=pdf.internal.pageSize.getHeight();
+    const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
+    const imgData=canvas.toDataURL('image/jpeg',0.92);const imgH=canvas.height*pdfW/canvas.width;
+    let y=0,page=0;while(y<imgH){if(page>0)pdf.addPage();pdf.addImage(imgData,'JPEG',0,-y,pdfW,imgH);y+=pdfH;page++;}
+    pdf.save(filename);
+  }finally{document.body.removeChild(container);document.body.removeChild(overlay);}
+}
+async function generatePDF(){
+  if(!lastResult)return;
+  const cfg=getConfig();const brand=cfg.brand||'信義房屋 文心高工店';const phone=cfg.phoneLabel||'祐承 0933-317-625';const lineUrl=cfg.lineUrl||'https://line.me/ti/p/EfDsNa26Xw';
+  const R=lastResult;const today=new Date().toLocaleDateString('zh-TW');
+  let stageHTML='';
+  document.querySelectorAll('#stage-tbody tr').forEach(tr=>{
+    const c=tr.querySelectorAll('td');stageHTML+=`<tr><td>${c[0].textContent}</td><td style="text-align:right">${c[1].textContent}</td><td style="text-align:right">${c[2].textContent}</td></tr>`;
+  });
+  const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;}
+    .page{max-width:714px;margin:0 auto;}
+    .header{background:#1a4a7a;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;}
+    .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
+    .report-date{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
+    .report-date strong{display:block;font-size:1rem;color:white;}
+    .hero{background:#1a1410;padding:22px 32px;}
+    .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:6px;}
+    .hero-val{font-family:'Noto Serif TC',serif;font-size:2.4rem;font-weight:700;color:white;}
+    .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
+    .section{padding:22px 32px 0;}
+    .sec-title{font-size:.75rem;color:#9a8e84;letter-spacing:.12em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .data-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px;}
+    .data-card{border:1px solid #e0dad3;padding:12px 14px;}
+    .data-label{font-size:.68rem;color:#9a8e84;margin-bottom:4px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.1rem;color:#1a1410;font-weight:600;}
+    table{width:100%;border-collapse:collapse;margin-top:4px;}
+    th{background:#1a4a7a;color:white;padding:8px 12px;font-size:.72rem;font-weight:500;text-align:left;}
+    td{padding:7px 12px;font-size:.78rem;border-bottom:1px solid #eee;color:#5a4e44;}
+    td:first-child{color:#1a1410;font-weight:500;}
+    .contact{background:#1a4a7a;padding:18px 32px;margin-top:22px;}
+    .cb{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
+    .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
+    .disc{padding:14px 32px;font-size:.7rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+  </style></head><body><div class="page">
+    <div class="header"><div class="brand">${brand}<small>新青安3.0 貸款試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
+    <div class="hero"><div class="hero-label">新青安預估本金</div><div class="hero-val">${R.principalWan.toFixed(0)} 萬元</div><div class="hero-sub">前3年月付 ${yen(R.qFirstPay)} 元・${R.years} 年・寬限 ${R.graceYears} 年・資格初判：${R.verdict}</div></div>
+    <div class="section">
+      <div class="sec-title">房價與貸款組成</div>
+      <div class="data-grid">
+        <div class="data-card"><div class="data-label">成交總價</div><div class="data-val">${R.price} 萬</div></div>
+        <div class="data-card"><div class="data-label">新青安本金</div><div class="data-val">${R.principalWan.toFixed(0)} 萬</div></div>
+        <div class="data-card"><div class="data-label">最低自備款</div><div class="data-val">${R.minDown.toFixed(0)} 萬</div></div>
+        <div class="data-card"><div class="data-label">未涵蓋金額</div><div class="data-val">${R.gap.toFixed(0)} 萬</div></div>
+        <div class="data-card"><div class="data-label">區域上限</div><div class="data-val">${R.cap} 萬</div></div>
+        <div class="data-card"><div class="data-label">家庭額度</div><div class="data-val">${R.quota}</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="sec-title">3+3 階梯利率・本息月付變化</div>
+      <table><thead><tr><th>期間</th><th style="text-align:right">年利率</th><th style="text-align:right">本息月付</th></tr></thead><tbody>${stageHTML}</tbody></table>
+    </div>
+    <div class="section">
+      <div class="sec-title">全期試算</div>
+      <div class="data-grid">
+        <div class="data-card"><div class="data-label">全期總利息</div><div class="data-val">${(R.totalInterest/10000).toFixed(1)} 萬</div></div>
+        <div class="data-card"><div class="data-label">第7年起月付</div><div class="data-val">${yen(R.y7pay)} 元</div></div>
+        <div class="data-card"><div class="data-label">較一般房貸省息</div><div class="data-val">${R.saveInt.toFixed(1)} 萬</div></div>
+      </div>
+    </div>
+    <div class="contact"><div class="cb">${brand}</div><div class="ci">祐承店長 ${phone}　｜　LINE：${lineUrl}</div></div>
+    <div class="disc">⚠ 本報告僅供估算參考。1.775% 非固定利率，採 3+3 補貼退場，郵儲指標利率調整時各階段會一起變動。實際資格、額度、鑑價與利率均由承辦公股銀行核定，非核貸承諾或銀行報價。</div>
+  </div></body></html>`;
+  const btn=document.querySelector('[onclick="generatePDF()"]');if(btn){btn.textContent='⏳ 產生中...';btn.disabled=true;}
+  const today2=new Date().toLocaleDateString('zh-TW').replace(/\//g,'');
+  try{await renderToPDF(html,`新青安3.0試算報告_${today2}.pdf`);}finally{if(btn){btn.textContent='📄 下載 PDF 報告';btn.disabled=false;}}
+}
+
+// ── Init config ──
+(function(){
+  const c=getConfig();
+  function sa(id,val){const el=document.getElementById(id);if(el&&val)el.textContent=val;}
+  function sh(id,val){const el=document.getElementById(id);if(el&&val)el.href=val;}
+  sa('hdr-branch',c.brandSubtitle);
+  const pl=c.phoneLabel||'祐承 0933-317-625';
+  sa('hdr-phone-label',pl);
+  document.getElementById('footer-phone').textContent='📞 '+pl;
+  sh('hdr-phone','tel:'+(c.phone||'0933317625'));
+  sh('footer-phone','tel:'+(c.phone||'0933317625'));
+  sh('hdr-line',c.lineUrl);sh('footer-line',c.lineUrl);
+  sh('res-phone','tel:'+(c.phone||'0933317625'));
+  sh('res-line',c.lineUrl);
+  sa('footer-brand',c.brand);
+})();
+</script>
+</body>
+</html>
