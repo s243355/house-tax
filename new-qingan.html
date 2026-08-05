@@ -8,11 +8,13 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --pri:#1a4a7a;--pri-dark:#0f3260;--pri-light:#eef4fb;--pri-mid:#c8ddf0;
-    --red:#C00000;--red-light:#fdf0f0;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
-    --border:#e0dad3;--border-dark:#c8bfb5;
-    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
-    --green:#2e7d52;--gold:#b8860b;
+    --pri:#0a8a43;--pri-dark:#076e35;--pri-light:#e9f6ee;--pri-mid:#b7e0c8;
+    --blue:#1f6fb2;--blue-dark:#155a97;--blue-light:#eaf2fa;--blue-mid:#c3ddf0;
+    --orange:#e07b1a;--orange-dark:#c26410;--orange-light:#fdf3e8;
+    --red:#C00000;--red-light:#fdf0f0;--bg:#f4f7f5;--white:#fff;--surface2:#edeae6;
+    --border:#dbe6e0;--border-dark:#c2d4ca;
+    --text:#16241c;--text-dim:#4a5a51;--text-muted:#8a988f;
+    --green:#0a8a43;--gold:#b8860b;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -170,6 +172,57 @@
   .lm-btn-open:hover{background:#f0faf2;}
   .lm-tip{font-size:.72rem;color:var(--text-muted);margin-top:10px;text-align:center;line-height:1.6;}
 
+  /* ── 報告式分區（信義綠・強色塊） ── */
+  .rep-sec-head{display:flex;align-items:center;gap:12px;margin:26px 0 14px;}
+  .rep-sec-no{width:34px;height:34px;flex-shrink:0;background:var(--pri);color:#fff;font-family:'Noto Serif TC',serif;font-weight:700;font-size:1.05rem;display:flex;align-items:center;justify-content:center;border-radius:6px;box-shadow:0 2px 6px rgba(10,138,67,.3);}
+  .rep-sec-t{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;color:var(--pri-dark);}
+  .rep-sec-t small{display:block;font-family:'Noto Sans TC',sans-serif;font-size:.72rem;color:var(--text-muted);font-weight:400;margin-top:1px;}
+
+  /* 核貸金額配置 4 卡 */
+  .cfg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+  .cfg-card{border:1.5px solid var(--border);border-top:5px solid var(--pri);border-radius:10px;padding:20px 16px 18px;text-align:center;background:var(--white);box-shadow:var(--shadow-sm);}
+  .cfg-card.green{border-top-color:var(--pri);background:linear-gradient(180deg,var(--pri-light),#fff 60%);}
+  .cfg-card.blue{border-top-color:var(--blue);background:linear-gradient(180deg,var(--blue-light),#fff 60%);}
+  .cfg-card.orange{border-top-color:var(--orange);background:linear-gradient(180deg,var(--orange-light),#fff 60%);}
+  .cfg-l{font-size:.76rem;color:var(--text-dim);margin-bottom:9px;font-weight:500;}
+  .cfg-v{font-family:'Noto Serif TC',serif;font-size:1.65rem;font-weight:700;color:var(--pri);line-height:1.1;}
+  .cfg-card.blue .cfg-v{color:var(--blue);}
+  .cfg-card.orange .cfg-v{color:var(--orange);}
+  .cfg-info{background:var(--blue-light);border:1.5px solid var(--blue-mid);border-left:4px solid var(--blue);border-radius:8px;padding:13px 16px;font-size:.8rem;color:var(--blue-dark);line-height:1.7;margin-bottom:6px;}
+  .cfg-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .cfg-chip{flex:1;min-width:150px;background:var(--pri-light);border:1px solid var(--pri-mid);border-radius:6px;padding:8px 12px;font-size:.75rem;color:var(--pri-dark);}
+  .cfg-chip b{font-family:'Noto Serif TC',serif;font-size:.9rem;}
+
+  /* 各年期月付 階梯卡 */
+  .mix-grid{display:grid;grid-template-columns:repeat(5,1fr);border:1.5px solid var(--pri-mid);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);}
+  .mix-col{border-right:1px solid var(--pri-mid);background:var(--white);}
+  .mix-col:last-child{border-right:none;}
+  .mix-head{background:var(--pri);color:#fff;padding:10px 8px;text-align:center;}
+  .mix-head .ml{font-size:.82rem;font-weight:700;}
+  .mix-head .mp{font-size:.66rem;opacity:.8;margin-top:1px;}
+  .mix-body{padding:16px 10px 14px;text-align:center;}
+  .mix-total{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:var(--pri-dark);}
+  .mix-sub{font-size:.68rem;color:var(--text-muted);line-height:1.6;margin-top:6px;}
+  .mix-chg{font-size:.66rem;margin-top:6px;font-weight:600;}
+  .mix-chg.up{color:var(--red);}
+  .mix-chg.flat{color:var(--text-muted);}
+  .mix-chg.grace{color:var(--gold);}
+
+  /* 方案對照 2 卡 */
+  .cmp2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .cmp2-card{border-radius:10px;padding:22px 20px 20px;box-shadow:var(--shadow-sm);}
+  .cmp2-card.mix{background:var(--pri-light);border:1.5px solid var(--pri-mid);}
+  .cmp2-card.gen{background:var(--surface2);border:1.5px solid var(--border-dark);}
+  .cmp2-l{font-size:.82rem;font-weight:700;margin-bottom:10px;}
+  .cmp2-card.mix .cmp2-l{color:var(--pri-dark);}
+  .cmp2-card.gen .cmp2-l{color:var(--text-dim);}
+  .cmp2-v{font-family:'Noto Serif TC',serif;font-size:1.9rem;font-weight:700;margin-bottom:8px;}
+  .cmp2-card.mix .cmp2-v{color:var(--pri);}
+  .cmp2-card.gen .cmp2-v{color:var(--text);}
+  .cmp2-s{font-size:.74rem;color:var(--text-dim);line-height:1.6;}
+  .cmp2-save{background:var(--pri);color:#fff;border-radius:8px;padding:12px 16px;font-size:.85rem;text-align:center;margin-top:12px;font-weight:500;}
+  .cmp2-save b{font-family:'Noto Serif TC',serif;font-size:1.15rem;}
+
   @media(max-width:640px){
     header{padding:0 12px;height:52px;}
     .ht,.hd{display:none;}
@@ -197,6 +250,18 @@
     .rh-val{font-size:1.6rem;}
     .rh-val-sm{font-size:1.1rem;}
     .result-grid{grid-template-columns:1fr 1fr;}
+    .cfg-grid{grid-template-columns:1fr 1fr;}
+    .cfg-v{font-size:1.3rem;}
+    .rep-sec-t{font-size:1rem;}
+    .rep-sec-no{width:30px;height:30px;font-size:.95rem;}
+    .mix-grid{grid-template-columns:1fr;}
+    .mix-col{border-right:none;border-bottom:1px solid var(--pri-mid);}
+    .mix-col:last-child{border-bottom:none;}
+    .mix-head{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;}
+    .mix-head .mp{margin-top:0;}
+    .mix-body{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;text-align:left;}
+    .mix-sub{margin-top:0;}
+    .cmp2{grid-template-columns:1fr;}
     .result-card{padding:14px;}
     .rc-val{font-size:1.1rem;}
     .block-card{padding:16px;}
@@ -434,70 +499,33 @@
       </div>
     </div>
 
-    <!-- 貸款組成 -->
-    <div class="block-card">
-      <div class="block-title">🧩 房價與貸款組成</div>
-      <div class="result-grid">
-        <div class="result-card">
-          <div class="rc-label">最高成數金額（8成）</div>
-          <div class="rc-val" id="r-max80">—</div>
-          <div class="rc-sub">成交價、鑑價孰低 × 80%</div>
-        </div>
-        <div class="result-card">
-          <div class="rc-label">新青安本金</div>
-          <div class="rc-val accent" id="r-principal2">—</div>
-          <div class="rc-sub">成數、額度、需求取小</div>
-        </div>
-        <div class="result-card">
-          <div class="rc-label">最低自備款</div>
-          <div class="rc-val warn" id="r-down">—</div>
-          <div class="rc-sub">成交價 − 最高成數金額</div>
-        </div>
-        <div class="result-card">
-          <div class="rc-label">未涵蓋金額</div>
-          <div class="rc-val" id="r-gap">—</div>
-          <div class="rc-sub">需自備或搭一般房貸</div>
-        </div>
-        <div class="result-card">
-          <div class="rc-label">區域房價上限</div>
-          <div class="rc-val" id="r-cap">—</div>
-          <div class="rc-sub" id="r-cap-status">—</div>
-        </div>
-        <div class="result-card">
-          <div class="rc-label">家庭額度上限</div>
-          <div class="rc-val" id="r-quota">—</div>
-          <div class="rc-sub" id="r-quota-type">—</div>
-        </div>
-      </div>
+    <!-- 一、核貸金額配置 -->
+    <div class="rep-sec-head"><div class="rep-sec-no">一</div><div class="rep-sec-t">核貸金額配置<small>成交價 8 成，拆成新青安配額＋一般房貸超額</small></div></div>
+    <div class="cfg-grid">
+      <div class="cfg-card green"><div class="cfg-l">總核貸金額</div><div class="cfg-v" id="c-total">—</div></div>
+      <div class="cfg-card green"><div class="cfg-l">新青安配額</div><div class="cfg-v" id="c-qingan">—</div></div>
+      <div class="cfg-card blue"><div class="cfg-l">一般房貸金額</div><div class="cfg-v" id="c-gen">—</div></div>
+      <div class="cfg-card orange"><div class="cfg-l">自備款預估</div><div class="cfg-v" id="c-down">—</div></div>
+    </div>
+    <div class="cfg-info" id="c-info">—</div>
+    <div class="cfg-strip">
+      <div class="cfg-chip">最高成數金額（8成）：<b id="c-max80">—</b></div>
+      <div class="cfg-chip">區域房價上限：<b id="c-cap">—</b> <span id="c-cap-status"></span></div>
+      <div class="cfg-chip">家庭額度上限：<b id="c-quota">—</b> <span id="c-quota-type" style="font-weight:400"></span></div>
     </div>
 
-    <!-- 3+3 階梯利率月付 -->
-    <div class="block-card" style="padding:0;overflow:hidden;">
-      <div style="padding:20px 24px 0;">
-        <div class="block-title">📈 3+3 階梯利率・月付會怎麼跳</div>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="rtable">
-          <thead><tr><th>期間</th><th>年利率</th><th>本息月付</th><th>月付變化</th></tr></thead>
-          <tbody id="stage-tbody"></tbody>
-        </table>
-      </div>
-      <div class="block-note" style="padding:0 24px 20px;">前3年享滿額 2 碼補貼 1.775%；滿 3 年後每年減半碼（+0.125），第 7 年起回到原貸款利率。本息平均攤還在每次調息時，會就「剩餘本金、剩餘年期」重算月付，所以金額會逐段往上跳。</div>
-    </div>
+    <!-- 二、各年期月付試算 -->
+    <div class="rep-sec-head"><div class="rep-sec-no">二</div><div class="rep-sec-t" id="mix-title">各年期每月月付金試算<small>月付會怎麼跳</small></div></div>
+    <div class="mix-grid" id="mix-grid"></div>
+    <div class="block-note" style="margin-top:10px;">前 3 年享滿額 2 碼補貼 1.775%；滿 3 年後每年減半碼（+0.125），第 7 年起回到原貸款利率。本息平均攤還在每次調息時，會就「剩餘本金、剩餘年期」重算月付，所以金額會逐段往上跳。</div>
 
-    <!-- 新青安 vs 一般房貸 -->
-    <div class="block-card" style="padding:0;overflow:hidden;">
-      <div style="padding:20px 24px 0;">
-        <div class="block-title">⚖ 新青安 vs 一般首購房貸</div>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="rtable">
-          <thead><tr><th>方案</th><th>前3年月付</th><th>前6年總繳</th><th>全期利息</th></tr></thead>
-          <tbody id="compare-tbody"></tbody>
-        </table>
-      </div>
-      <div class="block-note" style="padding:12px 24px 20px;" id="compare-note">同本金、年限、寬限期與還款方式；一般房貸採固定利率假設，非銀行報價。</div>
+    <!-- 三、方案對照 -->
+    <div class="rep-sec-head"><div class="rep-sec-no">三</div><div class="rep-sec-t">方案對照<small>混合方案前段每月 vs 全額走一般房貸</small></div></div>
+    <div class="cmp2">
+      <div class="cmp2-card mix"><div class="cmp2-l" id="cmp-a-l">超額混合方案・前段每月</div><div class="cmp2-v" id="cmp-a-v">—</div><div class="cmp2-s" id="cmp-a-s">—</div></div>
+      <div class="cmp2-card gen"><div class="cmp2-l">全額走一般房貸・每月</div><div class="cmp2-v" id="cmp-b-v">—</div><div class="cmp2-s" id="cmp-b-s">—</div></div>
     </div>
+    <div class="cmp2-save" id="cmp-save">—</div>
 
     <!-- 聯絡 -->
     <div class="contact-strip">
@@ -517,7 +545,7 @@
     <button class="calc-btn" style="background:#0b8a43;border:none;padding:14px;font-size:.92rem;margin-top:0;margin-bottom:10px;width:100%;" onclick="generateImage()">🖼 產生新青安試算報告圖片（PNG）</button>
     <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
       <button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;flex:1;min-width:140px;margin-top:0;" onclick="showLineShare()">📤 LINE 分享</button>
-      <button class="calc-btn" style="background:#1a4a7a;border:none;padding:12px;font-size:.85rem;flex:1;min-width:140px;margin-top:0;" onclick="generatePDF()">📄 下載 PDF</button>
+      <button class="calc-btn" style="background:var(--blue);border:none;padding:12px;font-size:.85rem;flex:1;min-width:140px;margin-top:0;" onclick="generatePDF()">📄 下載 PDF</button>
     </div>
     <div class="info-box">
       ⚠ 本工具只做資格初篩與還款情境估算，<strong>不是資格核定、核貸承諾或銀行報價</strong>。1.775% 非 40 年固定利率；郵儲指標利率調整時各階段會一起變動。實際額度、利率、鑑價與撥款仍由承辦公股銀行核定。
@@ -714,74 +742,18 @@ function calc(){
   const totalMonths=years*12,graceMonths=graceYears*12;
   schedule=buildSchedule(loan,r0,totalMonths,graceMonths,repay);
   const totalInterest=schedule.reduce((a,d)=>a+d.interest,0);
-
-  // 各階段代表月付（該階段首月）
-  const stageDefs=[
-    {label:'第1-3年',start:1,end:36},
-    {label:'第4年',start:37,end:48},
-    {label:'第5年',start:49,end:60},
-    {label:'第6年',start:61,end:72},
-    {label:'第7年起',start:73,end:totalMonths}
-  ];
-  let prevPay=null,stageRows='';
-  const m1=schedule.find(d=>!d.inGrace&&d.month<=36);
-  stageDefs.forEach(st=>{
-    if(st.start>totalMonths)return;
-    const row=schedule[st.start-1];
-    const rate=row.annual.toFixed(3)+'%';
-    let payTxt,chg;
-    if(row.inGrace){payTxt='<span style="color:var(--gold)">'+yen(row.payment)+'</span>';chg='<span class="tag-mini tag-grace">寬限純息</span>';}
-    else{
-      payTxt=yen(row.payment);
-      if(prevPay===null)chg='<span class="flat">—</span>';
-      else{const d=Math.round(row.payment-prevPay);chg = d>0?`<span class="up">+${d.toLocaleString()}</span>`:(d<0?`<span class="flat">${d.toLocaleString()}</span>`:'<span class="flat">±0</span>');}
-      prevPay=row.payment;
-    }
-    const endTxt=st.end>=totalMonths?`（至第${years}年）`:'';
-    stageRows+=`<tr${row.inGrace?' class="stage-grace"':''}><td data-label="期間">${st.label}${endTxt}</td><td data-label="年利率">${rate}</td><td data-label="本息月付">${payTxt} 元</td><td data-label="月付變化">${chg}</td></tr>`;
-  });
-  document.getElementById('stage-tbody').innerHTML=stageRows;
-
-  // 前3年 / 第7年起 代表月付
   const firstRepay=schedule.find(d=>!d.inGrace)||schedule[0];
+  const qFirstPay=firstRepay.payment;
   const y7=schedule.find(d=>d.month===73)||schedule[schedule.length-1];
 
-  // ── 一般房貸比較（同本金）──
-  const fixed=buildFixed(loan,rGen,totalMonths,graceMonths,repay);
-  const qFirst3=schedule.filter(d=>!d.inGrace&&d.month<=36).reduce((a,d)=>a+d.payment,0)+schedule.filter(d=>d.inGrace).reduce((a,d)=>a+d.payment,0);
-  const q6=schedule.filter(d=>d.month<=72).reduce((a,d)=>a+d.payment,0);
-  const g6=fixed.filter(d=>d.month<=72).reduce((a,d)=>a+d.payment,0);
-  const gInterest=fixed.reduce((a,d)=>a+d.interest,0);
-  const qFirstPay=firstRepay.payment;
-  const gFirst=fixed.find(d=>!d.inGrace)||fixed[0];
-  document.getElementById('compare-tbody').innerHTML=`
-    <tr class="highlight"><td data-label="方案">新青安3.0</td><td data-label="前3年月付">${yen(qFirstPay)} 元</td><td data-label="前6年總繳">${wan(q6)} 萬</td><td data-label="全期利息">${wan(totalInterest)} 萬</td></tr>
-    <tr><td data-label="方案">一般首購 ${rGen}%</td><td data-label="前3年月付">${yen(gFirst.payment)} 元</td><td data-label="前6年總繳">${wan(g6)} 萬</td><td data-label="全期利息">${wan(gInterest)} 萬</td></tr>`;
-  const saveInt=(gInterest-totalInterest)/10000;
-  document.getElementById('compare-note').innerHTML=`同本金 ${principalWan.toFixed(0)} 萬、${years} 年、寬限 ${graceYears} 年、${repay==='equal-payment'?'本息平均攤還':'本金平均攤還'}；一般房貸採固定 ${rGen}% 假設，非銀行報價。<strong>全期利息新青安約可少繳 ${saveInt.toFixed(1)} 萬</strong>（僅比補貼利益，不含其他費用）。`;
-
-  // ── 主結果卡 ──
-  document.getElementById('r-principal').textContent=principalWan.toFixed(0);
-  document.getElementById('r-principal2').textContent=principalWan.toFixed(0)+' 萬';
-  document.getElementById('r-m1').textContent=yen(qFirstPay);
-  document.getElementById('r-m7').textContent=yen(y7.payment);
-  document.getElementById('r-int').textContent=wan(totalInterest);
-  document.getElementById('r-max80').textContent=max80.toFixed(0)+' 萬';
-  document.getElementById('r-down').textContent=down.toFixed(0)+' 萬';
-  document.getElementById('r-gap').textContent=gap.toFixed(0)+' 萬';
-  document.getElementById('r-cap').textContent=cap.toLocaleString()+' 萬';
-  document.getElementById('r-cap-status').textContent=base>cap?'⚠ 已超過上限':'✓ 未逾上限';
-  document.getElementById('r-cap-status').style.color=base>cap?'var(--red)':'var(--green)';
-  document.getElementById('r-quota').textContent=quota.toLocaleString()+' 萬';
-  const qtype=quota===1500?'育有未成年子女':(quota===1200?'新婚 2 年內':'一般首購');
-  document.getElementById('r-quota-type').textContent=qtype+(max80<quota?'・受 8 成成數限制':'');
-
-  // ── 超額混合方案（新青安 + 一般房貸超額）供報告圖片使用 ──
-  const genLoanWan=gap;                                   // 一般房貸（超額）金額
-  const totalLoanWan=principalWan+genLoanWan;             // 總核貸
+  // ── 超額混合方案（新青安 + 一般房貸超額）──
+  const genLoanWan=gap;
+  const totalLoanWan=principalWan+genLoanWan;
   const GEN_TERM=360;                                     // 超額一般房貸假設 30 年無寬限
   const genMonthly=genLoanWan>0?pmt(genLoanWan*10000,rGen,GEN_TERM):0;
   const fullGenMonthly=pmt(totalLoanWan*10000,rGen,GEN_TERM);
+  const qtype=quota===1500?'育有未成年子女':(quota===1200?'新婚 2 年內':'一般首購');
+  const hasGen=genLoanWan>0.5;
   const stageMixDefs=[
     {label:'前3年補貼期',period:'第 1~36 期',start:1},
     {label:'第四年時段',period:'第 37~48 期',start:37},
@@ -794,6 +766,55 @@ function calc(){
     return {label:st.label,period:st.period,qingan:Math.round(row.payment),grace:row.inGrace,
             general:Math.round(genMonthly),total:Math.round(row.payment+genMonthly)};
   });
+
+  // 全期利息對照（同本金一般房貸）
+  const fixed=buildFixed(loan,rGen,totalMonths,graceMonths,repay);
+  const gInterest=fixed.reduce((a,d)=>a+d.interest,0);
+  const saveInt=(gInterest-totalInterest)/10000;
+
+  // ── 主結果 hero ──
+  document.getElementById('r-principal').textContent=principalWan.toFixed(0);
+  document.getElementById('r-m1').textContent=yen(qFirstPay);
+  document.getElementById('r-m7').textContent=yen(y7.payment);
+  document.getElementById('r-int').textContent=wan(totalInterest);
+
+  // ── 一、核貸金額配置 ──
+  document.getElementById('c-total').textContent=totalLoanWan.toFixed(0)+' 萬';
+  document.getElementById('c-qingan').textContent=principalWan.toFixed(0)+' 萬';
+  document.getElementById('c-gen').textContent=genLoanWan.toFixed(0)+' 萬';
+  document.getElementById('c-down').textContent=down.toFixed(0)+' 萬';
+  document.getElementById('c-info').innerHTML=hasGen
+    ? `本案符合新青安 3.0 資格；因總核貸金額 ${totalLoanWan.toFixed(0)} 萬已超過【${qtype}】額度上限 ${principalWan.toFixed(0)} 萬，系統自動配置為 <b>新青安 ${principalWan.toFixed(0)} 萬 ＋ 一般房貸 ${genLoanWan.toFixed(0)} 萬</b> 超額混合方案辦理。`
+    : `本案總核貸金額 ${totalLoanWan.toFixed(0)} 萬未超過【${qtype}】額度上限，可全額以新青安 3.0 辦理，無需搭配一般房貸超額。`;
+  document.getElementById('c-max80').textContent=max80.toFixed(0)+' 萬';
+  document.getElementById('c-cap').textContent=cap.toLocaleString()+' 萬';
+  const cs=document.getElementById('c-cap-status');cs.textContent=base>cap?'⚠ 已超過':'✓ 未逾';cs.style.color=base>cap?'var(--red)':'var(--green)';cs.style.fontWeight='600';
+  document.getElementById('c-quota').textContent=quota.toLocaleString()+' 萬';
+  document.getElementById('c-quota-type').textContent='（'+qtype+'）';
+
+  // ── 二、各年期月付（階梯卡）──
+  document.getElementById('mix-title').innerHTML=`${hasGen?'超額混合方案 ':''}各年期每月月付金試算<small>${hasGen?'新青安 ＋ 一般房貸 合計':'新青安 3.0'}</small>`;
+  let prevTotal=null;
+  document.getElementById('mix-grid').innerHTML=stageMix.map(s=>{
+    let chg;
+    if(prevTotal===null)chg=s.grace?'<div class="mix-chg grace">寬限只繳息</div>':'<div class="mix-chg flat">起始月付</div>';
+    else{const d=s.total-prevTotal;chg=d>0?`<div class="mix-chg up">▲ +${d.toLocaleString()}</div>`:(d<0?`<div class="mix-chg flat">${d.toLocaleString()}</div>`:'<div class="mix-chg flat">±0</div>');}
+    prevTotal=s.total;
+    const sub=`青安 $${s.qingan.toLocaleString()}${s.grace?'（寬限）':''}${hasGen?`<br>＋一般 $${s.general.toLocaleString()}`:''}`;
+    return `<div class="mix-col"><div class="mix-head"><div class="ml">${s.label}</div><div class="mp">${s.period}</div></div><div class="mix-body"><div><div class="mix-total">$${s.total.toLocaleString()}</div><div class="mix-sub">${sub}</div></div>${chg}</div></div>`;
+  }).join('');
+
+  // ── 三、方案對照 ──
+  document.getElementById('cmp-a-l').textContent=hasGen?'超額混合方案・前段每月':'新青安方案・前段每月';
+  document.getElementById('cmp-a-v').textContent='$'+stageMix[0].total.toLocaleString();
+  document.getElementById('cmp-a-s').innerHTML=hasGen
+    ? `新青安 ${principalWan.toFixed(0)} 萬（${graceYears>0?`前 ${graceYears} 年寬限只繳息、`:''}享補貼）＋ ${genLoanWan.toFixed(0)} 萬一般房貸同步攤還。`
+    : `新青安 ${principalWan.toFixed(0)} 萬，依 3+3 補貼利率攤還。`;
+  document.getElementById('cmp-b-v').textContent='$'+Math.round(fullGenMonthly).toLocaleString();
+  document.getElementById('cmp-b-s').innerHTML=`${totalLoanWan.toFixed(0)} 萬全額一般房貸（30 年、無寬限、${rGen}%）之月付金，未使用新青安補貼。`;
+  const monthlySave=Math.round(fullGenMonthly-stageMix[0].total);
+  document.getElementById('cmp-save').innerHTML=`前段每月現金流：混合方案比全額一般房貸少付 <b>$${monthlySave.toLocaleString()}</b> ／月；新青安全期利息約少繳 <b>${saveInt.toFixed(1)} 萬</b>。`;
+
   const regionLabel=cap===3500?'臺北市（總價 3,500 萬以下）':(cap===2500?'新北市／新竹市／新竹縣（總價 2,500 萬以下）':'除雙北、新竹以外之縣市（總價 2,000 萬以下）');
   const incomeLabel=income==='ok'?'200 萬以下（未逾排富門檻）':(income==='no'?'超過 200 萬（不符排富）':'尚未確認');
   const ownLabel=own==='none'?'是（本人、配偶及未成年子女名下均無）':(own==='share'?'僅共有持分（需確認）':(own==='has'?'名下已有住宅':'尚未確認'));
@@ -995,7 +1016,7 @@ async function generateImage(){
       .rep-meta{text-align:right;font-size:.82rem;color:#5a655e;line-height:1.7;}
       .rep-meta strong{color:#1f2d24;}
       .rep-rule{height:3px;background:#0b8a43;margin:14px 0 26px;border-radius:2px;}
-      .rep-sec{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:#153a26;margin:0 0 16px;padding-left:12px;border-left:5px solid #0b8a43;}
+      .rep-sec{font-family:'Noto Serif TC',serif;font-size:1.02rem;font-weight:700;color:#fff;margin:0 0 16px;padding:9px 16px;background:#0b8a43;border-radius:6px;box-shadow:0 2px 6px rgba(11,138,67,.28);}
       .rep-cond{display:grid;grid-template-columns:150px 1fr 150px 1fr;border:1px solid #dfe8e2;border-radius:8px;overflow:hidden;margin-bottom:30px;background:#f6faf7;}
       .rep-cond .k{background:#eef5f0;padding:13px 16px;font-size:.82rem;color:#3d564a;font-weight:500;border-bottom:1px solid #e3ece6;border-right:1px solid #e3ece6;}
       .rep-cond .v{padding:13px 16px;font-size:.85rem;color:#1f2d24;font-weight:500;border-bottom:1px solid #e3ece6;border-right:1px solid #e3ece6;}
