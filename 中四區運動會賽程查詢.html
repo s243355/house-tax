@@ -14,27 +14,24 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.5; font-size:15px; -webkit-font-smoothing:antialiased;
-  }
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5; font-size:15px; -webkit-font-smoothing:antialiased}
   .wrap{max-width:520px; margin:0 auto; min-height:100vh; background:var(--bg)}
+  a{color:inherit}
 
-  header{
-    background:linear-gradient(160deg,var(--green) 0%,var(--green-d) 100%);
-    color:#fff; padding:18px 20px 20px; position:sticky; top:0; z-index:20;
-    box-shadow:0 2px 10px rgba(7,108,52,.18);
-  }
+  header{background:linear-gradient(160deg,var(--green) 0%,var(--green-d) 100%); color:#fff; padding:18px 20px 20px;
+    position:sticky; top:0; z-index:20; box-shadow:0 2px 10px rgba(7,108,52,.18)}
   .eyebrow{font-size:12px; letter-spacing:2px; opacity:.85; font-weight:600}
   header h1{font-size:20px; font-weight:800; margin-top:3px; letter-spacing:.5px}
-  .datechip{display:inline-flex; align-items:center; gap:6px; margin-top:10px;
-    background:rgba(255,255,255,.16); padding:5px 11px; border-radius:20px; font-size:12.5px; font-weight:600}
+  .headrow{display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px; gap:10px}
+  .datechip{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); padding:5px 11px; border-radius:20px; font-size:12.5px; font-weight:600}
+  .clock{font-size:12.5px; font-weight:700; font-variant-numeric:tabular-nums; opacity:.95}
 
   .status{font-size:11.5px; padding:7px 18px; color:var(--muted); background:var(--bg); text-align:center; border-bottom:1px solid var(--line)}
   .status.live{color:var(--green-d)} .status.local{color:var(--tight)}
 
-  .tabs{display:flex; gap:6px; padding:12px 16px 4px; position:sticky; top:78px; background:var(--bg); z-index:15}
-  .tab{flex:1; text-align:center; padding:10px 8px; border-radius:12px; font-weight:700; font-size:14px;
+  .tabs{display:flex; gap:6px; padding:12px 14px 4px; position:sticky; top:78px; background:var(--bg); z-index:15}
+  .tab{flex:1; text-align:center; padding:10px 6px; border-radius:12px; font-weight:700; font-size:13.5px;
     background:#fff; color:var(--muted); border:1px solid var(--line); cursor:pointer; transition:.15s; user-select:none}
   .tab.active{background:var(--green); color:#fff; border-color:var(--green)}
 
@@ -44,29 +41,43 @@
   .searchbox{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:8px}
   .searchbox label{font-size:13px; font-weight:700; color:var(--muted); display:block; margin-bottom:8px}
   .inrow{display:flex; gap:8px}
-  #nameInput{flex:1; padding:13px 14px; font-size:16px; border:1.5px solid var(--line); border-radius:12px; outline:none; background:#fff; font-family:inherit}
-  #nameInput:focus{border-color:var(--green)}
+  input,select{font-family:inherit}
+  #nameInput,#findEvent{flex:1; padding:13px 14px; font-size:16px; border:1.5px solid var(--line); border-radius:12px; outline:none; background:#fff; width:100%}
+  #nameInput:focus,#findEvent:focus{border-color:var(--green)}
   .btn{padding:0 18px; background:var(--green); color:#fff; border:none; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer; font-family:inherit}
   .btn:active{background:var(--green-d)}
   .hint{font-size:12px; color:var(--muted); margin-top:10px; line-height:1.6}
 
+  .banner{margin-top:12px; border-radius:14px; padding:13px 15px; font-size:13.5px; line-height:1.6}
+  .banner.live{background:var(--green);color:#fff} .banner.pre{background:#eef3ee;color:var(--muted)}
+  .banner b{font-size:15px}
+  .banner .nx{opacity:.95; margin-top:4px; display:block}
+
   .summary{margin-top:14px; background:var(--green-l); border:1px solid #cfe8d8; border-radius:16px; padding:14px 16px}
   .summary .who{font-size:19px; font-weight:800; color:var(--green-d)}
   .summary .stats{display:flex; gap:16px; margin-top:8px; flex-wrap:wrap}
-  .stat{font-size:13px; color:#2c5a3e}
-  .stat b{font-size:17px; display:block; font-variant-numeric:tabular-nums}
+  .stat{font-size:13px; color:#2c5a3e} .stat b{font-size:17px; display:block; font-variant-numeric:tabular-nums}
+  .calbtn{margin-top:12px; width:100%; padding:11px; background:#fff; border:1.5px solid var(--green); color:var(--green-d);
+    border-radius:12px; font-weight:800; font-size:14px; cursor:pointer; font-family:inherit}
+  .calbtn:active{background:var(--green-l)}
 
   .rail{margin-top:14px}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px 13px 16px; margin-bottom:11px; border-left:5px solid var(--line)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px 13px 16px; margin-bottom:11px; border-left:5px solid var(--line); position:relative}
   .card.v-heping{border-left-color:var(--heping)} .card.v-track{border-left-color:var(--track)} .card.v-daan{border-left-color:var(--daan)}
+  .card.done{opacity:.48}
+  .card.live{box-shadow:0 0 0 2px var(--green); border-color:var(--green)}
+  .card.next{box-shadow:0 0 0 2px var(--tight)}
   .ctop{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
   .ctime{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink)}
   .ctime small{font-size:11px; font-weight:700; color:var(--muted); display:block; letter-spacing:1px}
   .vtag{font-size:11px; font-weight:800; padding:4px 9px; border-radius:20px; white-space:nowrap; color:#fff}
   .vtag.v-heping{background:var(--heping)} .vtag.v-track{background:var(--track)} .vtag.v-daan{background:var(--daan)}
-  .cname{font-size:17px; font-weight:800; margin-top:8px}
+  .cstate{position:absolute; top:12px; right:12px; font-size:10.5px; font-weight:800; padding:3px 8px; border-radius:20px}
+  .cstate.live{background:var(--green);color:#fff} .cstate.next{background:var(--tight-bg);color:var(--tight)} .cstate.done{background:#eee;color:#999}
+  .cname{font-size:17px; font-weight:800; margin-top:8px; padding-right:56px}
   .cmeta{font-size:13px; color:var(--muted); margin-top:4px}
   .cmeta .loc{font-weight:600; color:#3a4a3f}
+  .navlink{color:var(--track); font-weight:700; text-decoration:none; white-space:nowrap}
   .pnote{font-size:12.5px; margin-top:6px; color:var(--tight); font-weight:600}
   .flag{margin-top:9px; padding:9px 11px; border-radius:10px; font-size:12.5px; font-weight:600; line-height:1.5; display:flex; gap:7px; align-items:flex-start}
   .flag.hard{background:var(--warn-bg); color:var(--warn)} .flag.tight{background:var(--tight-bg); color:var(--tight)}
@@ -84,7 +95,7 @@
   .fchip{font-size:12.5px; font-weight:700; padding:6px 12px; border-radius:20px; border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer; user-select:none}
   .fchip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
 
-  .fcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:10px; border-left:5px solid var(--line)}
+  .fcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:10px; border-left:5px solid var(--line); position:relative}
   .fcard.v-heping{border-left-color:var(--heping)} .fcard.v-track{border-left-color:var(--track)} .fcard.v-daan{border-left-color:var(--daan)}
   .fcard.forfeit{opacity:.55}
   .ftop{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
@@ -92,6 +103,7 @@
   .fname{font-size:16px; font-weight:800; margin-top:6px}
   .fstore{font-size:11px; font-weight:800; color:var(--green-d); background:var(--green-l); padding:3px 8px; border-radius:6px; margin-left:6px; white-space:nowrap}
   .fmeta{font-size:12.5px; color:var(--muted); margin-top:4px}
+  .nowtag{font-size:10.5px;font-weight:800;background:var(--green);color:#fff;padding:3px 8px;border-radius:20px}
   details{margin-top:8px}
   summary{font-size:12.5px; font-weight:700; color:var(--green-d); cursor:pointer; list-style:none}
   summary::-webkit-details-marker{display:none}
@@ -99,6 +111,29 @@
   .roster{font-size:12.5px; color:#3a4a3f; margin-top:7px; line-height:1.7}
   .roster b{color:var(--green-d)}
   .forfeit-tag{font-size:12px; font-weight:800; color:var(--warn); background:var(--warn-bg); padding:3px 9px; border-radius:6px}
+  details.rules{margin-top:8px}
+  details.rules>summary{color:var(--ink); background:#f0f4f0; padding:8px 11px; border-radius:9px; font-weight:800}
+  .rbody{padding:11px 4px 3px; font-size:12.5px; color:#37453c; line-height:1.65}
+  .rrow{margin-bottom:8px}
+  .rrow>b{display:inline-block; color:var(--green-d); margin-right:6px}
+  .rbody ol{margin:4px 0 0 18px; padding:0}
+  .rbody ol li{margin-bottom:3px}
+  .rbody .rx{background:#f6f8f4; border-left:3px solid var(--green); padding:6px 9px; border-radius:4px; margin-top:4px}
+
+  /* find */
+  .ehead{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;border-left:5px solid var(--line)}
+  .ehead.v-heping{border-left-color:var(--heping)} .ehead.v-track{border-left-color:var(--track)} .ehead.v-daan{border-left-color:var(--daan)}
+  .ehead .en{font-size:18px;font-weight:800}
+  .ehead .em{font-size:13px;color:var(--muted);margin-top:5px}
+  .grp{margin-bottom:14px}
+  .grp h4{font-size:13.5px;font-weight:800;margin-bottom:8px;padding:7px 11px;border-radius:9px;background:#eef2ee;color:#37503f}
+  .grp.cross h4{background:var(--tight-bg);color:var(--tight)}
+  .grp.first h4{background:#eef3fb;color:var(--track)}
+  .prow{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px}
+  .prow .pn{font-weight:800;font-size:14.5px}
+  .prow .pn small{font-weight:600;color:var(--muted);font-size:12px;margin-left:5px}
+  .prow .pp{font-size:12px;color:var(--muted);margin-top:3px}
+  .prow.tight{border-color:#eecf9a;background:var(--tight-bg)}
 
   footer{padding:18px 20px 30px; text-align:center; font-size:11.5px; color:var(--muted); line-height:1.7}
 </style>
@@ -108,17 +143,22 @@
   <header>
     <div class="eyebrow">信義企業集團 45週年・中四區</div>
     <h1>圓夢運動會 賽程查詢</h1>
-    <div class="datechip">📅 <b>9/2（二）</b> · 台北 3 場館</div>
+    <div class="headrow">
+      <div class="datechip">📅 <b>9/2（二）</b> · 台北 3 場館</div>
+      <div class="clock" id="clock"></div>
+    </div>
   </header>
 
   <div class="status" id="status">名單來源：載入中…</div>
 
   <div class="tabs">
-    <div class="tab active" id="tabMine" onclick="switchTab('mine')">我的賽程</div>
-    <div class="tab" id="tabAll" onclick="switchTab('all')">全部流程</div>
+    <div class="tab active" id="tab-mine" onclick="switchTab('mine')">我的賽程</div>
+    <div class="tab" id="tab-all" onclick="switchTab('all')">全部流程</div>
+    <div class="tab" id="tab-find" onclick="switchTab('find')">窗口找人</div>
   </div>
 
-  <section id="viewMine">
+  <!-- 我的賽程 -->
+  <section id="view-mine">
     <div class="searchbox">
       <label for="nameInput">輸入你的名字，看今天在哪、幾點到</label>
       <div class="inrow">
@@ -127,12 +167,13 @@
         <button class="btn" onclick="doSearch()">查詢</button>
       </div>
       <datalist id="nameList"></datalist>
-      <div class="hint">列出你報名的所有項目，依「最早到場時間」排好，並提醒撞時間或要換場館的狀況。</div>
+      <div class="hint">依「最早到場時間」排好，可一鍵加入手機行事曆，並提醒撞時間或換場館。</div>
     </div>
     <div id="mineResult"></div>
   </section>
 
-  <section id="viewAll" class="hidden">
+  <!-- 全部流程 -->
+  <section id="view-all" class="hidden">
     <div class="legend">
       <span><i class="dot v-heping"></i>和平籃球館</span>
       <span><i class="dot v-track"></i>國北教田徑場</span>
@@ -142,112 +183,146 @@
     <div id="allResult"></div>
   </section>
 
+  <!-- 窗口找人 -->
+  <section id="view-find" class="hidden">
+    <div class="searchbox">
+      <label for="findEvent">選項目 → 列出參賽者，並顯示「上一場在哪」方便找人</label>
+      <select id="findEvent" onchange="renderFind()"><option value="">— 選擇報名項目 —</option></select>
+      <div class="hint">灰底＝上一場就在本場館（好找）；橘底＝從別場館趕來（可能較晚到，會標從哪來）。</div>
+    </div>
+    <div id="findResult"></div>
+  </section>
+
   <footer>
     時間以「最早須到場（報到／檢錄）」排序，非開賽時間。<br>
-    三個場館為不同地點，跨場請預留移動時間。<br>
+    場館：和平籃球館・大安運動中心・國北教田徑場（皆位於大安區，步行約 10–15 分）。<br>
     內建名單更新：2026/8/21
   </footer>
 </div>
 
 <script>
-/* ============ 自動更新設定 ============ */
-const SHEET_ID = "1ZLVDqudTmSo10HXRlzT4orBgM29-qPtITBRxW2Rojyw";
-const SHEET_GID = "1714129761";
-/* 預設用 gviz（免發布，但少數情況會被瀏覽器 CORS 擋，擋到就自動改用內建名單）。
-   若已「發布到網路 → CSV」，把下一行換成你的 pub 網址最穩：
-   const LIVE_URL = "https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid="+SHEET_GID+"&single=true&output=csv"; */
-const LIVE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+/* ============ 設定 ============ */
+const SHEET_ID="1ZLVDqudTmSo10HXRlzT4orBgM29-qPtITBRxW2Rojyw";
+const SHEET_GID="1714129761";
+/* 已「發布到網路→CSV」的話，把下一行換成 pub 網址最穩。 */
+const LIVE_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+const EVENT_DATE="2026-09-02";
 
-/* ============ 場館 ============ */
-const V = {
-  heping:{name:"和平籃球館", cls:"v-heping"},
-  track :{name:"國北教田徑場", cls:"v-track"},
-  daan  :{name:"大安運動中心", cls:"v-daan"},
+/* ============ 場館（含地址與導航）============ */
+const V={
+  heping:{name:"和平籃球館", cls:"v-heping", addr:"台北市大安區敦南街76巷28號"},
+  track :{name:"國北教田徑場", cls:"v-track", addr:"台北市大安區和平東路二段134號 國立臺北教育大學"},
+  daan  :{name:"大安運動中心", cls:"v-daan", addr:"台北市大安區辛亥路三段55號"},
 };
+const navUrl=v=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(V[v].name+" "+V[v].addr);
 
-/* ============ 內建名單（後備 + 時間/場館骨架）============
-   自動更新時只換 people / need，其餘沿用此骨架。*/
-const EV = [
+/* ============ 內建名單（後備＋時間骨架）============ */
+const EV=[
  {t:"09:00",arr:540,end:570,name:"大隊創意進場",store:"復興",venue:"heping",loc:"和平籃球館 1F",
   detail:"進場 09:00–09:30；投票 10:30–14:00（08:30 集合）",need:"10",note:"10人（黑4選2）",
   people:[{n:"洪正龍",s:"復興"},{n:"陳正賢",s:"復興"},{n:"林俊瑋",s:"復興"},{n:"任韋柏",s:"復興"},{n:"曾渝茜",s:"復興"},{n:"連汶瑛",s:"復興"},{n:"魏旭國",s:"復興"},{n:"陳柏瑋",s:"復興"},{n:"賴宥伯",s:"大國"},{n:"黃國彥",s:"心興"}]},
-
  {t:"10:20",arr:620,end:635,name:"協調力／多人多足",store:"中正",venue:"heping",loc:"和平籃球館 1樓",
   detail:"10:30–10:35（賽前10分報到）積分賽",need:"8",note:"",
   people:[{n:"盧家儒",s:"心高"},{n:"洪敬琁",s:"彰化"},{n:"柯永泰",s:"彰美"},{n:"劉冠宏",s:"湖濱"},{n:"邱昱瑋",s:"大興"},{n:"張培瑩",s:"大興"},{n:"許喬涵",s:"大興"},{n:"劉彥呈",s:"中正"}]},
-
  {t:"10:30",arr:630,end:690,name:"羽球（雙打）",store:"大興",venue:"daan",loc:"大安運動中心 3F 羽球場",
   detail:"10:30 比賽",need:"2",note:"",
   people:[{n:"張晉綸",s:"大國"},{n:"謝凱勛",s:"大園"}]},
-
  {t:"10:40",arr:640,end:695,name:"大隊接力 1200公尺",store:"心興",venue:"track",loc:"國北教 田徑場",
   detail:"11:10 比賽（前30分檢錄／前15分截止）",need:"12",note:"5男5女",
   people:[{n:"陳嘉伶",s:"大國"},{n:"洪齊駿",s:"大園"},{n:"黃凱傑",s:"彰化"},{n:"黃凱鈴",s:"彰化"},{n:"張馨云",s:"湖濱"},{n:"王瀠萱",s:"湖濱"},{n:"陳明遠",s:"中正"},{n:"林辰翰",s:"中正"},{n:"李翌菁",s:"心興"},{n:"翁培勛",s:"心興"},{n:"王韻婷",s:"大興"},{n:"彥儒",s:"大芳"}]},
-
  {t:"10:40",arr:640,end:700,name:"匹克球（雙打）",store:"",venue:"daan",loc:"大安運動中心 3F 匹克球場",
   detail:"11:10 比賽（前30分檢錄）",need:"2",note:"區內沒人會",forfeit:true,people:[]},
-
  {t:"10:50",arr:650,end:710,name:"桌球（單打）",store:"",venue:"daan",loc:"大安運動中心 2F 桌球室",
-  detail:"10:50 比賽",need:"1",note:"",
-  people:[{n:"蔡瑜涵",s:"彰美"}]},
-
+  detail:"10:50 比賽",need:"1",note:"",people:[{n:"蔡瑜涵",s:"彰美"}]},
  {t:"11:15",arr:675,end:690,name:"專注力／疊杯接力",store:"彰美",venue:"heping",loc:"和平籃球館 1樓",
   detail:"11:25–11:30（賽前10分報到）積分賽",need:"5",note:"",
   people:[{n:"蕭晉欣",s:"大國"},{n:"謝昇樺",s:"彰美"},{n:"邱昱瑋",s:"大興"},{n:"姚政存",s:"大芳"},{n:"謝嘉峰",s:"大芳"}]},
-
  {t:"11:40",arr:700,end:715,name:"續航力／陸上行舟",store:"國光",venue:"heping",loc:"和平籃球館 1樓",
   detail:"11:50–11:55（賽前10分報到）積分賽",need:"5",note:"",
   people:[{n:"辜義勝",s:"國光"},{n:"莊朝竣",s:"國光"},{n:"周品辰",s:"國光"},{n:"江馨喬",s:"大芳"},{n:"姚政存",s:"大芳"}]},
-
  {t:"11:47",arr:707,end:722,name:"100公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"11:47 前報到（第4組）",need:"1",note:"",
-  people:[{n:"黃凱傑",s:"彰化"}]},
-
+  detail:"11:47 前報到（第4組）",need:"1",note:"",people:[{n:"黃凱傑",s:"彰化"}]},
  {t:"12:00",arr:720,end:780,name:"籃球（5v5）",store:"大園",venue:"daan",loc:"大安運動中心 3F 籃球場",
   detail:"12:00 比賽（賽程 10:30–14:50）",need:"10",note:"正式5／替補5",
   people:[{n:"劉晉佑",s:"大國"},{n:"徐仕旻",s:"中三區"},{n:"賴凱祥",s:"大園"},{n:"曹維剛",s:"心高"},{n:"許智南",s:"彰化"},{n:"姚政存",s:"大芳"},{n:"林民雄",s:"中正"},{n:"邱仕軒",s:"心興"},{n:"楊弘至",s:"大興"},{n:"柯永泰",s:"彰美"}]},
-
  {t:"12:05",arr:725,end:740,name:"100公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"12:05 前報到（第3組）",need:"1",note:"",
-  people:[{n:"李翌菁",s:"心興"}]},
-
+  detail:"12:05 前報到（第3組）",need:"1",note:"",people:[{n:"李翌菁",s:"心興"}]},
  {t:"12:10",arr:730,end:745,name:"反應力／大繩跳繩",store:"彰化",venue:"heping",loc:"和平籃球館 1樓",
   detail:"12:20–12:25（賽前10分報到）積分賽",need:"10",note:"",
   people:[{n:"李祐承",s:"心高"},{n:"盧家儒",s:"心高"},{n:"吳雅如",s:"彰美"},{n:"莊朝竣",s:"國光"},{n:"周品辰",s:"國光"},{n:"王韻婷",s:"大興"},{n:"任韋柏",s:"復興"},{n:"魏旭國",s:"復興"},{n:"陳柏瑋",s:"復興"},{n:"陳正賢",s:"復興"}]},
-
  {t:"12:35",arr:755,end:770,name:"穩定性／四平八穩",store:"大芳",venue:"heping",loc:"和平籃球館 1樓",
   detail:"12:45–12:50（賽前10分報到）積分賽",need:"6",note:"",
   people:[{n:"黃凱鈴",s:"彰美"},{n:"林家禾",s:"彰美"},{n:"賴佩芬",s:"中正"},{n:"曾秀靜",s:"中正"},{n:"鄭曉茹",s:"國光"},{n:"吳乙宜",s:"國光"}]},
-
  {t:"12:47",arr:767,end:782,name:"200公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"12:47 前報到（第7組）",need:"1",note:"",
-  people:[{n:"劉晉佑",s:"大國",note:"看籃球來不來得及"}]},
-
+  detail:"12:47 前報到（第7組）",need:"1",note:"",people:[{n:"劉晉佑",s:"大國",note:"看籃球來不來得及"}]},
  {t:"13:02",arr:782,end:797,name:"200公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:02 前報到（第4組）",need:"1",note:"",
-  people:[{n:"張馨云",s:"湖濱"}]},
-
+  detail:"13:02 前報到（第4組）",need:"1",note:"",people:[{n:"張馨云",s:"湖濱"}]},
  {t:"13:20",arr:800,end:815,name:"肌力練習曲／鋼鐵重力戰",store:"公園",venue:"daan",loc:"大安運動中心 2F 多功能教室",
   detail:"13:30–13:35（賽前10分報到）",need:"10",note:"",
   people:[{n:"賴宥伯",s:"大國"},{n:"廖育頡",s:"大園"},{n:"張宏瑜",s:"心高"},{n:"盧家儒",s:"心高"},{n:"巫忠穎",s:"湖濱"},{n:"劉冠宏",s:"湖濱"},{n:"黃柏睿",s:"中正"},{n:"辜義勝",s:"國光"},{n:"張憲庭",s:"心興"},{n:"黃國彥",s:"心興"}]},
-
  {t:"13:31",arr:811,end:826,name:"400公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:31 前報到（第3組）",need:"1",note:"",
-  people:[{n:"蔡瑜涵",s:"彰美",note:"看桌球來不來得及"}]},
-
+  detail:"13:31 前報到（第3組）",need:"1",note:"",people:[{n:"蔡瑜涵",s:"彰美",note:"看桌球來不來得及"}]},
  {t:"13:34",arr:814,end:860,name:"大隊拔河",store:"高工",venue:"heping",loc:"和平籃球館 1F",
   detail:"14:04 比賽（前30分檢錄／前15分截止）",need:"10",note:"5男5女，候補2男2女",
   people:[{n:"蕭晉欣",s:"大國"},{n:"李祐承",s:"心高"},{n:"高文峰",s:"彰美"},{n:"鍾寶惜",s:"彰美"},{n:"謝昇樺",s:"彰美"},{n:"柯永泰",s:"彰美"},{n:"黃芮頎",s:"彰美"},{n:"張培瑩",s:"大興"},{n:"邱昱瑋",s:"大興"},{n:"謝嘉峰",s:"大芳"},{n:"李彥儒",s:"大芳"},{n:"黃美昀",s:"大芳"},{n:"王瀠萱",s:"湖濱"}]},
-
  {t:"13:40",arr:820,end:835,name:"活力有氧操",store:"公園",venue:"daan",loc:"大安運動中心 2F 韻律教室2",
   detail:"13:50–13:55（賽前10分報到）",need:"20",note:"",
   people:[{n:"張晉綸",s:"大國"},{n:"陳嘉伶",s:"大國"},{n:"洪琇婷",s:"大園"},{n:"洪齊駿",s:"大園"},{n:"蔡惠羽",s:"心高"},{n:"洪敬琁",s:"彰化"},{n:"柯煜妏",s:"彰化"},{n:"黃凱鈴",s:"彰美"},{n:"賴佩芬",s:"中正"},{n:"曾秀靜",s:"中正"},{n:"黃詩勻",s:"中正"},{n:"鄭曉茹",s:"國光"},{n:"吳乙宜",s:"國光"},{n:"張怡君",s:"心興"},{n:"魏玫聆",s:"心興"},{n:"王韻婷",s:"大興"},{n:"許喬涵",s:"大興"},{n:"江馨喬",s:"大芳"},{n:"曾渝茜",s:"復興"},{n:"連汶瑛",s:"復興"}]},
-
  {t:"13:51",arr:831,end:846,name:"400公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:51 前報到（第3組）",need:"1",note:"",
-  people:[{n:"翁培勛",s:"心興"}]},
+  detail:"13:51 前報到（第3組）",need:"1",note:"",people:[{n:"翁培勛",s:"心興"}]},
 ];
 EV.sort((a,b)=>a.arr-b.arr);
+
+/* ============ 各項規則與內容（固定，不隨名單更新）============ */
+const PTS_FUN="名次1–8 → 15/12/10/8/6/4/3/2 分；參加分 3 分；前 3 名獲獎盃";
+const PTS_TEAM="名次1–8 → 15/12/10/8/6/4/3/2 分；參加分每隊 +3；前 3 名獲獎盃";
+const PTS_BALL="名次1–8 → 15/12/10/8/4/4/4/4 分；參加分每隊 +3；前 3 名頒獎";
+const RULES={
+ "大隊創意進場":{team:"10人/隊（1 人舉牌，其餘同仁看台觀禮）",scoring:"創意進場＋場外投票計分（14:00 截止投票）",
+   list:["開幕依大會順序進場，可自製道具、團體服自由搭配","10 位代表進場，1 位舉牌區組名稱","不限男女配比，可用自己的音樂","依動線行經觀眾席、登台展演隊呼（最多 30 秒）","表演後依序入席台下觀禮區"],
+   extra:"評分：每隊 3 張投票貼紙，至多 1 張投自己、其餘投他隊、不得重複；14:00 截止，依得票轉團隊加分。",
+   note:"如需進場音樂，8/31 17:00 前由領隊於社群繳交；參與者仍需帶制服於閉幕式穿著。",pts:PTS_TEAM},
+ "協調力／多人多足":{team:"8人一隊，相鄰兩人一腳綁繩",scoring:"限時 3 分鐘計時制，完成越短越好，超時即結束",
+   list:["起點至終點 20m，聽哨音同時起步","全隊同步前進，全員通過終點且秒數最短者勝","有人越過起跑線視為搶跑，全隊須返回重跑","累計犯規 2 次取消資格"],
+   note:"相鄰兩人腳踝以綁帶或魔鬼氈固定，鬆緊適中。",pts:PTS_FUN},
+ "羽球（雙打）":{team:"2人（雙打，不限性別）",scoring:"單局定勝負，單局 25 分（13 分換邊），先得 25 分勝；24:24 進 deuce、上限 28 分",
+   list:["各區僅報一隊 2 人，雙打打到底","如有空場大會將拆場接續，請留意廣播至指定場地","唱名三次未到、計時 5 分未出賽判棄權"],pts:PTS_BALL},
+ "大隊接力 1200公尺":{team:"12人/隊（6男6女）",scoring:"1200m 大隊接力，計時最短者勝",
+   list:["棒次男女不限，可任意穿插","第 3 棒開始搶跑道","傳接棒須在 20m 接力區內完成，否則加罰 5 秒","前 3 棒分道跑，過指定標示後可搶進內道"],
+   note:"服裝無限制；基於校方保護場地，嚴禁穿釘鞋。",pts:PTS_TEAM},
+ "匹克球（雙打）":{team:"2人（雙打）",scoring:"單局定勝負，單局 15 分（8 分換邊）落地得分制，先得 15 分勝；14:14 進 deuce、上限 18 分",
+   list:["各區僅報一隊 2 人，雙打打到底","如有空場將拆場接續，留意廣播","唱名三次未到、計時 5 分未出賽判棄權"],pts:PTS_BALL},
+ "桌球（單打）":{team:"1人（單打）",scoring:"三局兩勝，每局 11 分制、無 deuce；第三局於 5 分時換邊",
+   list:["球拍及膠皮須符合正式比賽規定","不可穿白色上衣及長褲出賽","各區僅報一隊 1 人，單打打到底","唱名三次未到、計時 5 分未出賽判棄權"],pts:PTS_BALL},
+ "專注力／疊杯接力":{team:"5人一隊",scoring:"限時 3 分鐘計時制，完成越短越好，超時即結束",
+   list:["按壓計時器開始，依序完成疊杯與復原後交棒","流程含「向上疊高」與「向下收杯」兩步驟","完成時間最短者勝；未完成以完成棒次多者排名","杯子滑落須親手恢復正常，才能進行下一動作或按計時器"],
+   extra:"向上堆疊：左 3 杯小金字塔、中 6 杯大金字塔、右 3 杯小金字塔；向下由左至右或右至左，依序還原成 3-6-3 平疊。",
+   note:"報到時領取團隊規格杯（12 杯，排列左3、中6、右3）。",pts:PTS_FUN},
+ "續航力／陸上行舟":{team:"5人一隊",scoring:"限時 3 分鐘計時制，完成越短越好，超時即結束",
+   list:["全隊跨騎在「陸上龍舟」上，雙手抓緊兩側把手","聽哨音向前奔跑，繞折返點標誌後返回起點，全程雙腳協同出力","全隊同步前進至終點並折返完成","完成時間最短者勝；未完成以推進距離排名"],pts:PTS_FUN},
+ "籃球（5v5）":{team:"正式5＋替補5（10人）",scoring:"上下半場各 10 分鐘、不停錶（僅暫停／上半場最後 24 秒／下半場決勝期 2 分鐘停錶）",
+   list:["中場休息 3 分鐘","正規時間平手，每隊派 3 人罰球 PK 延長","女性選手於禁區內出手、男生若有防守行為，直接判該員得 2 分","個犯 4 次離場，每節團犯第 5 次起加罰"],
+   note:"各區僅報一隊；球類皆不分男女、不限男女比例。",pts:PTS_BALL},
+ "反應力／大繩跳繩":{team:"10人一隊（2 人搖繩、8 人跳）",scoring:"限時 3 分鐘計次制，時間內成功次數越多者勝",
+   list:["成功跳過總次數計分，累計最高者勝","踩繩或勾繩致繩停，該下不算、秒數不停，須重新起繩再計"],
+   note:"使用約 5 公尺專用塑膠耐磨繩。",pts:PTS_FUN},
+ "穩定性／四平八穩":{team:"6人一隊",scoring:"限時 3 分鐘計時制，完成越短越好，超時即結束",
+   list:["物品放托盤上，聽哨音後單手或雙手平端托盤前進","共同操作平衡道具，接力來回將物品穩定運送至終點","完成時間最短者勝；未完成以推進距離排名","物品掉落須在掉落處撿起放回托盤後才能繼續"],pts:PTS_FUN},
+ "肌力練習曲／鋼鐵重力戰":{team:"每隊10人（初/中/高級至少選一項報名）",scoring:"技能挑戰（體能類）：使用啞鈴進行指定肌力訓練，約 3 分鐘",
+   list:["挑戰約 5–8 分鐘，含說明、練習、挑戰及評分","每隊須於指定時間完成報到","遵守裁判及工作人員指示，爭議以裁判判定為準"],pts:"完成賽事隊伍參加分 +10 分"},
+ "大隊拔河":{team:"10人/隊（5男5女，候補2男2女）",scoring:"每局限時 60 秒，單局勝利淘汰制，繩上標誌線拉過中央標線獲勝",
+   list:["超過 60 秒以標線判定獲勝","雙手掌心向上緊握繩子，繩由軀幹與手臂（腋下）間通過","嚴禁纏繞身體/手臂/手腕，不得故意放手鬆繩或左右搖擺","大會提供後位安全帽與手套數雙（可自備手套）"],
+   note:"不限體重，使用十人制專用繩（約 33m，圓周 10~12.5cm）；一律穿平底運動鞋，禁赤腳/釘鞋/突起鞋款。",pts:PTS_TEAM},
+ "活力有氧操":{team:"每隊20人（初/中/高級至少選一項報名）",scoring:"技能挑戰（體能類）：依指定動作完成有氧操",
+   list:["挑戰約 5–8 分鐘，含說明、練習、挑戰","每隊須於指定時間完成報到","遵守裁判及工作人員指示，爭議以裁判判定為準"],pts:"完成賽事隊伍參加分 +15 分"},
+ "_track":{team:"1人（個人徑賽）",scoring:"個人短跑，依大會分組與組次起跑，最先抵終點者勝",
+   list:["依大會分組與報到組次起跑","服裝無限制；基於校方保護場地，嚴禁穿釘鞋"],
+   note:"詳細賽制與組次以大會現場公告／廣播為準。",pts:"個人徑賽，依大會計分辦法"},
+};
+EV.forEach(e=>{ e.rules = RULES[e.name] || (/公尺/.test(e.name)?RULES._track:null); });
+
+/* ============ 名字比對（容忍缺姓，如「彥儒」↔「李彥儒」）============ */
+const same=(a,b)=> a===b || (a.length>=2&&b.length>=2&&(a.indexOf(b)>=0||b.indexOf(a)>=0));
 
 /* ============ 名單解析（自動更新用）============ */
 const STORES=["中三區","復興","大國","大園","心高","彰化","彰美","湖濱","中正","國光","心興","大興","大芳","高工","公園"];
@@ -257,66 +332,71 @@ function parseRoster(cell, fb){
   if(/棄權/.test(cell)) return {forfeit:true,people:[]};
   const re=new RegExp("("+STORES.join("|")+")\\s*[：:]","g");
   let m, idxs=[];
-  while((m=re.exec(cell))) idxs.push({store:m[1], start:m.index, after:re.lastIndex});
+  while((m=re.exec(cell))) idxs.push({store:m[1], after:re.lastIndex, start:m.index});
   const people=[];
-  const pushNames=(txt,store)=>{
-    txt=(txt||"").replace(/[，,]/g,"、");
-    txt.split(/[、\s]+/).forEach(raw=>{
-      raw=raw.trim(); if(!raw) return;
-      let note="";
-      const mm=raw.match(/[（(]([^）)]*)[）)]/);
-      if(mm){ note=mm[1]; raw=raw.replace(/[（(][^）)]*[）)]/,"").trim(); }
-      if(raw) people.push({n:raw, s:store||"", note});
-    });
-  };
-  if(idxs.length===0){ pushNames(cell, fb); return {forfeit:false,people}; }
-  if(idxs[0].start>0) pushNames(cell.slice(0,idxs[0].start), fb);
-  for(let i=0;i<idxs.length;i++){
-    const seg=cell.slice(idxs[i].after, i+1<idxs.length?idxs[i+1].start:cell.length);
-    pushNames(seg, idxs[i].store);
-  }
+  const push=(txt,store)=>{ (txt||"").replace(/[，,]/g,"、").split(/[、\s]+/).forEach(raw=>{
+    raw=raw.trim(); if(!raw) return; let note="";
+    const mm=raw.match(/[（(]([^）)]*)[）)]/); if(mm){note=mm[1];raw=raw.replace(/[（(][^）)]*[）)]/,"").trim();}
+    if(raw) people.push({n:raw,s:store||"",note}); }); };
+  if(!idxs.length){ push(cell,fb); return {forfeit:false,people}; }
+  if(idxs[0].start>0) push(cell.slice(0,idxs[0].start),fb);
+  for(let i=0;i<idxs.length;i++) push(cell.slice(idxs[i].after, i+1<idxs.length?idxs[i+1].start:cell.length), idxs[i].store);
   return {forfeit:false,people};
 }
-function parseCSV(text){
-  const rows=[]; let row=[],f="",q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
-    else{ if(c==='"') q=true; else if(c===","){row.push(f);f="";}
-      else if(c==="\n"){row.push(f);rows.push(row);row=[];f="";}
-      else if(c!=="\r") f+=c; }
-  }
-  if(f!==""||row.length){row.push(f);rows.push(row);}
-  return rows;
-}
+function parseCSV(t){const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else{ if(c==='"')q=true; else if(c===","){row.push(f);f="";}
+      else if(c==="\n"){row.push(f);rows.push(row);row=[];f="";} else if(c!=="\r")f+=c; } }
+  if(f!==""||row.length){row.push(f);rows.push(row);} return rows;}
 async function loadLive(){
   try{
-    const res=await fetch(LIVE_URL,{cache:"no-store"});
-    if(!res.ok) throw 0;
+    const res=await fetch(LIVE_URL,{cache:"no-store"}); if(!res.ok) throw 0;
     const rows=parseCSV(await res.text());
-    const h=rows.findIndex(r=>r.some(c=>c&&c.indexOf("排序時間")>=0));
-    if(h<0) throw 0;
-    const head=rows[h].map(x=>(x||"").trim());
-    const col=k=>head.findIndex(x=>x.indexOf(k)>=0);
-    const cN=col("報名項目"), cF=col("最終"), cNeed=col("需求");
-    if(cN<0||cF<0) throw 0;
+    const h=rows.findIndex(r=>r.some(c=>c&&c.indexOf("排序時間")>=0)); if(h<0) throw 0;
+    const head=rows[h].map(x=>(x||"").trim()); const col=k=>head.findIndex(x=>x.indexOf(k)>=0);
+    const cN=col("報名項目"),cF=col("最終"),cNeed=col("需求"); if(cN<0||cF<0) throw 0;
     let n=0;
-    for(let r=h+1;r<rows.length;r++){
-      const nm=(rows[r][cN]||"").trim(); if(!nm) continue;
+    for(let r=h+1;r<rows.length;r++){ const nm=(rows[r][cN]||"").trim(); if(!nm) continue;
       const ev=EV.find(e=>e.name===nm); if(!ev) continue;
-      const pr=parseRoster(rows[r][cF], ev.store);
-      ev.people=pr.people; ev.forfeit=pr.forfeit;
-      if(cNeed>=0 && (rows[r][cNeed]||"").trim()) ev.need=rows[r][cNeed].trim();
-      n++;
-    }
-    if(!n) throw 0;
-    setStatus(true); rebuild();
+      const pr=parseRoster(rows[r][cF],ev.store); ev.people=pr.people; ev.forfeit=pr.forfeit;
+      if(cNeed>=0&&(rows[r][cNeed]||"").trim()) ev.need=rows[r][cNeed].trim(); n++; }
+    if(!n) throw 0; setStatus(true); rebuild();
   }catch(e){ setStatus(false); }
 }
-function setStatus(live){
-  const el=document.getElementById("status");
-  if(live){ el.className="status live"; el.textContent="🟢 名單來源：Google 試算表（即時同步）"; }
-  else{ el.className="status local"; el.textContent="📄 名單來源：內建名單（更新 8/21，未連上試算表）"; }
+function setStatus(live){ const el=document.getElementById("status");
+  if(live){el.className="status live";el.textContent="🟢 名單來源：Google 試算表（即時同步）";}
+  else{el.className="status local";el.textContent="📄 名單來源：內建名單（更新 8/21，未連上試算表）";} }
+
+/* ============ 即時 ============ */
+function getNow(){
+  const p=new URLSearchParams(location.search).get("demo");
+  if(p&&/^\d{1,2}:\d{2}$/.test(p)){const[a,b]=p.split(":");return{day:true,min:(+a)*60+(+b)};}
+  const d=new Date();
+  const iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  return {day: iso===EVENT_DATE, min:d.getHours()*60+d.getMinutes()};
+}
+const hhmm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+function evState(e,now){ if(!now.day) return ""; if(now.min>=e.arr&&now.min<e.end) return "live"; if(now.min>=e.end) return "done"; return ""; }
+function tickClock(){ const now=getNow(); const el=document.getElementById("clock");
+  el.textContent = now.day ? "🔴 現在 "+hhmm(now.min) : ""; }
+
+/* ============ 行事曆 ============ */
+function esc(s){return (s||"").replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n");}
+function downloadICS(name){
+  const evs=EV.filter(e=>!e.forfeit&&e.people.some(p=>same(p.n,name))).sort((a,b)=>a.arr-b.arr);
+  const dt="20260902", p2=n=>String(n).padStart(2,"0"), T=m=>dt+"T"+p2(Math.floor(m/60))+p2(m%60)+"00";
+  let L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//中四區圓夢運動會//TW//","CALSCALE:GREGORIAN"];
+  evs.forEach((e,i)=>{ L.push("BEGIN:VEVENT","UID:sport0902-"+i+"-"+Date.now()+"@local","DTSTAMP:20260821T000000Z",
+    "DTSTART:"+T(e.arr),"DTEND:"+T(Math.max(e.end,e.arr+10)),
+    "SUMMARY:"+esc(e.name+"（"+V[e.venue].name+"）"),"LOCATION:"+esc(e.loc),
+    "DESCRIPTION:"+esc("最早到場 "+e.t+"　"+e.detail),
+    "BEGIN:VALARM","TRIGGER:-PT20M","ACTION:DISPLAY","DESCRIPTION:"+esc(e.name+" 準備報到"),"END:VALARM","END:VEVENT"); });
+  L.push("END:VCALENDAR");
+  const blob=new Blob([L.join("\r\n")],{type:"text/calendar;charset=utf-8"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=name+"_圓夢運動會賽程.ics"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 
 /* ============ 通用 ============ */
@@ -324,59 +404,86 @@ let allNames=[];
 function rebuild(){
   allNames=[...new Set(EV.flatMap(e=>e.people.map(p=>p.n)))].sort();
   document.getElementById("nameList").innerHTML=allNames.map(n=>`<option value="${n}">`).join("");
-  if(!document.getElementById("viewAll").classList.contains("hidden")) renderAll();
+  const sel=document.getElementById("findEvent"); const cur=sel.value;
+  sel.innerHTML='<option value="">— 選擇報名項目 —</option>'+
+    EV.map((e,i)=>`<option value="${i}">${e.t}　${e.name}${e.forfeit?"（棄權）":""}</option>`).join("");
+  sel.value=cur;
+  const vis=id=>!document.getElementById(id).classList.contains("hidden");
+  if(vis("view-all")) renderAll();
+  if(vis("view-find")) renderFind();
   if(lastQuery) doSearch(true);
 }
-function switchTab(which){
-  const mine=which==="mine";
-  document.getElementById("viewMine").classList.toggle("hidden",!mine);
-  document.getElementById("viewAll").classList.toggle("hidden",mine);
-  document.getElementById("tabMine").classList.toggle("active",mine);
-  document.getElementById("tabAll").classList.toggle("active",!mine);
-  if(!mine) renderAll();
+function switchTab(w){
+  ["mine","all","find"].forEach(k=>{
+    document.getElementById("view-"+k).classList.toggle("hidden",k!==w);
+    document.getElementById("tab-"+k).classList.toggle("active",k===w);
+  });
+  if(w==="all") renderAll(); if(w==="find") renderFind();
   window.scrollTo(0,0);
+}
+function locLink(e){ return `<a class="navlink" href="${navUrl(e.venue)}" target="_blank" rel="noopener">🧭 導航</a>`; }
+function rulesHTML(e){
+  const r=e.rules; if(!r) return "";
+  let s=`<details class="rules"><summary>📋 比賽規則與內容</summary><div class="rbody">`;
+  if(r.team) s+=`<div class="rrow"><b>參賽人數</b>${r.team}</div>`;
+  if(r.scoring) s+=`<div class="rrow"><b>成績計列</b>${r.scoring}</div>`;
+  if(r.list&&r.list.length) s+=`<div class="rrow"><b>比賽規則</b><ol>${r.list.map(x=>`<li>${x}</li>`).join("")}</ol></div>`;
+  if(r.extra) s+=`<div class="rrow"><div class="rx">${r.extra}</div></div>`;
+  if(r.note) s+=`<div class="rrow"><b>注意事項</b>${r.note}</div>`;
+  if(r.pts) s+=`<div class="rrow"><b>積分</b>${r.pts}</div>`;
+  return s+`</div></details>`;
 }
 
 /* ============ 我的賽程 ============ */
 let lastQuery="";
 function doSearch(keep){
   const q=(keep?lastQuery:document.getElementById("nameInput").value).trim().replace(/\s/g,"");
-  lastQuery=q;
-  const box=document.getElementById("mineResult");
+  lastQuery=q; const box=document.getElementById("mineResult");
   if(!q){box.innerHTML="";return;}
-  const hit=p=> p.n===q || (q.length>=2&&p.n.indexOf(q)>=0) || (p.n.length>=2&&q.indexOf(p.n)>=0);
+  const hit=p=>same(p.n,q);
   let mine=EV.filter(e=>e.people.some(hit)).sort((a,b)=>a.arr-b.arr);
-  if(!mine.length){
-    box.innerHTML=`<div class="empty"><div class="big">🔍</div>
-      <h3>名單裡查不到「${q}」</h3>
-      <p>可能是候補、或名字打法不同。<br>可從輸入框建議清單挑選，或問窗口確認。</p></div>`;
-    return;
-  }
+  if(!mine.length){ box.innerHTML=`<div class="empty"><div class="big">🔍</div>
+    <h3>名單裡查不到「${q}」</h3><p>可能是候補、或名字打法不同。<br>可從輸入框建議清單挑選，或問窗口確認。</p></div>`; return; }
+  const now=getNow();
   const earliest=mine[0].t, venues=[...new Set(mine.map(e=>e.venue))];
   const flags={};
-  for(let i=1;i<mine.length;i++){
-    const a=mine[i-1],b=mine[i],gap=b.arr-a.end;
-    if(b.arr<a.end) (flags[i]=flags[i]||[]).push({lv:"hard",msg:`與「${a.name}」時間重疊，需擇一或安排替補`});
-    else if(a.venue!==b.venue&&gap<20) (flags[i]=flags[i]||[]).push({lv:"tight",msg:`從「${a.name}」（${V[a.venue].name}）趕過來只有約 ${gap} 分鐘，且要換場館`});
+  for(let i=1;i<mine.length;i++){const a=mine[i-1],b=mine[i],gap=b.arr-a.end;
+    if(b.arr<a.end)(flags[i]=flags[i]||[]).push({lv:"hard",msg:`與「${a.name}」時間重疊，需擇一或安排替補`});
+    else if(a.venue!==b.venue&&gap<20)(flags[i]=flags[i]||[]).push({lv:"tight",msg:`從「${a.name}」（${V[a.venue].name}）趕過來只有約 ${gap} 分鐘，且要換場館`});}
+  // banner
+  let banner="";
+  if(now.day){
+    const liveEv=mine.find(e=>now.min>=e.arr&&now.min<e.end);
+    const nextEv=mine.find(e=>now.min<e.arr);
+    if(liveEv||nextEv){
+      banner=`<div class="banner live">`;
+      if(liveEv) banner+=`<b>正在進行：${liveEv.name}</b>（${V[liveEv.venue].name}）`;
+      if(nextEv) banner+=`<span class="nx">下一場：${nextEv.name}・${nextEv.t} 到場（還有 ${nextEv.arr-now.min} 分）→ ${V[nextEv.venue].name}</span>`;
+      if(!liveEv&&!nextEv) banner+=`今日賽程已全部結束 🎉`;
+      banner+=`</div>`;
+    } else banner=`<div class="banner live">今日賽程已全部結束 🎉</div>`;
+  } else {
+    banner=`<div class="banner pre">🗓 活動當天（9/2）打開，這裡會即時顯示「正在進行 / 下一場倒數」。</div>`;
   }
-  let html=`<div class="summary"><div class="who">${q}</div>
-    <div class="stats">
-      <div class="stat"><b>${mine.length}</b>項比賽</div>
-      <div class="stat"><b>${earliest}</b>最早到場</div>
-      <div class="stat"><b>${venues.length}</b>個場館</div>
-    </div>
-    <div class="stat" style="margin-top:8px">場館：${venues.map(v=>V[v].name).join("、")}</div></div><div class="rail">`;
+  let html=banner+`<div class="summary"><div class="who">${q}</div>
+    <div class="stats"><div class="stat"><b>${mine.length}</b>項比賽</div>
+      <div class="stat"><b>${earliest}</b>最早到場</div><div class="stat"><b>${venues.length}</b>個場館</div></div>
+    <div class="stat" style="margin-top:8px">場館：${venues.map(v=>V[v].name).join("、")}</div>
+    <button class="calbtn" onclick="downloadICS('${q}')">📆 加入手機行事曆（賽前20分提醒）</button></div><div class="rail">`;
+  const nextEv=now.day?mine.find(e=>now.min<e.arr):null;
   mine.forEach((e,i)=>{
-    const me=e.people.find(hit), vc=V[e.venue].cls;
-    html+=`<div class="card ${vc}">
-      <div class="ctop"><div class="ctime"><small>最早到場</small>${e.t}</div>
-        <div class="vtag ${vc}">${V[e.venue].name}</div></div>
+    const me=e.people.find(hit), vc=V[e.venue].cls, st=evState(e,now);
+    const isNext=nextEv&&e===nextEv&&st!=="live";
+    const stTag = st==="live"?`<div class="cstate live">進行中</div>`: st==="done"?`<div class="cstate done">已結束</div>`: isNext?`<div class="cstate next">下一場</div>`:"";
+    html+=`<div class="card ${vc} ${st} ${isNext?'next':''}">${stTag}
+      <div class="ctop"><div class="ctime"><small>最早到場</small>${e.t}</div><div class="vtag ${vc}">${V[e.venue].name}</div></div>
       <div class="cname">${e.name}</div>
-      <div class="cmeta"><span class="loc">📍 ${e.loc}</span></div>
+      <div class="cmeta"><span class="loc">📍 ${e.loc}</span>　${locLink(e)}</div>
       <div class="cmeta">🕐 ${e.detail}</div>
       ${me&&me.s?`<div class="cmeta">👤 代表：${me.s}${me.s!==e.store&&e.store?`（窗口：${e.store}）`:""}</div>`:""}
       ${me&&me.note?`<div class="pnote">※ ${me.note}</div>`:""}
       ${(flags[i]||[]).map(f=>`<div class="flag ${f.lv}"><span class="ic">${f.lv==="hard"?"⚠":"⏱"}</span><span>${f.msg}</span></div>`).join("")}
+      ${rulesHTML(e)}
     </div>`;
   });
   box.innerHTML=html+"</div>";
@@ -384,34 +491,71 @@ function doSearch(keep){
 
 /* ============ 全部流程 ============ */
 let activeFilter="all";
-function renderFilters(){
-  const items=[["all","全部"],["heping","和平"],["track","田徑場"],["daan","大安"]];
-  document.getElementById("filters").innerHTML=items.map(([k,l])=>
-    `<div class="fchip ${activeFilter===k?"on":""}" onclick="setFilter('${k}')">${l}</div>`).join("");
-}
+function renderFilters(){ const items=[["all","全部"],["heping","和平"],["track","田徑場"],["daan","大安"]];
+  document.getElementById("filters").innerHTML=items.map(([k,l])=>`<div class="fchip ${activeFilter===k?"on":""}" onclick="setFilter('${k}')">${l}</div>`).join(""); }
 function setFilter(k){activeFilter=k;renderFilters();renderAll();}
 function renderAll(){
-  renderFilters();
+  renderFilters(); const now=getNow();
   const list=EV.filter(e=>activeFilter==="all"||e.venue===activeFilter);
   document.getElementById("allResult").innerHTML=list.map(e=>{
-    const vc=V[e.venue].cls, g={};
+    const vc=V[e.venue].cls, g={}; const live=now.day&&now.min>=e.arr&&now.min<e.end;
     e.people.forEach(p=>{(g[p.s||"—"]=g[p.s||"—"]||[]).push(p.n+(p.note?`（${p.note}）`:""));});
     const roster=Object.entries(g).map(([s,ns])=>`<b>${s}</b>：${ns.join("、")}`).join("　");
     return `<div class="fcard ${vc} ${e.forfeit?"forfeit":""}">
       <div class="ftop"><div class="ftime">${e.t}</div>
-        ${e.forfeit?'<span class="forfeit-tag">棄權</span>':`<span class="fstore">窗口 ${e.store||"—"}</span>`}</div>
+        ${e.forfeit?'<span class="forfeit-tag">棄權</span>':(live?'<span class="nowtag">進行中</span>':`<span class="fstore">窗口 ${e.store||"—"}</span>`)}</div>
       <div class="fname">${e.name}</div>
-      <div class="fmeta">📍 ${e.loc}　·　🕐 ${e.detail}</div>
-      <div class="fmeta">需求 ${e.need} 人${e.note?"　·　"+e.note:""}</div>
+      <div class="fmeta">📍 ${e.loc}　${locLink(e)}</div>
+      <div class="fmeta">🕐 ${e.detail}　·　需求 ${e.need} 人${e.note?"　·　"+e.note:""}</div>
       ${e.people.length?`<details><summary>看名單（${e.people.length}）</summary><div class="roster">${roster}</div></details>`:""}
+      ${rulesHTML(e)}
     </div>`;
   }).join("");
 }
 
+/* ============ 窗口找人 ============ */
+function prevOf(name, E){
+  const mine=EV.filter(x=>x!==E&&!x.forfeit&&x.people.some(p=>same(p.n,name))).sort((a,b)=>a.arr-b.arr);
+  const before=mine.filter(x=>x.arr<E.arr);
+  return before.length?before[before.length-1]:null;
+}
+function renderFind(){
+  const box=document.getElementById("findResult");
+  const v=document.getElementById("findEvent").value;
+  if(v===""){ box.innerHTML=`<div class="empty"><div class="big">🧭</div><h3>選一個項目</h3><p>會列出參賽者，並依「上一場在哪個場館」分組，方便你去找人。</p></div>`; return; }
+  const E=EV[+v], vc=V[E.venue].cls;
+  let head=`<div class="ehead ${vc}"><div class="en">${E.name}</div>
+    <div class="em">🕐 ${E.detail}</div>
+    <div class="em">📍 ${E.loc}　${locLink(E)}</div>
+    <div class="em">需求 ${E.need} 人・目前名單 ${E.people.length} 人</div>${rulesHTML(E)}</div>`;
+  if(E.forfeit){ box.innerHTML=head+`<div class="empty"><div class="big">🚫</div><h3>此項目已棄權</h3></div>`; return; }
+  if(!E.people.length){ box.innerHTML=head+`<div class="empty"><h3>尚無名單</h3></div>`; return; }
+  const same_v=[], first=[], byV={};
+  E.people.forEach(p=>{
+    const pv=prevOf(p.n,E);
+    if(!pv) first.push({p});
+    else if(pv.venue===E.venue) same_v.push({p,pv});
+    else (byV[pv.venue]=byV[pv.venue]||[]).push({p,pv});
+  });
+  const nameCell=(o,cross)=>{
+    const tight = o.pv && (E.arr-o.pv.end)<20 && o.pv.venue!==E.venue;
+    return `<div class="prow ${tight?'tight':''}"><div class="pn">${o.p.n}<small>${o.p.s||""}</small></div>
+      ${o.pv?`<div class="pp">上一場：${o.pv.t} ${o.pv.name}（${V[o.pv.venue].name}）${tight?'・⏱ 可能剛結束、較晚到':''}</div>`:`<div class="pp">本日首場（從報到處／外部到）</div>`}</div>`;
+  };
+  let html=head;
+  if(same_v.length) html+=`<div class="grp"><h4>✅ 已在本場館（上一場同場地，好找）・${same_v.length}人</h4>${same_v.map(o=>nameCell(o)).join("")}</div>`;
+  Object.keys(byV).forEach(vv=>{ html+=`<div class="grp cross"><h4>🚶 從 ${V[vv].name} 過來・${byV[vv].length}人</h4>${byV[vv].map(o=>nameCell(o,true)).join("")}</div>`; });
+  if(first.length) html+=`<div class="grp first"><h4>🆕 本日首場（從報到處／外部到）・${first.length}人</h4>${first.map(o=>nameCell(o)).join("")}</div>`;
+  box.innerHTML=html;
+}
+
 /* ============ 啟動 ============ */
-setStatus(false);
-rebuild();
-loadLive();
+setStatus(false); rebuild(); tickClock(); loadLive();
+setInterval(()=>{ tickClock();
+  const now=getNow();
+  if(now.day){ if(lastQuery&&!document.getElementById("view-mine").classList.contains("hidden")) doSearch(true);
+    if(!document.getElementById("view-all").classList.contains("hidden")) renderAll(); }
+},60000);
 </script>
 </body>
 </html>
