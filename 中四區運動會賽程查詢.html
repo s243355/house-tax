@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a8a43">
+<title>中四區・圓夢運動會 9/2 賽程查詢</title>
+<style>
+  :root{
+    --green:#0a8a43; --green-d:#076c34; --green-l:#e7f4ec;
+    --ink:#122017; --muted:#5c6b60; --line:#e2e8e2; --bg:#f5f8f4; --card:#ffffff;
+    --heping:#e07a2f; --track:#2f6fb3; --daan:#7a54c2;
+    --warn:#c0392b; --warn-bg:#fdecea; --tight:#b8791b; --tight-bg:#fdf3e2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    font-size:15px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:520px; margin:0 auto; min-height:100vh; background:var(--bg)}
+  .num{font-variant-numeric:tabular-nums; letter-spacing:.5px}
+
+  /* Header */
+  header{
+    background:linear-gradient(160deg,var(--green) 0%,var(--green-d) 100%);
+    color:#fff; padding:18px 20px 20px; position:sticky; top:0; z-index:20;
+    box-shadow:0 2px 10px rgba(7,108,52,.18);
+  }
+  .eyebrow{font-size:12px; letter-spacing:2px; opacity:.85; font-weight:600}
+  header h1{font-size:20px; font-weight:800; margin-top:3px; letter-spacing:.5px}
+  .datechip{
+    display:inline-flex; align-items:center; gap:6px; margin-top:10px;
+    background:rgba(255,255,255,.16); padding:5px 11px; border-radius:20px;
+    font-size:12.5px; font-weight:600;
+  }
+  .datechip b{font-size:13px}
+
+  /* Tabs */
+  .tabs{display:flex; gap:6px; padding:12px 16px 4px; position:sticky; top:78px; background:var(--bg); z-index:15}
+  .tab{
+    flex:1; text-align:center; padding:10px 8px; border-radius:12px; font-weight:700;
+    font-size:14px; background:#fff; color:var(--muted); border:1px solid var(--line);
+    cursor:pointer; transition:.15s; user-select:none;
+  }
+  .tab.active{background:var(--green); color:#fff; border-color:var(--green)}
+
+  section{padding:8px 16px 40px}
+  .hidden{display:none}
+
+  /* Search */
+  .searchbox{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:8px}
+  .searchbox label{font-size:13px; font-weight:700; color:var(--muted); display:block; margin-bottom:8px}
+  .inrow{display:flex; gap:8px}
+  #nameInput{
+    flex:1; padding:13px 14px; font-size:16px; border:1.5px solid var(--line);
+    border-radius:12px; outline:none; background:#fff; font-family:inherit;
+  }
+  #nameInput:focus{border-color:var(--green)}
+  .btn{
+    padding:0 18px; background:var(--green); color:#fff; border:none; border-radius:12px;
+    font-weight:800; font-size:15px; cursor:pointer; font-family:inherit;
+  }
+  .btn:active{background:var(--green-d)}
+  .hint{font-size:12px; color:var(--muted); margin-top:10px; line-height:1.6}
+
+  /* Personal summary */
+  .summary{
+    margin-top:14px; background:var(--green-l); border:1px solid #cfe8d8; border-radius:16px; padding:14px 16px;
+  }
+  .summary .who{font-size:19px; font-weight:800; color:var(--green-d)}
+  .summary .stats{display:flex; gap:16px; margin-top:8px; flex-wrap:wrap}
+  .stat{font-size:13px; color:#2c5a3e}
+  .stat b{font-size:17px; display:block; font-variant-numeric:tabular-nums}
+
+  /* Rail cards */
+  .rail{margin-top:14px; position:relative; padding-left:6px}
+  .card{
+    position:relative; background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px 13px 16px; margin-bottom:11px; border-left:5px solid var(--line);
+  }
+  .card.v-heping{border-left-color:var(--heping)}
+  .card.v-track{border-left-color:var(--track)}
+  .card.v-daan{border-left-color:var(--daan)}
+  .ctop{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+  .ctime{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .ctime small{font-size:11px; font-weight:700; color:var(--muted); display:block; letter-spacing:1px}
+  .vtag{font-size:11px; font-weight:800; padding:4px 9px; border-radius:20px; white-space:nowrap; color:#fff}
+  .vtag.v-heping{background:var(--heping)} .vtag.v-track{background:var(--track)} .vtag.v-daan{background:var(--daan)}
+  .cname{font-size:17px; font-weight:800; margin-top:8px}
+  .cmeta{font-size:13px; color:var(--muted); margin-top:4px}
+  .cmeta .loc{font-weight:600; color:#3a4a3f}
+  .pnote{font-size:12.5px; margin-top:6px; color:var(--tight); font-weight:600}
+
+  .flag{
+    margin-top:9px; padding:9px 11px; border-radius:10px; font-size:12.5px; font-weight:600; line-height:1.5;
+    display:flex; gap:7px; align-items:flex-start;
+  }
+  .flag.hard{background:var(--warn-bg); color:var(--warn)}
+  .flag.tight{background:var(--tight-bg); color:var(--tight)}
+  .flag .ic{font-weight:900}
+
+  /* empty */
+  .empty{text-align:center; padding:36px 20px; color:var(--muted)}
+  .empty .big{font-size:40px; margin-bottom:8px}
+  .empty h3{font-size:16px; color:var(--ink); margin-bottom:6px}
+
+  /* Full flow */
+  .legend{display:flex; gap:14px; flex-wrap:wrap; padding:12px 2px 4px; font-size:12.5px; color:var(--muted)}
+  .legend span{display:inline-flex; align-items:center; gap:6px; font-weight:600}
+  .dot{width:11px; height:11px; border-radius:50%}
+  .dot.v-heping{background:var(--heping)} .dot.v-track{background:var(--track)} .dot.v-daan{background:var(--daan)}
+  .filters{display:flex; gap:7px; flex-wrap:wrap; padding:6px 0 12px}
+  .fchip{
+    font-size:12.5px; font-weight:700; padding:6px 12px; border-radius:20px; border:1px solid var(--line);
+    background:#fff; color:var(--muted); cursor:pointer; user-select:none;
+  }
+  .fchip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+  .fcard{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px;
+    margin-bottom:10px; border-left:5px solid var(--line);
+  }
+  .fcard.v-heping{border-left-color:var(--heping)}
+  .fcard.v-track{border-left-color:var(--track)}
+  .fcard.v-daan{border-left-color:var(--daan)}
+  .fcard.forfeit{opacity:.55}
+  .ftop{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+  .ftime{font-size:19px; font-weight:800; font-variant-numeric:tabular-nums}
+  .fname{font-size:16px; font-weight:800; margin-top:6px}
+  .fstore{font-size:11px; font-weight:800; color:var(--green-d); background:var(--green-l); padding:3px 8px; border-radius:6px; margin-left:6px; white-space:nowrap}
+  .fmeta{font-size:12.5px; color:var(--muted); margin-top:4px}
+  details{margin-top:8px}
+  summary{font-size:12.5px; font-weight:700; color:var(--green-d); cursor:pointer; list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ "; }
+  details[open] summary::before{content:"▾ "}
+  .roster{font-size:12.5px; color:#3a4a3f; margin-top:7px; line-height:1.7}
+  .roster b{color:var(--green-d)}
+  .forfeit-tag{font-size:12px; font-weight:800; color:var(--warn); background:var(--warn-bg); padding:3px 9px; border-radius:6px}
+
+  footer{padding:18px 20px 30px; text-align:center; font-size:11.5px; color:var(--muted); line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">信義企業集團 45週年・中四區</div>
+    <h1>圓夢運動會 賽程查詢</h1>
+    <div class="datechip">📅 <b>9/2（二）</b> · 台北 3 場館</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" id="tabMine" onclick="switchTab('mine')">我的賽程</div>
+    <div class="tab" id="tabAll" onclick="switchTab('all')">全部流程</div>
+  </div>
+
+  <!-- MY SCHEDULE -->
+  <section id="viewMine">
+    <div class="searchbox">
+      <label for="nameInput">輸入你的名字，看今天在哪、幾點到</label>
+      <div class="inrow">
+        <input id="nameInput" list="nameList" placeholder="例如：李祐承" autocomplete="off"
+               onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn" onclick="doSearch()">查詢</button>
+      </div>
+      <datalist id="nameList"></datalist>
+      <div class="hint">找出你報名的所有項目，會依「最早到場時間」排好，並提醒撞時間或要換場館的狀況。</div>
+    </div>
+    <div id="mineResult"></div>
+  </section>
+
+  <!-- ALL FLOW -->
+  <section id="viewAll" class="hidden">
+    <div class="legend">
+      <span><i class="dot v-heping"></i>和平籃球館</span>
+      <span><i class="dot v-track"></i>國北教田徑場</span>
+      <span><i class="dot v-daan"></i>大安運動中心</span>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="allResult"></div>
+  </section>
+
+  <footer>
+    時間以「最早須到場（報到／檢錄）」排序，非開賽時間。<br>
+    三個場館為不同地點，跨場請預留移動時間。<br>
+    資料來源：中四區報名時間表（最終名單）
+  </footer>
+</div>
+
+<script>
+/* ---------- venue meta ---------- */
+const V = {
+  heping:{name:"和平籃球館", cls:"v-heping"},
+  track :{name:"國北教田徑場", cls:"v-track"},
+  daan  :{name:"大安運動中心", cls:"v-daan"},
+};
+
+/* ---------- events (最終名單) ---------- */
+/* arr/end = 分鐘；venue=場館鍵；people=[{n:名, s:分店, note?}] */
+const EV = [
+ {t:"09:00",arr:540,end:570,name:"大隊創意進場",store:"復興",venue:"heping",loc:"和平籃球館 1F",
+  detail:"進場 09:00–09:30；投票 10:30–14:00（08:30 集合）",need:"10",note:"10人（黑4選2）",
+  people:[{n:"洪正龍",s:"復興"},{n:"陳正賢",s:"復興"},{n:"林俊瑋",s:"復興"},{n:"任韋柏",s:"復興"},{n:"曾渝茜",s:"復興"},{n:"連汶瑛",s:"復興"},{n:"魏旭國",s:"復興"},{n:"陳柏瑋",s:"復興"},{n:"賴宥伯",s:"大國"},{n:"黃國彥",s:"心興"}]},
+
+ {t:"10:20",arr:620,end:635,name:"協調力／多人多足",store:"中正",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"10:30–10:35（賽前10分報到）積分賽",need:"8",note:"",
+  people:[{n:"盧家儒",s:"心高"},{n:"洪敬琁",s:"彰化"},{n:"柯永泰",s:"彰美"},{n:"劉冠宏",s:"湖濱"},{n:"邱昱瑋",s:"大興"},{n:"張培瑩",s:"大興"},{n:"許喬涵",s:"大興"},{n:"劉彥呈",s:"中正"}]},
+
+ {t:"10:30",arr:630,end:700,name:"羽球（雙打）",store:"大興",venue:"daan",loc:"大安運動中心 3F 羽球場",
+  detail:"10:30 比賽",need:"2",note:"",
+  people:[{n:"張晉綸",s:"大國"},{n:"謝凱勛",s:"大園"}]},
+
+ {t:"10:40",arr:640,end:695,name:"大隊接力 1200公尺",store:"心興",venue:"track",loc:"國北教 田徑場",
+  detail:"11:10 比賽（前30分檢錄／前15分截止）",need:"12",note:"5男5女",
+  people:[{n:"陳嘉伶",s:"大國"},{n:"洪齊駿",s:"大園"},{n:"黃凱傑",s:"彰化"},{n:"洪敬琁",s:"彰化"},{n:"張馨云",s:"湖濱"},{n:"王瀠萱",s:"湖濱"},{n:"陳明遠",s:"中正"},{n:"林辰翰",s:"中正"},{n:"李翌菁",s:"心興"},{n:"翁培勛",s:"心興"},{n:"王韻婷",s:"大興"}]},
+
+ {t:"10:40",arr:640,end:700,name:"匹克球（雙打）",store:"大興",venue:"daan",loc:"大安運動中心 3F 匹克球場",
+  detail:"11:10 比賽（前30分檢錄）",need:"2",note:"區內沒人會",forfeit:true,people:[]},
+
+ {t:"10:50",arr:650,end:700,name:"桌球（單打）",store:"大興",venue:"daan",loc:"大安運動中心 2F 桌球室",
+  detail:"10:50 比賽",need:"1",note:"",
+  people:[{n:"蔡瑜涵",s:"彰美"}]},
+
+ {t:"11:15",arr:675,end:690,name:"專注力／疊杯接力",store:"彰美",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"11:25–11:30（賽前10分報到）積分賽",need:"5",note:"",
+  people:[{n:"蕭晉欣",s:"大國"},{n:"謝昇樺",s:"彰美"},{n:"邱昱瑋",s:"大興"},{n:"姚政存",s:"大芳"},{n:"謝嘉峰",s:"大芳"}]},
+
+ {t:"11:40",arr:700,end:715,name:"續航力／陸上行舟",store:"國光",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"11:50–11:55（賽前10分報到）積分賽",need:"5",note:"",
+  people:[{n:"辜義勝",s:"國光"},{n:"莊朝竣",s:"國光"},{n:"周品辰",s:"國光"},{n:"江馨喬",s:"大芳"},{n:"姚政存",s:"大芳"}]},
+
+ {t:"11:47",arr:707,end:722,name:"100公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"11:47 前報到（第4組）",need:"1",note:"",
+  people:[{n:"黃凱傑",s:"彰化"}]},
+
+ {t:"12:00",arr:720,end:770,name:"籃球（5v5）",store:"大園",venue:"daan",loc:"大安運動中心 3F 籃球場",
+  detail:"12:00 比賽（賽程 10:30–14:50）",need:"10",note:"正式5／替補5",
+  people:[{n:"劉晉佑",s:"大國"},{n:"徐仕旻",s:"中三區"},{n:"賴凱祥",s:"大園"},{n:"許智南",s:"彰化"},{n:"林民雄",s:"中正"},{n:"邱仕軒",s:"心興"},{n:"楊弘至",s:"大興"},{n:"柯永泰",s:"彰美"}]},
+
+ {t:"12:05",arr:725,end:740,name:"100公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"12:05 前報到（第3組）",need:"1",note:"",
+  people:[{n:"李翌菁",s:"心興"}]},
+
+ {t:"12:10",arr:730,end:745,name:"反應力／大繩跳繩",store:"彰化",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"12:20–12:25（賽前10分報到）積分賽",need:"10",note:"",
+  people:[{n:"李祐承",s:"心高"},{n:"盧家儒",s:"心高"},{n:"吳雅如",s:"彰美"},{n:"莊朝竣",s:"國光"},{n:"周品辰",s:"國光"},{n:"王韻婷",s:"大興"},{n:"任韋柏",s:"復興"},{n:"魏旭國",s:"復興"},{n:"陳柏瑋",s:"復興"},{n:"陳正賢",s:"復興"}]},
+
+ {t:"12:35",arr:755,end:770,name:"穩定性／四平八穩",store:"大芳",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"12:45–12:50（賽前10分報到）積分賽",need:"6",note:"",
+  people:[{n:"黃凱鈴",s:"彰美"},{n:"林家禾",s:"彰美"},{n:"賴佩芬",s:"中正"},{n:"曾秀靜",s:"中正"},{n:"鄭曉茹",s:"國光"},{n:"吳乙宜",s:"國光"}]},
+
+ {t:"12:47",arr:767,end:782,name:"200公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"12:47 前報到（第7組）",need:"1",note:"",
+  people:[{n:"劉晉佑",s:"大國",note:"看籃球來不來得及"}]},
+
+ {t:"13:02",arr:782,end:797,name:"200公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"13:02 前報到（第4組）",need:"1",note:"",
+  people:[{n:"張馨云",s:"湖濱"}]},
+
+ {t:"13:20",arr:800,end:815,name:"肌力練習曲／鋼鐵重力戰",store:"大興",venue:"daan",loc:"大安運動中心 2F 多功能教室",
+  detail:"13:30–13:35（賽前10分報到）",need:"10",note:"",
+  people:[{n:"賴宥伯",s:"大國"},{n:"廖育頡",s:"大園"},{n:"張宏瑜",s:"心高"},{n:"盧家儒",s:"心高"},{n:"巫忠穎",s:"湖濱"},{n:"劉冠宏",s:"湖濱"},{n:"黃柏睿",s:"中正"},{n:"辜義勝",s:"國光"},{n:"張憲庭",s:"心興"},{n:"黃國彥",s:"心興"}]},
+
+ {t:"13:31",arr:811,end:826,name:"400公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"13:31 前報到（第3組）",need:"1",note:"",
+  people:[{n:"蔡瑜涵",s:"彰美",note:"看桌球來不來得及"}]},
+
+ {t:"13:34",arr:814,end:860,name:"大隊拔河",store:"高工",venue:"heping",loc:"和平籃球館 1F",
+  detail:"14:04 比賽（前30分檢錄／前15分截止）",need:"10",note:"5男5女，候補2男2女",
+  people:[{n:"蕭晉欣",s:"大國"},{n:"李祐承",s:"心高"},{n:"高文峰",s:"彰美"},{n:"鍾寶惜",s:"彰美"},{n:"謝昇樺",s:"彰美"},{n:"柯永泰",s:"彰美"},{n:"黃芮頎",s:"彰美"},{n:"張培瑩",s:"大興"},{n:"邱昱瑋",s:"大興"},{n:"謝嘉峰",s:"大芳"},{n:"李彥儒",s:"大芳"},{n:"黃美昀",s:"大芳"},{n:"王瀠萱",s:"湖濱"}]},
+
+ {t:"13:40",arr:820,end:835,name:"活力有氧操",store:"公園",venue:"daan",loc:"大安運動中心 2F 韻律教室2",
+  detail:"13:50–13:55（賽前10分報到）",need:"20",note:"",
+  people:[{n:"張晉綸",s:"大國"},{n:"陳嘉伶",s:"大國"},{n:"洪琇婷",s:"大園"},{n:"洪齊駿",s:"大園"},{n:"蔡惠羽",s:"心高"},{n:"洪敬琁",s:"彰化"},{n:"柯煜妏",s:"彰化"},{n:"黃凱鈴",s:"彰美"},{n:"賴佩芬",s:"中正"},{n:"曾秀靜",s:"中正"},{n:"黃詩勻",s:"中正"},{n:"鄭曉茹",s:"國光"},{n:"吳乙宜",s:"國光"},{n:"張怡君",s:"心興"},{n:"魏玫聆",s:"心興"},{n:"王韻婷",s:"大興"},{n:"許喬涵",s:"大興"},{n:"江馨喬",s:"大芳"},{n:"曾渝茜",s:"復興"},{n:"連汶瑛",s:"復興"}]},
+
+ {t:"13:51",arr:831,end:846,name:"400公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
+  detail:"13:51 前報到（第3組）",need:"1",note:"",
+  people:[{n:"翁培勛",s:"心興"}]},
+];
+
+/* sort by arrive time (stable) */
+EV.sort((a,b)=> a.arr-b.arr);
+
+/* ---------- build name list ---------- */
+const allNames = [...new Set(EV.flatMap(e=>e.people.map(p=>p.n)))].sort();
+document.getElementById('nameList').innerHTML =
+  allNames.map(n=>`<option value="${n}">`).join('');
+
+/* ---------- tabs ---------- */
+function switchTab(which){
+  const mine=which==='mine';
+  document.getElementById('viewMine').classList.toggle('hidden',!mine);
+  document.getElementById('viewAll').classList.toggle('hidden',mine);
+  document.getElementById('tabMine').classList.toggle('active',mine);
+  document.getElementById('tabAll').classList.toggle('active',!mine);
+  if(!mine) renderAll();
+  window.scrollTo(0,0);
+}
+
+/* ---------- personal search ---------- */
+function doSearch(){
+  const raw=document.getElementById('nameInput').value.trim().replace(/\s/g,'');
+  const box=document.getElementById('mineResult');
+  if(!raw){box.innerHTML='';return;}
+  let mine=EV.filter(e=>e.people.some(p=>p.n===raw));
+  if(!mine.length) mine=EV.filter(e=>e.people.some(p=>p.n.includes(raw)));
+  if(!mine.length){
+    box.innerHTML=`<div class="empty"><div class="big">🔍</div>
+      <h3>名單裡查不到「${raw}」</h3>
+      <p>可能是候補、或名字打法不同。<br>可從輸入框的建議清單挑選，或問窗口確認。</p></div>`;
+    return;
+  }
+  mine=[...mine].sort((a,b)=>a.arr-b.arr);
+
+  // stats
+  const earliest=mine[0].t;
+  const venues=[...new Set(mine.map(e=>e.venue))];
+  const vNames=venues.map(v=>V[v].name).join('、');
+
+  // conflict detection between consecutive events
+  const flags={}; // eventIndex -> [flag]
+  for(let i=1;i<mine.length;i++){
+    const a=mine[i-1], b=mine[i];
+    const gap=b.arr-a.end;
+    if(b.arr < a.end){
+      pushFlag(flags,i,'hard',`與「${a.name}」時間重疊，需擇一或安排替補`);
+    }else if(a.venue!==b.venue && gap<20){
+      pushFlag(flags,i,'tight',`從「${a.name}」（${V[a.venue].name}）趕到這裡只有約 ${gap} 分鐘，且要換場館`);
+    }
+  }
+
+  let html=`<div class="summary">
+    <div class="who">${raw}</div>
+    <div class="stats">
+      <div class="stat"><b>${mine.length}</b>項比賽</div>
+      <div class="stat"><b>${earliest}</b>最早到場</div>
+      <div class="stat"><b>${venues.length}</b>個場館</div>
+    </div>
+    <div class="stat" style="margin-top:8px">場館：${vNames}</div>
+  </div><div class="rail">`;
+
+  mine.forEach((e,i)=>{
+    const me=e.people.find(p=>p.n===raw)||e.people.find(p=>p.n.includes(raw));
+    const vc=V[e.venue].cls;
+    html+=`<div class="card ${vc}">
+      <div class="ctop">
+        <div class="ctime"><small>最早到場</small>${e.t}</div>
+        <div class="vtag ${vc}">${V[e.venue].name}</div>
+      </div>
+      <div class="cname">${e.name}</div>
+      <div class="cmeta"><span class="loc">📍 ${e.loc}</span></div>
+      <div class="cmeta">🕐 ${e.detail}</div>
+      <div class="cmeta">👤 代表：${me?me.s:''}${me&&me.s!==e.store?`（窗口：${e.store}）`:''}</div>
+      ${me&&me.note?`<div class="pnote">※ ${me.note}</div>`:''}
+      ${(flags[i]||[]).map(f=>`<div class="flag ${f.lv}"><span class="ic">${f.lv==='hard'?'⚠':'⏱'}</span><span>${f.msg}</span></div>`).join('')}
+    </div>`;
+  });
+  html+=`</div>`;
+  box.innerHTML=html;
+}
+function pushFlag(o,i,lv,msg){(o[i]=o[i]||[]).push({lv,msg});}
+
+/* ---------- full flow ---------- */
+let activeFilter='all';
+function renderFilters(){
+  const box=document.getElementById('filters');
+  const items=[['all','全部'],['heping','和平'],['track','田徑場'],['daan','大安']];
+  box.innerHTML=items.map(([k,l])=>
+    `<div class="fchip ${activeFilter===k?'on':''}" onclick="setFilter('${k}')">${l}</div>`).join('');
+}
+function setFilter(k){activeFilter=k; renderFilters(); renderAll();}
+function renderAll(){
+  renderFilters();
+  const box=document.getElementById('allResult');
+  const list=EV.filter(e=>activeFilter==='all'||e.venue===activeFilter);
+  box.innerHTML=list.map(e=>{
+    const vc=V[e.venue].cls;
+    const roster=groupRoster(e.people);
+    return `<div class="fcard ${vc} ${e.forfeit?'forfeit':''}">
+      <div class="ftop">
+        <div class="ftime">${e.t}</div>
+        ${e.forfeit?'<span class="forfeit-tag">棄權</span>':`<span class="fstore">窗口 ${e.store}</span>`}
+      </div>
+      <div class="fname">${e.name}</div>
+      <div class="fmeta">📍 ${e.loc}　·　🕐 ${e.detail}</div>
+      <div class="fmeta">需求 ${e.need} 人${e.note?'　·　'+e.note:''}</div>
+      ${e.people.length?`<details><summary>看名單（${e.people.length}）</summary><div class="roster">${roster}</div></details>`:''}
+    </div>`;
+  }).join('');
+}
+function groupRoster(people){
+  const g={};
+  people.forEach(p=>{(g[p.s]=g[p.s]||[]).push(p.n+(p.note?`（${p.note}）`:''));});
+  return Object.entries(g).map(([s,ns])=>`<b>${s}</b>：${ns.join('、')}`).join('　');
+}
+
+renderFilters();
+</script>
+</body>
+</html>
