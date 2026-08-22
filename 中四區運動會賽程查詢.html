@@ -138,6 +138,12 @@
   .manual{display:block; margin:10px 16px 0; padding:12px 14px; background:var(--green); color:#fff; text-align:center;
     border-radius:12px; font-weight:800; font-size:14px; text-decoration:none; box-shadow:0 2px 8px rgba(7,108,52,.2)}
   .manual:active{background:var(--green-d)}
+  .countdown{margin:10px 16px 0; padding:11px 14px; border-radius:12px; text-align:center; font-weight:800; font-size:14px;
+    background:linear-gradient(135deg,#0a8a43,#076c34); color:#fff; box-shadow:0 2px 8px rgba(7,108,52,.18); display:none}
+  .countdown.show{display:block}
+  .countdown .cd-num{font-size:20px; font-variant-numeric:tabular-nums; margin:0 2px}
+  .countdown.live{background:linear-gradient(135deg,#c0392b,#9b2d22)}
+  .countdown.done{background:#5c6b60}
 
   .mintro{background:var(--green-l); border:1px solid #cfe8d8; border-radius:14px; padding:13px 15px; margin:8px 0 14px; font-size:13px; color:#2c5a3e; line-height:1.6}
   .mhead{font-size:15px; font-weight:800; color:var(--ink); margin:18px 0 4px}
@@ -186,6 +192,8 @@
   </header>
 
   <div class="status" id="status">名單來源：載入中…</div>
+
+  <div class="countdown" id="countdown"></div>
 
   <a class="manual" href="https://canva.link/ds79yt1rhhhjz4l" target="_blank" rel="noopener">📖 點我看「當天完整說明手冊」</a>
 
@@ -459,6 +467,35 @@ const hhmm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart
 function evState(e,now){ if(!now.day) return ""; if(now.min>=e.arr&&now.min<e.end) return "live"; if(now.min>=e.end) return "done"; return ""; }
 function tickClock(){ const now=getNow(); const el=document.getElementById("clock");
   el.textContent = now.day ? "🔴 現在 "+hhmm(now.min) : ""; }
+function tickCountdown(){
+  const el=document.getElementById("countdown"); if(!el) return;
+  el.className="countdown show";
+  // demo override 也能測當天
+  const p=new URLSearchParams(location.search).get("demo");
+  const now=new Date();
+  const start=new Date("2026-09-02T09:00:00+08:00");  // 開幕（大隊創意進場）
+  const end=new Date("2026-09-02T15:30:00+08:00");    // 賽事大致結束
+  const g=getNow();
+  if(g.day || (p&&/^\d{1,2}:\d{2}$/.test(p))){
+    const mn=g.min;
+    if(mn<540){ el.innerHTML=`⏳ 今天開幕！距 09:00 開幕還有 <span class="cd-num">${540-mn}</span> 分鐘`; }
+    else if(mn<930){ el.className="countdown show live"; el.innerHTML=`🔴 賽事進行中 · 現在 ${hhmm(mn)}`; }
+    else { el.className="countdown show done"; el.innerHTML=`🎉 今日賽事已結束，辛苦了！`; }
+    return;
+  }
+  const diff=start-now;
+  if(diff<=0){
+    if(now>end){ el.className="countdown show done"; el.textContent="🎉 圓夢運動會圓滿結束，辛苦了！"; }
+    else{ el.className="countdown show live"; el.textContent="🔴 賽事進行中"; }
+    return;
+  }
+  const days=Math.floor(diff/86400000);
+  const hrs=Math.floor(diff%86400000/3600000);
+  const mins=Math.floor(diff%3600000/60000);
+  el.innerHTML = days>0
+    ? `🏁 距 9/2 開幕還有 <span class="cd-num">${days}</span> 天 <span class="cd-num">${hrs}</span> 時`
+    : `🏁 今天開幕倒數 <span class="cd-num">${hrs}</span> 時 <span class="cd-num">${mins}</span> 分`;
+}
 
 /* ============ 行事曆 ============ */
 function esc(s){return (s||"").replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n");}
@@ -734,14 +771,14 @@ function renderFind(){
 }
 
 /* ============ 啟動 ============ */
-setStatus(false); rebuild(); tickClock();
+setStatus(false); rebuild(); tickClock(); tickCountdown();
 (function(){ const n=loadName(); if(n){ document.getElementById("nameInput").value=n; doSearch(); } })();
 loadLive();
-setInterval(()=>{ tickClock();
+setInterval(()=>{ tickClock(); tickCountdown();
   const now=getNow();
   if(now.day){ if(lastQuery&&!document.getElementById("view-mine").classList.contains("hidden")) doSearch(true);
     if(!document.getElementById("view-all").classList.contains("hidden")) renderAll(); }
-},60000);
+},30000);
 </script>
 </body>
 </html>
