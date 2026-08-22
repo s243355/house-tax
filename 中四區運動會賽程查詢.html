@@ -135,6 +135,27 @@
   .prow .pp{font-size:12px;color:var(--muted);margin-top:3px}
   .prow.tight{border-color:#eecf9a;background:var(--tight-bg)}
 
+  .manual{display:block; margin:10px 16px 0; padding:12px 14px; background:var(--green); color:#fff; text-align:center;
+    border-radius:12px; font-weight:800; font-size:14px; text-decoration:none; box-shadow:0 2px 8px rgba(7,108,52,.2)}
+  .manual:active{background:var(--green-d)}
+
+  .mintro{background:var(--green-l); border:1px solid #cfe8d8; border-radius:14px; padding:13px 15px; margin:8px 0 14px; font-size:13px; color:#2c5a3e; line-height:1.6}
+  .mhead{font-size:15px; font-weight:800; color:var(--ink); margin:18px 0 4px}
+  .mhead .sub{font-size:12px; font-weight:600; color:var(--muted); margin-left:6px}
+  .gcard{background:var(--card); border:1px solid var(--line); border-radius:13px; padding:12px 14px; margin-bottom:9px; border-left:5px solid var(--heping)}
+  .gcard .gn{font-size:15.5px; font-weight:800}
+  .gcard .gloc{font-size:11.5px; font-weight:700; color:var(--heping); margin-top:2px}
+  .gcard .gd{font-size:12.5px; color:#3a4a3f; margin-top:6px; line-height:1.55}
+  .gcard .gp{font-size:12px; color:var(--green-d); font-weight:700; margin-top:5px}
+
+  .fdcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; border-left:5px solid var(--daan)}
+  .fdcard.hp{border-left-color:var(--heping)} .fdcard.tk{border-left-color:var(--track)}
+  .fdcard .ftitle{font-size:16px; font-weight:800}
+  .fdcard .frule{font-size:12.5px; color:var(--tight); font-weight:700; background:var(--tight-bg); padding:8px 10px; border-radius:9px; margin:8px 0; line-height:1.55}
+  .fdcard .fline{font-size:13px; color:#3a4a3f; margin-top:6px; line-height:1.6}
+  .fdcard .fline b{color:var(--green-d)}
+
+  .disc{display:block; margin-top:8px; color:#9aa89e; font-size:10.5px; line-height:1.6}
   footer{padding:18px 20px 30px; text-align:center; font-size:11.5px; color:var(--muted); line-height:1.7}
 </style>
 </head>
@@ -151,10 +172,13 @@
 
   <div class="status" id="status">名單來源：載入中…</div>
 
+  <a class="manual" href="https://canva.link/ds79yt1rhhhjz4l" target="_blank" rel="noopener">📖 點我看「當天完整說明手冊」</a>
+
   <div class="tabs">
     <div class="tab active" id="tab-mine" onclick="switchTab('mine')">我的賽程</div>
     <div class="tab" id="tab-all" onclick="switchTab('all')">全部流程</div>
     <div class="tab" id="tab-find" onclick="switchTab('find')">窗口找人</div>
+    <div class="tab" id="tab-more" onclick="switchTab('more')">加分・餐飲</div>
   </div>
 
   <!-- 我的賽程 -->
@@ -193,10 +217,16 @@
     <div id="findResult"></div>
   </section>
 
+  <!-- 加分・餐飲 -->
+  <section id="view-more" class="hidden">
+    <div id="moreResult"></div>
+  </section>
+
   <footer>
     時間以「最早須到場（報到／檢錄）」排序，非開賽時間。<br>
     場館：和平籃球館・大安運動中心・國北教田徑場（皆位於大安區，步行約 10–15 分）。<br>
-    內建名單更新：2026/8/21
+    內建名單更新：2026/8/21<br>
+    <span class="disc">此系統由中四區・文心高工店 李祐承 製作提供，為非官方系統，若有錯誤敬請見諒。</span>
   </footer>
 </div>
 
@@ -205,7 +235,7 @@
 const SHEET_ID="1ZLVDqudTmSo10HXRlzT4orBgM29-qPtITBRxW2Rojyw";
 const SHEET_GID="1714129761";
 /* 已「發布到網路→CSV」的話，把下一行換成 pub 網址最穩。 */
-const LIVE_URL=`https://docs.google.com/spreadsheets/d/e/2PACX-1vS0l21xI9RBa8snwHLGrHQxFsFBhQI3XTmGSnnyRl0JCvJ4QFRQ2PBsNIdJNYMR5B-yBTSm9ykqMC74/pub?gid=1714129761&single=true&output=csv`;
+const LIVE_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS0l21xI9RBa8snwHLGrHQxFsFBhQI3XTmGSnnyRl0JCvJ4QFRQ2PBsNIdJNYMR5B-yBTSm9ykqMC74/pub?output=csv";
 const EVENT_DATE="2026-09-02";
 
 /* ============ 場館（含地址與導航）============ */
@@ -354,8 +384,13 @@ async function loadLive(){
     const res=await fetch(LIVE_URL,{cache:"no-store"}); if(!res.ok) throw 0;
     const rows=parseCSV(await res.text());
     const h=rows.findIndex(r=>r.some(c=>c&&c.indexOf("排序時間")>=0)); if(h<0) throw 0;
-    const head=rows[h].map(x=>(x||"").trim()); const col=k=>head.findIndex(x=>x.indexOf(k)>=0);
-    const cN=col("報名項目"),cF=col("最終"),cNeed=col("需求"); if(cN<0||cF<0) throw 0;
+    const head=rows[h].map(x=>(x||"").trim());
+    const tIdx=head.findIndex(x=>x.indexOf("排序時間")>=0);
+    let cF=head.findIndex(x=>x.indexOf("最終")>=0);                 // 標題有「最終」就直接用
+    if(cF<0){ const co=head.findIndex(x=>x==="參加分店與人名"); cF=co>0?co-1:-1; } // 否則＝原始名單欄左一欄
+    const cN=tIdx+1;      // 報名項目
+    const cNeed=cF-2;     // 需求
+    if(cN<1||cF<0) throw 0;
     let n=0;
     for(let r=h+1;r<rows.length;r++){ const nm=(rows[r][cN]||"").trim(); if(!nm) continue;
       const ev=EV.find(e=>e.name===nm); if(!ev) continue;
@@ -414,12 +449,50 @@ function rebuild(){
   if(lastQuery) doSearch(true);
 }
 function switchTab(w){
-  ["mine","all","find"].forEach(k=>{
+  ["mine","all","find","more"].forEach(k=>{
     document.getElementById("view-"+k).classList.toggle("hidden",k!==w);
     document.getElementById("tab-"+k).classList.toggle("active",k===w);
   });
-  if(w==="all") renderAll(); if(w==="find") renderFind();
+  if(w==="all") renderAll(); if(w==="find") renderFind(); if(w==="more") renderMore();
   window.scrollTo(0,0);
+}
+
+/* ============ 加分挑戰賽（現場自由參加）+ 餐飲 ============ */
+const GAMES=[
+ {n:"拳擊機",loc:"1F 廊道左側",d:"戴拳套、按鈕後全力一擊，面板顯示拳力分數。",p:"前八名分數者計分"},
+ {n:"飛鏢機",loc:"1F 廊道左側",d:"一人三標射向原盤，愈接近中心分數越高，面板顯示總分。",p:"前八名分數者計分"},
+ {n:"大力士",loc:"1F 廊道左側",d:"舉大槌用力槌下，一人打二槌，總計分顯示於畫面。",p:"前八名分數者計分"},
+ {n:"反應機",loc:"1F 廊道左側",d:"按鈕後棍子隨機落下，約 30 秒內試著接住越多支越好。",p:"單局抓 10 支再獲 3 分"},
+ {n:"桌上足球",loc:"1F 廊道左側",d:"1 人同區/隊、2 隊開啟回合，操作橫桿踢球防守，總計 5 球。",p:"單局獲勝者 1 分"},
+ {n:"UNO STACKO",loc:"1F 場內教室",d:"疊塔後猜拳決定順序，抽取同色或同數字積木，倒塔者敗。",p:"單局獲勝者兩人共計 2 分"},
+ {n:"戰鬥陀螺",loc:"1F 場內教室",d:"自備正版陀螺與發射器（現場備少許），雙人標準盤，先得分勝。",p:"單局獲勝者 1 分"},
+ {n:"我最高",loc:"1F 廊道中央",d:"領一張貼紙寫上資訊，原地起跳把貼紙貼在牆上最高刻度為成績（不可踩線/借助道具）。",p:"前八名分數者計分"},
+ {n:"神應援",loc:"1F 服務處／廊道中央",d:"於 IG／FB／Threads 打卡發文或限動，加官方 #信義45全員上場 #信義集團45週年運動會 及團隊 Hashtag，至 1F 服務台出示畫面加分。",p:"打卡貼文 1 分、限動分享 1 分、貼文超 50 讚 3 分；每人總計最高 5 分"},
+];
+const GAME_PTS="加分挑戰賽計分：名次 1–8 → 8/7/6/5/4/3/2/1 分，另有參加分 1 分。每人限加分一次、每隊參加分上限 30 分。";
+const FOOD=[
+ {cls:"hp",venue:"和平籃球館 2F 飲食區",nav:"heping",
+  rules:["🍱 正餐領取 11:00–13:00：請各領隊代表於時間內至 2 樓攤位統一領取。","🥤 輕食／飲品 11:00–15:00：每位同仁限領三份（輕食飲品合計），憑系統餐食兌換頁面 QR code 兌換。"],
+  lines:["<b>左側輕食</b>：小木屋鬆餅、一之軒、繼光香香雞","<b>左側飲品</b>：五桐號、清心、coco","<b>右側輕食</b>：洪瑞珍、胖老爹、炸雞大獅、Mister Donut、聖瑪莉烘焙、黑丸嫩仙草、凍心炸冰淇淋、手信坊、頂呱呱","<b>右側飲品</b>：龜記、COMEBUY、50嵐"]},
+ {cls:"tk",venue:"國北教田徑場 輕食攤位",nav:"track",
+  rules:["🥤 同仁領取 11:00–15:00：每人限領三份，憑系統餐食兌換頁面 QR code 兌換。","現場設有補水站。"],
+  lines:["<b>輕食</b>：一之軒、小木屋鬆餅、頂呱呱","<b>飲品</b>：清心、龜記、50嵐"]},
+];
+function renderMore(){
+  let h=`<a class="manual" href="https://canva.link/ds79yt1rhhhjz4l" target="_blank" rel="noopener" style="margin:8px 0 0">📖 當天完整說明手冊（規則・地圖・餐飲）</a>`;
+  h+=`<div class="mhead">🎮 加分挑戰賽 <span class="sub">現場自由參加・行程有空就來玩</span></div>`;
+  h+=`<div class="mintro">全部在 <b>和平籃球館 1F</b>，時間 10:30–14:30，隨到隨玩，還能幫團隊加分！${locLink({venue:"heping"})}</div>`;
+  h+=GAMES.map(g=>`<div class="gcard">
+    <div class="gn">${g.n}</div><div class="gloc">📍 ${g.loc}</div>
+    <div class="gd">${g.d}</div><div class="gp">🏅 ${g.p}</div></div>`).join("");
+  h+=`<div class="mintro" style="margin-top:6px">${GAME_PTS}</div>`;
+  h+=`<div class="mhead">🍱 當天餐飲須知</div>`;
+  h+=FOOD.map(f=>`<div class="fdcard ${f.cls}">
+    <div class="ftitle">${f.venue}　${locLink({venue:f.nav})}</div>
+    ${f.rules.map(r=>`<div class="frule">${r}</div>`).join("")}
+    ${f.lines.map(l=>`<div class="fline">${l}</div>`).join("")}</div>`).join("");
+  h+=`<div class="mintro">大安運動中心的球類／技能賽夥伴，餐飲請至和平籃球館 2F 或國北教田徑場攤位領取；詳細位置圖請見上方說明手冊。</div>`;
+  document.getElementById("moreResult").innerHTML=h;
 }
 function locLink(e){ return `<a class="navlink" href="${navUrl(e.venue)}" target="_blank" rel="noopener">🧭 導航</a>`; }
 function rulesHTML(e){
