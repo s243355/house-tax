@@ -142,8 +142,18 @@
     background:linear-gradient(135deg,#0a8a43,#076c34); color:#fff; box-shadow:0 2px 8px rgba(7,108,52,.18); display:none}
   .countdown.show{display:block}
   .countdown .cd-num{font-size:20px; font-variant-numeric:tabular-nums; margin:0 2px}
-  .countdown.live{background:linear-gradient(135deg,#c0392b,#9b2d22)}
+  .countdown.live{background:linear-gradient(135deg,#c0392b,#9b2d22); animation:cdflash 1.1s ease-in-out infinite}
   .countdown.done{background:#5c6b60}
+  .countdown.soon{background:linear-gradient(135deg,#e08a1e,#c26f0f); animation:cdflash 1.3s ease-in-out infinite}
+  @keyframes cdflash{0%,100%{filter:brightness(1)}50%{filter:brightness(1.28)}}
+
+  .marquee{display:none; margin:10px 16px 0; background:#fff4d6; border:1px solid #f0d489; border-radius:12px;
+    overflow:hidden; white-space:nowrap; position:relative; height:38px}
+  .marquee.show{display:block}
+  .mq-track{display:inline-block; white-space:nowrap; padding-left:100%; line-height:38px; font-size:13.5px; font-weight:700;
+    color:#8a5a00; animation:mqscroll linear infinite}
+  .mq-track b{color:#c0392b}
+  @keyframes mqscroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 
   .mintro{background:var(--green-l); border:1px solid #cfe8d8; border-radius:14px; padding:13px 15px; margin:8px 0 14px; font-size:13px; color:#2c5a3e; line-height:1.6}
   .mhead{font-size:15px; font-weight:800; color:var(--ink); margin:18px 0 4px}
@@ -192,6 +202,8 @@
   </header>
 
   <div class="status" id="status">名單來源：載入中…</div>
+
+  <div class="marquee" id="marquee"><div class="mq-track" id="mqTrack"></div></div>
 
   <div class="countdown" id="countdown"></div>
 
@@ -457,6 +469,27 @@ function setStatus(live){ const el=document.getElementById("status");
   if(live){el.className="status live";el.textContent="🟢 名單來源：Google 試算表（即時同步）";}
   else{el.className="status local";el.textContent="📄 名單來源：內建名單（更新 8/21，未連上試算表）";} }
 
+/* ============ 即時公告（跑馬燈）＝ 讀名單分頁 L 欄第一格 ============ */
+async function loadNotice(){
+  try{
+    const res=await fetch(LIVE_URL+((LIVE_URL.indexOf("?")>=0?"&":"?")+"t="+Date.now()),{cache:"no-store"});
+    if(!res.ok) return;
+    const rows=parseCSV(await res.text());
+    let msg="";
+    for(const r of rows){ const v=(r[11]||"").trim(); if(v){ msg=v; break; } }  // 第12欄=L欄
+    setMarquee(msg);
+  }catch(e){}
+}
+function setMarquee(msg){
+  const box=document.getElementById("marquee"), tr=document.getElementById("mqTrack");
+  if(!box||!tr) return;
+  if(!msg){ box.classList.remove("show"); tr.innerHTML=""; return; }
+  const one=`📢 <b>公告</b>　${msg}`;
+  tr.innerHTML=one+"　　　　"+one;
+  tr.style.animationDuration=Math.max(12, Math.min(45, msg.length*0.9))+"s";
+  box.classList.add("show");
+}
+
 /* ============ 即時 ============ */
 function getNow(){
   const p=new URLSearchParams(location.search).get("demo");
@@ -480,7 +513,7 @@ function tickCountdown(){
   const g=getNow();
   if(g.day || (p&&/^\d{1,2}:\d{2}$/.test(p))){
     const mn=g.min;
-    if(mn<540){ el.innerHTML=`⏳ 今天開幕！距 09:00 開幕還有 <span class="cd-num">${540-mn}</span> 分鐘`; }
+    if(mn<540){ el.className="countdown show soon"; el.innerHTML=`⏳ 今天開幕！距 09:00 開幕還有 <span class="cd-num">${540-mn}</span> 分鐘`; }
     else if(mn<930){ el.className="countdown show live"; el.innerHTML=`🔴 賽事進行中 · 現在 ${hhmm(mn)}`; }
     else { el.className="countdown show done"; el.innerHTML=`🎉 今日賽事已結束，辛苦了！`; }
     return;
@@ -494,6 +527,7 @@ function tickCountdown(){
   const days=Math.floor(diff/86400000);
   const hrs=Math.floor(diff%86400000/3600000);
   const mins=Math.floor(diff%3600000/60000);
+  if(days<1) el.className="countdown show soon";
   el.innerHTML = days>0
     ? `🏁 距 9/2 開幕還有 <span class="cd-num">${days}</span> 天 <span class="cd-num">${hrs}</span> 時`
     : `🏁 今天開幕倒數 <span class="cd-num">${hrs}</span> 時 <span class="cd-num">${mins}</span> 分`;
@@ -649,7 +683,7 @@ function extrasHTML(e){
   let s="";
   const mv=EV_MAP[e.name];
   if(mv&&window[mv]) s+=`<details class="rules"><summary>🗺 場地位置圖</summary><div class="rbody"><img class="fdmap" src="${window[mv]}" alt="${e.name} 場地圖"><div class="fdmap-cap">▲ ${V[e.venue].name} 場地位置</div></div></details>`;
-  if(e.name==="大隊創意進場"&&window["IMG_MAP_SEATING"]) s+=`<details class="rules"><summary>🪑 中四區 開幕式觀賞座位</summary><div class="rbody"><img class="fdmap" src="${window["IMG_MAP_SEATING"]}" alt="開幕式座位圖"><div class="fdmap-cap">▲ 中四區在「業18區＋業23區」（圖右側中間處）</div></div></details>`;
+  if(e.name==="大隊創意進場"&&window["IMG_MAP_SEATING"]) s+=`<details class="rules"><summary>🪑 中四區 開幕式觀賞座位</summary><div class="rbody"><img class="fdmap" src="${window["IMG_MAP_SEATING"]}" alt="開幕式座位圖"><div class="fdmap-cap">▲ 中四區在圖右側中間處</div></div></details>`;
   const bv=EV_BRACKET[e.name], fv=EV_FINALS[e.name];
   if(bv&&window[bv]) s+=`<details class="rules"><summary>🏆 晉級流程（通往冠軍）</summary><div class="rbody"><img class="fdmap" src="${window[bv]}" alt="${e.name} 賽程圖"><div class="fdmap-cap">▲ 賽制／對戰表（實際時間依大會廣播）</div></div></details>`;
   else if(fv) s+=`<details class="rules"><summary>🏆 晉級流程（預賽 → 決賽）</summary><div class="rbody"><div class="rrow">${fv}</div><div class="rrow" style="color:var(--muted)">實際時間以大會現場廣播為準。</div></div></details>`;
@@ -776,12 +810,13 @@ function renderFind(){
 /* ============ 啟動 ============ */
 setStatus(false); rebuild(); tickClock(); tickCountdown();
 (function(){ const n=loadName(); if(n){ document.getElementById("nameInput").value=n; doSearch(); } })();
-loadLive();
+loadLive(); loadNotice();
 setInterval(()=>{ tickClock(); tickCountdown();
   const now=getNow();
   if(now.day){ if(lastQuery&&!document.getElementById("view-mine").classList.contains("hidden")) doSearch(true);
     if(!document.getElementById("view-all").classList.contains("hidden")) renderAll(); }
 },30000);
+setInterval(loadNotice, 60000);
 </script>
 </body>
 </html>
