@@ -31,7 +31,7 @@
   .status.live{color:var(--green-d)} .status.local{color:var(--tight)}
 
   .tabs{display:flex; gap:6px; padding:12px 14px 4px; position:sticky; top:78px; background:var(--bg); z-index:15}
-  .tab{flex:1; text-align:center; padding:10px 6px; border-radius:12px; font-weight:700; font-size:13.5px;
+  .tab{flex:1; text-align:center; padding:10px 4px; border-radius:12px; font-weight:700; font-size:12.5px; letter-spacing:-.3px; white-space:nowrap;
     background:#fff; color:var(--muted); border:1px solid var(--line); cursor:pointer; transition:.15s; user-select:none}
   .tab.active{background:var(--green); color:#fff; border-color:var(--green)}
 
@@ -213,7 +213,7 @@
     <div class="tab active" id="tab-mine" onclick="switchTab('mine')">我的賽程</div>
     <div class="tab" id="tab-all" onclick="switchTab('all')">全部流程</div>
     <div class="tab" id="tab-find" onclick="switchTab('find')">窗口找人</div>
-    <div class="tab" id="tab-more" onclick="switchTab('more')">加分・餐飲</div>
+    <div class="tab" id="tab-more" onclick="switchTab('more')">加分・餐飲・接駁</div>
   </div>
 
   <!-- 我的賽程 -->
@@ -647,6 +647,17 @@ function renderMore(){
     ${f.lines.map(l=>`<div class="fline">${l}</div>`).join("")}
     ${f.img&&window[f.img]?`<img class="fdmap" src="${window[f.img]}" alt="${f.venue} 位置圖"><div class="fdmap-cap">▲ ${f.venue} 攤位位置圖</div>`:""}</div>`).join("");
   h+=`<div class="mintro">大安運動中心的球類／技能賽夥伴，餐飲請至和平籃球館 2F 或國北教田徑場攤位領取；詳細位置圖請見上方說明手冊。</div>`;
+  h+=`<div class="mhead">🚌 接駁車資訊</div>`;
+  h+=`<div class="fdcard hp">
+    <div class="ftitle">去程（前往會場）</div>
+    <div class="fline"><b>乘車地點</b>：台北車站 1F 東三門　<a class="navlink" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent("台北車站 東三門")}" target="_blank" rel="noopener">🧭 導航</a></div>
+    <div class="fline">現場有工作人員舉牌指引。</div>
+  </div>
+  <div class="fdcard tk">
+    <div class="ftitle">回程（賦歸）</div>
+    <div class="fline"><b>乘車地點</b>：和平籃球館正門口　${locLink({venue:"heping"})}</div>
+    <div class="frule">🕔 發車時間：17:10 起，坐滿一車即發車；最後一班預計 17:50 發車。</div>
+  </div>`;
   document.getElementById("moreResult").innerHTML=h;
 }
 function locLink(e){ return `<a class="navlink" href="${navUrl(e.venue)}" target="_blank" rel="noopener">🧭 導航</a>`; }
