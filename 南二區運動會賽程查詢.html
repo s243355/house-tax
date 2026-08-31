@@ -301,7 +301,7 @@ var IMG_BR_TUGWAR="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBg
 const SHEET_ID="1ZLVDqudTmSo10HXRlzT4orBgM29-qPtITBRxW2Rojyw";
 const SHEET_GID="1714129761";
 /* 已「發布到網路→CSV」的話，把下一行換成 pub 網址最穩。 */
-const LIVE_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1JBB9XC8KYiYqooVosdIdw0tXlNFrx0ywPZfLOtREC5ZYbLsC5sqqWxokPxZflM9bagR4aaMoIwye/pub?gid=0&single=true&output=csv";
+const LIVE_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1JBB9XC8KYiYqooVosdIdw0tXlNFrx0ywPZfLOtREC5ZYbLsC5sqqWxokPxZflM9bagR4aaMoIwye/pub?output=csv";
 const EVENT_DATE="2026-09-02";
 
 /* ============ 場館（含地址與導航）============ */
@@ -332,8 +332,10 @@ const EV=[
   detail:"11:30 比賽",need:"1",note:"",people:[{n:"陳子祿",s:"安平"}]},
  {t:"11:50",arr:710,end:715,name:"穩定性／四平八穩",store:"安南安中",venue:"heping",loc:"和平籃球館 1樓",
   detail:"11:50–11:55（賽前10分報到）積分賽",need:"6",note:"",people:[{n:"王仲良",s:"安南安中"},{n:"周世國",s:"安南安中"},{n:"陳政光",s:"安南安中"},{n:"王漢翔",s:"安南安中"},{n:"張家福",s:"安南安中"},{n:"楊雅晴",s:"安平"}]},
- {t:"12:00",arr:720,end:735,name:"籃球（5v5）",store:"",venue:"daan",loc:"大安運動中心 3F 籃球場",
-  detail:"12:00 比賽（賽程 10:30–14:50）",need:"10",note:"正式5／替補5",people:[]},
+ {t:"12:00",arr:720,end:730,name:"傳說對決（四強）",store:"林家正",venue:"heping",loc:"和平籃球館 主舞台",
+  detail:"12:00（賽前10分報到）",need:"7",note:"",people:[]},
+ {t:"13:00",arr:780,end:790,name:"傳說對決（冠軍賽）",store:"林家正",venue:"heping",loc:"和平籃球館 主舞台",
+  detail:"13:00（賽前10分報到）",need:"7",note:"",people:[]},
  {t:"12:10",arr:730,end:745,name:"匹克球（雙打）",store:"西門水交社",venue:"daan",loc:"大安運動中心 3F 匹克球場",
   detail:"12:10 比賽（前30分檢錄）",need:"2",note:"",people:[{n:"戴伯勳",s:"西門水交社"},{n:"林佳奇",s:"西門水交社"}]},
  {t:"12:12",arr:732,end:747,name:"100公尺（男）",store:"安平永華",venue:"track",loc:"國北教 田徑場",
@@ -388,9 +390,10 @@ const RULES={
    note:"報到時領取團隊規格杯（12 杯，排列左3、中6、右3）。",pts:PTS_FUN},
  "續航力／陸上行舟":{team:"5人一隊",scoring:"限時 3 分鐘計時制，完成越短越好，超時即結束",
    list:["全隊跨騎在「陸上龍舟」上，雙手抓緊兩側把手","聽哨音向前奔跑，繞折返點標誌後返回起點，全程雙腳協同出力","全隊同步前進至終點並折返完成","完成時間最短者勝；未完成以推進距離排名"],pts:PTS_FUN},
- "籃球（5v5）":{team:"正式5＋替補5（10人）",scoring:"上下半場各 10 分鐘、不停錶（僅暫停／上半場最後 24 秒／下半場決勝期 2 分鐘停錶）",
-   list:["中場休息 3 分鐘","正規時間平手，每隊派 3 人罰球 PK 延長","女性選手於禁區內出手、男生若有防守行為，直接判該員得 2 分","個犯 4 次離場，每節團犯第 5 次起加罰"],
-   note:"各區僅報一隊；球類皆不分男女、不限男女比例。",pts:PTS_BALL},
+ "傳說對決（四強）":{team:"每隊 7 人（遊戲對決類）",scoring:"手機遊戲對戰，單淘汰晉級",
+   list:["和平籃球館主舞台進行","賽前 10 分鐘完成報到","遵守裁判及工作人員指示，爭議以裁判判定為準"],pts:"依大會遊戲對決類計分辦法"},
+ "傳說對決（冠軍賽）":{team:"每隊 7 人（遊戲對決類）",scoring:"手機遊戲對戰，冠軍賽",
+   list:["和平籃球館主舞台進行","賽前 10 分鐘完成報到","遵守裁判及工作人員指示，爭議以裁判判定為準"],pts:"依大會遊戲對決類計分辦法"},
  "反應力／大繩跳繩":{team:"10人一隊（2 人搖繩、8 人跳）",scoring:"限時 3 分鐘計次制，時間內成功次數越多者勝",
    list:["成功跳過總次數計分，累計最高者勝","踩繩或勾繩致繩停，該下不算、秒數不停，須重新起繩再計"],
    note:"使用約 5 公尺專用塑膠耐磨繩。",pts:PTS_FUN},
@@ -420,7 +423,7 @@ function parseRoster(cell, fb){
   cell=(cell||"").trim();
   if(!cell) return {forfeit:false,people:[]};
   if(/棄權/.test(cell)) return {forfeit:true,people:[]};
-  const re=new RegExp("("+STORES.join("|")+")\\s*[：:]","g");
+  const re=/([\u4e00-\u9fa5A-Za-z0-9]{2,6})\s*[：:]/g;
   let m, idxs=[];
   while((m=re.exec(cell))) idxs.push({store:m[1], after:re.lastIndex, start:m.index});
   const people=[];
@@ -563,7 +566,7 @@ function rebuild(){
     EV.map((e,i)=>`<option value="${i}">${e.t}　${e.name}${e.forfeit?"（棄權）":""}</option>`).join("");
   sel.value=cur;
   // 分店下拉
-  const stores=[...new Set(EV.flatMap(e=>e.people.map(p=>p.s)).filter(s=>s&&s!=="中三區"))].sort();
+  const stores=[...new Set(EV.flatMap(e=>e.people.map(p=>p.s)).filter(s=>s&&s!=="中三區"&&s!=="南二區"))].sort();
   const ss=document.getElementById("storeSelect"); const scur=ss.value;
   ss.innerHTML='<option value="">— 選擇分店 —</option>'+stores.map(s=>`<option value="${s}">${s}</option>`).join("");
   ss.value=scur;
@@ -680,11 +683,11 @@ function rulesHTML(e){
 const EV_MAP={
  "大隊創意進場":"IMG_MAP_ENTRANCE","大隊拔河":"IMG_MAP_TUGWAR",
  "協調力／多人多足":"IMG_MAP_FUN","專注力／疊杯接力":"IMG_MAP_FUN","續航力／陸上行舟":"IMG_MAP_FUN","反應力／大繩跳繩":"IMG_MAP_FUN","穩定性／四平八穩":"IMG_MAP_FUN",
- "羽球（雙打）":"IMG_MAP_DAAN3","匹克球（雙打）":"IMG_MAP_DAAN3","籃球（5v5）":"IMG_MAP_DAAN3",
+ "羽球（雙打）":"IMG_MAP_DAAN3","匹克球（雙打）":"IMG_MAP_DAAN3",
  "桌球（單打）":"IMG_MAP_DAAN2TT","肌力練習曲／鋼鐵重力戰":"IMG_MAP_DAAN2SK","活力有氧操":"IMG_MAP_DAAN2SK","睡眠比賽":"IMG_MAP_DAAN2SK",
  "大隊接力 1200公尺":"IMG_MAP_TRACK","100公尺（男）":"IMG_MAP_TRACK","100公尺（女）":"IMG_MAP_TRACK","200公尺（男）":"IMG_MAP_TRACK","200公尺（女）":"IMG_MAP_TRACK","400公尺（女）":"IMG_MAP_TRACK","400公尺（男）":"IMG_MAP_TRACK",
 };
-const EV_BRACKET={"籃球（5v5）":"IMG_BR_BASKET","羽球（雙打）":"IMG_BR_BADMINTON","桌球（單打）":"IMG_BR_TT","大隊拔河":"IMG_BR_TUGWAR"};
+const EV_BRACKET={"羽球（雙打）":"IMG_BR_BADMINTON","桌球（單打）":"IMG_BR_TT","大隊拔河":"IMG_BR_TUGWAR"};
 const EV_FINALS={
  "大隊接力 1200公尺":"預賽 10:30–11:34（7 組滾動）→ 決賽 11:42–11:52；各道最快進決賽。",
  "100公尺（男）":"預賽 12:00（第 1–7 組）→ 決賽 13:33。",
