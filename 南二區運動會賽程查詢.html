@@ -314,48 +314,50 @@ const navUrl=v=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIC
 
 /* ============ 內建名單（後備＋時間骨架）============ */
 const EV=[
- {t:"09:00",arr:540,end:570,name:"大隊創意進場",store:"復興",venue:"heping",loc:"和平籃球館 1F",
+ {t:"9:00",arr:540,end:570,name:"大隊創意進場",store:"安平永華",venue:"heping",loc:"和平籃球館 1F",
   detail:"進場 09:00–09:30；投票 10:30–14:00（08:30 集合）",need:"10",note:"10人（黑4選2）",people:[{n:"張辰語",s:"安平永華"},{n:"許家豪",s:"安平永華"},{n:"張斳恩",s:"安平永華"},{n:"黃凱揚",s:"安平永華"},{n:"羅仁能",s:"安平永華"},{n:"邵柏翔",s:"安平永華"},{n:"陳子祿",s:"安平"},{n:"余建倫",s:"安平"},{n:"謝旻璁",s:"安平"},{n:"林惠祥",s:"安平"}]},
- {t:"10:20",arr:620,end:635,name:"協調力／多人多足",store:"中正",venue:"heping",loc:"和平籃球館 1樓",
-  detail:"10:30–10:35（賽前10分報到）積分賽",need:"8",note:"",people:[{n:"李進富",s:"台南民生"},{n:"張耘愷",s:"台南民生"},{n:"呂映嬋",s:"台南民生"},{n:"葉詠婕",s:"安南海佃"},{n:"殷芸葶",s:"安南海佃"},{n:"胡羽妃",s:"安南海佃"},{n:"盧冠銘",s:"安南海佃"},{n:"鍾尚哲",s:"安南海佃"}]},
- {t:"10:30",arr:630,end:690,name:"羽球（雙打）",store:"大興",venue:"daan",loc:"大安運動中心 3F 羽球場",
-  detail:"10:30 比賽",need:"2",note:"",people:[{n:"陳泓文",s:"安南海佃"},{n:"陳政文",s:"西門水交社"}]},
- {t:"10:40",arr:640,end:695,name:"大隊接力 1200公尺",store:"心興",venue:"track",loc:"國北教 田徑場",
-  detail:"11:10 比賽（前30分檢錄／前15分截止）",need:"12",note:"5男5女",people:[{n:"劉立廷",s:"海安文元"},{n:"江仁傑",s:"安平"},{n:"張斳恩",s:"安平永華"},{n:"洪春月",s:"安平永華"},{n:"江品郁",s:"市府華平"},{n:"鄭珈旻",s:"台南民生"},{n:"匡鴻誌",s:"台南公園"},{n:"鄧喬薰",s:"台南公園"},{n:"曾湘鈞",s:"西門水交社"},{n:"方力羚",s:"開元"},{n:"林宛儀",s:"開元"},{n:"蔡孟珊",s:"安南安中"}]},
- {t:"10:40",arr:640,end:700,name:"匹克球（雙打）",store:"大興",venue:"daan",loc:"大安運動中心 3F 匹克球場",
-  detail:"11:10 比賽（前30分檢錄）",need:"2",note:"",people:[{n:"戴伯勳",s:"西門水交社"},{n:"林佳奇",s:"西門水交社"}]},
- {t:"10:50",arr:650,end:710,name:"桌球（單打）",store:"大興",venue:"daan",loc:"大安運動中心 2F 桌球室",
-  detail:"10:50 比賽",need:"1",note:"",people:[{n:"陳子祿",s:"安平"}]},
- {t:"11:15",arr:675,end:690,name:"專注力／疊杯接力",store:"彰美",venue:"heping",loc:"和平籃球館 1樓",
-  detail:"11:25–11:30（賽前10分報到）積分賽",need:"5",note:"",people:[{n:"謝欣怡",s:"台南公園"},{n:"黃詠綺",s:"台南公園"},{n:"劉昀妮",s:"台南公園"},{n:"陳彥錚",s:"市府華平"},{n:"趙翊彣",s:"市府華平"}]},
- {t:"11:40",arr:700,end:715,name:"續航力／陸上行舟",store:"國光",venue:"heping",loc:"和平籃球館 1樓",
-  detail:"11:50–11:55（賽前10分報到）積分賽",need:"5",note:"",people:[{n:"關宜寧",s:"開元"},{n:"許家豪",s:"安平永華"},{n:"邵柏翔",s:"安平永華"},{n:"李佳樺",s:"市府華平"},{n:"余建倫",s:"安平"}]},
- {t:"11:47",arr:707,end:722,name:"100公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"11:47 前報到（第4組）",need:"1",note:"",people:[{n:"張斳恩",s:"安平永華"}]},
- {t:"12:00",arr:720,end:780,name:"籃球（5v5）",store:"大園",venue:"daan",loc:"大安運動中心 3F 籃球場",
+ {t:"10:30",arr:630,end:635,name:"活力有氧操",store:"安平永華",venue:"daan",loc:"大安運動中心 2F 韻律教室2",
+  detail:"10:30–10:35（賽前10分報到）",need:"20",note:"",people:[{n:"黃琡珺",s:"金華"},{n:"朱語熙",s:"金華"},{n:"陳宇承",s:"金華"},{n:"楊子璇",s:"金華"},{n:"陳俐嘉",s:"開元"},{n:"朱芳儀",s:"開元"},{n:"黃恬盷",s:"開元"},{n:"楊巧倫",s:"安平永華"},{n:"張瑜安",s:"安平永華"},{n:"蔡孟珊",s:"安南安中"},{n:"陳美娟",s:"安南安中"},{n:"郭怡珊",s:"安南安中"},{n:"鄭雯鎂",s:"市府華平"},{n:"郭韶恬",s:"市府華平"},{n:"董平桂",s:"台南民生"},{n:"李佳靜",s:"台南民生"},{n:"陳佳樺",s:"安平"},{n:"林筱耘",s:"海安文元"},{n:"喻婕安",s:"台南公園"},{n:"胡羽妃",s:"安南海佃"}]},
+ {t:"10:45",arr:645,end:660,name:"大隊接力 1200公尺",store:"",venue:"track",loc:"國北教 田徑場",
+  detail:"10:45 比賽（前30分檢錄／前15分截止）",need:"12",note:"5男5女",people:[{n:"劉立廷",s:"海安文元"},{n:"江仁傑",s:"安平"},{n:"張斳恩",s:"安平永華"},{n:"洪春月",s:"安平永華"},{n:"江品郁",s:"市府華平"},{n:"鄭珈旻",s:"台南民生"},{n:"匡鴻誌",s:"台南公園"},{n:"鄧喬薰",s:"台南公園"},{n:"曾湘鈞",s:"西門水交社"},{n:"方力羚",s:"開元"},{n:"林宛儀",s:"開元"},{n:"蔡孟珊",s:"安南安中"}]},
+ {t:"10:50",arr:650,end:665,name:"羽球（雙打）",store:"",venue:"daan",loc:"大安運動中心 3F 羽球場",
+  detail:"10:50 比賽",need:"2",note:"",people:[{n:"陳泓文",s:"安南海佃"},{n:"陳政文",s:"西門水交社"}]},
+ {t:"10:51",arr:651,end:654,name:"肌力練習曲／鋼鐵重力戰",store:"安平",venue:"daan",loc:"大安運動中心 2F 多功能教室",
+  detail:"10:51–10:54（賽前10分報到）",need:"10",note:"",people:[{n:"謝旻璁",s:"安平"},{n:"簡劭存",s:"安平"},{n:"江仁傑",s:"安平"},{n:"徐竟堯",s:"市府華平"},{n:"郭韋志",s:"市府華平"},{n:"江品郁",s:"市府華平"},{n:"陳正諴",s:"市府華平"},{n:"張榮",s:"台南民生"},{n:"陳昱傑",s:"海安文元"},{n:"周柏宇",s:"海安文元"}]},
+ {t:"11:05",arr:665,end:670,name:"戰繩巔峰對決",store:"安平店",venue:"daan",loc:"大安運動中心 2F 多功能教室",
+  detail:"11:05-11:10（賽前10分報到）",need:"5",note:"",people:[{n:"陳昱傑",s:"海安文元"},{n:"龔如堯",s:"海安文元"},{n:"周柏宇",s:"海安文元"},{n:"謝旻璁",s:"安平店"},{n:"簡劭存",s:"安平店"}]},
+ {t:"11:25",arr:685,end:690,name:"反應力／大繩跳繩",store:"安平永華",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"11:25–11:30（賽前10分報到）積分賽",need:"10",note:"",people:[{n:"潘念筠",s:"海安文元"},{n:"蔡佩君",s:"安平"},{n:"林宛儀",s:"開元"},{n:"傅怡翔",s:"開元"},{n:"賴居旺",s:"開元"},{n:"洪春月",s:"安平永華"},{n:"王湘宜",s:"安平永華"},{n:"張辰語",s:"安平永華"},{n:"羅仁能",s:"安平永華"},{n:"陳姿伶",s:"安平永華"}]},
+ {t:"11:30",arr:690,end:705,name:"桌球（單打）",store:"",venue:"daan",loc:"大安運動中心 2F 桌球室",
+  detail:"11:30 比賽",need:"1",note:"",people:[{n:"陳子祿",s:"安平"}]},
+ {t:"11:50",arr:710,end:715,name:"穩定性／四平八穩",store:"安南安中",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"11:50–11:55（賽前10分報到）積分賽",need:"6",note:"",people:[{n:"王仲良",s:"安南安中"},{n:"周世國",s:"安南安中"},{n:"陳政光",s:"安南安中"},{n:"王漢翔",s:"安南安中"},{n:"張家福",s:"安南安中"},{n:"楊雅晴",s:"安平"}]},
+ {t:"12:00",arr:720,end:735,name:"籃球（5v5）",store:"",venue:"daan",loc:"大安運動中心 3F 籃球場",
   detail:"12:00 比賽（賽程 10:30–14:50）",need:"10",note:"正式5／替補5",people:[]},
- {t:"12:05",arr:725,end:740,name:"100公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"12:05 前報到（第3組）",need:"1",note:"",people:[{n:"賴怡心",s:"開元"}]},
- {t:"12:10",arr:730,end:745,name:"反應力／大繩跳繩",store:"彰化",venue:"heping",loc:"和平籃球館 1樓",
-  detail:"12:20–12:25（賽前10分報到）積分賽",need:"10",note:"",people:[{n:"潘念筠",s:"海安文元"},{n:"蔡佩君",s:"安平"},{n:"林宛儀",s:"開元"},{n:"傅怡翔",s:"開元"},{n:"賴居旺",s:"開元"},{n:"洪春月",s:"市府華平"},{n:"王湘宜",s:"市府華平"},{n:"張辰語",s:"市府華平"},{n:"羅仁能",s:"市府華平"},{n:"陳姿伶",s:"市府華平"}]},
- {t:"12:35",arr:755,end:770,name:"穩定性／四平八穩",store:"大芳",venue:"heping",loc:"和平籃球館 1樓",
-  detail:"12:45–12:50（賽前10分報到）積分賽",need:"6",note:"",people:[{n:"王仲良",s:"安南安中"},{n:"周世國",s:"安南安中"},{n:"陳政光",s:"安南安中"},{n:"王漢翔",s:"安南安中"},{n:"張家福",s:"安南安中"},{n:"楊雅晴",s:"安平"}]},
- {t:"12:47",arr:767,end:782,name:"200公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"12:47 前報到（第7組）",need:"1",note:"",people:[{n:"林惠祥",s:"安平"}]},
- {t:"13:02",arr:782,end:797,name:"200公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:02 前報到（第4組）",need:"1",note:"",people:[{n:"董平桂",s:"台南民生"}]},
- {t:"13:20",arr:800,end:815,name:"肌力練習曲／鋼鐵重力戰",store:"大興",venue:"daan",loc:"大安運動中心 2F 多功能教室",
-  detail:"13:30–13:35（賽前10分報到）",need:"10",note:"",people:[{n:"謝旻璁",s:"安平"},{n:"簡劭存",s:"安平"},{n:"江仁傑",s:"安平"},{n:"徐竟堯",s:"市府華平"},{n:"郭韋志",s:"市府華平"},{n:"江品郁",s:"市府華平"},{n:"陳正諴",s:"市府華平"},{n:"張榮",s:"台南民生"},{n:"陳昱傑",s:"海安文元"},{n:"周柏宇",s:"海安文元"}]},
- {t:"13:31",arr:811,end:826,name:"400公尺（女）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:31 前報到（第3組）",need:"1",note:"",people:[{n:"方力羚",s:"開元"}]},
- {t:"13:30",arr:810,end:860,name:"大隊拔河",store:"高工",venue:"heping",loc:"和平籃球館 1F",
+ {t:"12:10",arr:730,end:745,name:"匹克球（雙打）",store:"西門水交社",venue:"daan",loc:"大安運動中心 3F 匹克球場",
+  detail:"12:10 比賽（前30分檢錄）",need:"2",note:"",people:[{n:"戴伯勳",s:"西門水交社"},{n:"林佳奇",s:"西門水交社"}]},
+ {t:"12:12",arr:732,end:747,name:"100公尺（男）",store:"安平永華",venue:"track",loc:"國北教 田徑場",
+  detail:"11:57 前報到（第5組）",need:"1",note:"",people:[{n:"張斳恩",s:"安平永華"}]},
+ {t:"12:36",arr:756,end:771,name:"100公尺（女）",store:"開元",venue:"track",loc:"國北教 田徑場",
+  detail:"12:21 前報到（第6組）",need:"1",note:"",people:[{n:"賴怡心",s:"開元"}]},
+ {t:"12:45",arr:765,end:770,name:"專注力／疊杯接力",store:"",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"12:45–12:50（賽前10分報到）積分賽",need:"5",note:"",people:[{n:"謝欣怡",s:"台南公園"},{n:"黃詠綺",s:"台南公園"},{n:"劉昀妮",s:"台南公園"},{n:"陳彥錚",s:"市府華平"},{n:"趙翊彣",s:"市府華平"}]},
+ {t:"13:00",arr:780,end:795,name:"200公尺（男）",store:"安平",venue:"track",loc:"國北教 田徑場",
+  detail:"12:45 前報到（第7組）",need:"1",note:"",people:[{n:"林惠祥",s:"安平"}]},
+ {t:"13:15",arr:795,end:800,name:"協調力／多人多足",store:"",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"13:15–13:20（賽前10分報到）積分賽",need:"8",note:"",people:[{n:"李進富",s:"台南民生"},{n:"張耘愷",s:"台南民生"},{n:"呂映嬋",s:"台南民生"},{n:"葉詠婕",s:"安南海佃"},{n:"殷芸葶",s:"安南海佃"},{n:"胡羽妃",s:"安南海佃"},{n:"盧冠銘",s:"安南海佃"},{n:"鍾尚哲",s:"安南海佃"}]},
+ {t:"13:18",arr:798,end:813,name:"200公尺（女）",store:"台南民生",venue:"track",loc:"國北教 田徑場",
+  detail:"13:03 前報到（第3組）",need:"1",note:"",people:[{n:"董平桂",s:"台南民生"}]},
+ {t:"13:30",arr:810,end:825,name:"大隊拔河",store:"安南海佃",venue:"heping",loc:"和平籃球館 1F",
   detail:"14:04 比賽（前30分檢錄／前15分截止）",need:"10",note:"5男5女，候補2男2女",people:[{n:"林于翔",s:"台南民生"},{n:"郭顓宇",s:"安南海佃"},{n:"戴羽萱",s:"安南海佃"},{n:"林睿翔",s:"安南海佃"},{n:"陳泓文",s:"安南海佃"},{n:"王道涵",s:"海安文元"},{n:"施志翰",s:"海安文元"},{n:"林筱耘",s:"海安文元"},{n:"潘念筠",s:"海安文元"},{n:"李致毅",s:"金華"},{n:"黃亦晨",s:"台南公園"},{n:"楊沛珊",s:"西門水交社"},{n:"曾湘鈞",s:"西門水交社"},{n:"周于禎",s:"西門水交社"}]},
- {t:"13:40",arr:820,end:835,name:"活力有氧操",store:"公園",venue:"daan",loc:"大安運動中心 2F 韻律教室2",
-  detail:"13:50–13:55（賽前10分報到）",need:"20",note:"",people:[{n:"黃琡珺",s:"金華"},{n:"朱語熙",s:"金華"},{n:"陳宇承",s:"金華"},{n:"楊子璇",s:"金華"},{n:"陳俐嘉",s:"開元"},{n:"朱芳儀",s:"開元"},{n:"黃恬盷",s:"開元"},{n:"楊巧倫",s:"安平永華"},{n:"張瑜安",s:"安平永華"},{n:"蔡孟珊",s:"安南安中"},{n:"陳美娟",s:"安南安中"},{n:"郭怡珊",s:"安南安中"},{n:"鄭雯鎂",s:"市府華平"},{n:"郭韶恬",s:"市府華平"},{n:"董平桂",s:"台南民生"},{n:"李佳靜",s:"台南民生"},{n:"陳佳樺",s:"安平"},{n:"林筱耘",s:"海安文元"},{n:"喻婕安",s:"台南公園"},{n:"胡羽妃",s:"安南海佃"}]},
- {t:"13:51",arr:831,end:846,name:"400公尺（男）",store:"大國",venue:"track",loc:"國北教 田徑場",
-  detail:"13:51 前報到（第3組）",need:"1",note:"",people:[{n:"劉立廷",s:"海安文元"}]},
- {t:"10:30",arr:630,end:650,name:"睡眠比賽",store:"公園",venue:"daan",loc:"大安運動中心 2F 社區教室",
-  detail:"10:30 起分梯次進行（每場 20 分，含說明）；每隊最多 1 人",need:"1",note:"須預先報名",people:[]},
+ {t:"13:40",arr:820,end:825,name:"續航力／陸上行舟",store:"",venue:"heping",loc:"和平籃球館 1樓",
+  detail:"13:40–13:45（賽前10分報到）積分賽",need:"5",note:"",people:[{n:"關宜寧",s:"開元"},{n:"許家豪",s:"安平永華"},{n:"邵柏翔",s:"安平永華"},{n:"李佳樺",s:"市府華平"},{n:"余建倫",s:"安平"}]},
+ {t:"13:47",arr:827,end:842,name:"400公尺（女）",store:"開元",venue:"track",loc:"國北教 田徑場",
+  detail:"13:32 前報到（第2組）",need:"1",note:"",people:[{n:"方力羚",s:"開元"}]},
+ {t:"14:07",arr:847,end:862,name:"400公尺（男）",store:"海安文元",venue:"track",loc:"國北教 田徑場",
+  detail:"13:52前報到（第2組)",need:"1",note:"",people:[{n:"劉立廷",s:"海安文元"}]},
+ {t:"15:07",arr:907,end:922,name:"400公尺（男）",store:"海安文元",venue:"track",loc:"國北教 田徑場",
+  detail:"13:52前報到（第2組)",need:"1",note:"",people:[{n:"劉立廷",s:"海安文元"}]},
 ];
 EV.sort((a,b)=>a.arr-b.arr);
 
@@ -413,7 +415,7 @@ EV.forEach(e=>{ e.rules = RULES[e.name] || (/公尺/.test(e.name)?RULES._track:n
 const same=(a,b)=> a===b || (a.length>=2&&b.length>=2&&(a.indexOf(b)>=0||b.indexOf(a)>=0));
 
 /* ============ 名單解析（自動更新用）============ */
-const STORES=["安平永華","安南海佃","安南安中","台南民生","台南公園","西門水交社","市府華平","海安文元","開元","金華","安平"];
+const STORES=["安平永華","安平店","安南海佃","安南安中","台南民生","台南公園","西門水交社","市府華平","海安文元","開元","金華","安平"];
 function parseRoster(cell, fb){
   cell=(cell||"").trim();
   if(!cell) return {forfeit:false,people:[]};
@@ -437,24 +439,32 @@ function parseCSV(t){const rows=[];let row=[],f="",q=false;
     else{ if(c==='"')q=true; else if(c===","){row.push(f);f="";}
       else if(c==="\n"){row.push(f);rows.push(row);row=[];f="";} else if(c!=="\r")f+=c; } }
   if(f!==""||row.length){row.push(f);rows.push(row);} return rows;}
+function timeToMin(s){ const m=(s||"").match(/(\d{1,2})[:：](\d{2})/); return m?(+m[1])*60+(+m[2]):null; }
+function venueOf(loc){ loc=loc||""; if(/和平/.test(loc))return"heping"; if(/國北教|田徑/.test(loc))return"track"; if(/大安/.test(loc))return"daan"; return"daan"; }
+function endOf(detail,arr){ const it=(detail||"").matchAll(/(\d{1,2})[:：](\d{2})\s*[–—-]\s*(\d{1,2})[:：](\d{2})/g); for(const r of it){ const s=(+r[1])*60+(+r[2]); if(Math.abs(s-arr)<=4) return (+r[3])*60+(+r[4]); } return arr+15; }
 async function loadLive(){
   try{
     const res=await fetch(LIVE_URL,{cache:"no-store"}); if(!res.ok) throw 0;
     const rows=parseCSV(await res.text());
     const h=rows.findIndex(r=>r.some(c=>c&&c.indexOf("排序時間")>=0)); if(h<0) throw 0;
     const head=rows[h].map(x=>(x||"").trim());
-    const tIdx=head.findIndex(x=>x.indexOf("排序時間")>=0);
-    let cF=head.findIndex(x=>x.indexOf("最終")>=0);                 // 標題有「最終」就直接用
-    if(cF<0){ const co=head.findIndex(x=>x==="參加分店與人名"); cF=co>0?co-1:-1; } // 否則＝原始名單欄左一欄
-    const cN=tIdx+1;      // 報名項目
-    const cNeed=cF-2;     // 需求
-    if(cN<1||cF<0) throw 0;
-    let n=0;
-    for(let r=h+1;r<rows.length;r++){ const nm=(rows[r][cN]||"").trim(); if(!nm) continue;
-      const ev=EV.find(e=>e.name===nm); if(!ev) continue;
-      const pr=parseRoster(rows[r][cF],ev.store); ev.people=pr.people; ev.forfeit=pr.forfeit;
-      if(cNeed>=0&&(rows[r][cNeed]||"").trim()) ev.need=rows[r][cNeed].trim(); n++; }
-    if(!n) throw 0; setStatus(true); rebuild();
+    const idx=k=>head.findIndex(x=>x.indexOf(k)>=0);
+    const cT=idx("排序時間"),cNm=idx("報名項目"),cSt=idx("負責分店"),cD=idx("詳細時間"),cL=idx("地點"),cNd=idx("需求"),cNo=idx("備註"),cF=idx("最終");
+    if(cT<0||cNm<0||cF<0) throw 0;
+    const nEV=[];
+    for(let r=h+1;r<rows.length;r++){
+      const nm=(rows[r][cNm]||"").trim(); if(!nm) continue;
+      const t=(rows[r][cT]||"").trim(); const arr=timeToMin(t); if(arr==null) continue;
+      const detail=(rows[r][cD]||"").trim(), loc=(rows[r][cL]||"").trim(), store=(rows[r][cSt]||"").trim();
+      const pr=parseRoster(rows[r][cF],store);
+      nEV.push({t,arr,end:endOf(detail,arr),name:nm,store,venue:venueOf(loc),loc,detail,
+        need:(cNd>=0?(rows[r][cNd]||"").trim():""),note:(cNo>=0?(rows[r][cNo]||"").trim():""),forfeit:pr.forfeit,people:pr.people});
+    }
+    if(!nEV.length) throw 0;
+    nEV.sort((a,b)=>a.arr-b.arr);
+    nEV.forEach(e=>{ e.rules = RULES[e.name] || (/公尺/.test(e.name)?RULES._track:null); });
+    EV.length=0; nEV.forEach(e=>EV.push(e));
+    setStatus(true); rebuild();
   }catch(e){ setStatus(false); }
 }
 function setStatus(live){ const el=document.getElementById("status");
