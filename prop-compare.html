@@ -149,7 +149,7 @@ table.cmp tbody tr.best:hover{background:#e0f0e8;}
 <header>
   <a class="logo" href="/" aria-label="回到首頁">
     <div class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="9" height="9"/><rect x="13" y="2" width="9" height="9" opacity=".5"/><rect x="2" y="13" width="9" height="9" opacity=".5"/><rect x="13" y="13" width="9" height="9"/></svg></div>
-    <div class="logo-name">信義房屋<small>文心高工店・祐承店長</small></div>
+    <div class="logo-name">信義房屋<small id="brand-sub">文心高工店・祐承店長</small></div>
   </a>
   <h1 class="page-h">物件比較分析報告</h1>
 </header>
@@ -231,6 +231,30 @@ var reportShown = false;
 var restoreSortFocus = false;
 var DEFAULT_AGENT = "祐承店長";
 var DEFAULT_PHONE = "0933-317-625";
+var DEFAULT_STORE = "文心高工店";
+var brandStore = DEFAULT_STORE;
+var parsedAgent = "";
+
+function updateBrand() {
+  var agentEl = document.getElementById("agent");
+  var agent = (agentEl && agentEl.value.trim()) || DEFAULT_AGENT;
+  var sub = document.getElementById("brand-sub");
+  if (sub) sub.textContent = (brandStore || DEFAULT_STORE) + "・" + agent;
+}
+
+function applyHeader(text, force) {
+  var header = PC.parseHeader(text || "");
+  if (header.store) brandStore = header.store;
+  var agentEl = document.getElementById("agent");
+  if (header.agent && (force || !agentEl.value || agentEl.value === DEFAULT_AGENT || agentEl.value === parsedAgent)) {
+    agentEl.value = header.agent;
+    parsedAgent = header.agent;
+  }
+  if (header.phone && (force || document.getElementById("phone").value === DEFAULT_PHONE)) {
+    document.getElementById("phone").value = header.phone;
+  }
+  updateBrand();
+}
 
 function detect() {
   var list = PC.parseText(document.getElementById("paste").value);
@@ -278,8 +302,13 @@ function linkHtml(p) {
   if (!href) return "<span class='unk'>無連結</span>";
   return "<a href='" + PC.esc(href) + "' target='_blank' rel='noopener noreferrer'>查看 ↗</a>";
 }
+function proxiedImg(url) {
+  var safe = PC.safeUrl(url, "img");
+  if (!safe) return "";
+  return "/api/prop-img?u=" + encodeURIComponent(safe);
+}
 function imgHtml(p, cls) {
-  var src = PC.safeUrl(p.img, "img");
+  var src = proxiedImg(p.img);
   if (!src) return "";
   return "<img src='" + PC.esc(src) + "' alt='" + PC.esc("物件照片 " + p.code) + "' class='" + (cls || "") + "'>";
 }
@@ -470,13 +499,17 @@ function setPark(code, field, value) {
   renderReport();
 }
 
-async function fetchProp(p) {
+function sleep(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
+async function fetchPropOnce(p) {
   try {
     var res = await fetch("/api/scrape-prop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: p.code }),
-      signal: AbortSignal.timeout(20000)
+      signal: AbortSignal.timeout(45000)
     });
     var data = null;
     try { data = await res.json(); } catch (e) { data = null; }
@@ -489,11 +522,19 @@ async function fetchProp(p) {
   }
 }
 
+async function fetchProp(p) {
+  var last = null;
+  for (var i = 0; i < 3; i++) {
+    if (i) await sleep(600 * i);
+    last = await fetchPropOnce(p);
+    if (!last.detailFailed) return last;
+  }
+  return last;
+}
+
 async function startAll() {
   var text = document.getElementById("paste").value;
-  var header = PC.parseHeader(text);
-  if (header.agent) document.getElementById("agent").value = header.agent;
-  if (header.phone) document.getElementById("phone").value = header.phone;
+  applyHeader(text, true);
   var list = PC.parseText(text);
   if (!list.length) { alert("未偵測到有效物件訊息"); return; }
   document.getElementById("overlay").classList.add("on");
@@ -507,6 +548,7 @@ async function startAll() {
     lbl.textContent = "讀取中 " + (i + 1) + "/" + list.length + "：" + p.code;
     fill.style.width = ((i / list.length) * 100) + "%";
     props.push(await fetchProp(p));
+    if (i < list.length - 1) await sleep(150);
   }
   fill.style.width = "100%";
   lbl.textContent = "完成 " + list.length + " 件";
@@ -523,7 +565,8 @@ function shareReport() {
     agent: document.getElementById("agent").value,
     phone: document.getElementById("phone").value,
     client: document.getElementById("client").value,
-    note: document.getElementById("note").value
+    note: document.getElementById("note").value,
+    store: brandStore
   };
   if (!payload.props.length) { alert("沒有可分享的物件"); return; }
   var enc = PC.encodeShare(payload);
@@ -551,6 +594,9 @@ function loadFromUrl() {
   if (pl.phone) document.getElementById("phone").value = pl.phone;
   if (pl.client) document.getElementById("client").value = pl.client;
   if (pl.note) document.getElementById("note").value = pl.note;
+  if (pl.store) brandStore = pl.store;
+  if (pl.agent) parsedAgent = pl.agent;
+  updateBrand();
   document.getElementById("input-card").style.display = "none";
   renderReport();
 }
@@ -600,10 +646,17 @@ function resetAll() {
   document.getElementById("share-box").style.display = "none";
   document.getElementById("agent").value = DEFAULT_AGENT;
   document.getElementById("phone").value = DEFAULT_PHONE;
+  brandStore = DEFAULT_STORE;
+  parsedAgent = "";
+  updateBrand();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-document.getElementById("paste").addEventListener("input", detect);
+document.getElementById("paste").addEventListener("input", function () {
+  detect();
+  applyHeader(document.getElementById("paste").value, false);
+});
+document.getElementById("agent").addEventListener("input", updateBrand);
 document.getElementById("go-btn").addEventListener("click", startAll);
 document.getElementById("share-btn").addEventListener("click", shareReport);
 document.getElementById("pdf-btn").addEventListener("click", genPDF);

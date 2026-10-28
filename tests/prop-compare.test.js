@@ -35,6 +35,10 @@ const SAMPLE = `信義房屋文心高工店 李祐承
 
 const header = PC.parseHeader(SAMPLE);
 assert.strictEqual(header.agent, '李祐承');
+assert.strictEqual(header.store, '文心高工店');
+const sharedHeader = PC.decodeShare(PC.encodeShare({ props: [{ code: '6416DS', title: '甲', price: 1, area: 1 }], store: '文心高工店', agent: '李祐承' }));
+assert.strictEqual(sharedHeader.store, '文心高工店');
+assert.strictEqual(sharedHeader.agent, '李祐承');
 assert.strictEqual(header.phone, '0963-600-792');
 assert.ok(!SAMPLE.includes(header.phone) || header.phone !== '0933-317-625');
 
