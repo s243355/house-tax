@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>議價試算工具｜信義房屋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>議價試算工具｜祐承店長 信義房屋 文心高工店</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -429,13 +431,26 @@ header{
 }
 .hdr-home-btn:hover{color:var(--red);background:var(--red-l);}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="依單價與坪數排出多組議價級距，對照含車總價、拆車單價、仲介服務費與屋主實拿，方便貼到 LINE 跟屋主討論。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/price-calculator">
+<meta property="og:title" content="議價試算工具｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="依單價與坪數排出多組議價級距，對照含車總價、拆車單價、仲介服務費與屋主實拿，方便貼到 LINE 跟屋主討論。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/price-calculator">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="議價試算工具｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="依單價與坪數排出多組議價級距，對照含車總價、拆車單價、仲介服務費與屋主實拿，方便貼到 LINE 跟屋主討論。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="brand">
     <div class="brand-mark">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -455,15 +470,16 @@ header{
 </header>
 
 <div class="container">
-  <div class="page-title">議價試算工具</div>
+  <h1 class="page-title">議價試算工具</h1>
   <div class="page-sub">輸入單價與各項條件，自動產生多個級距的總價、服務費與實拿金額對照表</div>
+  <p class="page-sub">法規依據：議價與服務費試算，實際服務費以契約約定為準・最後更新日：2026-05-05</p>
 
   <!-- INPUT CARD -->
   <div class="input-card">
-    <div class="card-heading">🏠 建物條件</div>
+    <h2 class="card-heading">🏠 建物條件</h2>
     <div class="input-grid">
       <div class="input-group">
-        <div class="input-label">單價 <span class="required">必填</span></div>
+        <label class="input-label" for="unit-price">單價 <span class="required">必填</span></label>
         <div class="iw">
           <input type="number" id="unit-price" placeholder="例：30" step="0.5" oninput="liveCalc()">
           <span class="unit" id="unit-price-unit">萬／坪</span>
@@ -476,7 +492,7 @@ header{
         <div class="input-hint" id="unit-price-hint">含車：總價 = 單價 × 總建坪</div>
       </div>
       <div class="input-group">
-        <div class="input-label">總建坪 <span class="required">必填</span></div>
+        <label class="input-label" for="building-area">總建坪 <span class="required">必填</span></label>
         <div class="iw">
           <input type="number" id="building-area" placeholder="例：35.5" step="0.01" oninput="liveCalc()">
           <span class="unit">坪</span>
@@ -484,7 +500,7 @@ header{
         <div class="input-hint">登記建物移轉總面積（含公設、含車位坪）</div>
       </div>
       <div class="input-group">
-        <div class="input-label">車位價格 <span class="optional">選填</span></div>
+        <label class="input-label" for="parking-price">車位價格 <span class="optional">選填</span></label>
         <div class="iw">
           <input type="number" id="parking-price" placeholder="例：150" step="1" oninput="liveCalc()">
           <span class="unit">萬</span>
@@ -492,7 +508,7 @@ header{
         <div class="input-hint">留空表示無車位</div>
       </div>
       <div class="input-group">
-        <div class="input-label">車位坪數 <span class="optional">選填</span></div>
+        <label class="input-label" for="parking-area">車位坪數 <span class="optional">選填</span></label>
         <div class="iw">
           <input type="number" id="parking-area" placeholder="例：8" step="0.01" oninput="liveCalc()">
           <span class="unit">坪</span>
@@ -502,10 +518,10 @@ header{
     </div>
 
     <!-- 稅費 -->
-    <div class="card-heading" style="margin-top:18px;">💸 稅費與服務費</div>
+    <h2 class="card-heading" style="margin-top:18px;">💸 稅費與服務費</h2>
     <div class="input-grid">
       <div class="input-group">
-        <div class="input-label">土地增值稅 <span class="optional">選填</span></div>
+        <label class="input-label" for="land-tax">土地增值稅 <span class="optional">選填</span></label>
         <div class="iw">
           <input type="number" id="land-tax" placeholder="0" step="0.1" oninput="liveCalc()">
           <span class="unit">萬</span>
@@ -513,7 +529,7 @@ header{
         <div class="input-hint">從稅單或試算取得</div>
       </div>
       <div class="input-group">
-        <div class="input-label">仲介服務費率</div>
+        <label class="input-label" for="commission-rate">仲介服務費率</label>
         <div class="iw">
           <input type="number" id="commission-rate" value="4" placeholder="4" step="0.1" oninput="liveCalc()">
           <span class="unit">%</span>
@@ -521,7 +537,7 @@ header{
         <div class="input-hint">依總價計算，預設 4%</div>
       </div>
       <div class="input-group">
-        <div class="input-label">其他費用 <span class="optional">選填</span></div>
+        <label class="input-label" for="other-cost">其他費用 <span class="optional">選填</span></label>
         <div class="iw">
           <input type="number" id="other-cost" placeholder="0" step="0.1" oninput="liveCalc()">
           <span class="unit">萬</span>
@@ -529,7 +545,7 @@ header{
         <div class="input-hint">代書費、規費等</div>
       </div>
       <div class="input-group">
-        <div class="input-label">房地合一稅 <span class="optional">選填</span></div>
+        <label class="input-label" for="realty-tax">房地合一稅 <span class="optional">選填</span></label>
         <div class="iw">
           <input type="number" id="realty-tax" placeholder="0" step="0.1" oninput="liveCalc()">
           <span class="unit">萬</span>
@@ -557,12 +573,12 @@ header{
     <!-- 級距設定 -->
     <div class="config-row">
       <span class="config-label">級距設定：</span>
-      <span class="config-label" style="color:var(--muted);">每格遞減</span>
+      <label class="config-label" for="step-size" style="color:var(--muted);">每格遞減</label>
       <div class="config-iw">
         <input type="number" id="step-size" value="0.5" step="0.5" min="0.1" max="5">
         <span class="unit">萬</span>
       </div>
-      <span class="config-label" style="color:var(--muted);">共顯示</span>
+      <label class="config-label" for="tier-count" style="color:var(--muted);">共顯示</label>
       <div class="config-iw">
         <input type="number" id="tier-count" value="6" step="1" min="3" max="20">
         <span class="unit">個級距</span>
@@ -936,6 +952,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

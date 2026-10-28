@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>持有成本試算｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -242,13 +244,26 @@
   }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="試算房屋稅、地價稅、貸款利息、管理費與其他支出，對照租金收益後，看繼續持有這間房每年以及數年合計要花多少錢。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/holding-cost">
+<meta property="og:title" content="持有成本試算｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="試算房屋稅、地價稅、貸款利息、管理費與其他支出，對照租金收益後，看繼續持有這間房每年以及數年合計要花多少錢。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/holding-cost">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="持有成本試算｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="試算房屋稅、地價稅、貸款利息、管理費與其他支出，對照租金收益後，看繼續持有這間房每年以及數年合計要花多少錢。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -271,28 +286,28 @@
 </div>
 
 <main>
-  <a class="back-link" href="index.html">← 回主頁</a>
+  <a class="back-link" href="/">← 回主頁</a>
 
   <!-- 基本資料 -->
   <div class="input-card">
-    <div class="card-title">🏠 房屋基本資料</div>
+    <h2 class="card-title">🏠 房屋基本資料</h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">房屋現值（市價估計）</div>
+        <label class="field-label" for="market-val">房屋現值（市價估計）</label>
         <div class="input-wrap"><input type="number" id="market-val" placeholder="例：1500" oninput="autoCalcTax()"><span class="input-unit">萬</span></div>
         <div class="field-tip">用於估算機會成本</div>
       </div>
       <div class="field-group">
-        <div class="field-label">試算持有年數</div>
+        <label class="field-label" for="hold-years">試算持有年數</label>
         <div class="input-wrap"><input type="number" id="hold-years" placeholder="例：5" value="5" oninput="calcCost()"><span class="input-unit">年</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">房屋評定現值</div>
+        <label class="field-label" for="house-assessed">房屋評定現值</label>
         <div class="input-wrap"><input type="number" id="house-assessed" placeholder="例：80" oninput="autoCalcTax()"><span class="input-unit">萬</span></div>
         <div class="field-tip">從房屋稅單查詢</div>
       </div>
       <div class="field-group">
-        <div class="field-label">公告地價總額</div>
+        <label class="field-label" for="land-assessed">公告地價總額</label>
         <div class="input-wrap"><input type="number" id="land-assessed" placeholder="例：200" oninput="autoCalcTax()"><span class="input-unit">萬</span></div>
         <div class="field-tip">從地價稅單查詢</div>
       </div>
@@ -301,7 +316,7 @@
 
   <!-- 稅費 -->
   <div class="input-card">
-    <div class="card-title">💸 每年稅費（系統自動估算，可手動修改）</div>
+    <h2 class="card-title">💸 每年稅費（系統自動估算，可手動修改）</h2>
 
     <div class="info-box">
       💡 系統根據你填入的評定現值與公告地價自動估算稅費。若有實際繳款金額，直接填入覆蓋即可。
@@ -309,12 +324,12 @@
 
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">房屋稅（年）</div>
+        <label class="field-label" for="house-tax">房屋稅（年）</label>
         <div class="input-wrap"><input type="number" id="house-tax" placeholder="自動估算" oninput="calcCost()"><span class="input-unit">元</span></div>
         <div class="field-tip">住家用：評定現值 × 1.2%</div>
       </div>
       <div class="field-group">
-        <div class="field-label">地價稅（年）</div>
+        <label class="field-label" for="land-tax">地價稅（年）</label>
         <div class="input-wrap"><input type="number" id="land-tax" placeholder="自動估算" oninput="calcCost()"><span class="input-unit">元</span></div>
         <div class="field-tip">自用住宅：公告地價 × 0.2%</div>
       </div>
@@ -323,7 +338,7 @@
 
   <!-- 貸款 -->
   <div class="input-card">
-    <div class="card-title">🏦 貸款利息（若有未還清貸款）</div>
+    <h2 class="card-title">🏦 貸款利息（若有未還清貸款）</h2>
 
     <div class="toggle-row" onclick="toggleLoan()">
       <div class="toggle" id="toggle-loan"></div>
@@ -333,11 +348,11 @@
     <div id="loan-fields" style="display:none;margin-top:16px;">
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label">貸款餘額</div>
+          <label class="field-label" for="loan-balance">貸款餘額</label>
           <div class="input-wrap"><input type="number" id="loan-balance" placeholder="例：600" oninput="calcCost()"><span class="input-unit">萬</span></div>
         </div>
         <div class="field-group">
-          <div class="field-label">年利率</div>
+          <label class="field-label" for="loan-rate">年利率</label>
           <div class="input-wrap"><input type="number" id="loan-rate" placeholder="例：2.0" step="0.1" value="2.0" oninput="calcCost()"><span class="input-unit">%</span></div>
         </div>
       </div>
@@ -347,23 +362,23 @@
 
   <!-- 其他費用 -->
   <div class="input-card">
-    <div class="card-title">🔧 其他持有費用（可選填）</div>
+    <h2 class="card-title">🔧 其他持有費用（可選填）</h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">每月管理費</div>
+        <label class="field-label" for="mgmt-fee">每月管理費</label>
         <div class="input-wrap"><input type="number" id="mgmt-fee" placeholder="0" oninput="calcCost()"><span class="input-unit">元/月</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">每年維修保養費</div>
+        <label class="field-label" for="maintain-fee">每年維修保養費</label>
         <div class="input-wrap"><input type="number" id="maintain-fee" placeholder="0" oninput="calcCost()"><span class="input-unit">元/年</span></div>
         <div class="field-tip">抓成交價 0.5%～1% 為參考</div>
       </div>
       <div class="field-group">
-        <div class="field-label">每年火險、地震險</div>
+        <label class="field-label" for="insurance-fee">每年火險、地震險</label>
         <div class="input-wrap"><input type="number" id="insurance-fee" placeholder="0" oninput="calcCost()"><span class="input-unit">元/年</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">其他費用（年）</div>
+        <label class="field-label" for="other-fee">其他費用（年）</label>
         <div class="input-wrap"><input type="number" id="other-fee" placeholder="0" oninput="calcCost()"><span class="input-unit">元/年</span></div>
       </div>
     </div>
@@ -371,7 +386,7 @@
 
   <!-- 出租設定 -->
   <div class="input-card">
-    <div class="card-title">🏘 出租收益（若有出租）</div>
+    <h2 class="card-title">🏘 出租收益（若有出租）</h2>
     <div class="toggle-row" onclick="toggleRental()">
       <div class="toggle" id="toggle-rental"></div>
       <div class="toggle-label">這間房有出租</div>
@@ -379,11 +394,11 @@
     <div id="rental-fields" style="display:none;margin-top:16px;">
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label">每月租金收入</div>
+          <label class="field-label" for="rental-income">每月租金收入</label>
           <div class="input-wrap"><input type="number" id="rental-income" placeholder="例：20000" oninput="calcCost()"><span class="input-unit">元/月</span></div>
         </div>
         <div class="field-group">
-          <div class="field-label">出租稅負（房租所得稅）</div>
+          <label class="field-label" for="rental-tax-rate">出租稅負（房租所得稅）</label>
           <div class="input-wrap"><input type="number" id="rental-tax-rate" placeholder="例：5" step="1" value="5" oninput="calcCost()"><span class="input-unit">%</span></div>
           <div class="field-tip">依個人綜所稅率，最低 5%</div>
         </div>
@@ -525,7 +540,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">持有成本試算工具 · 僅供參考，實際費用依個案而定</div>
+      <div class="fi">持有成本試算工具 · 僅供參考，實際費用依個案而定</div><div class="fi">法規依據：房屋稅、地價稅及貸款利息等持有費用估算（非核定稅額）・最後更新日：2026-05-05</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -737,6 +752,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

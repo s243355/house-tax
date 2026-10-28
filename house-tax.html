@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>房地合一稅試算｜信義房屋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>房地合一稅試算｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 
@@ -72,7 +74,7 @@
   .hero-banner{background:var(--red);padding:26px 30px;margin-bottom:32px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;}
   .hero-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border:20px solid rgba(255,255,255,.06);border-radius:50%;}
   .hero-banner-icon{font-size:2.2rem;flex-shrink:0;}
-  .hero-banner-text h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:white;font-weight:600;margin-bottom:4px;}
+  .hero-banner-text h1{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:white;font-weight:600;margin-bottom:4px;}
   .hero-banner-text p{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.5;}
 
   /* Type cards */
@@ -242,13 +244,27 @@
     .result-contact-strip{flex-direction:column;align-items:flex-start;}
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="依所得稅法第14條之4，以登記日的曆年試算房地合一稅（2年以內45%到超過10年15%）。自住須設籍並實際居住連續滿6年，400萬以內免稅、超過部分10%。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/house-tax">
+<meta property="og:title" content="房地合一稅試算｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="依所得稅法第14條之4，以登記日的曆年試算房地合一稅（2年以內45%到超過10年15%）。自住須設籍並實際居住連續滿6年，400萬以內免稅、超過部分10%。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/house-tax">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="房地合一稅試算｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="依所得稅法第14條之4，以登記日的曆年試算房地合一稅（2年以內45%到超過10年15%）。自住須設籍並實際居住連續滿6年，400萬以內免稅、超過部分10%。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
+<script src="/holding-period.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="header-left">
     <div class="sinyi-emblem">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
@@ -275,7 +291,7 @@
   <div class="hero-banner">
     <div class="hero-banner-icon">🏠</div>
     <div class="hero-banner-text">
-      <h3 id="nt-banner-title">房地合一稅快速試算</h3>
+      <h1 id="nt-banner-title">房地合一稅快速試算</h1>
       <p id="nt-banner-desc">輸入房屋資料，立即試算應繳稅額與稅後實拿<br>有疑問歡迎來電或加 LINE 詢問</p>
     </div>
   </div>
@@ -313,8 +329,9 @@
   <p class="step-desc">4 項要件必須全部成立，缺一項就不能用優惠稅率</p>
   <div class="warn-box">⚠ 所得稅法 §4-5 + §14-4。4 個條件必須<strong>同時成立</strong>。亂勾的話國稅局會核退並補稅 + 罰鍰。</div>
   <div class="field-group">
-    <div class="field-label">自住起算日</div>
+    <label class="field-label" for="selfuse-start-date">自住起算日</label>
     <input type="date" id="selfuse-start-date" min="2010-01-01">
+    <div class="field-tip">自住優惠須本人、配偶或未成年子女設籍並實際居住連續滿 6 年（所得稅法第14條之4）。有填起算日者，以曆年判斷是否已滿 6 年；未填則依下方勾選認定，不另外擋下試算。</div>
   </div>
   <div id="selfuse-checks">
     <div class="check-item" onclick="toggleCheck(this)">
@@ -342,7 +359,7 @@
   <h2>繼承相關日期與成本</h2>
   <p class="step-desc">系統自動合計被繼承人持有時間，並套 CPI 調整</p>
   <div class="field-group">
-    <div class="field-label">被繼承人原始取得日</div>
+    <label class="field-label" for="inherit-orig-date">被繼承人原始取得日</label>
     <input type="date" id="inherit-orig-date">
   </div>
   <div class="toggle-row" onclick="toggleInheritMerge()">
@@ -351,20 +368,20 @@
   </div>
   <div class="info-box" style="margin-top:12px;">通常勾選比較有利。若被繼承人持有 &lt; 2 年，合計反而吃 45% 高稅率，這時取消勾選。</div>
   <div class="field-group">
-    <div class="field-label">繼承登記完成日<span class="field-required">必填</span></div>
+    <label class="field-label" for="inherit-register-date">繼承登記完成日<span class="field-required">必填</span></label>
     <input type="date" id="inherit-register-date" min="2016-01-01">
     <div class="field-tip">房地合一稅新制適用 2016/1/1 起取得的房地</div>
   </div>
   <div class="field-group">
-    <div class="field-label">繼承時房屋評定現值</div>
+    <label class="field-label" for="inherit-house-val">繼承時房屋評定現值</label>
     <div class="input-wrap"><input type="number" id="inherit-house-val" placeholder="例：200" oninput="updateInheritSum()"><span class="input-unit">萬</span></div>
   </div>
   <div class="field-group">
-    <div class="field-label">繼承時公告土地現值</div>
+    <label class="field-label" for="inherit-land-val">繼承時公告土地現值</label>
     <div class="input-wrap"><input type="number" id="inherit-land-val" placeholder="例：300" oninput="updateInheritSum()"><span class="input-unit">萬</span></div>
   </div>
   <div class="field-group">
-    <div class="field-label">繼承登記雜費（代書費、規費等）</div>
+    <label class="field-label" for="inherit-misc">繼承登記雜費（代書費、規費等）</label>
     <div class="input-wrap"><input type="number" id="inherit-misc" placeholder="0" oninput="updateInheritSum()"><span class="input-unit">元</span></div>
   </div>
   <div class="auto-sum">
@@ -383,25 +400,25 @@
   <h2>配偶贈與相關資料</h2>
   <p class="step-desc">持有時間追溯到配偶當初買房的日期</p>
   <div class="field-group">
-    <div class="field-label">配偶當初買這間房的日期<span class="field-required">必填</span></div>
+    <label class="field-label" for="gift-spouse-buy-date">配偶當初買這間房的日期<span class="field-required">必填</span></label>
     <input type="date" id="gift-spouse-buy-date">
   </div>
   <div class="field-group">
-    <div class="field-label">贈與給你的日期<span class="field-required">必填</span></div>
+    <label class="field-label" for="gift-transfer-date">贈與給你的日期<span class="field-required">必填</span></label>
     <input type="date" id="gift-transfer-date" min="2016-01-01">
   </div>
   <div class="field-group">
-    <div class="field-label">配偶當初買這間房的價格<span class="field-required">必填</span></div>
+    <label class="field-label" for="gift-price">配偶當初買這間房的價格<span class="field-required">必填</span></label>
     <div class="input-wrap"><input type="number" id="gift-price" placeholder="例：1000" oninput="updateGiftSum()"><span class="input-unit">萬</span></div>
   </div>
   <hr class="divider">
   <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">配偶買房時的費用（可選填）</p>
-  <div class="field-group"><div class="field-label">契稅</div><div class="input-wrap"><input type="number" id="gift-deed-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="gift-stamp-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="gift-agent-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">仲介費</div><div class="input-wrap"><input type="number" id="gift-broker-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">裝修費</div><div class="input-wrap"><input type="number" id="gift-reno-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="gift-other-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-deed-tax">契稅</label><div class="input-wrap"><input type="number" id="gift-deed-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-stamp-tax">印花稅</label><div class="input-wrap"><input type="number" id="gift-stamp-tax" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-agent-fee">代書費</label><div class="input-wrap"><input type="number" id="gift-agent-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-broker-fee">仲介費</label><div class="input-wrap"><input type="number" id="gift-broker-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-reno-fee">裝修費</label><div class="input-wrap"><input type="number" id="gift-reno-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="gift-other-fee">其他費用</label><div class="input-wrap"><input type="number" id="gift-other-fee" placeholder="0" oninput="updateGiftSum()"><span class="input-unit">元</span></div></div>
   <div class="auto-sum">
     <span class="auto-sum-label">配偶買房費用合計</span>
     <span class="auto-sum-val" id="gift-sum">0 元</span>
@@ -418,12 +435,12 @@
   <h2>這間房的重要日期</h2>
   <p class="step-desc">你持有多久會決定稅率是多少</p>
   <div class="field-group">
-    <div class="field-label">買進完成所有權移轉登記日<span class="field-required">必填</span></div>
+    <label class="field-label" for="buy-date">買進完成所有權移轉登記日<span class="field-required">必填</span></label>
     <input type="date" id="buy-date" min="2016-01-01" onchange="updateHoldPeriod()">
     <div class="field-tip">不是簽約日，是地政事務所登記到你名下的那一天</div>
   </div>
   <div class="field-group" style="margin-top:20px;">
-    <div class="field-label">出售完成所有權移轉登記日（或預計日）<span class="field-required">必填</span></div>
+    <label class="field-label" for="sell-date">出售完成所有權移轉登記日（或預計日）<span class="field-required">必填</span></label>
     <input type="date" id="sell-date" onchange="updateHoldPeriod()">
   </div>
   <div class="auto-sum" id="hold-display" style="display:none;">
@@ -442,7 +459,7 @@
   <h2>這間房你要賣多少？</h2>
   <p class="step-desc">買方答應給你的成交總價（含車位）</p>
   <div class="field-group">
-    <div class="field-label">成交價<span class="field-required">必填</span></div>
+    <label class="field-label" for="sell-price">成交價<span class="field-required">必填</span></label>
     <div class="input-wrap" id="sell-price-wrap"><input type="number" id="sell-price" placeholder="例：1500"><span class="input-unit">萬</span></div>
     <div class="error-msg" id="sell-price-err">請輸入成交價</div>
   </div>
@@ -458,7 +475,7 @@
   <h2>你當初買這間房花了多少？</h2>
   <p class="step-desc">當初付給賣方的總價</p>
   <div class="field-group">
-    <div class="field-label">購入價金<span class="field-required">必填</span></div>
+    <label class="field-label" for="buy-price">購入價金<span class="field-required">必填</span></label>
     <div class="input-wrap" id="buy-price-wrap"><input type="number" id="buy-price" placeholder="例：1000"><span class="input-unit">萬</span></div>
     <div class="error-msg" id="buy-price-err">請輸入購入價金</div>
   </div>
@@ -473,20 +490,20 @@
   <div class="step-tag">STEP 06</div>
   <h2>買房時付了哪些費用？</h2>
   <p class="step-desc">這些費用都能從稅裡扣掉。不確定的就留空</p>
-  <div class="field-group"><div class="field-label">契稅</div><div class="input-wrap"><input type="number" id="buy-deed-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">買進時繳給政府的稅，通常是房屋現值 × 6%</div></div>
-  <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="buy-stamp-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="buy-agent-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">委託地政士辦理過戶，通常 1–2 萬</div></div>
-  <div class="field-group"><div class="field-label">仲介費（買入時）</div><div class="input-wrap"><input type="number" id="buy-broker-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">履保費</div><div class="input-wrap"><input type="number" id="buy-escrow-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="buy-deed-tax">契稅</label><div class="input-wrap"><input type="number" id="buy-deed-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">買進時繳給政府的稅，通常是房屋現值 × 6%</div></div>
+  <div class="field-group"><label class="field-label" for="buy-stamp-tax">印花稅</label><div class="input-wrap"><input type="number" id="buy-stamp-tax" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="buy-agent-fee">代書費</label><div class="input-wrap"><input type="number" id="buy-agent-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div><div class="field-tip">委託地政士辦理過戶，通常 1–2 萬</div></div>
+  <div class="field-group"><label class="field-label" for="buy-broker-fee">仲介費（買入時）</label><div class="input-wrap"><input type="number" id="buy-broker-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="buy-escrow-fee">履保費</label><div class="input-wrap"><input type="number" id="buy-escrow-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
   <div class="field-group">
-    <div class="field-label">裝修費</div>
+    <label class="field-label" for="buy-reno-fee">裝修費</label>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
       <div class="check-box" id="reno-check" onclick="toggleReno()"></div>
       <span style="font-size:.8rem;color:var(--text-muted);">我確認此裝修為增置／改良（有單據，非一般修繕）</span>
     </div>
     <div class="input-wrap"><input type="number" id="buy-reno-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div>
   </div>
-  <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="buy-other-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="buy-other-fee">其他費用</label><div class="input-wrap"><input type="number" id="buy-other-fee" placeholder="0" oninput="updateBuyFeeSum()"><span class="input-unit">元</span></div></div>
   <div class="auto-sum">
     <span class="auto-sum-label">取得時費用合計</span>
     <span class="auto-sum-val" id="buy-fee-sum">0 元</span>
@@ -508,13 +525,13 @@
   </div>
   <div class="estimate-info" id="estimate-info">✅ 已改用 3% 推計。系統以成交價 × 3%（上限 30 萬）計算，通常比實報有利。</div>
   <div id="actual-fields">
-    <div class="field-group"><div class="field-label">仲介費（出售時）</div><div class="input-wrap"><input type="number" id="sell-broker-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">履保費</div><div class="input-wrap"><input type="number" id="sell-escrow-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">代書費</div><div class="input-wrap"><input type="number" id="sell-agent-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">規費</div><div class="input-wrap"><input type="number" id="sell-reg-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="sell-stamp-tax" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">公證費</div><div class="input-wrap"><input type="number" id="sell-notary-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
-    <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="sell-other-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-broker-fee">仲介費（出售時）</label><div class="input-wrap"><input type="number" id="sell-broker-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-escrow-fee">履保費</label><div class="input-wrap"><input type="number" id="sell-escrow-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-agent-fee">代書費</label><div class="input-wrap"><input type="number" id="sell-agent-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-reg-fee">規費</label><div class="input-wrap"><input type="number" id="sell-reg-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-stamp-tax">印花稅</label><div class="input-wrap"><input type="number" id="sell-stamp-tax" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-notary-fee">公證費</label><div class="input-wrap"><input type="number" id="sell-notary-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
+    <div class="field-group"><label class="field-label" for="sell-other-fee">其他費用</label><div class="input-wrap"><input type="number" id="sell-other-fee" placeholder="0" oninput="updateSellFeeSum()"><span class="input-unit">元</span></div></div>
     <div class="auto-sum">
       <span class="auto-sum-label">移轉費用合計</span>
       <span class="auto-sum-val" id="sell-fee-sum">0 元</span>
@@ -532,16 +549,16 @@
   <h2>土地增值稅的土地漲價總數額</h2>
   <p class="step-desc">從土地增值稅試算或繳款書抄，別跟房地合一稅重複算了</p>
   <div class="field-group">
-    <div class="field-label">土地漲價總數額 <a href="https://www.etax.nat.gov.tw/etwmain/etw168w" target="_blank" style="font-size:.75rem;color:var(--red);text-decoration:none;margin-left:6px;">→ 財政部試算</a></div>
+    <label class="field-label" for="land-inc-total">土地漲價總數額 <a href="https://www.etax.nat.gov.tw/etwmain/etw168w" target="_blank" style="font-size:.75rem;color:var(--red);text-decoration:none;margin-left:6px;">→ 財政部試算</a></label>
     <div class="input-wrap"><input type="number" id="land-inc-total" placeholder="0"><span class="input-unit">萬</span></div>
     <div class="field-tip">千萬別在移轉費用再填土增稅，會重複扣。</div>
   </div>
   <div class="field-group">
-    <div class="field-label">扣除上限（公告現值差額）（選填）</div>
+    <label class="field-label" for="land-inc-cap">扣除上限（公告現值差額）（選填）</label>
     <div class="input-wrap"><input type="number" id="land-inc-cap" placeholder="0（不設限）"><span class="input-unit">萬</span></div>
   </div>
   <div class="field-group">
-    <div class="field-label">土地增值稅金額（選填，用於計算「真正到手」）</div>
+    <label class="field-label" for="land-tax-amt">土地增值稅金額（選填，用於計算「真正到手」）</label>
     <div class="input-wrap"><input type="number" id="land-tax-amt" placeholder="0"><span class="input-unit">萬</span></div>
   </div>
   <div class="nav-row">
@@ -667,7 +684,7 @@
     </div>
     <div>
       <div class="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="footer-info" id="footer-update">資料更新日期：2026-05-05 ・ 房地合一 2.0（2021/7/1 起）</div>
+      <div class="footer-info" id="footer-update">法規依據：所得稅法第14條之4、第4條之5（自住須設籍並居住滿6年）・資料更新日期：2026-05-05</div>
     </div>
   </div>
   <div class="footer-contact">
@@ -695,7 +712,7 @@ function getConfig(){
   if(s){try{return JSON.parse(s);}catch(e){}}
   return{brand:'信義房屋 文心高工店',updatedDate:'2026-05-05',selfuseExemptLimit:400,selfuseTaxRate:10,transferEstimateRate:3,transferEstimateCap:30,
     disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
-    taxRates:[{maxYears:2,rate:45,label:'持有 ≤ 2 年'},{maxYears:5,rate:35,label:'持有 2-5 年'},{maxYears:10,rate:20,label:'持有 5-10 年'},{maxYears:999,rate:15,label:'持有 > 10 年'}],
+    taxRates:[{maxYears:2,rate:45,label:'2年以內'},{maxYears:5,rate:35,label:'超過2年未逾5年'},{maxYears:10,rate:20,label:'超過5年未逾10年'},{maxYears:999,rate:15,label:'超過10年'}],
     cpiTable:{'2016':1,'2017':1.008,'2018':1.015,'2019':1.021,'2020':1.017,'2021':1.022,'2022':1.057,'2023':1.092,'2024':1.112,'2025':1.125,'2026':1.13}
   };
 }
@@ -779,9 +796,10 @@ function updateSellFeeSum(){document.getElementById('sell-fee-sum').textContent=
 
 function updateHoldPeriod(){
   const b=s('buy-date'),sl=s('sell-date');if(!b||!sl)return;
-  const yrs=(new Date(sl)-new Date(b))/(365.25*24*3600*1000);if(yrs<=0)return;
+  const info=HoldingPeriod.analyze(b,sl);
+  if(!info||!info.valid)return;
   document.getElementById('hold-display').style.display='flex';
-  document.getElementById('hold-text').textContent=`${Math.floor(yrs)} 年 ${Math.round((yrs-Math.floor(yrs))*12)} 個月`;
+  document.getElementById('hold-text').textContent=`${info.years} 年 ${info.months} 個月・${info.tier}`;
 }
 
 function buildReview(){
@@ -793,16 +811,21 @@ function buildReview(){
   document.getElementById('review-table').innerHTML=rows.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
 }
 
-function getHoldYears(){
+function getHoldInfo(){
   const start=currentType==='gift'?s('gift-spouse-buy-date'):(currentType==='inherit'&&inheritMerge)?s('inherit-orig-date'):s('buy-date');
-  return(new Date(s('sell-date'))-new Date(start||s('buy-date')))/(365.25*24*3600*1000);
+  const from=start||s('buy-date');
+  const end=s('sell-date');
+  if(!from||!end)return null;
+  const info=HoldingPeriod.analyze(from,end);
+  return info&&info.valid?info:null;
 }
 
 function calculate(){
   buildReview();
   const cfg=getConfig();
   const sellPrice=n('sell-price');
-  const holdYrs=getHoldYears();
+  const holdInfo=getHoldInfo();
+  const holdYrs=holdInfo?holdInfo.bracketYears:NaN;
 
   let costBase=0;
   if(currentType==='inherit'){
@@ -830,13 +853,26 @@ function calculate(){
   const totalCost=costBase+buyFees+sellFees+landInc;
   let taxableIncome=sellPrice-totalCost;
 
-  let exempt=0,selfuseApplied=false;
+  let exempt=0,selfuseApplied=false,selfuseMiss='';
   if(currentType==='selfuse'){
     const allChk=[...document.querySelectorAll('#selfuse-checks .check-box')].every(c=>c.classList.contains('checked'));
-    if(allChk&&holdYrs>=6){selfuseApplied=true;exempt=Math.min(Math.max(taxableIncome,0),cfg.selfuseExemptLimit);taxableIncome=Math.max(taxableIncome-exempt,0);}
+    const regStart=s('selfuse-start-date');
+    let residencyOk=true;
+    if(regStart){
+      const reg=HoldingPeriod.analyze(regStart,s('sell-date'));
+      residencyOk=!!(reg&&reg.valid&&reg.fullSix);
+    }
+    const ownershipOk=!!(holdInfo&&holdInfo.fullSix);
+    if(allChk&&ownershipOk&&residencyOk){
+      selfuseApplied=true;
+      exempt=Math.min(Math.max(taxableIncome,0),cfg.selfuseExemptLimit);
+      taxableIncome=Math.max(taxableIncome-exempt,0);
+    }else if(!allChk) selfuseMiss='自住要件未全部勾選';
+    else if(!ownershipOk) selfuseMiss='持有未滿6年';
+    else selfuseMiss='設籍居住未滿6年';
   }
 
-  let taxRate=15,rateTier='持有 > 10 年 → 15%';
+  let taxRate=15,rateTier='超過10年 → 15%';
   if(selfuseApplied){taxRate=cfg.selfuseTaxRate;rateTier=`自住優惠 ${cfg.selfuseTaxRate}%`;}
   else{for(const t of cfg.taxRates){if(holdYrs<=t.maxYears){taxRate=t.rate;rateTier=t.label+` → ${t.rate}%`;break;}}}
 
@@ -849,17 +885,19 @@ function calculate(){
   window.scrollTo({top:0,behavior:'smooth'});
 
   const fmt=v=>v.toFixed(1)+' 萬';
-  const yInt=Math.floor(holdYrs),mo=Math.round((holdYrs-yInt)*12);
+  const yInt=holdInfo?holdInfo.years:0,mo=holdInfo?holdInfo.months:0;
 
   document.getElementById('r-tax').textContent=fmt(taxAmt);
-  document.getElementById('r-rate-label').textContent=`稅率：${rateTier}・持有 ${yInt} 年 ${mo} 個月`;
+  document.getElementById('r-rate-label').textContent=`稅率：${rateTier}・持有 ${yInt} 年 ${mo} 個月`+(selfuseMiss?`（未適用自住優惠：${selfuseMiss}）`:'');
   document.getElementById('r-income').textContent=fmt(Math.max(taxableIncome,0));
-  document.getElementById('r-hold').textContent=`${yInt} 年 ${mo} 個月`;
+  document.getElementById('r-hold').textContent=holdInfo?`${yInt} 年 ${mo} 個月・${holdInfo.tier}`:'—';
   document.getElementById('r-sell').textContent=fmt(sellPrice);
   document.getElementById('r-cost').textContent=fmt(totalCost);
   document.getElementById('r-net').textContent=fmt(netAmt);
-  document.getElementById('r-after-loan').textContent='—';
-  document.getElementById('loan-input').value='';
+  const afterLoanEl=document.getElementById('r-after-loan');
+  if(afterLoanEl)afterLoanEl.textContent='—';
+  const loanInputEl=document.getElementById('loan-input');
+  if(loanInputEl)loanInputEl.value='';
 
   // 記錄統計
   try{
@@ -898,11 +936,11 @@ function calculate(){
   document.getElementById('calc-detail').innerHTML=d;
 
   document.getElementById('law-detail').innerHTML=`
-    <div class="calc-row"><span>持有 ≤ 2 年 稅率 45%</span><span>所得稅法 §4-4</span></div>
-    <div class="calc-row"><span>持有 2-5 年 稅率 35%</span><span>所得稅法 §4-4</span></div>
-    <div class="calc-row"><span>持有 5-10 年 稅率 20%</span><span>所得稅法 §4-4</span></div>
-    <div class="calc-row"><span>持有 >10 年 稅率 15%</span><span>所得稅法 §4-4</span></div>
-    <div class="calc-row"><span>自住優惠 400 萬免稅</span><span>財政部公告</span></div>
+    <div class="calc-row"><span>2年以內 稅率 45%</span><span>所得稅法 §14-4</span></div>
+    <div class="calc-row"><span>超過2年未逾5年 稅率 35%</span><span>所得稅法 §14-4</span></div>
+    <div class="calc-row"><span>超過5年未逾10年 稅率 20%</span><span>所得稅法 §14-4</span></div>
+    <div class="calc-row"><span>超過10年 稅率 15%</span><span>所得稅法 §14-4</span></div>
+    <div class="calc-row"><span>自住設籍並居住滿6年，400萬免稅</span><span>財政部公告</span></div>
     <div class="calc-row"><span>移轉費用推計 3%／上限 30 萬</span><span>南區國稅局公告</span></div>
     <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--red);">財政部稅務入口網 — 房地交易試算 →</a></div>`;
 
@@ -911,7 +949,10 @@ function calculate(){
 
 function updateLoan(){
   if(!window._calc)return;
-  document.getElementById('r-after-loan').textContent=(window._calc.netAmt-(parseFloat(document.getElementById('loan-input').value)||0)).toFixed(1)+' 萬';
+  const afterLoanEl=document.getElementById('r-after-loan');
+  const loanInputEl=document.getElementById('loan-input');
+  if(!afterLoanEl||!loanInputEl)return;
+  afterLoanEl.textContent=(window._calc.netAmt-(parseFloat(loanInputEl.value)||0)).toFixed(1)+' 萬';
 }
 
 function calcReverse(type){
@@ -1071,14 +1112,15 @@ renderProgress();
   sa('hdr-branch',c.brandSubtitle);
   const pl=c.phoneLabel||'祐承 0933-317-625';
   sa('hdr-phone-label',pl);
-  document.getElementById('footer-phone').textContent='📞 '+pl;
+  const footerPhone=document.getElementById('footer-phone');
+  if(footerPhone)footerPhone.textContent='📞 '+pl;
   sh('hdr-phone','tel:'+(c.phone||'0933317625'));
   sh('footer-phone','tel:'+(c.phone||'0933317625'));
   sh('hdr-line',c.lineUrl);sh('footer-line',c.lineUrl);
   sh('res-phone','tel:'+(c.phone||'0933317625'));
   sh('res-line',c.lineUrl);
   sa('footer-brand',c.brand);
-  if(c.updatedDate)document.getElementById('footer-update').textContent='資料更新日期：'+c.updatedDate+' ・ 房地合一 2.0（2021/7/1 起）';
+  if(c.updatedDate)document.getElementById('footer-update').textContent='法規依據：所得稅法第14條之4、第4條之5（自住須設籍並居住滿6年）・資料更新日期：'+c.updatedDate;
   // 留資表單
   const lf=c.leadForm||{};
   if(lf.enabled){
@@ -1121,6 +1163,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

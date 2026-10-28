@@ -8,6 +8,66 @@
 //   ANTHROPIC_KEY  → Anthropic API Key（console.anthropic.com → API Keys）
 // ================================================================
 
+const SITEMAP_PATHS = [
+  '/',
+  '/house-tax',
+  '/old-tax',
+  '/repurchase-refund',
+  '/refund-old-tax',
+  '/refund-land-tax',
+  '/holding-cost',
+  '/rental-tax',
+  '/new-qingan',
+  '/mortgage',
+  '/home-buying',
+  '/price-calculator',
+  '/transaction-planner',
+  '/card',
+];
+
+function notFoundHtml() {
+  return `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>找不到頁面｜祐承店長 信義房屋 文心高工店</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{min-height:100vh;background:#f5f3f0;color:#1a1410;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;display:flex;flex-direction:column;}
+  header{background:#fff;border-bottom:3px solid #C00000;height:64px;display:flex;align-items:center;padding:0 24px;font-weight:700;color:#C00000;letter-spacing:.08em;}
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+  .box{max-width:460px;text-align:center;}
+  h1{font-size:1.6rem;margin-bottom:12px;}
+  p{color:#5a4e44;line-height:1.7;margin-bottom:22px;}
+  a{display:inline-block;background:#C00000;color:#fff;text-decoration:none;padding:10px 22px;font-weight:600;}
+  a:hover{background:#9a0000;}
+</style>
+</head>
+<body>
+<header>祐承店長 信義房屋 文心高工店</header>
+<main>
+  <div class="box">
+    <h1>找不到這個頁面</h1>
+    <p>這個網址沒有對應的內容。請回到首頁，選擇房地合一稅、舊制、重購退稅或其他試算工具。</p>
+    <a href="/">回首頁</a>
+  </div>
+</main>
+</body>
+</html>`;
+}
+
+function notFoundResponse() {
+  return new Response(notFoundHtml(), {
+    status: 404,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex',
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -28,17 +88,37 @@ export default {
       return handleScrapeProp(request, env, cors);
     }
 
-    // 靜態資產：自動補 .html（讓 /prop-compare 能找到 prop-compare.html）
+    if (url.pathname === '/robots.txt') {
+      const body = `User-agent: *\nAllow: /\n\nSitemap: ${url.origin}/sitemap.xml\n`;
+      return new Response(body, {
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+      });
+    }
+
+    if (url.pathname === '/sitemap.xml') {
+      const urls = SITEMAP_PATHS.map((p) => `  <url><loc>${url.origin}${p === '/' ? '/' : p}</loc></url>`).join('\n');
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+      return new Response(xml, {
+        headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+      });
+    }
+
+    // 靜態資產：無副檔名時補 .html（/house-tax → house-tax.html）。
+    // 找不到就回 404，不要落到首頁。
     if (env.ASSETS) {
-      if (!url.pathname.includes('.')) {
+      if (url.pathname !== '/' && !url.pathname.includes('.')) {
+        const trimmed = url.pathname.replace(/\/+$/, '');
         const newUrl = new URL(request.url);
-        newUrl.pathname = url.pathname.replace(/\/?$/, '.html');
+        newUrl.pathname = (trimmed || '/') + '.html';
         const res = await env.ASSETS.fetch(new Request(newUrl.toString(), request));
         if (res.status !== 404) return res;
+        return notFoundResponse();
       }
-      return env.ASSETS.fetch(request);
+      const res = await env.ASSETS.fetch(request);
+      if (res.status === 404) return notFoundResponse();
+      return res;
     }
-    return new Response('Not Found', { status: 404 });
+    return notFoundResponse();
   }
 };
 

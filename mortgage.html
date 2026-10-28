@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>房貸試算｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -230,13 +232,26 @@
   }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="輸入總價、自備款、利率與年限，試算房貸每月還款、總利息與攤還明細，並比較等額本息、等額本金與寬限期。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/mortgage">
+<meta property="og:title" content="房貸試算｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="輸入總價、自備款、利率與年限，試算房貸每月還款、總利息與攤還明細，並比較等額本息、等額本金與寬限期。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/mortgage">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="房貸試算｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="輸入總價、自備款、利率與年限，試算房貸每月還款、總利息與攤還明細，並比較等額本息、等額本金與寬限期。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -259,20 +274,20 @@
 </div>
 
 <main>
-  <a class="back-link" href="index.html">← 回主頁</a>
+  <a class="back-link" href="/">← 回主頁</a>
 
   <!-- 輸入區 -->
   <div class="input-card">
-    <div class="card-title">🏦 貸款條件設定</div>
+    <h2 class="card-title">🏦 貸款條件設定</h2>
 
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">房屋總價</div>
+        <label class="field-label" for="house-price">房屋總價</label>
         <div class="input-wrap"><input type="number" id="house-price" placeholder="例：1500" oninput="updateLoanFromPrice()"><span class="input-unit">萬</span></div>
         <div class="field-tip">填入後系統自動算貸款金額</div>
       </div>
       <div class="field-group">
-        <div class="field-label">自備款比例</div>
+        <label class="field-label" for="down-ratio">自備款比例</label>
         <div class="select-wrap">
           <select class="input-select" id="down-ratio" onchange="updateLoanFromPrice()">
             <option value="20">20%（八成貸）</option>
@@ -284,12 +299,12 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">貸款金額</div>
+        <label class="field-label" for="loan-amount">貸款金額</label>
         <div class="input-wrap"><input type="number" id="loan-amount" placeholder="例：1000" oninput="calcMortgage()"><span class="input-unit">萬</span></div>
         <div class="field-tip">可直接修改覆蓋自動計算值</div>
       </div>
       <div class="field-group">
-        <div class="field-label">貸款期數</div>
+        <label class="field-label" for="loan-years">貸款期數</label>
         <div class="select-wrap">
           <select class="input-select" id="loan-years" onchange="calcMortgage()">
             <option value="10">10 年（120 期）</option>
@@ -301,7 +316,7 @@
         </div>
       </div>
       <div class="field-group" style="grid-column:1/-1;">
-        <div class="field-label">年利率：<strong id="rate-display" style="color:var(--pri);">2.5%</strong></div>
+        <label class="field-label" for="rate-slider">年利率：<strong id="rate-display" style="color:var(--pri);">2.5%</strong></label>
         <div class="slider-wrap">
           <input type="range" id="rate-slider" min="1.0" max="5.0" step="0.05" value="2.5" oninput="updateRateDisplay();calcMortgage()">
           <div class="slider-labels"><span>1.0%</span><span>2.5%</span><span>3.0%</span><span>4.0%</span><span>5.0%</span></div>
@@ -315,7 +330,7 @@
       <div class="field-label" style="margin-bottom:14px;">寬限期設定（前幾年只還利息）</div>
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label" style="font-weight:400;">寬限期年數</div>
+          <label class="field-label" for="grace-years" style="font-weight:400;">寬限期年數</label>
           <div class="select-wrap">
             <select class="input-select" id="grace-years" onchange="calcMortgage()">
               <option value="0" selected>無寬限期</option>
@@ -327,7 +342,7 @@
           </div>
         </div>
         <div class="field-group">
-          <div class="field-label" style="font-weight:400;">還款方式</div>
+          <label class="field-label" for="repay-type" style="font-weight:400;">還款方式</label>
           <div class="select-wrap">
             <select class="input-select" id="repay-type" onchange="calcMortgage()">
               <option value="equal-payment" selected>本息平均攤還（等額還款）</option>
@@ -405,7 +420,7 @@
 
     <!-- 多情境比較 -->
     <div class="compare-card">
-      <div class="card-title" style="font-size:.9rem;">📊 不同貸款年限比較</div>
+      <h2 class="card-title" style="font-size:.9rem;">📊 不同貸款年限比較</h2>
       <table>
         <thead><tr><th>年限</th><th>月付（元）</th><th>總利息（萬）</th><th>利息佔比</th></tr></thead>
         <tbody id="compare-tbody"></tbody>
@@ -487,7 +502,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">房貸試算工具 · 僅供參考，實際條件依銀行審核</div>
+      <div class="fi">房貸試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：本息攤還試算，實際利率與費用以銀行核定為準・最後更新日：2026-05-05</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -742,6 +757,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

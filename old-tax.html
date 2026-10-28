@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>財產交易所得稅試算（舊制）｜信義房屋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>財產交易所得稅試算（舊制）｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{--pri:#7a3000;--pri-dark:#5a2000;--pri-light:#fff8f3;--pri-mid:#f5d5c0;--red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;--border:#e0dad3;--border-dark:#c8bfb5;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;--green:#2e7d52;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);}
@@ -58,7 +60,7 @@
   .hero-banner{background:var(--pri);padding:26px 30px;margin-bottom:32px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;}
   .hero-banner::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;border:20px solid rgba(255,255,255,.06);border-radius:50%;}
   .hero-banner-icon{font-size:2.2rem;flex-shrink:0;}
-  .hero-banner-text h3{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:white;font-weight:600;margin-bottom:4px;}
+  .hero-banner-text h1{font-family:'Noto Serif TC',serif;font-size:1.05rem;color:white;font-weight:600;margin-bottom:4px;}
   .hero-banner-text p{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.5;}
 
   /* Method cards */
@@ -126,7 +128,7 @@
   .result-card.highlight .result-card-val{color:var(--pri);font-size:1.7rem;}
 
   .income-note{background:var(--white);border:1.5px solid var(--border);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
-  .income-note h3{font-size:.85rem;color:var(--text-dim);margin-bottom:10px;font-weight:500;}
+  .income-note h2{font-family:inherit;font-size:.85rem;color:var(--text-dim);margin-bottom:10px;font-weight:500;}
   .income-note p{font-size:.82rem;color:var(--text-dim);line-height:1.7;}
 
   /* Tax brackets */
@@ -210,13 +212,26 @@
     .result-contact-strip{flex-direction:column;align-items:flex-start;}
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="適用民國104年12月31日以前取得的房地，試算財產交易所得稅（舊制）。可選核實認定或標準認定，並併入綜合所得稅級距估算應納稅額。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/old-tax">
+<meta property="og:title" content="財產交易所得稅試算（舊制）｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="適用民國104年12月31日以前取得的房地，試算財產交易所得稅（舊制）。可選核實認定或標準認定，並併入綜合所得稅級距估算應納稅額。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/old-tax">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="財產交易所得稅試算（舊制）｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="適用民國104年12月31日以前取得的房地，試算財產交易所得稅（舊制）。可選核實認定或標準認定，並併入綜合所得稅級距估算應納稅額。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -238,11 +253,11 @@
 
 <!-- STEP 1: 申報方式 -->
 <div class="step-panel active" id="step-1">
-  <a class="back-home" href="index.html">← 回主頁</a>
+  <a class="back-home" href="/">← 回主頁</a>
   <div class="hero-banner">
     <div class="hero-banner-icon">📋</div>
     <div class="hero-banner-text">
-      <h3 id="ot-banner-title">財產交易所得稅試算（舊制）</h3>
+      <h1 id="ot-banner-title">財產交易所得稅試算（舊制）</h1>
       <p id="ot-banner-desc">適用民國 104 年 12 月 31 日以前取得的房地<br>土地免稅，房屋所得併入個人綜合所得稅</p>
     </div>
   </div>
@@ -313,7 +328,7 @@
   <!-- 賣出：有拆價 -->
   <div id="sell-split-field">
     <div class="field-group">
-      <div class="field-label">房屋賣出價款（合約載明）<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-sell">房屋賣出價款（合約載明）<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-sell-wrap"><input type="number" id="act-sell" placeholder="例：700（合約上房屋部分金額）"><span class="input-unit">萬</span></div>
       <div class="field-tip">填合約書上「房屋」欄位的金額，不含土地</div>
       <div class="error-msg" id="act-sell-err">請輸入房屋賣出價款</div>
@@ -322,7 +337,7 @@
   <!-- 賣出：只有總價 -->
   <div id="sell-total-field" style="display:none;">
     <div class="field-group">
-      <div class="field-label">房地賣出總價<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-sell-total">房地賣出總價<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-sell-total-wrap"><input type="number" id="act-sell-total" placeholder="例：1500（房屋＋土地合計）"><span class="input-unit">萬</span></div>
       <div class="error-msg" id="act-sell-total-err" style="display:none;color:var(--red);font-size:.78rem;">請輸入賣出總價</div>
     </div>
@@ -332,7 +347,7 @@
   <!-- 買入：有拆價 -->
   <div id="buy-split-field">
     <div class="field-group">
-      <div class="field-label">房屋買入價款（合約載明）<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-buy">房屋買入價款（合約載明）<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-buy-wrap"><input type="number" id="act-buy" placeholder="例：400（當初合約房屋部分）"><span class="input-unit">萬</span></div>
       <div class="field-tip">填買入合約書上「房屋」欄位的金額</div>
       <div class="error-msg" id="act-buy-err">請輸入房屋買入價款</div>
@@ -341,7 +356,7 @@
   <!-- 買入：只有總價 -->
   <div id="buy-total-field" style="display:none;">
     <div class="field-group">
-      <div class="field-label">房地買入總價<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-buy-total">房地買入總價<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-buy-total-wrap"><input type="number" id="act-buy-total" placeholder="例：1000（房屋＋土地合計）"><span class="input-unit">萬</span></div>
       <div class="error-msg" id="act-buy-total-err" style="display:none;color:var(--red);font-size:.78rem;">請輸入買入總價</div>
     </div>
@@ -351,13 +366,13 @@
   <div id="ratio-section" style="background:#eef4fb;border:1.5px solid #c8ddf0;border-left:3px solid #1a3f6e;padding:14px 16px;margin:14px 0;display:none;">
     <div style="font-size:.78rem;font-weight:600;color:#1a3f6e;margin-bottom:10px;">📐 房地比（出售時評定現值）— 用於拆算房屋所得比例</div>
     <div class="field-group">
-      <div class="field-label">出售時房屋評定現值<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-house-val">出售時房屋評定現值<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-house-val-wrap"><input type="number" id="act-house-val" placeholder="例：80" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
       <div class="field-tip">從房屋稅單或地政事務所查詢</div>
       <div class="error-msg" id="act-house-val-err">請輸入房屋評定現值</div>
     </div>
     <div class="field-group">
-      <div class="field-label">出售時土地公告現值<span class="field-required">必填</span></div>
+      <label class="field-label" for="act-land-val">出售時土地公告現值<span class="field-required">必填</span></label>
       <div class="input-wrap" id="act-land-val-wrap"><input type="number" id="act-land-val" placeholder="例：500" oninput="updateHouseRatio()"><span class="input-unit">萬</span></div>
       <div class="field-tip">從地價稅單查詢</div>
       <div class="error-msg" id="act-land-val-err">請輸入土地公告現值</div>
@@ -371,14 +386,14 @@
   <!-- 必要費用（共用）-->
   <hr class="divider">
   <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:14px;">必要費用（可選填，能從所得扣除）</div>
-  <div class="field-group"><div class="field-label">仲介費（買入時）</div><div class="input-wrap"><input type="number" id="act-buy-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">仲介費（賣出時）</div><div class="input-wrap"><input type="number" id="act-sell-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">代書費（含買入+賣出）</div><div class="input-wrap"><input type="number" id="act-agent-fee" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">契稅（買入時）</div><div class="input-wrap"><input type="number" id="act-deed-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">印花稅</div><div class="input-wrap"><input type="number" id="act-stamp-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">裝修改良費（有單據，增值性）</div><div class="input-wrap"><input type="number" id="act-reno" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
-  <div class="field-group"><div class="field-label">土地增值稅（賣出時繳納）</div><div class="input-wrap"><input type="number" id="act-land-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">萬</span></div><div class="field-tip">土增稅以萬填入，可從所得扣除</div></div>
-  <div class="field-group"><div class="field-label">其他費用</div><div class="input-wrap"><input type="number" id="act-other" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-buy-broker">仲介費（買入時）</label><div class="input-wrap"><input type="number" id="act-buy-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-sell-broker">仲介費（賣出時）</label><div class="input-wrap"><input type="number" id="act-sell-broker" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-agent-fee">代書費（含買入+賣出）</label><div class="input-wrap"><input type="number" id="act-agent-fee" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-deed-tax">契稅（買入時）</label><div class="input-wrap"><input type="number" id="act-deed-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-stamp-tax">印花稅</label><div class="input-wrap"><input type="number" id="act-stamp-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-reno">裝修改良費（有單據，增值性）</label><div class="input-wrap"><input type="number" id="act-reno" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
+  <div class="field-group"><label class="field-label" for="act-land-tax">土地增值稅（賣出時繳納）</label><div class="input-wrap"><input type="number" id="act-land-tax" placeholder="0" oninput="updateActSum()"><span class="input-unit">萬</span></div><div class="field-tip">土增稅以萬填入，可從所得扣除</div></div>
+  <div class="field-group"><label class="field-label" for="act-other">其他費用</label><div class="input-wrap"><input type="number" id="act-other" placeholder="0" oninput="updateActSum()"><span class="input-unit">元</span></div></div>
   <div class="auto-sum">
     <span class="auto-sum-label">必要費用合計（自動加總）</span>
     <span class="auto-sum-val" id="act-fee-sum">0 元</span>
@@ -401,20 +416,20 @@
   </div>
 
   <div class="field-group">
-    <div class="field-label">成交賣出價格（供判斷是否豪宅）</div>
+    <label class="field-label" for="std-sell">成交賣出價格（供判斷是否豪宅）</label>
     <div class="input-wrap"><input type="number" id="std-sell" placeholder="例：1500"><span class="input-unit">萬</span></div>
     <div class="field-tip">用於判斷是否達到豪宅門檻（若達門檻須改用收入 ×20% 計算）</div>
   </div>
 
   <div class="field-group">
-    <div class="field-label">出售時房屋評定現值<span class="field-required">必填</span></div>
+    <label class="field-label" for="std-house-val">出售時房屋評定現值<span class="field-required">必填</span></label>
     <div class="input-wrap" id="std-house-wrap"><input type="number" id="std-house-val" placeholder="例：80"><span class="input-unit">萬</span></div>
     <div class="field-tip">可從房屋稅單查詢</div>
     <div class="error-msg" id="std-house-err">請輸入房屋評定現值</div>
   </div>
 
   <div class="field-group">
-    <div class="field-label">房屋所在縣市區域<span class="field-required">必填</span></div>
+    <label class="field-label" for="std-region">房屋所在縣市區域<span class="field-required">必填</span></label>
     <div class="select-wrap">
       <select class="input-select" id="std-region" onchange="updateStdRate()">
         <option value="">-- 請選擇 --</option>
@@ -504,19 +519,19 @@
   </div>
 
   <div class="field-group">
-    <div class="field-label">本年度其他所得（薪資、利息、租金等）</div>
+    <label class="field-label" for="inc-other">本年度其他所得（薪資、利息、租金等）</label>
     <div class="input-wrap"><input type="number" id="inc-other" placeholder="例：80" oninput="updateIncomeInfo()"><span class="input-unit">萬</span></div>
     <div class="field-tip">不含本次財產交易所得，填估計值即可</div>
   </div>
 
   <div class="field-group">
-    <div class="field-label">免稅額合計（個人 + 扶養人口）</div>
+    <label class="field-label" for="inc-exempt">免稅額合計（個人 + 扶養人口）</label>
     <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：9.7" value="9.7"><span class="input-unit">萬</span></div>
     <div class="field-tip">114 年度每人 9.7 萬（115年5月申報適用）。若有扶養人口，每人加 9.7 萬，已婚另含配偶 9.7 萬</div>
   </div>
 
   <div class="field-group">
-    <div class="field-label">扣除額合計（標準 or 列舉 + 特別扣除額）</div>
+    <label class="field-label" for="inc-deduction">扣除額合計（標準 or 列舉 + 特別扣除額）</label>
     <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：34.9" value="34.9"><span class="input-unit">萬</span></div>
     <div class="field-tip">114 年度：標準扣除額 13.1 萬（已婚 26.2 萬）＋ 薪資特別扣除額 21.8 萬。預設值 34.9 萬為單身有薪資者，已婚有薪資者改填 48 萬</div>
   </div>
@@ -572,7 +587,7 @@
   </div>
 
   <div class="income-note">
-    <h3>📌 114 年度綜合所得稅累進稅率（115年5月申報）</h3>
+    <h2>📌 114 年度綜合所得稅累進稅率（115年5月申報）</h2>
     <p>財產交易所得加入後，你的總所得可能跨越不同稅率級距。以下是你試算的情況：</p>
     <table class="bracket-table" id="bracket-table"></table>
   </div>
@@ -601,7 +616,7 @@
     <button class="btn-action" onclick="showLineShare()">📤 LINE 分享摘要</button>
     <button class="btn-action" onclick="window.print()">🖨 列印</button>
     <button class="btn-action" onclick="resetAll()">🔄 重新試算</button>
-    <a class="btn-action" href="index.html">← 回主頁</a>
+    <a class="btn-action" href="/">← 回主頁</a>
   </div>
 
   <div class="disclaimer" id="disclaimer-box"></div>
@@ -634,7 +649,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi" id="footer-update">資料更新日期：2026-05-05 ・ 財產交易所得稅（舊制）</div>
+      <div class="fi" id="footer-update">法規依據：所得稅法第14條第1項第7類・資料更新日期：2026-05-05</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -762,7 +777,7 @@ function selectMethod(el){
   sh('res-phone','tel:'+(c2.phone||'0933317625'));
   sh('res-line',c2.lineUrl);
   sa('footer-brand',c2.brand);
-  if(c2.updatedDate)document.getElementById('footer-update').textContent='資料更新日期：'+c2.updatedDate+' ・ 財產交易所得稅（舊制）';
+  if(c2.updatedDate)document.getElementById('footer-update').textContent='法規依據：所得稅法第14條第1項第7類・資料更新日期：'+c2.updatedDate;
   const ot=c2.oldTax||{};
   sa('ot-banner-title',ot.bannerTitle);
   if(ot.bannerDesc)document.getElementById('ot-banner-desc').innerHTML=ot.bannerDesc.replace(/\n/g,'<br>');
@@ -1068,7 +1083,7 @@ if(cfg.phoneLabel){document.getElementById('hdr-phone-label').textContent=cfg.ph
 if(cfg.phone){document.getElementById('hdr-phone').href='tel:'+cfg.phone;document.getElementById('footer-phone').href='tel:'+cfg.phone;document.getElementById('res-phone').href='tel:'+cfg.phone;}
 if(cfg.lineUrl){document.getElementById('hdr-line').href=cfg.lineUrl;document.getElementById('footer-line').href=cfg.lineUrl;document.getElementById('res-line').href=cfg.lineUrl;}
 if(cfg.brand)document.getElementById('footer-brand').textContent=cfg.brand;
-if(cfg.updatedDate)document.getElementById('footer-update').textContent=`資料更新日期：${cfg.updatedDate} ・ 財產交易所得稅（舊制）`;
+if(cfg.updatedDate)document.getElementById('footer-update').textContent=`法規依據：所得稅法第14條第1項第7類・資料更新日期：${cfg.updatedDate}`;
 
 renderProgress();
 function showLineShare(){
@@ -1143,6 +1158,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();
