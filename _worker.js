@@ -1,15 +1,11 @@
 // ================================================================
 // 信義房屋物件比較 - Cloudflare Worker
 //
-// /api/scrape-prop：先查 Cache API（免費，不必開 KV，成功結果留 30 分鐘），
-// 再打信義公開 JSON（getObjectContent，失敗退避重試），然後才讀物件頁 HTML。
-// 以上都失敗、且有設定金鑰時，才用 Browser Rendering（一次容易撞上併發上限）。
-// 不要把任何金鑰寫進程式。
-//
-// Browser Rendering 備援才需要（付費附加功能）：
-//   CF_ACCOUNT_ID  → Cloudflare Account ID（純文字變數）
-//   CF_API_TOKEN   → API Token，權限 Account > Browser Rendering > Edit（Secret）
-// 程式沒有使用 ANTHROPIC_KEY。
+// /api/scrape-prop 必須在約 9 秒內回應。
+// 順序：Cache API → 信義 JSON（整段最多 2.5 秒，Cloudflare 上這條連線會掛住）
+// → 直接讀物件頁 HTML（PR #4 在時限內走得完的做法）。
+// Browser Rendering 實測約 19 秒且併發會失敗，放進這次請求會再次把連線掛住，所以不呼叫。
+// 不要把任何金鑰寫進程式。Cache API 免費，不必開 KV。
 // /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖，並加上 CORS，供 PDF 使用。
 // ================================================================
 import logic from "./prop-compare-logic.js";
@@ -144,19 +140,6 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function withRetry(fn, tries, label) {
-  for (let i = 0; i < tries; i++) {
-    try {
-      const value = await fn(i);
-      if (value) return value;
-    } catch (err) {
-      console.error(label, 'attempt', i + 1, err && err.message);
-    }
-    if (i < tries - 1) await sleep(350 * (i + 1) + Math.floor(Math.random() * 250));
-  }
-  return null;
-}
-
 function cacheRequest(origin, path) {
   return new Request(origin.replace(/\/$/, '') + path, { method: 'GET' });
 }
@@ -199,8 +182,28 @@ const SINYI_DEVICE = {
   sinyiGroup: 1,
 };
 
-async function postSinyi(path, body, session) {
-  const res = await fetch('https://sinyiwebapi.sinyi.com.tw/' + path, {
+// 每段上游連線都用 AbortController 切斷。正式環境對 sinyiwebapi 會掛到逾時，
+// 不能只靠 AbortSignal.timeout 再疊 3 次重試。
+// fetch() 在收到標頭就結束，本體還可能繼續掛住，所以計時器要蓋到讀完本體。
+function openUpstream(url, init, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), Math.max(200, ms));
+  const response = fetch(url, Object.assign({}, init, { signal: ctrl.signal }));
+  return { response: response, done: () => clearTimeout(timer) };
+}
+
+function within(ms, fn) {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), ms);
+    Promise.resolve()
+      .then(fn)
+      .then((value) => { clearTimeout(timer); resolve(value || null); })
+      .catch(() => { clearTimeout(timer); resolve(null); });
+  });
+}
+
+async function postSinyi(path, body, session, ms) {
+  const gate = openUpstream('https://sinyiwebapi.sinyi.com.tw/' + path, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -213,33 +216,36 @@ async function postSinyi(path, body, session) {
       sid: (session && session.sid) || '',
     },
     body: JSON.stringify(Object.assign({}, SINYI_DEVICE, body || {})),
-    signal: AbortSignal.timeout(12000),
-  });
-  if (!res.ok) throw new Error('sinyi api http ' + res.status);
-  const data = await res.json();
-  if (!data || String(data.retCode) !== '200' || !data.content) {
-    throw new Error('sinyi api ' + (data && data.retCode));
+  }, ms);
+  try {
+    const res = await gate.response;
+    if (!res.ok) throw new Error('sinyi api http ' + res.status);
+    const data = await res.json();
+    if (!data || String(data.retCode) !== '200' || !data.content) {
+      throw new Error('sinyi api ' + (data && data.retCode));
+    }
+    return data.content;
+  } finally {
+    gate.done();
   }
-  return data.content;
 }
 
-async function getSinyiSession(origin, fresh) {
+async function getSinyiSession(origin, deadline) {
   const key = cacheRequest(origin, '/__cache/sinyi-session');
-  if (!fresh) {
-    const hit = await cacheMatch(key);
-    if (hit) {
-      try {
-        const saved = await hit.json();
-        if (saved && saved.sat && saved.sid) return saved;
-      } catch (err) { /* 重新取得 */ }
-    }
+  const hit = await cacheMatch(key);
+  if (hit) {
+    try {
+      const saved = await hit.json();
+      if (saved && saved.sat && saved.sid) return saved;
+    } catch (err) { /* 重新取得 */ }
   }
-  const setup = await postSinyi('appSetup.php', {}, null);
+  const hop = Math.max(400, deadline - Date.now());
+  const setup = await postSinyi('appSetup.php', {}, null, hop);
   const sat = String((setup && setup.accessCode) || '');
-  if (!sat) throw new Error('no access code');
-  const sess = await postSinyi('getSession.php', {}, { sat: sat, sid: '' });
+  if (!sat || Date.now() >= deadline) return null;
+  const sess = await postSinyi('getSession.php', {}, { sat: sat, sid: '' }, Math.max(400, deadline - Date.now()));
   const sid = String((sess && sess.sid) || '');
-  if (!sid) throw new Error('no session');
+  if (!sid) return null;
   const session = { sat: sat, sid: sid };
   await cachePut(key, new Response(JSON.stringify(session), {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=600' },
@@ -247,15 +253,23 @@ async function getSinyiSession(origin, fresh) {
   return session;
 }
 
-async function fetchListingApi(code, origin, freshSession) {
-  const session = await getSinyiSession(origin, freshSession);
-  const content = await postSinyi('getObjectContent.php', { houseNo: code }, session);
+async function fetchListingApi(code, origin, deadline) {
+  const session = await getSinyiSession(origin, deadline);
+  if (!session || Date.now() >= deadline) return null;
+  const content = await postSinyi('getObjectContent.php', { houseNo: code }, session, Math.max(400, deadline - Date.now()));
   const mapped = logic.listingFromContent(content, code);
   return mapped ? Object.assign({ source: 'api' }, mapped) : null;
 }
 
+function failed(code, cors, reason) {
+  const body = { error: '無法取得物件詳細資料', detailFailed: true, code: code || '' };
+  if (reason) body.reason = reason;
+  return json(body, 502, cors);
+}
+
 async function handleScrapeProp(request, env, cors) {
   let code = '';
+  const BUDGET = 9000;
   try {
     const body = await request.json();
     code = String((body && body.code) || '').trim().toUpperCase();
@@ -263,27 +277,36 @@ async function handleScrapeProp(request, env, cors) {
       return json({ error: '無效的銷售編號', detailFailed: true }, 400, cors);
     }
     const origin = new URL(request.url).origin;
-    const cached = await cacheMatch(cacheRequest(origin, '/__cache/listing/' + code));
-    if (cached) {
-      const data = await cached.json();
-      if (data && data.code) return json(Object.assign({}, data, { source: data.source || 'cache' }), 200, cors);
-    }
-
-    let listing = await withRetry((i) => fetchListingApi(code, origin, i > 0), 3, 'json');
-    if (!listing) listing = await withRetry(() => fetchListingDirect(code), 2, 'html');
-    if (!listing && env && env.CF_ACCOUNT_ID && env.CF_API_TOKEN) {
-      listing = await withRetry(() => fetchViaBrowserRendering(code, env), 2, 'browser');
-    }
-    if (!listing) {
-      return json({ error: '無法取得物件詳細資料', detailFailed: true, code }, 502, cors);
-    }
+    const run = async () => {
+      const cached = await cacheMatch(cacheRequest(origin, '/__cache/listing/' + code));
+      if (cached) {
+        try {
+          const data = await cached.json();
+          if (data && data.code) return Object.assign({}, data, { source: data.source || 'cache' });
+        } catch (err) { /* 繼續向上游要 */ }
+      }
+      // JSON 與物件頁同時開跑。JSON 在 Cloudflare 會掛住，2.5 秒一定切斷；
+      // 物件頁是 PR #4 讀得到車位坪數的做法，最多 6 秒。誰先拿到完整資料就用誰。
+      const jsonP = within(2500, () => fetchListingApi(code, origin, Date.now() + 2400));
+      const htmlP = fetchListingDirect(code, 8000);
+      const fromJson = await jsonP;
+      if (fromJson && fromJson.code) return fromJson;
+      const fromHtml = await htmlP;
+      if (fromHtml && fromHtml.code) return fromHtml;
+      return { detailFailed: true, reason: (fromHtml && fromHtml.reason) || 'json-timeout' };
+    };
+    const listing = await Promise.race([
+      run(),
+      sleep(BUDGET).then(() => ({ detailFailed: true, reason: 'budget' })),
+    ]);
+    if (!listing || !listing.code) return failed(code, cors, listing && listing.reason);
     await cachePut(cacheRequest(origin, '/__cache/listing/' + code), new Response(JSON.stringify(listing), {
       headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=1800' },
     }));
     return json(listing, 200, cors);
   } catch (err) {
     console.error('handleScrapeProp error:', err && err.message);
-    return json({ error: '無法取得物件詳細資料', detailFailed: true, code }, 500, cors);
+    return failed(code, cors);
   }
 }
 
@@ -304,102 +327,93 @@ async function handlePropImg(url) {
   const hit = await cacheMatch(key);
   if (hit) return hit;
 
+  const gate = openUpstream(target, {
+    headers: {
+      Accept: 'image/avif,image/webp,image/*,*/*',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      Referer: 'https://www.sinyi.com.tw/',
+    },
+    redirect: 'manual',
+  }, 8000);
   let upstream;
   try {
-    upstream = await fetch(target, {
+    upstream = await gate.response;
+    if (upstream.status >= 300 && upstream.status < 400) {
+      const next = allowedSinyiImage(upstream.headers.get('Location'));
+      if (!next) return new Response('圖片轉址不允許', { status: 502 });
+      gate.done();
+      const again = openUpstream(next, { redirect: 'manual' }, 8000);
+      try {
+        upstream = await again.response;
+        if (!upstream.ok) return new Response('圖片不存在', { status: 502 });
+        const redirectedType = String(upstream.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
+        if (!redirectedType.startsWith('image/')) return new Response('不是圖片', { status: 502 });
+        const redirectedBytes = await upstream.arrayBuffer();
+        if (redirectedBytes.byteLength > 8 * 1024 * 1024) return new Response('圖片過大', { status: 502 });
+        const redirected = new Response(redirectedBytes, {
+          headers: {
+            'Content-Type': redirectedType,
+            'Cache-Control': 'public, max-age=86400',
+            'Access-Control-Allow-Origin': '*',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        });
+        await cachePut(key, redirected.clone());
+        return redirected;
+      } finally {
+        again.done();
+      }
+    }
+    if (!upstream.ok) return new Response('圖片不存在', { status: 502 });
+    const type = String(upstream.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
+    if (!type.startsWith('image/')) return new Response('不是圖片', { status: 502 });
+    const bytes = await upstream.arrayBuffer();
+    if (bytes.byteLength > 8 * 1024 * 1024) return new Response('圖片過大', { status: 502 });
+    const res = new Response(bytes, {
       headers: {
-        Accept: 'image/avif,image/webp,image/*,*/*',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        Referer: 'https://www.sinyi.com.tw/',
+        'Content-Type': type,
+        'Cache-Control': 'public, max-age=86400',
+        'Access-Control-Allow-Origin': '*',
+        'X-Content-Type-Options': 'nosniff',
       },
-      redirect: 'manual',
-      signal: AbortSignal.timeout(12000),
     });
+    await cachePut(key, res.clone());
+    return res;
   } catch (err) {
     return new Response('圖片讀取失敗', { status: 502 });
+  } finally {
+    gate.done();
   }
-  if (upstream.status >= 300 && upstream.status < 400) {
-    const next = allowedSinyiImage(upstream.headers.get('Location'));
-    if (!next) return new Response('圖片轉址不允許', { status: 502 });
-    try {
-      upstream = await fetch(next, { redirect: 'manual', signal: AbortSignal.timeout(12000) });
-    } catch (err) {
-      return new Response('圖片讀取失敗', { status: 502 });
-    }
-  }
-  if (!upstream.ok) return new Response('圖片不存在', { status: 502 });
-  const type = String(upstream.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
-  if (!type.startsWith('image/')) return new Response('不是圖片', { status: 502 });
-  const bytes = await upstream.arrayBuffer();
-  if (bytes.byteLength > 8 * 1024 * 1024) return new Response('圖片過大', { status: 502 });
-  const res = new Response(bytes, {
+}
+
+async function fetchListingDirect(code, ms) {
+  const pageUrl = `https://www.sinyi.com.tw/buy/house/${encodeURIComponent(code)}`;
+  const gate = openUpstream(pageUrl, {
+    redirect: 'follow',
     headers: {
-      'Content-Type': type,
-      'Cache-Control': 'public, max-age=86400',
-      'Access-Control-Allow-Origin': '*',
-      'X-Content-Type-Options': 'nosniff',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml',
+      'Accept-Language': 'zh-TW,zh;q=0.9',
     },
-  });
-  await cachePut(key, res.clone());
-  return res;
-}
-
-async function fetchListingDirect(code) {
-  const pageUrl = `https://www.sinyi.com.tw/buy/house/${encodeURIComponent(code)}`;
-  let res;
+  }, ms || 6000);
   try {
-    res = await fetch(pageUrl, {
-      redirect: 'follow',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'zh-TW,zh;q=0.9',
-      },
-      signal: AbortSignal.timeout(15000),
-    });
-  } catch (err) {
-    console.error('direct listing fetch failed', code, err && err.message);
-    return null;
-  }
-  if (!res.ok) {
-    console.error('direct listing status', code, res.status);
-    return null;
-  }
-  const html = await res.text();
-  const parsed = logic.parseListingHtml(html, code);
-  if (!parsed) return null;
-  return Object.assign({ source: 'html' }, parsed);
-}
-
-// 直接讀取失敗時才使用。需要帳號已開通 Browser Rendering，以及 CF_ACCOUNT_ID / CF_API_TOKEN。
-async function fetchViaBrowserRendering(code, env) {
-  const pageUrl = `https://www.sinyi.com.tw/buy/house/${encodeURIComponent(code)}`;
-  const endpoint = `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/browser-rendering/content`;
-  try {
-    const contentRes = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${env.CF_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: pageUrl,
-        gotoOptions: { waitUntil: 'domcontentloaded', timeout: 20000 },
-      }),
-      signal: AbortSignal.timeout(25000),
-    });
-    if (!contentRes.ok) {
-      console.error('Browser Rendering content status', contentRes.status);
-      return null;
+    const res = await gate.response;
+    if (!res.ok) {
+      console.error('direct listing status', code, res.status);
+      return { reason: 'html-' + res.status };
     }
-    const payload = await contentRes.json();
-    const html = payload && (payload.result || payload.content || '');
-    const parsed = typeof html === 'string' ? logic.parseListingHtml(html, code) : null;
-    if (parsed) return Object.assign({ source: 'browser' }, parsed);
-    const loose = logic.parseLooseDetail(typeof html === 'string' ? html.replace(/<[^>]+>/g, ' ').slice(0, 8000) : '', code);
-    return loose ? Object.assign({ source: 'browser-text' }, loose) : null;
+    const html = await res.text();
+    const parsed = logic.parseListingHtml(html, code);
+    if (!parsed) {
+      return { reason: (html.includes('__NEXT_DATA__') ? 'html-unparsed-' : 'html-no-data-') + html.length };
+    }
+    return Object.assign({ source: 'html' }, parsed);
   } catch (err) {
-    console.error('Browser Rendering failed', err && err.message);
-    return null;
+    const name = err && (err.name || err.message) || '';
+    console.error('direct listing fetch failed', code, name);
+    return { reason: /abort/i.test(name) ? 'html-timeout' : 'html-error' };
+  } finally {
+    gate.done();
   }
 }
+

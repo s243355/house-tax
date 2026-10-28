@@ -84,6 +84,9 @@ table.cmp tbody tr.best:hover{background:#e0f0e8;}
 .row-warn{display:inline-block;margin-top:4px;font-size:.62rem;color:#8a5a00;background:#fffbeb;border:1px solid #fcd34d;padding:1px 5px;}
 .park-lab{display:flex;align-items:center;justify-content:center;gap:3px;font-size:.62rem;color:var(--muted);margin-top:3px;font-family:"Noto Sans TC",sans-serif;}
 .park-lab input{width:62px;border:1px solid var(--border-d);padding:2px 4px;font-size:.72rem;font-family:"JetBrains Mono",monospace;color:var(--ink);}
+.park-pdf{display:none;font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--ink);line-height:1.4;}
+body.pdf-export .park-in{display:none !important;}
+body.pdf-export .park-pdf{display:inline !important;}
 .td-link a{display:inline-block;padding:4px 9px;font-size:.7rem;color:var(--sinyi);border:1px solid var(--sinyi-m);text-decoration:none;border-radius:2px;white-space:nowrap;transition:all .15s;}
 .td-link a:hover{background:var(--sinyi);color:white;}
 .card-list{display:none;}
@@ -288,8 +291,8 @@ function parkVal(p, field) {
   return String(p[field]);
 }
 function parkInputs(p) {
-  return "<label class='park-lab'>車位坪<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkArea' aria-label='" + PC.esc(p.code + " 車位坪數") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkArea")) + "'></label>" +
-    "<label class='park-lab'>車位價(萬)<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkPrice' aria-label='" + PC.esc(p.code + " 車位價（萬）") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkPrice")) + "'></label>";
+  return "<label class='park-lab'>車位坪<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkArea' aria-label='" + PC.esc(p.code + " 車位坪數") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkArea")) + "'><span class='park-pdf'></span></label>" +
+    "<label class='park-lab'>車位價(萬)<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkPrice' aria-label='" + PC.esc(p.code + " 車位價（萬）") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkPrice")) + "'><span class='park-pdf'></span></label>";
 }
 function unitHtml(d, best) {
   if (d.unitPrice != null) {
@@ -504,12 +507,14 @@ function sleep(ms) {
 }
 
 async function fetchPropOnce(p) {
+  var ctrl = new AbortController();
+  var timer = setTimeout(function () { ctrl.abort(); }, 12000);
   try {
     var res = await fetch("/api/scrape-prop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: p.code }),
-      signal: AbortSignal.timeout(45000)
+      signal: ctrl.signal
     });
     var data = null;
     try { data = await res.json(); } catch (e) { data = null; }
@@ -519,17 +524,16 @@ async function fetchPropOnce(p) {
     return PC.applyDetail(p, data);
   } catch (e) {
     return PC.applyDetail(p, { detailFailed: true, error: "無法連線，請稍後再試" });
+  } finally {
+    clearTimeout(timer);
   }
 }
 
 async function fetchProp(p) {
-  var last = null;
-  for (var i = 0; i < 3; i++) {
-    if (i) await sleep(600 * i);
-    last = await fetchPropOnce(p);
-    if (!last.detailFailed) return last;
-  }
-  return last;
+  var first = await fetchPropOnce(p);
+  if (!first.detailFailed) return first;
+  await sleep(300);
+  return fetchPropOnce(p);
 }
 
 async function startAll() {
@@ -542,14 +546,18 @@ async function startAll() {
   var fill = document.getElementById("prog-fill");
   var lbl = document.getElementById("prog-label");
   props = [];
-  for (var i = 0; i < list.length; i++) {
-    var p = list[i];
-    document.getElementById("ov-sub").textContent = (i + 1) + "/" + list.length + " 讀取 " + p.code + "...";
-    lbl.textContent = "讀取中 " + (i + 1) + "/" + list.length + "：" + p.code;
-    fill.style.width = ((i / list.length) * 100) + "%";
-    props.push(await fetchProp(p));
-    if (i < list.length - 1) await sleep(150);
-  }
+  var done = 0;
+  document.getElementById("ov-sub").textContent = "同時讀取 " + list.length + " 件...";
+  lbl.textContent = "讀取中 0/" + list.length;
+  props = await Promise.all(list.map(function (p) {
+    return fetchProp(p).then(function (row) {
+      done++;
+      fill.style.width = ((done / list.length) * 100) + "%";
+      lbl.textContent = "已完成 " + done + "/" + list.length + "：" + p.code;
+      document.getElementById("ov-sub").textContent = "已完成 " + done + "/" + list.length;
+      return row;
+    });
+  }));
   fill.style.width = "100%";
   lbl.textContent = "完成 " + list.length + " 件";
   document.getElementById("overlay").classList.remove("on");
@@ -609,7 +617,12 @@ async function genPDF() {
   document.body.appendChild(ov);
   try {
     await loadPdfLibs();
-    await new Promise(function (r) { setTimeout(r, 200); });
+    document.querySelectorAll(".park-in").forEach(function (input) {
+      var span = input.parentElement && input.parentElement.querySelector(".park-pdf");
+      if (span) span.textContent = input.value.trim() || "未填";
+    });
+    document.body.classList.add("pdf-export");
+    await new Promise(function (r) { setTimeout(r, 50); });
     var jsPDF = window.jspdf.jsPDF;
     var pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4" });
     var pW = pdf.internal.pageSize.getWidth();
@@ -629,6 +642,7 @@ async function genPDF() {
   } catch (e) {
     alert("PDF 產生失敗：" + (e && e.message ? e.message : e));
   } finally {
+    document.body.classList.remove("pdf-export");
     if (ov.parentNode) document.body.removeChild(ov);
   }
 }
