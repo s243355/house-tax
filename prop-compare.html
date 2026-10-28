@@ -561,12 +561,24 @@ async function startAll() {
   sortAsc = true;
   reportShown = false;
   renderReport();
+  var nextAt = 0;
   for (var i = 0; i < props.length; i++) {
+    if (gen !== loadGen) return;
+    var waitGap = nextAt - Date.now();
+    if (waitGap > 0) await sleep(waitGap);
     if (gen !== loadGen) return;
     lbl.textContent = "補齊詳細資料 " + (i + 1) + "/" + props.length + "：" + props[i].code;
     fill.style.width = ((i / props.length) * 100) + "%";
     var prev = props[i];
+    nextAt = Date.now() + 11000;
     var row = await fetchPropOnce(prev);
+    if (row.detailFailed && /額度|速率|429/.test(row.detailError || "")) {
+      var againAt = Math.max(nextAt, Date.now() + 11000);
+      if (againAt - Date.now() > 0) await sleep(againAt - Date.now());
+      if (gen !== loadGen) return;
+      nextAt = Date.now() + 11000;
+      row = await fetchPropOnce(prev);
+    }
     if (gen !== loadGen) return;
     if (prev.parkAreaKnown) { row.parkArea = prev.parkArea; row.parkAreaKnown = true; }
     if (prev.parkPriceKnown) { row.parkPrice = prev.parkPrice; row.parkPriceKnown = true; }
