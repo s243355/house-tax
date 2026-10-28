@@ -261,8 +261,10 @@ async function fetchListingApi(code, origin, deadline) {
   return mapped ? Object.assign({ source: 'api' }, mapped) : null;
 }
 
-function failed(code, cors) {
-  return json({ error: '無法取得物件詳細資料', detailFailed: true, code: code || '' }, 502, cors);
+function failed(code, cors, reason) {
+  const body = { error: '無法取得物件詳細資料', detailFailed: true, code: code || '' };
+  if (reason) body.reason = reason;
+  return json(body, 502, cors);
 }
 
 async function handleScrapeProp(request, env, cors) {
@@ -286,16 +288,18 @@ async function handleScrapeProp(request, env, cors) {
       // JSON 與物件頁同時開跑。JSON 在 Cloudflare 會掛住，2.5 秒一定切斷；
       // 物件頁是 PR #4 讀得到車位坪數的做法，最多 6 秒。誰先拿到完整資料就用誰。
       const jsonP = within(2500, () => fetchListingApi(code, origin, Date.now() + 2400));
-      const htmlP = fetchListingDirect(code, 6000);
+      const htmlP = fetchListingDirect(code, 8000);
       const fromJson = await jsonP;
       if (fromJson && fromJson.code) return fromJson;
-      return htmlP;
+      const fromHtml = await htmlP;
+      if (fromHtml && fromHtml.code) return fromHtml;
+      return { detailFailed: true, reason: (fromHtml && fromHtml.reason) || 'json-timeout' };
     };
     const listing = await Promise.race([
       run(),
-      sleep(BUDGET).then(() => null),
+      sleep(BUDGET).then(() => ({ detailFailed: true, reason: 'budget' })),
     ]);
-    if (!listing) return failed(code, cors);
+    if (!listing || !listing.code) return failed(code, cors, listing && listing.reason);
     await cachePut(cacheRequest(origin, '/__cache/listing/' + code), new Response(JSON.stringify(listing), {
       headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=1800' },
     }));
@@ -396,15 +400,18 @@ async function fetchListingDirect(code, ms) {
     const res = await gate.response;
     if (!res.ok) {
       console.error('direct listing status', code, res.status);
-      return null;
+      return { reason: 'html-' + res.status };
     }
     const html = await res.text();
     const parsed = logic.parseListingHtml(html, code);
-    if (!parsed) return null;
+    if (!parsed) {
+      return { reason: (html.includes('__NEXT_DATA__') ? 'html-unparsed-' : 'html-no-data-') + html.length };
+    }
     return Object.assign({ source: 'html' }, parsed);
   } catch (err) {
-    console.error('direct listing fetch failed', code, err && err.message);
-    return null;
+    const name = err && (err.name || err.message) || '';
+    console.error('direct listing fetch failed', code, name);
+    return { reason: /abort/i.test(name) ? 'html-timeout' : 'html-error' };
   } finally {
     gate.done();
   }
