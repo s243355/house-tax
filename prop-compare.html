@@ -231,6 +231,7 @@ var props = [];
 var sortKey = "unitPrice";
 var sortAsc = true;
 var reportShown = false;
+var loadGen = 0;
 var restoreSortFocus = false;
 var DEFAULT_AGENT = "祐承店長";
 var DEFAULT_PHONE = "0933-317-625";
@@ -290,9 +291,17 @@ function parkVal(p, field) {
   if (!p[field + "Known"] || p[field] == null) return "";
   return String(p[field]);
 }
+function loadingText() { return "<span class='unk'>載入中…</span>"; }
+function rowFlag(p) {
+  if (p.detailStatus === "loading") return "<div class='row-warn'>載入中…</div>";
+  if (p.detailStatus === "failed" || p.detailFailed) return "<div class='row-warn'>⚠ 未取得詳細資料</div>";
+  return "";
+}
 function parkInputs(p) {
-  return "<label class='park-lab'>車位坪<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkArea' aria-label='" + PC.esc(p.code + " 車位坪數") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkArea")) + "'><span class='park-pdf'></span></label>" +
-    "<label class='park-lab'>車位價(萬)<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkPrice' aria-label='" + PC.esc(p.code + " 車位價（萬）") + "' placeholder='未填' value='" + PC.esc(parkVal(p, "parkPrice")) + "'><span class='park-pdf'></span></label>";
+  var dis = p.detailStatus === "loading" ? " disabled" : "";
+  var ph = p.detailStatus === "loading" ? "載入中…" : "未填";
+  return "<label class='park-lab'>車位坪<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkArea' aria-label='" + PC.esc(p.code + " 車位坪數") + "' placeholder='" + ph + "' value='" + PC.esc(parkVal(p, "parkArea")) + "'" + dis + "><span class='park-pdf'></span></label>" +
+    "<label class='park-lab'>車位價(萬)<input class='park-in' type='number' min='0' step='0.01' inputmode='decimal' data-code='" + PC.esc(p.code) + "' data-field='parkPrice' aria-label='" + PC.esc(p.code + " 車位價（萬）") + "' placeholder='" + ph + "' value='" + PC.esc(parkVal(p, "parkPrice")) + "'" + dis + "><span class='park-pdf'></span></label>";
 }
 function unitHtml(d, best) {
   if (d.unitPrice != null) {
@@ -358,12 +367,16 @@ function renderReport() {
     "<div class='sb'><div class='sb-l'>" + PC.esc(avgLabel) + "</div><div class='sb-v g'>" + PC.esc(avgText) + "</div></div>" +
     "<div class='sb'><div class='sb-l'>最低扣車單價</div><div class='sb-v y'>" + PC.esc(minText) + "</div></div>";
 
-  var failed = props.filter(function (p) { return p.detailFailed; });
+  var loading = props.filter(function (p) { return p.detailStatus === "loading"; });
+  var failed = props.filter(function (p) { return p.detailStatus === "failed" || (p.detailFailed && p.detailStatus !== "loading"); });
   var notice = document.getElementById("detail-notice");
-  if (failed.length) {
+  if (loading.length) {
+    notice.style.display = "block";
+    notice.textContent = "正在逐筆補齊屋齡、樓別、管理費與車位（" + loading.length + " 件載入中…）。表格已先用您貼上的總價與坪數。";
+  } else if (failed.length) {
     notice.style.display = "block";
     var why = failed[0].detailError ? "（" + failed[0].detailError + "）" : "";
-    notice.textContent = "⚠ 有 " + failed.length + " 件物件未能讀取信義房屋詳細資料，屋齡、樓層、管理費、車位類型可能是 —。" + why + " 總價與坪數先用您貼上的內容。請在車位欄補上車位坪數與車位價，才會計算扣車單價。";
+    notice.textContent = "⚠ 有 " + failed.length + " 件未能取得信義房屋詳細資料" + why + "。總價與坪數仍用您貼上的內容，車位可手動填。";
   } else {
     notice.style.display = "none";
     notice.textContent = "";
@@ -406,16 +419,16 @@ function renderReport() {
       (p.community ? "<div class='n-comm'>" + PC.esc(p.community) + "</div>" : "") +
       "<div class='n-code'>" + PC.esc(p.code) + "</div>" +
       (p.rooms ? "<div class='n-rooms'>" + PC.esc(p.rooms) + "</div>" : "") +
-      (p.detailFailed ? "<div class='row-warn'>⚠ 未取得詳細資料</div>" : "") + "</td>" +
+      rowFlag(p) + "</td>" +
       "<td class='td-n " + (isBP ? "bp" : "") + "'><strong>" + fmtTrim(p.price) + "</strong>" + (isBP ? "<div class='bm bm-r'>最低</div>" : "") + "</td>" +
       "<td class='td-n'>" + (p.withParkUnit != null ? fmtUnit(p.withParkUnit) : "—") + "</td>" +
       "<td class='td-n " + (isBU ? "bu" : "") + "'>" + unitHtml(p, isBU) + "</td>" +
       "<td class='td-n'>" + fmtTrim(p.area) + "</td>" +
       "<td class='td-road'>" + PC.esc(p.address || "—") + "</td>" +
-      "<td class='td-n'>" + fmtAge(p.age) + "</td>" +
-      "<td class='td-n'>" + flr + "</td>" +
-      "<td class='td-n' style='font-size:.74rem;'>" + PC.esc(pk) + parkInputs(p) + "</td>" +
-      "<td class='td-n' style='font-size:.74rem;'>" + mgmt + "</td>" +
+      "<td class='td-n'>" + (p.detailStatus === "loading" ? loadingText() : fmtAge(p.age)) + "</td>" +
+      "<td class='td-n'>" + (p.detailStatus === "loading" ? loadingText() : flr) + "</td>" +
+      "<td class='td-n' style='font-size:.74rem;'>" + (p.detailStatus === "loading" ? loadingText() : PC.esc(pk)) + parkInputs(p) + "</td>" +
+      "<td class='td-n' style='font-size:.74rem;'>" + (p.detailStatus === "loading" ? loadingText() : mgmt) + "</td>" +
       "<td class='td-link'>" + linkHtml(p) + "</td>" +
       "</tr>";
   }).join("") + "</tbody>";
@@ -432,7 +445,7 @@ function renderReport() {
       (p.community ? "<div class='n-comm'>" + PC.esc(p.community) + "</div>" : "") +
       "<div class='n-code'>" + PC.esc(p.code) + "</div>" +
       "<div class='n-road'>" + PC.esc(p.address || "路段未填") + (p.rooms ? " · " + PC.esc(p.rooms) : "") + "</div>" +
-      (p.detailFailed ? "<div class='row-warn'>⚠ 未取得詳細資料</div>" : "") +
+      rowFlag(p) +
       "<dl class='pcard-metrics'>" +
       "<div><dt>總價（萬）</dt><dd class='" + (isBP ? "bp" : "") + "'>" + fmtTrim(p.price) + (isBP ? " 最低" : "") + "</dd></div>" +
       "<div><dt>總建坪</dt><dd>" + fmtTrim(p.area) + "</dd></div>" +
@@ -440,7 +453,7 @@ function renderReport() {
       "<div><dt>扣車單價</dt><dd class='" + (p.unitPrice != null ? (isBU ? "bu" : "") : "unk") + "'>" + (p.unitPrice != null ? fmtUnit(p.unitPrice) + (isBU ? " 最低" : "") : PC.esc(p.unitLabel || "—")) + "</dd></div>" +
       "</dl>" +
       "<div class='park-row' style='display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;'>" + parkInputs(p) + "</div>" +
-      "<div class='pcard-meta'>屋齡 " + fmtAge(p.age) + " 年 · " + flr + " · " + PC.esc(pk) + " · 管理費 " + mgmt + "</div>" +
+      "<div class='pcard-meta'>" + (p.detailStatus === "loading" ? "屋齡、樓別、車位載入中…" : ("屋齡 " + fmtAge(p.age) + " 年 · " + flr + " · " + PC.esc(pk) + " · 管理費 " + mgmt)) + "</div>" +
       "<div class='pcard-actions'><span></span>" + linkHtml(p) + "</div>" +
       "</article>";
   }).join("");
@@ -508,7 +521,7 @@ function sleep(ms) {
 
 async function fetchPropOnce(p) {
   var ctrl = new AbortController();
-  var timer = setTimeout(function () { ctrl.abort(); }, 12000);
+  var timer = setTimeout(function () { ctrl.abort(); }, 28000);
   try {
     var res = await fetch("/api/scrape-prop", {
       method: "POST",
@@ -529,42 +542,41 @@ async function fetchPropOnce(p) {
   }
 }
 
-async function fetchProp(p) {
-  var first = await fetchPropOnce(p);
-  if (!first.detailFailed) return first;
-  await sleep(300);
-  return fetchPropOnce(p);
-}
-
 async function startAll() {
   var text = document.getElementById("paste").value;
   applyHeader(text, true);
   var list = PC.parseText(text);
   if (!list.length) { alert("未偵測到有效物件訊息"); return; }
-  document.getElementById("overlay").classList.add("on");
+  var gen = ++loadGen;
+  props = list.map(function (p) {
+    p.detailStatus = "loading";
+    return p;
+  });
   document.getElementById("prog-wrap").style.display = "block";
   var fill = document.getElementById("prog-fill");
   var lbl = document.getElementById("prog-label");
-  props = [];
-  var done = 0;
-  document.getElementById("ov-sub").textContent = "同時讀取 " + list.length + " 件...";
-  lbl.textContent = "讀取中 0/" + list.length;
-  props = await Promise.all(list.map(function (p) {
-    return fetchProp(p).then(function (row) {
-      done++;
-      fill.style.width = ((done / list.length) * 100) + "%";
-      lbl.textContent = "已完成 " + done + "/" + list.length + "：" + p.code;
-      document.getElementById("ov-sub").textContent = "已完成 " + done + "/" + list.length;
-      return row;
-    });
-  }));
-  fill.style.width = "100%";
-  lbl.textContent = "完成 " + list.length + " 件";
-  document.getElementById("overlay").classList.remove("on");
+  fill.style.width = "0%";
+  lbl.textContent = "表格已用貼上的資料。正在逐筆補齊詳細資料…";
   sortKey = "unitPrice";
   sortAsc = true;
   reportShown = false;
   renderReport();
+  for (var i = 0; i < props.length; i++) {
+    if (gen !== loadGen) return;
+    lbl.textContent = "補齊詳細資料 " + (i + 1) + "/" + props.length + "：" + props[i].code;
+    fill.style.width = ((i / props.length) * 100) + "%";
+    var prev = props[i];
+    var row = await fetchPropOnce(prev);
+    if (gen !== loadGen) return;
+    if (prev.parkAreaKnown) { row.parkArea = prev.parkArea; row.parkAreaKnown = true; }
+    if (prev.parkPriceKnown) { row.parkPrice = prev.parkPrice; row.parkPriceKnown = true; }
+    row.detailStatus = row.detailFailed ? "failed" : "ok";
+    props[i] = row;
+    renderReport();
+  }
+  if (gen !== loadGen) return;
+  fill.style.width = "100%";
+  lbl.textContent = "詳細資料已補齊";
 }
 
 function shareReport() {
@@ -649,6 +661,7 @@ async function genPDF() {
 
 function resetAll() {
   props = [];
+  loadGen++;
   reportShown = false;
   document.getElementById("paste").value = "";
   document.getElementById("chips").innerHTML = "";

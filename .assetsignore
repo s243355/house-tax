@@ -1,1 +1,12 @@
-
+# 空的 .assetsignore 會蓋掉 Wrangler 預設忽略規則，
+# 把 .git / .wrangler 一併上傳，Workers Builds 因此失敗，workers.dev 不會更新。
+.git
+.git/**
+.wrangler
+.wrangler/**
+node_modules
+node_modules/**
+tests
+tests/**
+files.zip
+*.map
