@@ -181,6 +181,8 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <meta name="twitter:description" content="依土地稅法第35條，比較新購地與舊售地的申報移轉現值，試算自用住宅用地可退還的土地增值稅，並區分一生一次與一生一屋。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/tax-rules.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -284,8 +286,8 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
   <div class="input-card" id="input-section" style="display:none;">
     <h2 class="card-label">🏗 試算資料輸入</h2>
     <div class="info-box">
-      📌 「公告現值」= 每年財政部公告的土地公告現值 × 土地面積（登記坪數換算平方公尺）。<br>
-      可從<strong>土地所有權狀</strong>或向地政事務所查詢，也可從代書提供的土地增值稅計算書取得。
+      📌 重購退稅比較的是兩邊的「申報移轉現值」（土地稅法第35條），通常等於移轉當期土地現值 × 面積。土地現值由直轄市、縣（市）地政機關公告，不是財政部公告。<br>
+      可從土地增值稅繳款書或代書計算書抄申報移轉現值，不要用市價。
     </div>
     <div class="field-grid">
       <div class="field">
@@ -405,24 +407,21 @@ function calculate(){
 
   if(!oldVal||!taxPaid||!newVal){alert('請填入舊售地現值、已繳土增稅及新購地現值');return;}
 
-  // 公式：餘額A = 新購現值 − (舊售現值 − 已繳土增稅)
-  const remainder = oldVal - taxPaid;  // 舊售現值 − 已繳土增稅
-  const balanceA = newVal - remainder; // 餘額A
+  // 土地稅法第35條
+  const judged = TaxRules.landRepurchaseRefund(oldVal, taxPaid, newVal);
+  const remainder = judged.remainder;
+  const balanceA = judged.balanceA;
 
-  let refundAmt = 0;
-  let resultType = '';  // 'full' | 'partial' | 'none'
+  let refundAmt = judged.refundWan;
+  let resultType = judged.type;
   let resultMsg = '';
 
   if(balanceA <= 0){
     resultType = 'none';
     resultMsg = `餘額 A = ${fmt1(newVal)} − (${fmt1(oldVal)} − ${fmt1(taxPaid)}) = ${fmt1(balanceA)} 萬（≤ 0），不符合退稅條件。`;
-  } else if(taxPaid <= balanceA){
-    resultType = 'full';
-    refundAmt = taxPaid;
+  } else if(resultType === 'full'){
     resultMsg = `已繳土增稅 ${fmt1(taxPaid)} 萬 ≤ 餘額 A ${fmt1(balanceA)} 萬，全額退還。`;
   } else {
-    resultType = 'partial';
-    refundAmt = balanceA;
     resultMsg = `已繳土增稅 ${fmt1(taxPaid)} 萬 > 餘額 A ${fmt1(balanceA)} 萬，退還餘額 A。`;
   }
 
@@ -469,10 +468,11 @@ function calculate(){
   );
 
   document.getElementById('result').style.display='block';
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result');
   setTimeout(()=>document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
-function showLine(){
+function buildLineSummary(){
   if(!lastResult){alert('請先完成試算');return;}
   const cfg=getConfig();
   const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
@@ -505,6 +505,11 @@ ${'─'.repeat(22)}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
 祐承店長 ${phone}`;
+  return msg;
+}
+function showLine(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('lm-text').textContent=msg;
   document.getElementById('lm-overlay').classList.add('open');
   document.getElementById('lm-btn').textContent='📋 複製文字';
@@ -593,6 +598,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.querySelectorAll('input[type=number]').forEach(i=>i.value='');
   document.getElementById('rate-type').selectedIndex=0;
   checks.fill(false);

@@ -161,6 +161,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
 <script src="/holding-period.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -549,7 +550,8 @@ function calculate(){
     document.getElementById('not-eligible-result').style.display='block';
     document.getElementById('not-qualify-reason').textContent=
       `新屋房屋價額（${fmt(newPrice)} 萬）未達舊屋房屋價額（${fmt(oldPrice)} 萬），不符合重購退稅條件。新屋房屋價額需 ≥ 舊屋房屋價額，才可申請退稅。`;
-    lastResult=null;
+    lastResult={oldPrice,newPrice,taxPaid,gapDays,hasTax,eligible:false,reason:document.getElementById('not-qualify-reason').textContent};
+    if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result');
     window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
     return;
   }
@@ -560,7 +562,8 @@ function calculate(){
       (oldDate&&newDate)
         ? `兩次過戶以曆年計算已超過法定 2 年（間隔 ${gapDays} 天），不符合退稅資格。`
         : `兩屋過戶間距 ${gapDays} 天，已超過約 2 年。請改填過戶日期，系統會用曆年判斷。`;
-    lastResult=null;
+    lastResult={oldPrice,newPrice,taxPaid,gapDays,hasTax,eligible:false,reason:document.getElementById('not-qualify-reason').textContent};
+    if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result');
     window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
     return;
   }
@@ -603,10 +606,11 @@ function calculate(){
       : `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬・符合退稅資格`,
     {oldPrice,newPrice,taxPaid}
   );
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result');
   window.scrollTo({top:document.getElementById('result').offsetTop-20,behavior:'smooth'});
 }
 
-function showLine(){
+function buildLineSummary(){
   if(!lastResult){alert('請先完成試算');return;}
   const cfg=getConfig();
   const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
@@ -621,7 +625,9 @@ ${'═'.repeat(22)}
 🏠 舊屋房屋價額：${fmt(oldPrice)} 萬
 🏡 新屋房屋價額：${fmt(newPrice)} 萬
 ${gapDays>0?`📅 兩屋間距：${gapDays} 天（${(gapDays/365).toFixed(1)} 年）\n`:''}
-${hasTax
+${lastResult.eligible===false
+  ? `❌ 不符合重購退稅\n${lastResult.reason||''}`
+  : hasTax
   ? `💸 已繳財交所得稅增加額：${fmt(taxPaid)} 萬\n\n✅ 可申請退稅：${fmt(taxPaid)} 萬（全額退還）`
   : `✅ 符合退稅資格\n（待賣屋完成並申報所得稅後，可申請退還因財交所得增加的稅額）`
 }
@@ -633,6 +639,11 @@ ${'─'.repeat(22)}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
 祐承店長 ${phone}`;
+  return msg;
+}
+function showLine(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('lm-text').textContent=msg;
   document.getElementById('lm-overlay').classList.add('open');
   document.getElementById('lm-btn').textContent='📋 複製文字';
@@ -709,6 +720,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.querySelectorAll('input').forEach(i=>i.value='');
   checks.fill(false);
   document.querySelectorAll('.check-box').forEach(c=>c.classList.remove('on'));

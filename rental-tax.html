@@ -174,6 +174,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <meta name="twitter:description" content="依出租人、承租人是自然人或法人，試算租金的扣繳所得稅與二代健保補充保費，估算房東實際入帳。含稅與未稅報價都可以算。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -585,10 +586,11 @@ function calculate(){
     `${lessor==='person'?'自然人':'法人'}出租・${lessee==='biz'?'公司承租':'個人承租'}・${taxMode==='inc'?'含稅':'未稅'} ${fmtN(rent)}元 → 房東實拿 ${fmtN(landlordNet)}元`,
     {lessor,lessee,taxMode,rent}
   );
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result');
   setTimeout(()=>document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
-function showLine(){
+function buildLineSummary(){
   if(!lastResult){alert('請先完成試算');return;}
   const cfg=getConfig();
   const brand=cfg.brand||'祐承店長 信義房屋 文心高工店';
@@ -617,6 +619,11 @@ function showLine(){
   }
   if(notaryFee>0) msg+=`公證費用（另列）：${fmtN(notaryFee)} 元\n`;
   msg+=`\n試算日期：${today}\n📞 ${brand}\n☎ ${phone}\nLINE：${lineUrl}\n祐承店長 ${phone}`;
+  return msg;
+}
+function showLine(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('lm-text').textContent=msg;
   document.getElementById('lm-overlay').classList.add('open');
   document.getElementById('lm-btn').textContent='📋 複製文字';
@@ -767,6 +774,7 @@ function calcNotary(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.getElementById('rent-input').value='';
   ['lease-years','lease-months','deposit','house-tax-val'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';

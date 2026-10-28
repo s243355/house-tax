@@ -446,6 +446,8 @@ header{
 <meta name="twitter:description" content="依單價與坪數排出多組議價級距，對照含車總價、拆車單價、仲介服務費與屋主實拿，方便貼到 LINE 跟屋主討論。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/tax-rules.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -534,7 +536,8 @@ header{
           <input type="number" id="commission-rate" value="4" placeholder="4" step="0.1" oninput="liveCalc()">
           <span class="unit">%</span>
         </div>
-        <div class="input-hint">依總價計算，預設 4%</div>
+        <div class="input-hint">向買賣雙方收取的合計不得超過成交價 6%（內政部不動產仲介經紀業報酬計收標準）。賣方 4%、買方 2% 是市場常見分法，不是法定拆帳。預設 4% 為賣方常見費率。</div>
+        <p id="fee-cap-warn" hidden style="margin-top:6px;font-size:.78rem;color:#C00000;">這筆費率已超過法定合計上限 6%，請再確認。</p>
       </div>
       <div class="input-group">
         <label class="input-label" for="other-cost">其他費用 <span class="optional">選填</span></label>
@@ -692,33 +695,11 @@ function setPriceMode(mode){
 // 輸入：unitPrice（該級距的含車或扣車單價）
 // 輸出：{ grandTotal, buildOnlyTotal, splitUnitPrice, commission, net }
 function computeRow(unitPrice, totalArea, parkPrice, parkArea, commRate, landTax, realtyTax, otherCost){
-  const hasPark = parkPrice > 0 && parkArea > 0;
-  const pureArea = hasPark ? totalArea - parkArea : totalArea; // 純建物坪數
-
-  let grandTotal;
-  if(priceMode === 'with'){
-    // 含車單價模式：總價 = 單價 × 總建坪
-    grandTotal = +(unitPrice * totalArea).toFixed(2);
-  } else {
-    // 扣車單價模式：扣車總價 = 單價 × 純建物坪數，含車總價再加車位
-    const buildOnlyTotal = +(unitPrice * pureArea).toFixed(2);
-    grandTotal = +(buildOnlyTotal + (hasPark ? parkPrice : 0)).toFixed(2);
-  }
-
-  // 拆車單價 = (含車總價 - 車位價格) / (總建坪 - 車位坪數)
-  const splitUnitPrice = hasPark && pureArea > 0
-    ? +((grandTotal - parkPrice) / pureArea).toFixed(4)
-    : unitPrice;
-
-  // 含車單價（反推，用於扣車模式顯示）
-  const withParkUnitPrice = totalArea > 0
-    ? +(grandTotal / totalArea).toFixed(4)
-    : unitPrice;
-
-  const commission = +(grandTotal * commRate).toFixed(2);
-  const net = +(grandTotal - commission - landTax - realtyTax - otherCost).toFixed(2);
-
-  return { grandTotal, splitUnitPrice, withParkUnitPrice, commission, net };
+  return TaxRules.priceRow({unitPrice,totalArea,parkPrice,parkArea,commRate,landTax,realtyTax,otherCost,priceMode});
+}
+function refreshFeeCap(commRate){
+  const warn=document.getElementById('fee-cap-warn');
+  if(warn)warn.hidden=!(commRate>0.06);
 }
 
 // ── 即時預覽 ──
@@ -737,6 +718,7 @@ function liveCalc(){
     return;
   }
 
+  refreshFeeCap(commRate);
   const r = computeRow(unitPrice, totalArea, parkPrice, parkArea, commRate, landTax, realtyTax, otherCost);
   const hasPark = parkPrice > 0 && parkArea > 0;
 
@@ -902,6 +884,8 @@ function calculate(){
   lineText+=`祐承店長 ${cfg.phoneLabel||'0933317625'}\n`;
 
   document.getElementById('line-text').textContent = lineText;
+  refreshFeeCap(commRate);
+  if(window.YouchengLine)YouchengLine.publish(lineText,'result-section');
 
   // show
   document.getElementById('result-section').style.display = 'block';
@@ -1034,6 +1018,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.querySelectorAll('input[type=number]').forEach(i => {
     const defaults = {'commission-rate':'4','step-size':'0.5','tier-count':'6'};
     i.value = defaults[i.id] || '';

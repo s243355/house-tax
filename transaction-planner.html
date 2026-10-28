@@ -415,6 +415,7 @@ footer{
 <meta name="twitter:description" content="輸入簽約日、總價與貸款成數，自動排出簽約、用印、完稅到交屋的時程與各階段款項，並標出碰到假日的日子。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -835,7 +836,8 @@ function generate(){
   };
 
   renderResult(lastResult);
-  document.getElementById('result').style.display='block'
+  document.getElementById('result').style.display='block';
+  if(window.YouchengLine)YouchengLine.publish(showLine('summary', true),'result');
   // 儲存歷史記錄
   saveHistory('transaction-planner','買賣流程規劃',
     `總價 ${fmt1(total)} 萬 ・ 簽約 ${fmtDate(signDate)} ・ 交屋 ${fmtDate(handoverDate)}`,
@@ -1034,8 +1036,8 @@ function switchTab(tab,id){
   document.getElementById('panel-'+id).classList.add('active');
 }
 
-function showLine(mode='summary'){
-  if(!lastResult)return alert('請先產出時程表');
+function showLine(mode='summary', silent){
+  if(!lastResult){ if(!silent) alert('請先產出時程表'); return; }
   const r=lastResult;
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
@@ -1131,6 +1133,7 @@ ${'─'.repeat(22)}
     seller:['賣方簽約提醒','複製後傳給賣方'],
   };
 
+  if(silent) return msgs[mode]||msgs.summary;
   document.getElementById('lm-text').textContent=msgs[mode];
   document.getElementById('lm-modal-title').textContent=titles[mode][0];
   document.getElementById('lm-modal-sub').textContent=titles[mode][1];
@@ -1239,6 +1242,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.getElementById('sign-date').value='';
   document.getElementById('total-price').value='';
   document.getElementById('loan-ratio').value='0.7';

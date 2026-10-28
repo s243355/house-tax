@@ -247,6 +247,7 @@
 <meta name="twitter:description" content="輸入總價、自備款、利率與年限，試算房貸每月還款、總利息與攤還明細，並比較等額本息、等額本金與寬限期。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -547,7 +548,7 @@ function updateRateDisplay(){
 
 function calcMortgage(){
   const loanMillion = parseFloat(document.getElementById('loan-amount').value)||0;
-  if(loanMillion<=0){ document.getElementById('result-section').style.display='none'; return; }
+  if(loanMillion<=0){ document.getElementById('result-section').style.display='none'; if(window.YouchengLine)YouchengLine.hide(); return; }
 
   const loan = loanMillion * 10000;
   const annualRate = parseFloat(document.getElementById('rate-slider').value)/100;
@@ -651,6 +652,7 @@ function calcMortgage(){
   // Schedule
   buildSchedule(false);
 
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-section');
   window._shouldScroll = false;
   if(window._shouldScroll){
     window.scrollTo({top:document.getElementById('result-section').offsetTop-20, behavior:'smooth'});
@@ -842,7 +844,7 @@ async function generatePDF(){
   }
 }
 
-function showLineShare(){
+function buildLineSummary(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
@@ -880,6 +882,11 @@ LINE 諮詢：${lineUrl}
 
 ⚠ 本試算僅供參考，實際條件依銀行審核為準`;
 
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';
