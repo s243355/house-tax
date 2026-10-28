@@ -47,15 +47,19 @@
     var src = String(text || "");
     var agent = "";
     var phone = "";
-    var am = src.match(/信義房屋[^\n]{0,40}?店[ \t]+([^\s\d：:\n]{2,12})/);
-    if (am) agent = am[1].trim();
+    var store = "";
+    var am = src.match(/信義房屋([^\n]{0,30}?店)[ \t\u3000]+([^\s\d：:\n]{2,12})/);
+    if (am) {
+      store = am[1].trim();
+      agent = am[2].trim();
+    }
     if (!agent) {
       var am2 = src.match(/(?:業務員|經紀人員|經紀人)[：:\s]+([^\s\d：:\n]{2,12})/);
       if (am2) agent = am2[1].trim();
     }
     var pm = src.match(/服務專線[：:]\s*([0-9０-９\-–—\s]{8,20})/);
     if (pm) phone = formatPhone(pm[1]);
-    return { agent: agent, phone: phone };
+    return { agent: agent, phone: phone, store: store };
   }
 
   function parsePriceWan(block) {
@@ -289,7 +293,8 @@
         agent: cleanText(pl.agent, 40),
         phone: cleanText(pl.phone, 24),
         client: cleanText(pl.client, 40),
-        note: cleanText(pl.note, 80)
+        note: cleanText(pl.note, 80),
+        store: cleanText(pl.store, 40)
       };
     } catch (e) {
       return null;
@@ -331,6 +336,16 @@
       out.parkPriceKnown = true;
     }
     return out;
+  }
+
+  function listingFromContent(content, code) {
+    code = String(code || "").trim().toUpperCase();
+    if (!content || typeof content !== "object") return null;
+    if (!/^[A-Z0-9]{6}$/.test(code)) return null;
+    if (String(content.houseNo || "").toUpperCase() !== code) return null;
+    var mapped = mapContent(content, code);
+    if (!(mapped.price > 0) && !mapped.address && !mapped.title) return null;
+    return mapped;
   }
 
   function extractContentData(html, code) {
@@ -479,6 +494,7 @@
     decodeShare: decodeShare,
     applyDetail: applyDetail,
     parseListingHtml: parseListingHtml,
-    parseLooseDetail: parseLooseDetail
+    parseLooseDetail: parseLooseDetail,
+    listingFromContent: listingFromContent
   };
 });
