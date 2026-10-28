@@ -242,6 +242,7 @@
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
 <script src="/holding-period.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -581,6 +582,7 @@ function calculate(){
     document.getElementById('eligible-result').style.display='none';
     document.getElementById('not-eligible-result').style.display='block';
     document.getElementById('not-eligible-reason').textContent=`兩次移轉登記日以曆年計算已超過 2 年（間隔 ${Math.round(daysDiff)} 天），不符合重購退稅資格。`;
+    if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-panel');
     return;
   }
 
@@ -602,9 +604,10 @@ function calculate(){
   detail+=`<div class="calc-row"><span>退稅比例</span><span>${(refundRatio*100).toFixed(1)}%</span></div>`;
   detail+=`<div class="calc-row total"><span>可申請退稅金額</span><span>${fmt(refundAmt)}</span></div>`;
   document.getElementById('calc-detail').innerHTML=detail;
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-panel');
 }
 
-function showLineShare(){
+function buildLineSummary(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
@@ -632,6 +635,11 @@ LINE 諮詢：${lineUrl}
 
 ⚠ 本試算僅供參考，實際退稅依國稅局審核為準`;
 
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';
@@ -751,6 +759,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   currentStep=1;lastResult=null;
   document.querySelectorAll('input[type=number],input[type=date]').forEach(i=>i.value='');
   document.querySelectorAll('.check-box').forEach(c=>c.classList.remove('checked'));

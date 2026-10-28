@@ -260,6 +260,7 @@
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
 <script src="/holding-period.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -945,6 +946,7 @@ function calculate(){
     <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--red);">財政部稅務入口網 — 房地交易試算 →</a></div>`;
 
   document.getElementById('disclaimer-box').innerHTML=`<strong>⚠ 法律免責聲明</strong><br>${cfg.disclaimer}`;
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-panel');
 }
 
 function updateLoan(){
@@ -1024,7 +1026,7 @@ function loadHistory(id){
   },300);
 }
 
-function showLineShare(){
+function buildLineSummary(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
@@ -1060,6 +1062,11 @@ LINE 諮詢：${lineUrl}
 
 ⚠ 本試算僅供參考，實際稅額依國稅局核定為準`;
 
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';
@@ -1092,6 +1099,7 @@ function openLineApp(){
 function shareToLine(){ showLineShare(); }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   currentType=null;stepIdx=0;transferMode='actual';renoConfirmed=false;inheritMerge=true;
   document.querySelectorAll('input[type=number],input[type=date]').forEach(i=>i.value='');
   document.querySelectorAll('.check-box').forEach(c=>c.classList.remove('checked'));

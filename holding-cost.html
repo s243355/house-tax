@@ -259,6 +259,7 @@
 <meta name="twitter:description" content="試算房屋稅、地價稅、貸款利息、管理費與其他支出，對照租金收益後，看繼續持有這間房每年以及數年合計要花多少錢。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -686,10 +687,11 @@ function calcCost(){
   document.getElementById('dc-hold-val').textContent=(totalNet/10000).toFixed(1)+' 萬（成本）';
   document.getElementById('dc-sell-desc').textContent=sellVal>0?`現在賣可取回約 ${sellVal.toFixed(0)} 萬資金（未含房地合一稅）`:'填入市場現值後可顯示比較';
 
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-section');
   window.scrollTo({top:document.getElementById('result-section').offsetTop-20,behavior:'smooth'});
 }
 
-function showLineShare(){
+function buildLineSummary(){
   if(!lastResult){alert('請先完成試算');return;}
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
@@ -717,6 +719,11 @@ LINE 諮詢：${lineUrl}
 
 ⚠ 本試算僅供參考，不含房價漲跌因素`;
 
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';
@@ -856,6 +863,7 @@ async function generatePDF(){
 }
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.querySelectorAll('input[type=number]').forEach(i=>{
     if(i.id==='hold-years')i.value='5';
     else if(i.id==='loan-rate')i.value='2.0';

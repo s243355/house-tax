@@ -227,6 +227,8 @@
 <meta name="twitter:description" content="適用民國104年12月31日以前取得的房地，試算財產交易所得稅（舊制）。可選核實認定或標準認定，並併入綜合所得稅級距估算應納稅額。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/tax-rules.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -418,7 +420,7 @@
   <div class="field-group">
     <label class="field-label" for="std-sell">成交賣出價格（供判斷是否豪宅）</label>
     <div class="input-wrap"><input type="number" id="std-sell" placeholder="例：1500"><span class="input-unit">萬</span></div>
-    <div class="field-tip">用於判斷是否達到豪宅門檻（若達門檻須改用收入 ×20% 計算）</div>
+    <div class="field-tip">114年度規定（115年度標準令尚未公告，暫沿用）：臺中市含車總價達 3,000 萬，改以「房屋分得收入 × 20%」計算，並需填下方公告土地現值。未達門檻則用地區比率。</div>
   </div>
 
   <div class="field-group">
@@ -468,7 +470,14 @@
           <option value="22">臺中市：大雅區 (22%)</option>
           <option value="21">臺中市：龍井區、大肚區、霧峰區 (21%)</option>
           <option value="20">臺中市：后里區、神岡區 (20%)</option>
-          <option value="18">臺中市：其他區 (18%)</option>
+          <option value="19">臺中市：大甲區 (19%)</option>
+          <option value="18">臺中市：梧棲區 (18%)</option>
+          <option value="17">臺中市：清水區 (17%)</option>
+          <option value="15">臺中市：東勢區 (15%)</option>
+          <option value="14">臺中市：外埔區 (14%)</option>
+          <option value="12">臺中市：新社區、大安區 (12%)</option>
+          <option value="10">臺中市：石岡區 (10%)</option>
+          <option value="8">臺中市：和平區 (8%)</option>
           <option value="30">彰化縣 (30%)</option>
           <option value="28">南投縣 (28%)</option>
           <option value="30">雲林縣 (30%)</option>
@@ -494,7 +503,12 @@
         </optgroup>
       </select>
     </div>
-    <div class="field-tip">依財政部公告各縣市標準，選擇最接近的地區</div>
+    <div class="field-tip">臺中市比率依財政部115年3月4日台財稅字第11400690240號令（114年度）。115年度地區比率尚未公告。其他縣市若與該令不符，請改以令上比率為準。</div>
+  </div>
+  <div class="field-group">
+    <label class="field-label" for="std-land-val">出售時公告土地現值（達高價門檻才必填）</label>
+    <div class="input-wrap"><input type="number" id="std-land-val" placeholder="例：400"><span class="input-unit">萬</span></div>
+    <div class="field-tip">高價住宅用：房屋評定現值 ÷（房屋評定現值＋公告土地現值）× 成交總價 × 20%</div>
   </div>
 
   <div class="auto-sum" id="std-rate-display" style="display:none;">
@@ -526,14 +540,14 @@
 
   <div class="field-group">
     <label class="field-label" for="inc-exempt">免稅額合計（個人 + 扶養人口）</label>
-    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：9.7" value="9.7"><span class="input-unit">萬</span></div>
-    <div class="field-tip">114 年度每人 9.7 萬（115年5月申報適用）。若有扶養人口，每人加 9.7 萬，已婚另含配偶 9.7 萬</div>
+    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：10.1" value="10.1"><span class="input-unit">萬</span></div>
+    <div class="field-tip">115 年度每人 10.1 萬（116年5月申報適用，財政部114年11月27日公告）。年滿70歲為 15.15 萬。扶養親屬每人再加一份。</div>
   </div>
 
   <div class="field-group">
     <label class="field-label" for="inc-deduction">扣除額合計（標準 or 列舉 + 特別扣除額）</label>
-    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：34.9" value="34.9"><span class="input-unit">萬</span></div>
-    <div class="field-tip">114 年度：標準扣除額 13.1 萬（已婚 26.2 萬）＋ 薪資特別扣除額 21.8 萬。預設值 34.9 萬為單身有薪資者，已婚有薪資者改填 48 萬</div>
+    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：36.3" value="36.3"><span class="input-unit">萬</span></div>
+    <div class="field-tip">115 年度：標準扣除額 13.6 萬（已婚 27.2 萬）＋ 薪資特別扣除額 22.7 萬。預設 36.3 萬為單身有薪資者；已婚有薪資改填 49.9 萬。</div>
   </div>
 
   <div class="nav-row">
@@ -587,7 +601,7 @@
   </div>
 
   <div class="income-note">
-    <h2>📌 114 年度綜合所得稅累進稅率（115年5月申報）</h2>
+    <h2>📌 115 年度綜合所得稅累進稅率（116年5月申報）</h2>
     <p>財產交易所得加入後，你的總所得可能跨越不同稅率級距。以下是你試算的情況：</p>
     <table class="bracket-table" id="bracket-table"></table>
   </div>
@@ -659,14 +673,9 @@
 </footer>
 
 <script>
-// 綜所稅級距（114年度，115年報稅）
-const TAX_BRACKETS=[
-  {max:59.4,rate:5,diff:0},
-  {max:133,rate:12,diff:4.158},
-  {max:266,rate:20,diff:14.818},
-  {max:498,rate:30,diff:41.418},
-  {max:Infinity,rate:40,diff:91.218}
-];
+// 115年度綜合所得稅速算（財政部114年11月27日台財稅字第11404664070號）
+function calcTax(netIncome){return TaxRules.incomeTaxWan(netIncome);}
+function getRateLabel(netIncome){return TaxRules.incomeTaxRateLabel(netIncome);}
 
 
 // ── 歷史試算記錄 ──
@@ -857,17 +866,6 @@ function updateActFormula(){
 
 function toggleAcc(id){document.getElementById(id).classList.toggle('open');}
 
-function calcTax(netIncome){
-  for(const b of TAX_BRACKETS){
-    if(netIncome<=b.max)return netIncome*b.rate/100-b.diff;
-  }
-  return netIncome*0.4-91.218;
-}
-
-function getRateLabel(netIncome){
-  for(const b of TAX_BRACKETS){if(netIncome<=b.max)return b.rate+'%';}
-  return '40%';
-}
 
 function buildReview(){
   const rows=[['申報方式',currentMethod==='actual'?'核實認定':'標準認定']];
@@ -926,8 +924,13 @@ function calculate(){
     const hv=n('std-house-val');
     const rate=parseFloat(s('std-region'))||0;
     sellPrice=n('std-sell');
-    ratio=rate/100;
-    propIncome=hv*rate/100;
+    const landVal=n('std-land-val');
+    const regionText=document.getElementById('std-region').selectedOptions[0]?.text||'';
+    const std=TaxRules.standardHouseIncome({assessedWan:hv,ratePercent:rate,saleWan:sellPrice,landWan:landVal,regionLabel:regionText});
+    if(std.needsLand){alert('這筆成交價達到114年度高價住宅門檻，請再填出售時公告土地現值，才能用房屋收入的20%計算。');return;}
+    ratio=std.mode==='luxury20'?(hv/(hv+landVal)):rate/100;
+    propIncome=std.incomeWan;
+    window._stdLuxury=std.mode==='luxury20';
   }
 
   const totalIncome=otherIncome+propIncome;
@@ -954,11 +957,13 @@ function calculate(){
   document.getElementById('r-prop-income').textContent=fmt(propIncome);
   document.getElementById('r-method').textContent=currentMethod==='actual'?'核實認定':'標準認定';
   document.getElementById('r-net-income').textContent=fmt(netIncome);
-  document.getElementById('r-ratio').textContent=currentMethod==='actual'?(ratio*100).toFixed(2)+'%':(parseFloat(s('std-region'))||0)+'%（設算）';
+  document.getElementById('r-ratio').textContent=currentMethod==='actual'
+    ?(ratio*100).toFixed(2)+'%'
+    :(window._stdLuxury?'房屋收入×20%（高價住宅）':(parseFloat(s('std-region'))||0)+'%（設算）');
   // r-net 已移除（稅後實拿欄位已移除）
 
   // Bracket table
-  const brackets=[{label:'≤ 59.4 萬',rate:5},{label:'59.4～133 萬',rate:12},{label:'133～266 萬',rate:20},{label:'266～498 萬',rate:30},{label:'> 498 萬',rate:40}];
+  const brackets=[{label:'≤ 61 萬',rate:5},{label:'61～138 萬',rate:12},{label:'138～277 萬',rate:20},{label:'277～519 萬',rate:30},{label:'> 519 萬',rate:40}];
   let bHtml='<thead><tr><th>所得淨額</th><th>稅率</th><th>你的狀況</th></tr></thead><tbody>';
   const rateNow=parseInt(getRateLabel(netIncome));
   brackets.forEach(b=>{
@@ -1002,7 +1007,12 @@ function calculate(){
     }
   }else{
     d+=`<div class="calc-row"><span>房屋評定現值</span><span>${fmt(n('std-house-val'))}</span></div>`;
-    d+=`<div class="calc-row"><span>設算比率（${s('std-region')}%）</span><span>× ${s('std-region')}%</span></div>`;
+    if(window._stdLuxury){
+      d+=`<div class="calc-row"><span>高價住宅（114年度門檻）</span><span>房屋收入 × 20%</span></div>`;
+      d+=`<div class="calc-row sub"><span>　房屋收入</span><span>成交總價 × 房屋現值 ÷（房屋現值＋土地現值）</span></div>`;
+    }else{
+      d+=`<div class="calc-row"><span>設算比率（${s('std-region')}%）</span><span>× ${s('std-region')}%</span></div>`;
+    }
   }
   d+=`<div class="calc-row total"><span>財產交易所得</span><span>${fmt(propIncome)}</span></div>`;
   d+=`<div class="calc-row"><span>其他所得</span><span>+ ${fmt(otherIncome)}</span></div>`;
@@ -1025,11 +1035,13 @@ function calculate(){
     <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--pri);">財政部稅務入口網 →</a></div>`;
 
   document.getElementById('disclaimer-box').innerHTML=`<strong>⚠ 法律免責聲明</strong><br>${cfg.disclaimer}`;
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-panel');
 }
 
 function resetAll(){
   currentMethod=null;stepIdx=0;
-  document.querySelectorAll('input[type=number]').forEach(i=>{if(i.id==='inc-exempt')i.value='9.7';else if(i.id==='inc-deduction')i.value='34.9';else i.value='';});
+  document.querySelectorAll('input[type=number]').forEach(i=>{if(i.id==='inc-exempt')i.value='10.1';else if(i.id==='inc-deduction')i.value='36.3';else i.value='';});
+  if(window.YouchengLine)YouchengLine.hide();
   document.getElementById('std-region').value='';
   document.getElementById('std-rate-display').style.display='none';
   document.getElementById('ratio-display').style.display='none';
@@ -1086,7 +1098,7 @@ if(cfg.brand)document.getElementById('footer-brand').textContent=cfg.brand;
 if(cfg.updatedDate)document.getElementById('footer-update').textContent=`法規依據：所得稅法第14條第1項第7類・資料更新日期：${cfg.updatedDate}`;
 
 renderProgress();
-function showLineShare(){
+function buildLineSummary(){
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
@@ -1118,7 +1130,10 @@ LINE 諮詢：${lineUrl}
 祐承店長 ${phone}
 
 ⚠ 本試算僅供參考，須於隔年5月申報綜所稅時申報`;
-
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';

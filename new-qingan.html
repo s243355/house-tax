@@ -302,6 +302,7 @@
 <meta name="twitter:description" content="新青安3.0（青安貸款3.0）資格快篩、額度估算、3+3階梯利率與月付變化試算，並輸出 LINE 摘要與 PDF 報告。祐承店長 信義房屋 文心高工店 0933-317-625">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -705,7 +706,7 @@ function calc(){
   const r0=num(document.getElementById('rate0').value)||1.775;
   const rGen=num(document.getElementById('rateGen').value)||2.3;
 
-  if(price<=0){document.getElementById('result-section').style.display='none';return;}
+  if(price<=0){document.getElementById('result-section').style.display='none';if(window.YouchengLine)YouchengLine.hide();return;}
 
   // ── 額度組成 ──
   const base=Math.min(price,appraise);          // 成交/鑑價孰低
@@ -840,6 +841,7 @@ function calc(){
     stageMix,regionLabel,incomeLabel,ownLabel,age};
 
   document.getElementById('result-section').style.display='block';
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-section');
   if(window._scroll){window.scrollTo({top:document.getElementById('result-section').offsetTop-20,behavior:'smooth'});window._scroll=false;}
 
   saveHistory('new-qingan','新青安3.0試算',`本金 ${principalWan.toFixed(0)}萬・前3年月付 ${yen(qFirstPay)}元・${vTitle}`,{price,principalWan,years});
@@ -848,7 +850,7 @@ function calc(){
 function scrollToInput(){document.querySelector('.input-card').scrollIntoView({behavior:'smooth',block:'start'});}
 
 // ── LINE 分享 ──
-function showLineShare(){
+function buildLineSummary(){
   if(!lastResult)return;
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
@@ -877,6 +879,11 @@ ${'─'.repeat(22)}
 LINE：${lineUrl}
 
 ⚠ 僅供估算，實際額度利率依銀行核定`;
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg)return;
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';

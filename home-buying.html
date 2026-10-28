@@ -208,6 +208,8 @@
 <meta name="twitter:description" content="把舊房稅後實拿、剩餘貸款、新房自備款與新房貸款串成一份換屋計畫，估算資金缺口和搬進去之後每個月要還多少。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 <script src="/pdf-loader.js"></script>
+<script src="/tax-rules.js"></script>
+<script src="/line-share.js"></script>
 </head>
 <body>
 
@@ -275,7 +277,7 @@
             <option value="4">2～5 年（稅率 35%）</option>
             <option value="8" selected>5～10 年（稅率 20%）</option>
             <option value="15">10 年以上（稅率 15%）</option>
-            <option value="selfuse">自住優惠（10%）</option>
+            <option value="selfuse">自住優惠（超過400萬部分 10%）</option>
           </select>
         </div>
       </div>
@@ -305,6 +307,7 @@
       <div class="field-group">
         <label class="field-label" for="old-broker">仲介費（賣方）</label>
         <div class="input-wrap"><input type="number" id="old-broker" placeholder="自動估算" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
+        <div class="field-tip">未填時暫以成交價 1.5% 估算，可自行修改。法定上限是向買賣雙方收取的合計不超過成交價 6%；賣方 4%、買方 2% 只是市場常見分法。</div>
         <div class="field-tip">通常為成交價 × 1～2%</div>
       </div>
       <div class="field-group">
@@ -517,23 +520,16 @@ function n(id){return parseFloat(document.getElementById(id).value)||0;}
 function s(id){return document.getElementById(id).value||'';}
 let lastResult=null;
 
-function getTaxRate(){
-  const v=s('old-hold-years');
-  if(v==='selfuse')return 0.10;
-  if(+v<=2)return 0.45;
-  if(+v<=5)return 0.35;
-  if(+v<=10)return 0.20;
-  return 0.15;
+function estimatedHouseTax(price,cost){
+  return TaxRules.consolidatedHouseTaxWan(price,cost,s('old-hold-years'));
 }
 
 function calcOldNet(){
   const price=n('old-price');
   const cost=n('old-cost');
   const loan=n('old-loan');
-  const taxRate=getTaxRate();
   if(price>0&&cost>0){
-    const income=Math.max(price-cost,0);
-    const tax=income*taxRate;
+    const tax=estimatedHouseTax(price,cost);
     const broker=price*0.015;
     const net=price-loan-tax-broker;
     document.getElementById('old-net-preview').textContent=net.toFixed(1)+' 萬';
@@ -551,7 +547,7 @@ function updateDownAmt(){updateFlowCalc();}
 function getOldTax(){
   const v=n('old-tax');if(v>0)return v;
   const price=n('old-price'),cost=n('old-cost');
-  if(price>0&&cost>0)return Math.max(price-cost,0)*getTaxRate();
+  if(price>0&&cost>0)return estimatedHouseTax(price,cost);
   return 0;
 }
 function getOldBroker(){
@@ -579,12 +575,8 @@ function updateFlowBar(){
 }
 
 function calcMortgage(loanAmt, years, rate){
-  const monthlyRate=rate/100/12;
-  const months=years*12;
-  if(monthlyRate===0)return{monthly:loanAmt*10000/months,totalInt:0};
-  const monthly=loanAmt*10000*monthlyRate*Math.pow(1+monthlyRate,months)/(Math.pow(1+monthlyRate,months)-1);
-  const totalInt=monthly*months-loanAmt*10000;
-  return{monthly,totalInt:totalInt/10000};
+  const r=TaxRules.annuityMonthly(loanAmt,years,rate);
+  return{monthly:r.monthly,totalInt:r.totalInterestWan};
 }
 
 function calculate(){
@@ -611,14 +603,13 @@ function calculate(){
   const {monthly,totalInt}=calcMortgage(newLoan,loanYears,rate);
 
   lastResult={oldPrice,oldLoan,oldFees,available,newPrice,newDown,newLoan,newMisc,newReno,newTotalNeeded,gap,monthly,totalInt,loanYears,rate,newDownRatio};
+  const fmt=v=>v.toFixed(1)+' 萬';
 
   document.getElementById('result-section').style.display='block'
-  // 儲存歷史記錄
   saveHistory('home-buying','換屋資金規劃',
     `舊屋 ${fmt(oldPrice)} 萬 → 新屋 ${fmt(newPrice)} 萬 ・ ${gap>=0?'結餘':'缺口'} ${fmt(Math.abs(gap))} 萬`,
     {oldPrice,newPrice,loanRatio:+document.getElementById('new-down-ratio').value}
-  );;
-  const fmt=v=>v.toFixed(1)+' 萬';
+  );
 
   document.getElementById('r-old-price').textContent=fmt(oldPrice);
   document.getElementById('r-old-loan').textContent=fmt(oldLoan);
@@ -639,12 +630,12 @@ function calculate(){
   if(gap>=0){
     gapEl.className='fn-val green';
     fnGap.className='flow-node result ok';
-    document.getElementById('gap-label').textContent='資金結餘';
+    document.getElementById('gap-label').firstChild.textContent='資金結餘';
     document.getElementById('gap-desc').textContent='賣掉舊房後還有多餘資金';
   } else {
     gapEl.className='fn-val red';
     fnGap.className='flow-node result fail';
-    document.getElementById('gap-label').textContent='資金缺口';
+    document.getElementById('gap-label').firstChild.textContent='資金缺口';
     document.getElementById('gap-desc').textContent='還需籌措的額外資金';
   }
 
@@ -671,6 +662,7 @@ function calculate(){
   document.getElementById('vd-verdict').textContent=verdictText;
   document.getElementById('vd-verdict').style.color=verdictColor;
   document.getElementById('verdict-msg').innerHTML=msgHtml;
+  if(window.YouchengLine)YouchengLine.publish(buildLineSummary(),'result-section');
 
   window.scrollTo({top:document.getElementById('result-section').offsetTop-20,behavior:'smooth'});
 }
@@ -788,8 +780,8 @@ async function generatePDF(){
   }
 }
 
-function showLineShare(){
-  if(!lastResult){alert('請先完成試算');return;}
+function buildLineSummary(){
+  if(!lastResult)return '';
   const cfg=getConfig();
   const brand=cfg.brand||'信義房屋 文心高工店';
   const phone=cfg.phoneLabel||'祐承 0933-317-625';
@@ -821,7 +813,11 @@ ${'─'.repeat(22)}
 ☎ ${phone}
 LINE 諮詢：${lineUrl}
 祐承店長 ${phone}`;
-
+  return msg;
+}
+function showLineShare(){
+  const msg=buildLineSummary();
+  if(!msg){alert('請先完成試算');return;}
   document.getElementById('line-preview-text').textContent=msg;
   document.getElementById('line-modal').classList.add('open');
   document.getElementById('copy-btn').textContent='📋 複製文字';
@@ -838,6 +834,7 @@ function copyLineText(){
 function openLineApp(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(document.getElementById('line-preview-text').textContent),'_blank');}
 
 function resetAll(){
+  if(window.YouchengLine)YouchengLine.hide();
   document.querySelectorAll('input[type=number]').forEach(i=>{
     if(i.id==='new-rate')i.value='2.0'; else i.value='';
     i.placeholder=i.getAttribute('placeholder')||'';
