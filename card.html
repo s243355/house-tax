@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>聯絡我們｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -47,7 +49,7 @@
 
   /* QR Code 區 */
   .qr-section{padding:28px 32px 20px;text-align:center;border-bottom:1px solid var(--border);}
-  .qr-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;}
+  .qr-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.18em;text-transform:uppercase;font-weight:400;margin-bottom:14px;}
   .qr-wrap{display:inline-block;padding:12px;background:white;border:2px solid var(--border);box-shadow:var(--shadow-sm);margin-bottom:14px;}
   .qr-wrap img{width:160px;height:160px;display:block;}
   .qr-hint{font-size:.75rem;color:var(--text-muted);line-height:1.55;}
@@ -69,7 +71,7 @@
 
   /* 工具列 */
   .tools-section{padding:16px 32px;background:var(--surface2);border-top:1px solid var(--border);}
-  .tools-label{font-size:.68rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;}
+  .tools-label{font-size:.68rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;font-weight:400;margin-bottom:10px;}
   .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
   .tool-chip{background:var(--white);border:1.5px solid var(--border);padding:8px 6px;text-align:center;font-size:.7rem;color:var(--text-dim);text-decoration:none;transition:all .2s;border-radius:2px;}
   .tool-chip:hover{border-color:var(--red);color:var(--red);background:var(--red-light);}
@@ -110,11 +112,25 @@
 </style>
 <!-- QR Code 產生庫 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="祐承店長的聯絡名片：信義房屋文心高工店，電話 0933-317-625，LINE 加好友，以及房地稅務試算工具入口。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/card">
+<meta property="og:title" content="聯絡我們｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="祐承店長的聯絡名片：信義房屋文心高工店，電話 0933-317-625，LINE 加好友，以及房地稅務試算工具入口。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/card">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="聯絡我們｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="祐承店長的聯絡名片：信義房屋文心高工店，電話 0933-317-625，LINE 加好友，以及房地稅務試算工具入口。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
 </head>
 <body>
 
 <div style="max-width:420px;margin:0 auto;padding:0 0 8px;display:flex;align-items:center;justify-content:space-between;">
-  <a href="index.html" style="font-size:.78rem;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border);background:var(--card);border-radius:2px;transition:all .15s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">← 回工具首頁</a>
+  <a href="/" style="font-size:.78rem;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border);background:var(--card);border-radius:2px;transition:all .15s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">← 回工具首頁</a>
   <span style="font-size:.7rem;color:var(--text-muted);">信義房屋 文心高工店</span>
 </div>
 <div class="card" id="business-card">
@@ -131,7 +147,7 @@
         </svg>
       </div>
       <div class="logo-text">
-        <div class="logo-brand" id="card-brand">信義房屋</div>
+        <h1 class="logo-brand" id="card-brand">信義房屋</h1>
         <div class="logo-sub" id="card-branch">文心高工店</div>
       </div>
     </div>
@@ -140,7 +156,7 @@
 
   <!-- QR Code -->
   <div class="qr-section">
-    <div class="qr-label">LINE 加好友 · 掃碼即加</div>
+    <h2 class="qr-label">LINE 加好友 · 掃碼即加</h2>
     <div class="qr-wrap">
       <div id="qrcode"></div>
     </div>
@@ -181,24 +197,24 @@
 
   <!-- 工具捷徑 -->
   <div class="tools-section">
-    <div class="tools-label">免費試算工具</div>
+    <h2 class="tools-label">免費試算工具</h2>
     <div class="tools-grid">
-      <a class="tool-chip" id="chip-new" href="house-tax.html">
+      <a class="tool-chip" id="chip-new" href="/house-tax">
         <span class="tool-chip-icon">🏠</span>房地合一稅
       </a>
-      <a class="tool-chip" id="chip-old" href="old-tax.html">
+      <a class="tool-chip" id="chip-old" href="/old-tax">
         <span class="tool-chip-icon">📋</span>財交所得稅
       </a>
-      <a class="tool-chip" id="chip-mortgage" href="mortgage.html">
+      <a class="tool-chip" id="chip-mortgage" href="/mortgage">
         <span class="tool-chip-icon">🏦</span>房貸試算
       </a>
-      <a class="tool-chip" id="chip-holding" href="holding-cost.html">
+      <a class="tool-chip" id="chip-holding" href="/holding-cost">
         <span class="tool-chip-icon">🌿</span>持有成本
       </a>
-      <a class="tool-chip" id="chip-refund" href="repurchase-refund.html">
+      <a class="tool-chip" id="chip-refund" href="/repurchase-refund">
         <span class="tool-chip-icon">🔄</span>重購退稅
       </a>
-      <a class="tool-chip" id="chip-homebuying" href="home-buying.html">
+      <a class="tool-chip" id="chip-homebuying" href="/home-buying">
         <span class="tool-chip-icon">🔑</span>換屋規劃
       </a>
     </div>
@@ -221,11 +237,12 @@
 <div class="actions">
   <button class="action-btn" onclick="window.print()">🖨 列印名片</button>
   <button class="action-btn" onclick="shareCard()">📤 分享連結</button>
-  <a class="action-btn" href="index.html" style="text-align:center;text-decoration:none;">← 回主頁</a>
+  <a class="action-btn" href="/" style="text-align:center;text-decoration:none;">← 回主頁</a>
 </div>
 
 <div class="page-footer">
-  <a href="index.html">信義房屋 文心高工店 · 房產稅務試算工具</a>
+  <div>聯絡資訊以本頁所示電話與 LINE 為準・最後更新日：2026-05-05</div>
+  <a href="/">信義房屋 文心高工店 · 房產稅務試算工具</a>
 </div>
 
 <script>
@@ -269,7 +286,7 @@ function initCard(){
   if(vc.address)document.getElementById('card-address').textContent=vc.address;
 
   // 網址
-  const webUrl=vc.webUrl||window.location.href.replace('/card.html','/');
+  const webUrl=vc.webUrl||window.location.href.replace(/\/card(?:\.html)?\/?$/,'/');
   document.getElementById('card-web-link').href=webUrl;
   document.getElementById('card-web-link').textContent=webUrl.replace(/https?:\/\//,'').replace(/\/$/,'');
 

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>租賃稅務試算｜祐承店長 信義房屋 文心高工店</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -157,13 +159,26 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
   footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="依出租人、承租人是自然人或法人，試算租金的扣繳所得稅與二代健保補充保費，估算房東實際入帳。含稅與未稅報價都可以算。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/rental-tax">
+<meta property="og:title" content="租賃稅務試算｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="依出租人、承租人是自然人或法人，試算租金的扣繳所得稅與二代健保補充保費，估算房東實際入帳。含稅與未稅報價都可以算。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/rental-tax">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="租賃稅務試算｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="依出租人、承租人是自然人或法人，試算租金的扣繳所得稅與二代健保補充保費，估算房東實際入帳。含稅與未稅報價都可以算。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home">← 首頁</a>
+  <a href="/" class="hdr-home">← 首頁</a>
   <div class="hdr-mid">
     <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -187,7 +202,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 出租方身份 -->
   <div class="identity-section">
-    <div class="sec-label">🏠 出租方身份</div>
+    <h2 class="sec-label">🏠 出租方身份</h2>
     <div class="id-grid">
       <button class="id-btn active" id="lessor-person" onclick="setLessor('person')">
         <div class="id-btn-title">👤 自然人（個人）</div>
@@ -202,7 +217,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 承租方身份 -->
   <div class="identity-section">
-    <div class="sec-label">🏪 承租方身份</div>
+    <h2 class="sec-label">🏪 承租方身份</h2>
     <div class="id-grid">
       <button class="id-btn active" id="lessee-biz" onclick="setLessee('biz')">
         <div class="id-btn-title">🏢 公司／法人／機關</div>
@@ -223,7 +238,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 租金輸入 -->
   <div class="input-card" id="input-section">
-    <div class="sec-label">💰 租金資料</div>
+    <h2 class="sec-label">💰 租金資料</h2>
 
     <!-- 含稅/未稅 -->
     <div class="field">
@@ -236,7 +251,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
     </div>
 
     <div class="field">
-      <div class="field-label" id="rent-label">單月租金（含稅）<span class="req">必填</span></div>
+      <label class="field-label" for="rent-input" id="rent-label">單月租金（含稅）<span class="req">必填</span></label>
       <div class="iw">
         <input type="number" id="rent-input" placeholder="例：45000" oninput="liveCheck();autoDeposit()" onchange="liveCheck();autoDeposit()">
         <span class="unit">元</span>
@@ -249,7 +264,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
     <!-- 公證費用試算 -->
     <hr style="border:none;border-top:1px dashed var(--border);margin:16px 0;">
-    <div class="sec-label">📝 租約公證費試算（選填）</div>
+    <h2 class="sec-label">📝 租約公證費試算（選填）</h2>
     <div class="info-box" style="margin-bottom:12px;">
       📐 <strong>計算公式（公證法施行細則 §84）</strong>：取以下兩者較高值，再加押金，對照費率表。<br>
       　①  月租金 × 租期月數　②  房屋課稅現值（查房屋稅稅單）<br>
@@ -257,19 +272,19 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div class="field">
-        <div class="field-label">租期</div>
+        <label class="field-label" for="lease-years">租期</label>
         <div style="display:flex;gap:6px;align-items:center;">
           <div class="iw" style="flex:1;"><input type="number" id="lease-years" placeholder="1" min="0" oninput="calcNotary()"><span class="unit">年</span></div>
-          <div class="iw" style="flex:1;"><input type="number" id="lease-months" placeholder="0" min="0" max="11" oninput="calcNotary()"><span class="unit">月</span></div>
+          <div class="iw" style="flex:1;"><input type="number" id="lease-months" placeholder="0" min="0" max="11" oninput="calcNotary()" aria-label="租期月數"><span class="unit">月</span></div>
         </div>
       </div>
       <div class="field">
-        <div class="field-label">押金（保證金）</div>
+        <label class="field-label" for="deposit">押金（保證金）</label>
         <div class="iw"><input type="number" id="deposit" placeholder="自動帶入租金×2" oninput="calcNotary()"><span class="unit">元</span></div>
         <div class="field-tip" id="deposit-tip">輸入月租金後自動帶入（可修改）</div>
       </div>
       <div class="field">
-        <div class="field-label">房屋課稅現值</div>
+        <label class="field-label" for="house-tax-val">房屋課稅現值</label>
         <div class="iw"><input type="number" id="house-tax-val" placeholder="例：450000" oninput="calcNotary()"><span class="unit">元</span></div>
         <div class="field-tip">查最新一期房屋稅稅單上的「房屋課稅現值」</div>
       </div>
@@ -362,7 +377,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <footer>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="mark" style="width:26px;height:26px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">租賃稅務試算 · 僅供參考</div></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">租賃稅務試算 · 僅供參考</div><div class="fi">法規依據：所得稅法第88條扣繳、全民健康保險補充保費・最後更新日：2026-05-05</div></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
@@ -665,6 +680,7 @@ async function generatePDF(){
   container.innerHTML=html;document.body.appendChild(container);
   await new Promise(r=>setTimeout(r,800));
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth(),pdfH=pdf.internal.pageSize.getHeight();

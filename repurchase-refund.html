@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>房地合一重購退稅｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -224,13 +226,27 @@
   }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="依所得稅法第4條之5試算自住換屋可退的房地合一稅。以兩次移轉登記日的曆年判斷是否在2年內，大換小按比例退、大換大全額退。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/repurchase-refund">
+<meta property="og:title" content="房地合一重購退稅｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="依所得稅法第4條之5試算自住換屋可退的房地合一稅。以兩次移轉登記日的曆年判斷是否在2年內，大換小按比例退、大換大全額退。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/repurchase-refund">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="房地合一重購退稅｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="依所得稅法第4條之5試算自住換屋可退的房地合一稅。以兩次移轉登記日的曆年判斷是否在2年內，大換小按比例退、大換大全額退。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
+<script src="/holding-period.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -253,7 +269,7 @@
 </div>
 
 <main>
-  <a class="back-link" href="index.html">← 回主頁</a>
+  <a class="back-link" href="/">← 回主頁</a>
 
   <!-- 步驟指示 -->
   <div class="steps-indicator">
@@ -266,7 +282,7 @@
   <!-- STEP 1: 資格確認 -->
   <div class="step-panel active" id="step-1">
     <div class="input-card">
-      <div class="card-title">✅ 重購退稅 4 項資格確認</div>
+      <h2 class="card-title">✅ 重購退稅 4 項資格確認</h2>
 
       <div class="info-box">
         💡 重購退稅依據：所得稅法 §4-5 第一項第三款。符合以下 4 個條件才能申請退稅，請逐一確認。
@@ -305,23 +321,23 @@
   <!-- STEP 2: 舊屋資料 -->
   <div class="step-panel" id="step-2">
     <div class="input-card">
-      <div class="card-title">🏠 舊屋出售資料</div>
+      <h2 class="card-title">🏠 舊屋出售資料</h2>
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label">舊屋成交價<span class="field-required">必填</span></div>
+          <label class="field-label" for="old-sell">舊屋成交價<span class="field-required">必填</span></label>
           <div class="input-wrap"><input type="number" id="old-sell" placeholder="例：1500"><span class="input-unit">萬</span></div>
         </div>
         <div class="field-group">
-          <div class="field-label">出售完成過戶日<span class="field-required">必填</span></div>
+          <label class="field-label" for="old-sell-date">出售完成過戶日<span class="field-required">必填</span></label>
           <input type="date" id="old-sell-date">
         </div>
         <div class="field-group">
-          <div class="field-label">已繳納房地合一稅<span class="field-required">必填</span></div>
+          <label class="field-label" for="old-tax-paid">已繳納房地合一稅<span class="field-required">必填</span></label>
           <div class="input-wrap"><input type="number" id="old-tax-paid" placeholder="例：80"><span class="input-unit">萬</span></div>
           <div class="field-tip">從繳款書或報稅紀錄查詢</div>
         </div>
         <div class="field-group">
-          <div class="field-label">取得成本+費用合計</div>
+          <label class="field-label" for="old-cost">取得成本+費用合計</label>
           <div class="input-wrap"><input type="number" id="old-cost" placeholder="例：1000"><span class="input-unit">萬</span></div>
           <div class="field-tip">用於核算退稅比例，可選填</div>
         </div>
@@ -337,15 +353,15 @@
   <!-- STEP 3: 新屋資料 -->
   <div class="step-panel" id="step-3">
     <div class="input-card">
-      <div class="card-title">🏡 新屋購入資料</div>
+      <h2 class="card-title">🏡 新屋購入資料</h2>
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label">新屋購入總價<span class="field-required">必填</span></div>
+          <label class="field-label" for="new-buy">新屋購入總價<span class="field-required">必填</span></label>
           <div class="input-wrap"><input type="number" id="new-buy" placeholder="例：2000"><span class="input-unit">萬</span></div>
           <div class="field-tip">新屋總價 ≥ 舊屋成交價 → 全額退稅<br>新屋總價 &lt; 舊屋成交價 → 按比例退稅</div>
         </div>
         <div class="field-group">
-          <div class="field-label">購入完成過戶日<span class="field-required">必填</span></div>
+          <label class="field-label" for="new-buy-date">購入完成過戶日<span class="field-required">必填</span></label>
           <input type="date" id="new-buy-date">
         </div>
       </div>
@@ -463,7 +479,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">房地合一重購退稅工具 · 僅供參考，實際退稅依國稅局審核為準</div>
+      <div class="fi">房地合一重購退稅工具 · 僅供參考，實際退稅依國稅局審核為準</div><div class="fi">法規依據：所得稅法第4條之5第1項第3款（重購自住房地退稅）・最後更新日：2026-05-05</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -532,7 +548,7 @@ function calculate(){
   if(oldSellDate&&newBuyDate){
     const d1=new Date(oldSellDate);const d2=new Date(newBuyDate);
     daysDiff=Math.abs((d2-d1)/(1000*60*60*24));
-    within2Years=daysDiff<=730;
+    within2Years=HoldingPeriod.withinCalendarYears(oldSellDate,newBuyDate,2);
   }
 
   // 退稅計算
@@ -564,7 +580,7 @@ function calculate(){
   if(!within2Years&&daysDiff!==null){
     document.getElementById('eligible-result').style.display='none';
     document.getElementById('not-eligible-result').style.display='block';
-    document.getElementById('not-eligible-reason').textContent=`兩屋過戶日期間距為 ${Math.round(daysDiff)} 天（${(daysDiff/365).toFixed(1)} 年），超過法定 2 年期限，不符合重購退稅資格。`;
+    document.getElementById('not-eligible-reason').textContent=`兩次移轉登記日以曆年計算已超過 2 年（間隔 ${Math.round(daysDiff)} 天），不符合重購退稅資格。`;
     return;
   }
 
@@ -651,6 +667,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

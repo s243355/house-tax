@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>土地增值稅重購退稅｜祐承店長 信義房屋 文心高工店</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -164,13 +166,26 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
   footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="依土地稅法第35條，比較新購地與舊售地的申報移轉現值，試算自用住宅用地可退還的土地增值稅，並區分一生一次與一生一屋。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/refund-land-tax">
+<meta property="og:title" content="土地增值稅重購退稅｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="依土地稅法第35條，比較新購地與舊售地的申報移轉現值，試算自用住宅用地可退還的土地增值稅，並區分一生一次與一生一屋。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/refund-land-tax">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="土地增值稅重購退稅｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="依土地稅法第35條，比較新購地與舊售地的申報移轉現值，試算自用住宅用地可退還的土地增值稅，並區分一生一次與一生一屋。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home">← 首頁</a>
+  <a href="/" class="hdr-home">← 首頁</a>
   <div class="hdr-mid">
     <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -194,7 +209,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 一生一次 / 一生一屋 說明 -->
   <div class="rate-explain">
-    <div class="card-label">📖 自用住宅用地優惠稅率說明（影響已繳土增稅金額）</div>
+    <h2 class="card-label">📖 自用住宅用地優惠稅率說明（影響已繳土增稅金額）</h2>
     <div class="rate-grid">
       <div class="rate-card once">
         <div class="rate-card-title">🏅 一生一次</div>
@@ -217,7 +232,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 資格確認 -->
   <div class="qualify-card">
-    <div class="card-label">✅ 退稅資格確認（6 項需全符合）</div>
+    <h2 class="card-label">✅ 退稅資格確認（6 項需全符合）</h2>
     <div class="info-box">💡 以下 6 項需全部符合才能申請土地增值稅重購退稅。逐一勾選確認後，系統才開放試算。</div>
     <div id="checks">
       <div class="check-item" onclick="toggleCheck(this,0)">
@@ -267,29 +282,29 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 
   <!-- 輸入 -->
   <div class="input-card" id="input-section" style="display:none;">
-    <div class="card-label">🏗 試算資料輸入</div>
+    <h2 class="card-label">🏗 試算資料輸入</h2>
     <div class="info-box">
       📌 「公告現值」= 每年財政部公告的土地公告現值 × 土地面積（登記坪數換算平方公尺）。<br>
       可從<strong>土地所有權狀</strong>或向地政事務所查詢，也可從代書提供的土地增值稅計算書取得。
     </div>
     <div class="field-grid">
       <div class="field">
-        <div class="field-label">舊屋出售地：申報移轉現值 <span class="req">必填</span></div>
+        <label class="field-label" for="old-land-val">舊屋出售地：申報移轉現值 <span class="req">必填</span></label>
         <div class="iw"><input type="number" id="old-land-val" placeholder="例：500"><span class="unit">萬</span></div>
         <div class="field-tip">出售時的公告土地現值 × 面積（查繳納稅單）</div>
       </div>
       <div class="field">
-        <div class="field-label">已繳土地增值稅 <span class="req">必填</span></div>
+        <label class="field-label" for="land-tax-paid">已繳土地增值稅 <span class="req">必填</span></label>
         <div class="iw"><input type="number" id="land-tax-paid" placeholder="例：80" step="0.1"><span class="unit">萬</span></div>
         <div class="field-tip">查土增稅繳款書實際繳納金額（一般稅率 or 優惠稅率）</div>
       </div>
       <div class="field">
-        <div class="field-label">新屋購入地：申報移轉現值 <span class="req">必填</span></div>
+        <label class="field-label" for="new-land-val">新屋購入地：申報移轉現值 <span class="req">必填</span></label>
         <div class="iw"><input type="number" id="new-land-val" placeholder="例：450"><span class="unit">萬</span></div>
         <div class="field-tip">購入時的公告土地現值 × 面積</div>
       </div>
       <div class="field">
-        <div class="field-label">優惠稅率類型 <span class="opt">說明用</span></div>
+        <label class="field-label" for="rate-type">優惠稅率類型 <span class="opt">說明用</span></label>
         <div class="iw">
           <select id="rate-type">
             <option value="general">一般稅率（未申請優惠）</option>
@@ -354,7 +369,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <footer>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="mark" style="width:26px;height:26px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">土地增值稅重購退稅試算 · 僅供參考</div></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">土地增值稅重購退稅試算 · 僅供參考</div><div class="fi">法規依據：土地稅法第35條（自用住宅用地重購退稅）・最後更新日：2026-05-05</div></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
@@ -560,6 +575,7 @@ async function generatePDF(){
   container.innerHTML=html;document.body.appendChild(container);
   await new Promise(r=>setTimeout(r,800));
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

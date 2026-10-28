@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>換屋資金規劃｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
@@ -191,13 +193,26 @@
     footer{padding:16px 14px;flex-direction:column;align-items:flex-start;}
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="把舊房稅後實拿、剩餘貸款、新房自備款與新房貸款串成一份換屋計畫，估算資金缺口和搬進去之後每個月要還多少。">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/home-buying">
+<meta property="og:title" content="換屋資金規劃｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="把舊房稅後實拿、剩餘貸款、新房自備款與新房貸款串成一份換屋計畫，估算資金缺口和搬進去之後每個月要還多少。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/home-buying">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="換屋資金規劃｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="把舊房稅後實拿、剩餘貸款、新房自備款與新房貸款串成一份換屋計畫，估算資金缺口和搬進去之後每個月要還多少。">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -220,7 +235,7 @@
 </div>
 
 <main>
-  <a class="back-link" href="index.html">← 回主頁</a>
+  <a class="back-link" href="/">← 回主頁</a>
 
   <!-- 流程指示 -->
   <div class="flow-bar" id="flow-bar">
@@ -236,24 +251,24 @@
   <!-- SECTION 1: 舊房資料 -->
   <div class="section-card" id="sec-1">
     <div class="section-tag">STEP 01</div>
-    <div class="section-title">舊房：你打算賣多少？</div>
+    <h2 class="section-title">舊房：你打算賣多少？</h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">舊房預計成交價</div>
+        <label class="field-label" for="old-price">舊房預計成交價</label>
         <div class="input-wrap"><input type="number" id="old-price" placeholder="例：1500" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">舊房剩餘貸款</div>
+        <label class="field-label" for="old-loan">舊房剩餘貸款</label>
         <div class="input-wrap"><input type="number" id="old-loan" placeholder="0" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
         <div class="field-tip">若已還清或無貸款填 0</div>
       </div>
       <div class="field-group">
-        <div class="field-label">原始購入成本</div>
+        <label class="field-label" for="old-cost">原始購入成本</label>
         <div class="input-wrap"><input type="number" id="old-cost" placeholder="例：1000" oninput="calcOldNet()"><span class="input-unit">萬</span></div>
         <div class="field-tip">用於估算房地合一稅</div>
       </div>
       <div class="field-group">
-        <div class="field-label">持有期間</div>
+        <label class="field-label" for="old-hold-years">持有期間</label>
         <div class="select-wrap">
           <select class="input-select" id="old-hold-years" onchange="calcOldNet()">
             <option value="2">2 年以下（稅率 45%）</option>
@@ -274,26 +289,26 @@
   <!-- SECTION 2: 舊房稅費細項 -->
   <div class="section-card" id="sec-2">
     <div class="section-tag">STEP 02</div>
-    <div class="section-title">舊房：賣房相關稅費估算</div>
+    <h2 class="section-title">舊房：賣房相關稅費估算</h2>
     <div class="info-box">
       💡 以下為系統自動估算，可手動修改。若要精確計算，建議先用「房地合一稅試算」工具完整試算後填入。
     </div>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">房地合一稅（估算）</div>
+        <label class="field-label" for="old-tax">房地合一稅（估算）</label>
         <div class="input-wrap"><input type="number" id="old-tax" placeholder="自動估算" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">土地增值稅</div>
+        <label class="field-label" for="old-land-tax">土地增值稅</label>
         <div class="input-wrap"><input type="number" id="old-land-tax" placeholder="0" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">仲介費（賣方）</div>
+        <label class="field-label" for="old-broker">仲介費（賣方）</label>
         <div class="input-wrap"><input type="number" id="old-broker" placeholder="自動估算" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
         <div class="field-tip">通常為成交價 × 1～2%</div>
       </div>
       <div class="field-group">
-        <div class="field-label">代書費、規費等</div>
+        <label class="field-label" for="old-misc">代書費、規費等</label>
         <div class="input-wrap"><input type="number" id="old-misc" placeholder="例：3" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
       </div>
     </div>
@@ -306,14 +321,14 @@
   <!-- SECTION 3: 新房設定 -->
   <div class="section-card" id="sec-3">
     <div class="section-tag">STEP 03</div>
-    <div class="section-title">新房：你打算買多少？</div>
+    <h2 class="section-title">新房：你打算買多少？</h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">新房目標總價</div>
+        <label class="field-label" for="new-price">新房目標總價</label>
         <div class="input-wrap"><input type="number" id="new-price" placeholder="例：2000" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
       </div>
       <div class="field-group">
-        <div class="field-label">自備款比例</div>
+        <label class="field-label" for="new-down-ratio">自備款比例</label>
         <div class="select-wrap">
           <select class="input-select" id="new-down-ratio" onchange="updateDownAmt()">
             <option value="20">20%（八成貸）</option>
@@ -324,7 +339,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">新房貸款年限</div>
+        <label class="field-label" for="new-loan-years">新房貸款年限</label>
         <div class="select-wrap">
           <select class="input-select" id="new-loan-years" onchange="updateFlowCalc()">
             <option value="20">20 年</option>
@@ -334,7 +349,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">預估年利率</div>
+        <label class="field-label" for="new-rate">預估年利率</label>
         <div class="input-wrap"><input type="number" id="new-rate" placeholder="2.0" step="0.1" value="2.0" oninput="updateFlowCalc()"><span class="input-unit">%</span></div>
       </div>
     </div>
@@ -343,12 +358,12 @@
       <div class="field-label" style="margin-bottom:10px;">新房額外費用</div>
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label" style="font-weight:400;">契稅、代書費等</div>
+          <label class="field-label" for="new-misc" style="font-weight:400;">契稅、代書費等</label>
           <div class="input-wrap"><input type="number" id="new-misc" placeholder="例：5" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
           <div class="field-tip">通常 3～8 萬</div>
         </div>
         <div class="field-group">
-          <div class="field-label" style="font-weight:400;">裝潢預算</div>
+          <label class="field-label" for="new-reno" style="font-weight:400;">裝潢預算</label>
           <div class="input-wrap"><input type="number" id="new-reno" placeholder="0" oninput="updateFlowCalc()"><span class="input-unit">萬</span></div>
         </div>
       </div>
@@ -475,7 +490,7 @@
 <footer>
   <div style="display:flex;align-items:center;gap:12px;">
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">換屋資金規劃工具 · 僅供參考</div></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">換屋資金規劃工具 · 僅供參考</div><div class="fi">法規依據：換屋資金為試算組合（房地合一稅率級距同所得稅法第14條之4）・最後更新日：2026-05-05</div></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 祐承店長 0933-317-625</a>
@@ -675,6 +690,7 @@ async function renderToPDF(htmlContent, filename){
   await new Promise(r=>setTimeout(r,1000));
 
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;
     const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth();

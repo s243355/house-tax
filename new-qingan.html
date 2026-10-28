@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>新青安3.0試算｜祐承店長 信義房屋 文心高工店</title>
 <meta name="description" content="新青安3.0（青安貸款3.0）資格快篩、額度估算、3+3階梯利率與月付變化試算，並輸出 LINE 摘要與 PDF 報告。祐承店長 信義房屋 文心高工店 0933-317-625">
 <style>
@@ -286,13 +288,25 @@
     footer{padding:16px 14px;flex-direction:column;align-items:flex-start;gap:10px;}
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://house-tax.s243355.workers.dev/new-qingan">
+<meta property="og:title" content="新青安3.0試算｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="新青安3.0（青安貸款3.0）資格快篩、額度估算、3+3階梯利率與月付變化試算，並輸出 LINE 摘要與 PDF 報告。祐承店長 信義房屋 文心高工店 0933-317-625">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://house-tax.s243355.workers.dev/new-qingan">
+<meta property="og:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="新青安3.0試算｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="新青安3.0（青安貸款3.0）資格快篩、額度估算、3+3階梯利率與月付變化試算，並輸出 LINE 摘要與 PDF 報告。祐承店長 信義房屋 文心高工店 0933-317-625">
+<meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
+<script src="/pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a href="index.html" class="hdr-home-btn">← 首頁</a>
+  <a href="/" class="hdr-home-btn">← 首頁</a>
   <div class="hl">
     <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
@@ -316,19 +330,19 @@
 </div>
 
 <main>
-  <a class="back-link" href="index.html">← 回主頁</a>
+  <a class="back-link" href="/">← 回主頁</a>
 
   <!-- 資格快篩 -->
   <div class="input-card">
-    <div class="card-title">📋 資格快篩<span class="card-sub">6 個關鍵欄位・僅供初判</span></div>
+    <h2 class="card-title">📋 資格快篩<span class="card-sub">6 個關鍵欄位・僅供初判</span></h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">申請人實足年齡</div>
+        <label class="field-label" for="age">申請人實足年齡</label>
         <div class="input-wrap"><input type="number" id="age" placeholder="例：38" oninput="calc()"><span class="input-unit">歲</span></div>
         <div class="field-tip">須未滿 50 歲，且年齡＋年限 ≤ 80</div>
       </div>
       <div class="field-group">
-        <div class="field-label">本人年所得</div>
+        <label class="field-label" for="income">本人年所得</label>
         <div class="select-wrap">
           <select class="input-select" id="income" onchange="calc()">
             <option value="ok" selected>200 萬以下（符合）</option>
@@ -339,7 +353,7 @@
         <div class="field-tip">看本人，不是夫妻合併</div>
       </div>
       <div class="field-group">
-        <div class="field-label">本人／配偶／未成年子女名下住宅</div>
+        <label class="field-label" for="own">本人／配偶／未成年子女名下住宅</label>
         <div class="select-wrap">
           <select class="input-select" id="own" onchange="calc()">
             <option value="none" selected>都沒有住宅</option>
@@ -350,7 +364,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">是否曾核貸青安（一生一次）</div>
+        <label class="field-label" for="prior">是否曾核貸青安（一生一次）</label>
         <div class="select-wrap">
           <select class="input-select" id="prior" onchange="calc()">
             <option value="none" selected>沒有用過</option>
@@ -360,7 +374,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">家庭類型（決定額度上限）</div>
+        <label class="field-label" for="family">家庭類型（決定額度上限）</label>
         <div class="select-wrap">
           <select class="input-select" id="family" onchange="calc()">
             <option value="1000" selected>一般首購 → 1,000 萬</option>
@@ -370,7 +384,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">房屋所在縣市（決定房價上限）</div>
+        <label class="field-label" for="region">房屋所在縣市（決定房價上限）</label>
         <div class="select-wrap">
           <select class="input-select" id="region" onchange="calc()">
             <option value="2000" selected>其他縣市 → 上限 2,000 萬</option>
@@ -384,25 +398,25 @@
 
   <!-- 房價與貸款設定 -->
   <div class="input-card">
-    <div class="card-title">🏠 房價與貸款設定</div>
+    <h2 class="card-title">🏠 房價與貸款設定</h2>
     <div class="field-grid">
       <div class="field-group">
-        <div class="field-label">成交總價</div>
+        <label class="field-label" for="price">成交總價</label>
         <div class="input-wrap"><input type="number" id="price" placeholder="例：1200" oninput="syncAppraise();calc()"><span class="input-unit">萬</span></div>
         <div class="field-tip">成交價與鑑價都須 ≤ 區域上限</div>
       </div>
       <div class="field-group">
-        <div class="field-label">銀行鑑價（可留空＝同成交價）</div>
+        <label class="field-label" for="appraise">銀行鑑價（可留空＝同成交價）</label>
         <div class="input-wrap"><input type="number" id="appraise" placeholder="預設同成交價" oninput="calc()"><span class="input-unit">萬</span></div>
         <div class="field-tip">成數取「成交價、鑑價孰低」× 8 成</div>
       </div>
       <div class="field-group">
-        <div class="field-label">自備款（可留空＝用最低自備款）</div>
+        <label class="field-label" for="down">自備款（可留空＝用最低自備款）</label>
         <div class="input-wrap"><input type="number" id="down" placeholder="留空自動估" oninput="calc()"><span class="input-unit">萬</span></div>
         <div class="field-tip">填越多，未涵蓋金額越少</div>
       </div>
       <div class="field-group">
-        <div class="field-label">貸款年限</div>
+        <label class="field-label" for="years">貸款年限</label>
         <div class="select-wrap">
           <select class="input-select" id="years" onchange="calc()">
             <option value="20">20 年</option>
@@ -415,7 +429,7 @@
         <div class="field-tip">年齡＋年限不得超過 80</div>
       </div>
       <div class="field-group">
-        <div class="field-label">寬限期（前幾年只還息）</div>
+        <label class="field-label" for="grace">寬限期（前幾年只還息）</label>
         <div class="select-wrap">
           <select class="input-select" id="grace" onchange="calc()">
             <option value="0" selected>無寬限期</option>
@@ -427,7 +441,7 @@
         </div>
       </div>
       <div class="field-group">
-        <div class="field-label">還款方式</div>
+        <label class="field-label" for="repay">還款方式</label>
         <div class="select-wrap">
           <select class="input-select" id="repay" onchange="calc()">
             <option value="equal-payment" selected>本息平均攤還</option>
@@ -441,12 +455,12 @@
       <div class="section-divider-label">⚙ 利率設定（可依銀行實際核定調整）</div>
       <div class="field-grid">
         <div class="field-group">
-          <div class="field-label">新青安起始利率</div>
+          <label class="field-label" for="rate0">新青安起始利率</label>
           <div class="input-wrap"><input type="number" id="rate0" value="1.775" step="0.005" oninput="calc()"><span class="input-unit">%</span></div>
           <div class="field-tip">前3年；第4年起每年 +0.125 至 +0.5</div>
         </div>
         <div class="field-group">
-          <div class="field-label">一般房貸比較利率</div>
+          <label class="field-label" for="rateGen">一般房貸比較利率</label>
           <div class="input-wrap"><input type="number" id="rateGen" value="2.3" step="0.05" oninput="calc()"><span class="input-unit">%</span></div>
           <div class="field-tip">用來對比「若走一般首購」的月付</div>
         </div>
@@ -597,7 +611,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">新青安3.0試算工具 · 僅供參考，實際條件依銀行審核</div>
+      <div class="fi">新青安3.0試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：青年安心成家購屋優惠貸款方案，額度與利率以承貸金融機構核定為準・最後更新日：2026-05-05</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -887,6 +901,7 @@ async function renderToPDF(htmlContent,filename){
   container.innerHTML=htmlContent;document.body.appendChild(container);
   await new Promise(r=>setTimeout(r,1000));
   try{
+    await loadPdfLibs();
     const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'portrait',unit:'px',format:'a4'});
     const pdfW=pdf.internal.pageSize.getWidth(),pdfH=pdf.internal.pageSize.getHeight();
     const canvas=await html2canvas(container,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:794});
@@ -1117,6 +1132,7 @@ async function generateImage(){
     const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||Math.min(window.innerWidth,window.innerHeight)<700;
     const scale=isMobile?1.5:2;
     const target=container.querySelector('.rep-root')||container.firstElementChild||container;
+    await loadPdfLibs();
     const canvas=await html2canvas(target,{scale,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,width:880,windowWidth:880});
     const url=canvas.toDataURL('image/png');
     const fname=`新青安3.0試算報告_${today.replace(/\//g,'')}.png`;
