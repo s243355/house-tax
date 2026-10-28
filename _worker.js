@@ -1,12 +1,14 @@
 // ================================================================
 // 信義房屋物件比較 - Cloudflare Worker
 //
-// /api/scrape-prop 必須在約 9 秒內回應。
-// 順序：Cache API → 信義 JSON（整段最多 2.5 秒，Cloudflare 上這條連線會掛住）
-// → 直接讀物件頁 HTML（PR #4 在時限內走得完的做法）。
-// Browser Rendering 實測約 19 秒且併發會失敗，放進這次請求會再次把連線掛住，所以不呼叫。
-// 不要把任何金鑰寫進程式。Cache API 免費，不必開 KV。
-// /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖，並加上 CORS，供 PDF 使用。
+// 正式站 workers.dev 只由 Cloudflare Workers Builds 部署。
+// GitHub Actions 的 pages-build-deployment 只發佈 GitHub Pages，不會更新 workers.dev。
+//
+// /api/scrape-prop：Cache API（命中就不再開瀏覽器）→ Browser Rendering /content。
+// 信義頁面與 sinyiwebapi 從 Cloudflare 出口會掛住，不要先打它們。
+// 單筆硬逾時 25 秒。前端一次只打一筆，以符合免費方案 Quick Actions 約 1 次/10 秒。
+// 金鑰只用環境變數 CF_ACCOUNT_ID、CF_API_TOKEN，不要寫進程式。
+// /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖。
 // ================================================================
 import logic from "./prop-compare-logic.js";
 
@@ -262,14 +264,64 @@ async function fetchListingApi(code, origin, deadline) {
 }
 
 function failed(code, cors, reason) {
-  const body = { error: '無法取得物件詳細資料', detailFailed: true, code: code || '' };
+  const messages = {
+    'no-browser-credentials': '尚未設定 Browser Rendering 金鑰',
+    'browser-429': '瀏覽器額度或速率已滿，請稍後再試',
+    'browser-timeout': '讀取逾時',
+    budget: '讀取逾時',
+  };
+  const body = {
+    error: messages[reason] || '無法取得物件詳細資料',
+    detailFailed: true,
+    code: code || '',
+  };
   if (reason) body.reason = reason;
   return json(body, 502, cors);
 }
 
+async function fetchViaBrowser(code, env) {
+  if (!env || !env.CF_ACCOUNT_ID || !env.CF_API_TOKEN) return { reason: 'no-browser-credentials' };
+  const pageUrl = 'https://www.sinyi.com.tw/buy/house/' + encodeURIComponent(code);
+  const endpoint = 'https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/browser-rendering/content';
+  const gate = openUpstream(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + env.CF_API_TOKEN,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      url: pageUrl,
+      gotoOptions: { waitUntil: 'domcontentloaded', timeout: 20000 },
+    }),
+  }, 25000);
+  try {
+    const res = await gate.response;
+    if (!res.ok) {
+      console.error('browser status', res.status);
+      return { reason: 'browser-' + res.status };
+    }
+    const payload = await res.json();
+    let html = '';
+    if (payload && typeof payload.result === 'string') html = payload.result;
+    else if (payload && payload.result && typeof payload.result.content === 'string') html = payload.result.content;
+    else if (payload && typeof payload.content === 'string') html = payload.content;
+    if (!html) return { reason: 'browser-empty' };
+    const parsed = logic.parseListingHtml(html, code);
+    if (parsed) return Object.assign({ source: 'browser' }, parsed);
+    const loose = logic.parseLooseDetail(html.replace(/<[^>]+>/g, ' ').slice(0, 8000), code);
+    if (loose && (loose.address || loose.age || loose.price > 0)) return Object.assign({ source: 'browser-text' }, loose);
+    return { reason: 'browser-unparsed' };
+  } catch (err) {
+    const name = (err && (err.name || err.message)) || '';
+    console.error('browser failed', code, name);
+    return { reason: /abort/i.test(String(name)) ? 'browser-timeout' : 'browser-error' };
+  } finally {
+    gate.done();
+  }
+}
+
 async function handleScrapeProp(request, env, cors) {
   let code = '';
-  const BUDGET = 9000;
   try {
     const body = await request.json();
     code = String((body && body.code) || '').trim().toUpperCase();
@@ -277,31 +329,24 @@ async function handleScrapeProp(request, env, cors) {
       return json({ error: '無效的銷售編號', detailFailed: true }, 400, cors);
     }
     const origin = new URL(request.url).origin;
+    const BUDGET_MS = 26000;
     const run = async () => {
       const cached = await cacheMatch(cacheRequest(origin, '/__cache/listing/' + code));
       if (cached) {
         try {
           const data = await cached.json();
-          if (data && data.code) return Object.assign({}, data, { source: data.source || 'cache' });
+          if (data && data.code) return Object.assign({}, data, { source: 'cache' });
         } catch (err) { /* 繼續向上游要 */ }
       }
-      // JSON 與物件頁同時開跑。JSON 在 Cloudflare 會掛住，2.5 秒一定切斷；
-      // 物件頁是 PR #4 讀得到車位坪數的做法，最多 6 秒。誰先拿到完整資料就用誰。
-      const jsonP = within(2500, () => fetchListingApi(code, origin, Date.now() + 2400));
-      const htmlP = fetchListingDirect(code, 8000);
-      const fromJson = await jsonP;
-      if (fromJson && fromJson.code) return fromJson;
-      const fromHtml = await htmlP;
-      if (fromHtml && fromHtml.code) return fromHtml;
-      return { detailFailed: true, reason: (fromHtml && fromHtml.reason) || 'json-timeout' };
+      return fetchViaBrowser(code, env);
     };
     const listing = await Promise.race([
       run(),
-      sleep(BUDGET).then(() => ({ detailFailed: true, reason: 'budget' })),
+      sleep(BUDGET_MS).then(() => ({ detailFailed: true, reason: 'budget' })),
     ]);
     if (!listing || !listing.code) return failed(code, cors, listing && listing.reason);
     await cachePut(cacheRequest(origin, '/__cache/listing/' + code), new Response(JSON.stringify(listing), {
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=1800' },
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
     }));
     return json(listing, 200, cors);
   } catch (err) {

@@ -92,6 +92,9 @@ for (const route of Object.values(pages)) {
 }
 const wrangler = fs.readFileSync(path.join(root, 'wrangler.jsonc'), 'utf8');
 assert.ok(wrangler.includes('"not_found_handling": "none"'));
+const ignore = fs.readFileSync(path.join(root, '.assetsignore'), 'utf8');
+assert.ok(ignore.includes('.git'), '.assetsignore must exclude .git or Workers Builds uploads the repo');
+assert.ok(ignore.includes('.wrangler'), '.assetsignore must exclude .wrangler');
 
 for (const asset of ['og-image.png', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'holding-period.js', 'pdf-loader.js']) {
   assert.ok(fs.existsSync(path.join(root, asset)), 'missing ' + asset);
