@@ -183,7 +183,7 @@
       <div class="contact-icon addr">📍</div>
       <div class="contact-info">
         <div class="contact-info-label">門店地址</div>
-        <div class="contact-info-val" id="card-address">台中市（請在後台設定地址）</div>
+        <div class="contact-info-val" id="card-address">台中市南區文心南路888之2號</div>
       </div>
     </div>
     <div class="contact-item">
@@ -282,8 +282,10 @@ function initCard(){
   document.getElementById('card-line-link').href=lineUrl;
   document.getElementById('cta-line').href=lineUrl;
 
-  // 地址
-  if(vc.address)document.getElementById('card-address').textContent=vc.address;
+  // 地址（舊的後台佔位字串一律改成店址）
+  const storeAddress='台中市南區文心南路888之2號';
+  const savedAddress=vc.address&&vc.address!=='台中市（請在後台設定地址）'?vc.address:storeAddress;
+  document.getElementById('card-address').textContent=savedAddress;
 
   // 網址
   const webUrl=vc.webUrl||window.location.href.replace(/\/card(?:\.html)?\/?$/,'/');

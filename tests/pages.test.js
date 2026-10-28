@@ -70,7 +70,15 @@ assert.ok(!oldRefund.includes('gapDays <= 730'));
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 assert.ok(index.includes('試算僅供參考，實際以稅捐機關核定為準'));
 assert.ok(index.includes('"@type": "RealEstateAgent"'));
-assert.ok(!index.includes('address'), 'JSON-LD must not invent an address');
+assert.ok(index.includes('"@type": "PostalAddress"'));
+assert.ok(index.includes('"streetAddress": "文心南路888之2號"'));
+assert.ok(index.includes('"addressLocality": "台中市"'));
+assert.ok(index.includes('"addressRegion": "南區"'));
+assert.ok(index.includes('"addressCountry": "TW"'));
+const card = fs.readFileSync(path.join(root, 'card.html'), 'utf8');
+assert.ok(card.includes('台中市南區文心南路888之2號'));
+assert.ok(!card.includes('>台中市（請在後台設定地址）<'), 'card placeholder should be replaced');
+assert.ok(!index.includes('請在後台設定地址'));
 assert.ok(index.includes('https://line.me/ti/p/EfDsNa26Xw'));
 assert.ok(index.includes('0933-317-625'));
 
