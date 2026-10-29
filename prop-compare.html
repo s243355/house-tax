@@ -131,9 +131,9 @@ body.pdf-export .park-pdf{display:inline !important;}
   .td-img,th.col-img{display:none;}
 }
 </style>
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="description" content="貼上信義房屋物件訊息，比較路段、總價、含車單價與扣車單價，可補上車位並產出分享連結或 PDF。祐承店長 信義房屋 文心高工店">
 <link rel="canonical" href="https://house-tax.s243355.workers.dev/prop-compare">
 <meta property="og:title" content="物件比較分析｜祐承店長 信義房屋 文心高工店">
@@ -145,12 +145,12 @@ body.pdf-export .park-pdf{display:inline !important;}
 <meta name="twitter:title" content="物件比較分析｜祐承店長 信義房屋 文心高工店">
 <meta name="twitter:description" content="貼上信義房屋物件訊息，比較路段、總價、含車單價與扣車單價，可補上車位並產出分享連結或 PDF。">
 <meta name="twitter:image" content="https://house-tax.s243355.workers.dev/og-image.png">
-<script src="/pdf-loader.js"></script>
+<script src="pdf-loader.js"></script>
 </head>
 <body>
 
 <header>
-  <a class="logo" href="/" aria-label="回到首頁">
+  <a class="logo" href="./" aria-label="回到首頁">
     <div class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="9" height="9"/><rect x="13" y="2" width="9" height="9" opacity=".5"/><rect x="2" y="13" width="9" height="9" opacity=".5"/><rect x="13" y="13" width="9" height="9"/></svg></div>
     <div class="logo-name">信義房屋<small id="brand-sub">文心高工店・祐承店長</small></div>
   </a>
@@ -224,7 +224,7 @@ body.pdf-export .park-pdf{display:inline !important;}
 </div>
 </main>
 
-<script src="/prop-compare-logic.js"></script>
+<script src="prop-compare-logic.js"></script>
 <script>
 var PC = window.PropCompare;
 var props = [];
@@ -317,7 +317,7 @@ function linkHtml(p) {
 function proxiedImg(url) {
   var safe = PC.safeUrl(url, "img");
   if (!safe) return "";
-  return "/api/prop-img?u=" + encodeURIComponent(safe);
+  return "api/prop-img?u=" + encodeURIComponent(safe);
 }
 function imgHtml(p, cls) {
   var src = proxiedImg(p.img);
@@ -523,7 +523,7 @@ async function fetchPropOnce(p) {
   var ctrl = new AbortController();
   var timer = setTimeout(function () { ctrl.abort(); }, 28000);
   try {
-    var res = await fetch("/api/scrape-prop", {
+    var res = await fetch("api/scrape-prop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: p.code }),

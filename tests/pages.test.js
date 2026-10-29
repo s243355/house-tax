@@ -41,8 +41,10 @@ for (const [file, route] of Object.entries(pages)) {
   assert.ok(!/href="[a-z0-9-]+\.html"/.test(outside), file + ' still links to .html');
   assert.ok(html.includes('｜祐承店長 信義房屋 文心高工店'), file + ' title brand');
   if (file !== 'index.html' && file !== 'card.html') {
-    assert.ok(html.includes('/pdf-loader.js'), file + ' pdf loader');
+    assert.ok(html.includes('src="pdf-loader.js"'), file + ' pdf loader');
   }
+  assert.ok(!/(?:href|src)\s*=\s*["']\/(?!\/)/i.test(html), file + ' has root-absolute href/src');
+  assert.ok(html.includes('property="og:url" content="' + site + (route === '/' ? '/' : route) + '"'), file + ' og:url');
   const labeled = new Set([...outside.matchAll(/<label[^>]*\bfor="([^"]+)"/gi)].map((m) => m[1]));
   const ids = new Set([...outside.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
   for (const id of labeled) assert.ok(ids.has(id), file + ' label target missing ' + id);
@@ -59,7 +61,7 @@ const house = fs.readFileSync(path.join(root, 'house-tax.html'), 'utf8');
 assert.ok(!house.includes('365.25'), 'house-tax still divides by 365.25');
 assert.ok(house.includes('HoldingPeriod.analyze'), 'house-tax uses calendar helper');
 assert.ok(house.includes('設籍並實際居住連續滿 6 年'), 'self-use residency note');
-assert.ok(house.includes('/holding-period.js'));
+assert.ok(house.includes('src="holding-period.js"'));
 
 const refund = fs.readFileSync(path.join(root, 'repurchase-refund.html'), 'utf8');
 const oldRefund = fs.readFileSync(path.join(root, 'refund-old-tax.html'), 'utf8');
@@ -96,8 +98,33 @@ const ignore = fs.readFileSync(path.join(root, '.assetsignore'), 'utf8');
 assert.ok(ignore.includes('.git'), '.assetsignore must exclude .git or Workers Builds uploads the repo');
 assert.ok(ignore.includes('.wrangler'), '.assetsignore must exclude .wrangler');
 
-for (const asset of ['og-image.png', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'holding-period.js', 'pdf-loader.js']) {
+for (const asset of ['og-image.png', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'holding-period.js', 'pdf-loader.js', '404.html', 'robots.txt', 'sitemap.xml']) {
   assert.ok(fs.existsSync(path.join(root, asset)), 'missing ' + asset);
+}
+
+const notFound = fs.readFileSync(path.join(root, '404.html'), 'utf8');
+assert.ok(notFound.includes('找不到這個頁面'));
+assert.ok(notFound.includes('id="home-link" href="./"'));
+assert.ok(notFound.includes('noindex'));
+assert.ok(!/(?:href|src)\s*=\s*["']\/(?!\/)/i.test(notFound), '404.html root-absolute attribute');
+
+const robots = fs.readFileSync(path.join(root, 'robots.txt'), 'utf8');
+assert.ok(robots.includes('Sitemap: ' + site + '/sitemap.xml'));
+const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+for (const route of Object.values(pages)) {
+  assert.ok(sitemap.includes('<loc>' + site + (route === '/' ? '/' : route) + '</loc>'), 'static sitemap ' + route);
+}
+assert.ok(!sitemap.includes('github.io'));
+
+const lineShare = fs.readFileSync(path.join(root, 'line-share.js'), 'utf8');
+assert.ok(lineShare.includes("location.href"), 'LINE summary must use the current page URL');
+
+const rootAbsAttr = /(?:href|src)\s*=\s*["']\/(?!\/)/i;
+for (const name of fs.readdirSync(root)) {
+  if (!name.endsWith('.html') && !name.endsWith('.js')) continue;
+  if (name.startsWith('_')) continue;
+  const text = fs.readFileSync(path.join(root, name), 'utf8');
+  assert.ok(!rootAbsAttr.test(text), name + ' root-absolute href/src');
 }
 
 console.log('pages tests passed');

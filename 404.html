@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>找不到頁面｜祐承店長 信義房屋 文心高工店</title>
+<meta name="robots" content="noindex">
+<link rel="icon" id="icon-ico" href="favicon.ico" sizes="any">
+<link rel="icon" id="icon-png" type="image/png" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" id="icon-apple" href="apple-touch-icon.png">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{min-height:100vh;background:#f5f3f0;color:#1a1410;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;display:flex;flex-direction:column;}
+  header{background:#fff;border-bottom:3px solid #C00000;height:64px;display:flex;align-items:center;padding:0 24px;font-weight:700;color:#C00000;letter-spacing:.08em;}
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+  .box{max-width:460px;text-align:center;}
+  h1{font-size:1.6rem;margin-bottom:12px;}
+  p{color:#5a4e44;line-height:1.7;margin-bottom:22px;}
+  a{display:inline-block;background:#C00000;color:#fff;text-decoration:none;padding:10px 22px;font-weight:600;}
+  a:hover{background:#9a0000;}
+</style>
+</head>
+<body>
+<header>祐承店長 信義房屋 文心高工店</header>
+<main>
+  <div class="box">
+    <h1>找不到這個頁面</h1>
+    <p>這個網址沒有對應的內容。請回到首頁，選擇房地合一稅、舊制、重購退稅或其他試算工具。</p>
+    <a id="home-link" href="./">回首頁</a>
+  </div>
+</main>
+<script>
+(function () {
+  var link = document.getElementById('home-link');
+  if (!link) return;
+  var host = location.hostname;
+  var parts = location.pathname.split('/').filter(Boolean);
+  var loopback = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+  // GitHub Pages 專案站在 /house-tax/。本機子路徑靜態站同樣掛在這個前綴。
+  // workers.dev 與 wrangler（8787）的網站根目錄是 /。
+  var subpath = host.indexOf('github.io') !== -1 || (loopback && location.port !== '8787' && parts[0] === 'house-tax');
+  var home = subpath ? '/' + (parts[0] || 'house-tax') + '/' : '/';
+  link.setAttribute('href', home);
+  var icons = { 'icon-ico': 'favicon.ico', 'icon-png': 'favicon-32.png', 'icon-apple': 'apple-touch-icon.png' };
+  Object.keys(icons).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.setAttribute('href', home + icons[id]);
+  });
+})();
+</script>
+</body>
+</html>
