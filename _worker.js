@@ -30,47 +30,22 @@ const SITEMAP_PATHS = [
   '/prop-compare',
 ];
 
-function notFoundHtml() {
-  return `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>找不到頁面｜祐承店長 信義房屋 文心高工店</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{min-height:100vh;background:#f5f3f0;color:#1a1410;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;display:flex;flex-direction:column;}
-  header{background:#fff;border-bottom:3px solid #C00000;height:64px;display:flex;align-items:center;padding:0 24px;font-weight:700;color:#C00000;letter-spacing:.08em;}
-  main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
-  .box{max-width:460px;text-align:center;}
-  h1{font-size:1.6rem;margin-bottom:12px;}
-  p{color:#5a4e44;line-height:1.7;margin-bottom:22px;}
-  a{display:inline-block;background:#C00000;color:#fff;text-decoration:none;padding:10px 22px;font-weight:600;}
-  a:hover{background:#9a0000;}
-</style>
-</head>
-<body>
-<header>祐承店長 信義房屋 文心高工店</header>
-<main>
-  <div class="box">
-    <h1>找不到這個頁面</h1>
-    <p>這個網址沒有對應的內容。請回到首頁，選擇房地合一稅、舊制、重購退稅或其他試算工具。</p>
-    <a href="/">回首頁</a>
-  </div>
-</main>
-</body>
-</html>`;
-}
-
-function notFoundResponse() {
-  return new Response(notFoundHtml(), {
-    status: 404,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-store',
-      'X-Robots-Tag': 'noindex',
-    },
-  });
+async function notFoundResponse(request, env) {
+  const headers = {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'X-Robots-Tag': 'noindex',
+  };
+  if (env && env.ASSETS) {
+    const fileUrl = new URL(request.url);
+    fileUrl.search = '';
+    for (const path of ['/404.html', '/404']) {
+      fileUrl.pathname = path;
+      const res = await env.ASSETS.fetch(new Request(fileUrl.toString(), { method: 'GET', redirect: 'manual' }));
+      if (res.ok) return new Response(res.body, { status: 404, headers });
+    }
+  }
+  return new Response('找不到這個頁面', { status: 404, headers });
 }
 
 export default {
@@ -116,18 +91,31 @@ export default {
     // 找不到就回 404，不要落到首頁。
     if (env.ASSETS) {
       if (url.pathname !== '/' && !url.pathname.includes('.')) {
-        const trimmed = url.pathname.replace(/\/+$/, '');
+        const trimmed = url.pathname.replace(/\/+$/, '') || '/';
+        // 工具頁是 foo.html，乾淨網址沒有結尾斜線。有斜線時相對路徑會變成 /foo/line-share.js。
+        if (trimmed !== '/' && url.pathname !== trimmed) {
+          const probe = new URL(request.url);
+          probe.pathname = trimmed + '.html';
+          probe.search = '';
+          const probed = await env.ASSETS.fetch(new Request(probe.toString(), { method: 'GET', redirect: 'manual' }));
+          if (probed.status !== 404) {
+            const redir = new URL(request.url);
+            redir.pathname = trimmed;
+            return Response.redirect(redir.toString(), 308);
+          }
+          return notFoundResponse(request, env);
+        }
         const newUrl = new URL(request.url);
-        newUrl.pathname = (trimmed || '/') + '.html';
+        newUrl.pathname = trimmed + '.html';
         const res = await env.ASSETS.fetch(new Request(newUrl.toString(), request));
         if (res.status !== 404) return res;
-        return notFoundResponse();
+        return notFoundResponse(request, env);
       }
       const res = await env.ASSETS.fetch(request);
-      if (res.status === 404) return notFoundResponse();
+      if (res.status === 404) return notFoundResponse(request, env);
       return res;
     }
-    return notFoundResponse();
+    return notFoundResponse(request, env);
   }
 };
 
