@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>總太居易｜社區購屋分析</title>
+<meta name="description" content="總太居易（台中南區）社區購屋分析：近一年實登單價、樓層房型價差、租金、生活機能與看屋重點。｜信義房屋文心高工店 祐承店長">
+<link rel="icon" href="/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--bg:#fbfcfa;--surface:#fff;--tint:#eef5f0;--fg:#14211a;--muted:#56655c;--line:#d8e2db;--green:#0a8a43;--green-ink:#076b34;--on-green:#fff;--gold:#b8892f;--slate:#5b6f8a;
+--display:"Noto Serif TC","Songti TC","PMingLiU",serif;--body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--r:10px}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1712;--surface:#16211a;--tint:#1a2a20;--fg:#e7efe9;--muted:#9db0a4;--line:#2a3a30;--green:#2fb36a;--green-ink:#5fd08f;--on-green:#06140c;--gold:#d8ac58;--slate:#8fa6c4;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;padding-bottom:72px}
+a{color:var(--green-ink)}:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.3;margin:0;text-wrap:balance}h1{font-size:clamp(1.8rem,5vw,2.6rem)}h2{font-size:1.4rem}p{margin:0}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--green-ink);font-weight:700}.lead{color:var(--muted);max-width:66ch}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;font-weight:700;text-decoration:none;border:1.5px solid var(--green);font-size:.9rem;cursor:pointer;font-family:var(--body);background:transparent;color:var(--green-ink)}
+.btn.solid{background:var(--green);color:var(--on-green)}
+header.top{position:sticky;top:0;z-index:1001;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .bar{display:flex;align-items:center;gap:12px;height:56px}
+.brand-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-decoration:none;color:var(--fg)}
+.brand-mark{width:34px;height:34px;border-radius:50%;background:var(--green);color:var(--on-green);display:grid;place-items:center;font-family:var(--display);font-weight:900;flex:none}
+.brand{font-family:var(--display);font-weight:900;font-size:1.15rem;white-space:nowrap}.brand b{color:var(--green)}
+.tabsrow{border-top:1px solid var(--line)}
+nav.menu{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}nav.menu::-webkit-scrollbar{display:none}
+nav.menu a{text-decoration:none;color:var(--muted);font-size:.92rem;padding:10px 12px;white-space:nowrap;border-bottom:2px solid transparent}
+nav.menu a:hover,nav.menu a.on{color:var(--green-ink);border-bottom-color:var(--green)}
+section{padding-block:32px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:.88rem;cursor:pointer;font-family:var(--body)}
+.chip[aria-pressed="true"]{border-color:var(--green);background:var(--tint);color:var(--green-ink);font-weight:700}
+#map{height:min(62vh,560px);border-radius:var(--r);border:1px solid var(--line);z-index:0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.85rem;color:var(--muted)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.stats{display:flex;flex-wrap:wrap;gap:24px}.stats b{font-family:var(--display);font-size:1.8rem;color:var(--green-ink);display:block;line-height:1.1;font-variant-numeric:tabular-nums}.stats span{font-size:.85rem;color:var(--muted)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums;background:var(--surface)}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-weight:700;color:var(--muted);font-size:.82rem;cursor:pointer;background:var(--tint)}td.num,th.num{text-align:right}
+details{border-bottom:1px solid var(--line);padding-block:12px}summary{cursor:pointer;font-weight:700}details p{color:var(--muted);margin-top:6px}
+.note{font-size:.8rem;color:var(--muted)}
+.leaflet-popup-content{font-family:var(--body);font-size:.88rem;line-height:1.6}
+footer{border-top:1px solid var(--line);padding-block:24px;font-size:.8rem;color:var(--muted)}footer strong{color:var(--fg)}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:1001;display:flex;justify-content:center;gap:8px;background:var(--surface);border-top:1px solid var(--line);padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.dock .btn{flex:1;max-width:220px}
+
+.hero{display:flex;flex-direction:column;gap:10px}
+.crumb{font-size:.85rem;color:var(--muted)}.crumb a{color:var(--muted)}
+.greet{display:flex;gap:12px;align-items:flex-start;background:var(--tint);border-radius:var(--r);padding:14px 16px;max-width:760px}
+.greet .brand-mark{width:42px;height:42px;font-size:1.1rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.tile .k{font-size:.82rem;color:var(--muted)}.tile .v{font-family:var(--display);font-size:1.7rem;font-weight:900;color:var(--green-ink);line-height:1.2;font-variant-numeric:tabular-nums}.tile .s{font-size:.8rem;color:var(--muted)}
+.up{color:#c0392b}.dn{color:#2471a3}
+h2{margin-bottom:12px}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0}.kv dt{color:var(--muted);font-size:.9rem}.kv dd{margin:0}
+.tbd{color:var(--gold);font-size:.85rem}
+.bars{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.bar{display:grid;grid-template-columns:minmax(7em,11em) 1fr 4.5em;gap:10px;align-items:center;font-size:.9rem}
+.bar .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar .tr{background:var(--tint);border-radius:4px;height:14px;overflow:hidden}
+.bar .fl{height:100%;background:var(--slate);border-radius:4px}.bar.me .fl{background:var(--green)}.bar.me .t{font-weight:700}.bar.area .fl{background:var(--gold)}
+.bar .n{text-align:right;font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;max-width:760px;display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+ul.clean{margin:0;padding-left:1.2em}ul.clean li{margin-bottom:6px}
+.fit{display:grid;grid-template-columns:1fr 1fr;gap:16px}.fit>div{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--surface)}
+@media (max-width:760px){.fit{grid-template-columns:1fr}}
+ol.five{margin:0;padding-left:1.3em}ol.five li{margin-bottom:8px}
+.cta{background:var(--green);color:var(--on-green);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:10px}
+.cta h2{color:var(--on-green);margin:0}.cta .btn{background:var(--surface);color:var(--green-ink);border-color:var(--surface);align-self:flex-start}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap bar">
+  <a class="brand-wrap" href="/yucheng"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
+  <a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a>
+</div>
+<div class="tabsrow"><nav class="wrap menu" aria-label="主選單">
+  <a href="/yucheng#about">關於我</a><a href="/yucheng-communities" class="on">祐承的商圈</a><a href="/yucheng-location">地段地圖</a><a href="/yucheng#services">服務項目</a><a href="/yucheng#guides">避坑攻略</a><a href="/yucheng#tools">試算工具</a><a href="/yucheng#contact">聯絡</a>
+</nav></div></header>
+<main>
+<section class="wrap hero">
+<p class="crumb"><a href="/yucheng-communities">祐承的商圈</a> ／ 社區購屋分析</p>
+<p class="eyebrow">社區購屋分析</p>
+<h1>總太居易</h1>
+<p class="lead">台中市南區｜永和里｜五權南一路55號｜資料至 115 年 7 月</p>
+<div class="greet"><span class="brand-mark">承</span><p>嗨，我是祐承店長。這頁把「總太居易」的實價登錄、樓層房型價差、租金和生活機能整理在一起，看屋或出價前先看一遍，心裡比較有底。不確定的資料會標「待確認」，不會用猜的。</p></div>
+</section>
+<section class="wrap"><h2>買這裡之前，先看懂這幾個數字</h2><div class="tiles">
+<div class="tile"><span class="k">近一年成交中位單價</span><span class="v">33.9<small style="font-size:.9rem"> 萬/坪</small></span><span class="s">已扣車位・6 筆</span></div>
+<div class="tile"><span class="k">近期成交單價區間</span><span class="v" style="font-size:1.35rem">30.3–39.6</span><span class="s">萬/坪・最近 10 筆</span></div>
+<div class="tile"><span class="k">和南區整體比</span><span class="v up">+17.3%</span><span class="s">南區各屋齡近一年中位 28.9 萬/坪</span></div>
+<div class="tile"><span class="k">近一年價格變化</span><span class="v ">樣本不足</span><span class="s">和前一年中位數比較</span></div>
+</div><p class="note" style="margin-top:10px">單價皆已扣除車位價格，取中位數；和其他網站「總價÷坪數」的算法不同，數字會比較低。</p></section>
+<section class="wrap"><h2>社區基本資料</h2><dl class="kv">
+<dt>完工</dt><dd>2012 年・屋齡約 14 年</dd>
+<dt>樓高</dt><dd>地上 15 層</dd>
+<dt>戶數</dt><dd><span class="tbd">待確認</span></dd>
+<dt>棟數／門牌</dt><dd><span class="tbd">待確認</span>　<span class="note">實登登記門牌 21 個</span></dd>
+<dt>建設公司</dt><dd><span class="tbd">待確認</span></dd>
+<dt>公設比</dt><dd>約 29.9%　<span class="note">歷年成交中位數，以權狀為準</span></dd>
+<dt>管理費</dt><dd><span class="tbd">待確認</span></dd>
+<dt>管理方式</dt><dd>有管理組織</dd>
+<dt>公共設施</dt><dd><span class="tbd">待確認</span></dd>
+<dt>地址</dt><dd>台中市南區五權南一路55號</dd>
+</dl></section>
+<section class="wrap"><h2>區域市場定位</h2><p class="note" style="margin-bottom:12px">近一年成交中位單價（萬/坪）。周邊社區屋齡、坪數、車位條件不同，只能當作行情參考；預售為建案近期成交中位數。</p><div class="bars"><div class="bar "><span class="t" title="南和一街12號">南和一街12號</span><span class="tr"><span class="fl" style="width:26.3%;display:block"></span></span><span class="n">16.4</span></div><div class="bar "><span class="t" title="五權南路694號">五權南路694號</span><span class="tr"><span class="fl" style="width:40.1%;display:block"></span></span><span class="n">25.0</span></div><div class="bar "><span class="t" title="高工路506號">高工路506號</span><span class="tr"><span class="fl" style="width:41.7%;display:block"></span></span><span class="n">26.0</span></div><div class="bar area"><span class="t" title="南區整體">南區整體</span><span class="tr"><span class="fl" style="width:46.3%;display:block"></span></span><span class="n">28.9</span></div><div class="bar me"><span class="t" title="總太居易（本社區）">總太居易（本社區）</span><span class="tr"><span class="fl" style="width:54.3%;display:block"></span></span><span class="n">33.9</span></div><div class="bar "><span class="t" title="佳福森活學">佳福森活學</span><span class="tr"><span class="fl" style="width:56.1%;display:block"></span></span><span class="n">35.0</span></div><div class="bar "><span class="t" title="八街寓所（預售）">八街寓所（預售）</span><span class="tr"><span class="fl" style="width:62.5%;display:block"></span></span><span class="n">39.0</span></div><div class="bar "><span class="t" title="躍於（預售）">躍於（預售）</span><span class="tr"><span class="fl" style="width:83.3%;display:block"></span></span><span class="n">52.0</span></div><div class="bar "><span class="t" title="清森好漾2（預售）">清森好漾2（預售）</span><span class="tr"><span class="fl" style="width:100.0%;display:block"></span></span><span class="n">62.4</span></div></div></section>
+<section class="wrap"><h2>歷年行情</h2><p class="note" style="margin-bottom:8px">每年成交中位單價（萬/坪，已扣車位）</p><div class="chart"><svg viewBox="0 0 720 240" role="img" aria-label="歷年成交中位單價"><g font-size="11" fill="currentColor"><line x1="40" x2="720" y1="212.0" y2="212.0" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="216.0" text-anchor="end" fill-opacity=".6">0</text><line x1="40" x2="720" y1="188.4" y2="188.4" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="192.4" text-anchor="end" fill-opacity=".6">5</text><line x1="40" x2="720" y1="164.8" y2="164.8" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="168.8" text-anchor="end" fill-opacity=".6">10</text><line x1="40" x2="720" y1="141.2" y2="141.2" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="145.2" text-anchor="end" fill-opacity=".6">15</text><line x1="40" x2="720" y1="117.7" y2="117.7" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="121.7" text-anchor="end" fill-opacity=".6">20</text><line x1="40" x2="720" y1="94.1" y2="94.1" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="98.1" text-anchor="end" fill-opacity=".6">25</text><line x1="40" x2="720" y1="70.5" y2="70.5" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="74.5" text-anchor="end" fill-opacity=".6">30</text><line x1="40" x2="720" y1="46.9" y2="46.9" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="50.9" text-anchor="end" fill-opacity=".6">35</text><line x1="40" x2="720" y1="23.3" y2="23.3" stroke="currentColor" stroke-opacity=".12"/><text x="34" y="27.3" text-anchor="end" fill-opacity=".6">40</text><text x="62.3" y="232" text-anchor="middle" fill-opacity=".65">12</text><text x="107.0" y="232" text-anchor="middle" fill-opacity=".65">13</text><text x="151.7" y="232" text-anchor="middle" fill-opacity=".65">14</text><text x="196.3" y="232" text-anchor="middle" fill-opacity=".65">15</text><text x="241.0" y="232" text-anchor="middle" fill-opacity=".65">16</text><text x="285.7" y="232" text-anchor="middle" fill-opacity=".65">17</text><text x="330.3" y="232" text-anchor="middle" fill-opacity=".65">18</text><text x="375.0" y="232" text-anchor="middle" fill-opacity=".65">19</text><text x="419.7" y="232" text-anchor="middle" fill-opacity=".65">20</text><text x="464.3" y="232" text-anchor="middle" fill-opacity=".65">21</text><text x="509.0" y="232" text-anchor="middle" fill-opacity=".65">22</text><text x="553.7" y="232" text-anchor="middle" fill-opacity=".65">23</text><text x="598.3" y="232" text-anchor="middle" fill-opacity=".65">24</text><text x="643.0" y="232" text-anchor="middle" fill-opacity=".65">25</text><text x="687.7" y="232" text-anchor="middle" fill-opacity=".65">26</text><polyline fill="none" stroke="#0a8a43" stroke-width="2.5" points="62.3,170.5 107.0,138.4 151.7,128.0 196.3,124.3 241.0,133.2 285.7,120.0 330.3,112.5 375.0,115.8 419.7,106.8 464.3,87.9 509.0,52.6 553.7,54.9 598.3,37.0 643.0,43.1 687.7,60.1"/><circle cx="62.3" cy="170.5" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><text x="62.3" y="161.5" text-anchor="middle" font-weight="700" fill="#076b34">8.8</text><circle cx="107.0" cy="138.4" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="151.7" cy="128.0" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="196.3" cy="124.3" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="241.0" cy="133.2" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="285.7" cy="120.0" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="330.3" cy="112.5" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="375.0" cy="115.8" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="419.7" cy="106.8" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="464.3" cy="87.9" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="509.0" cy="52.6" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="553.7" cy="54.9" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="598.3" cy="37.0" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="643.0" cy="43.1" r="3.5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><circle cx="687.7" cy="60.1" r="5" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/><text x="687.7" y="51.1" text-anchor="middle" font-weight="700" fill="#076b34">32.2</text></g></svg></div></section>
+<section class="wrap"><h2>樓層、房型怎麼差</h2><p class="note" style="margin-bottom:10px">近五年成交，筆數少於 3 的組別參考性低。</p><div class="grid2"><div><div class="tbl"><table><thead><tr><th class="">樓層</th><th class="num">筆數</th><th class="num">中位單價</th></tr></thead><tbody><tr><td class="">1樓</td><td class="num">4</td><td class="num">27.5</td></tr><tr><td class="">2-5樓</td><td class="num">14</td><td class="num">32.9</td></tr><tr><td class="">6-10樓</td><td class="num">24</td><td class="num">35.0</td></tr><tr><td class="">11-15樓</td><td class="num">18</td><td class="num">35.3</td></tr></tbody></table></div></div><div><div class="tbl"><table><thead><tr><th class="">房型</th><th class="num">筆數</th><th class="num">中位單價</th><th class="num">中位總價</th><th class="num">中位坪數</th></tr></thead><tbody><tr><td class="">1房</td><td class="num">3</td><td class="num">30.3</td><td class="num">1,450 萬</td><td class="num">36.0</td></tr><tr><td class="">2房</td><td class="num">27</td><td class="num">37.1</td><td class="num">1,008 萬</td><td class="num">21.6</td></tr><tr><td class="">3房</td><td class="num">26</td><td class="num">33.6</td><td class="num">1,449 萬</td><td class="num">38.8</td></tr><tr><td class="">4房</td><td class="num">4</td><td class="num">31.0</td><td class="num">1,875 萬</td><td class="num">53.2</td></tr></tbody></table></div></div></div></section>
+<section class="wrap"><h2>近期實價登錄</h2><p class="note" style="margin-bottom:10px">＊單價已扣車位（萬/坪）；🅿 為含車位交易。出價前請以內政部實價登錄網站為準。</p><div class="tbl"><table><thead><tr><th class="">年月</th><th class="">樓層</th><th class="num">坪數</th><th class="">房型</th><th class="num">總價（含車位）</th><th class="num">單價＊</th></tr></thead><tbody><tr><td class="">2026-07</td><td class="">3/15F</td><td class="num">36.6</td><td class="">2 房</td><td class="num">1,400 萬 🅿</td><td class="num"><b>30.7</b></td></tr><tr><td class="">2026-06</td><td class="">3/15F</td><td class="num">36.6</td><td class="">3 房</td><td class="num">1,400 萬 🅿</td><td class="num"><b>30.7</b></td></tr><tr><td class="">2026-05</td><td class="">13/15F</td><td class="num">51.6</td><td class="">4 房</td><td class="num">1,950 萬 🅿</td><td class="num"><b>32.2</b></td></tr><tr><td class="">2026-04</td><td class="">6/15F</td><td class="num">21.6</td><td class="">2 房</td><td class="num">1,090 萬 🅿</td><td class="num"><b>35.6</b></td></tr><tr><td class="">2026-01</td><td class="">14/15F</td><td class="num">21.6</td><td class="">2 房</td><td class="num">970 萬 🅿</td><td class="num"><b>36.6</b></td></tr><tr><td class="">2025-11</td><td class="">8/15F</td><td class="num">36.6</td><td class="">3 房</td><td class="num">1,630 萬 🅿</td><td class="num"><b>39.6</b></td></tr><tr><td class="">2025-10</td><td class="">6/15F</td><td class="num">41.1</td><td class="">3 房</td><td class="num">1,580 萬 🅿</td><td class="num"><b>35.8</b></td></tr><tr><td class="">2025-09</td><td class="">1/15F</td><td class="num">49.6</td><td class="">1 房</td><td class="num">1,880 萬 🅿</td><td class="num"><b>34.3</b></td></tr><tr><td class="">2025-08</td><td class="">8/15F</td><td class="num">38.8</td><td class="">3 房</td><td class="num">1,605 萬 🅿</td><td class="num"><b>36.8</b></td></tr><tr><td class="">2025-05</td><td class="">3/15F</td><td class="num">52.0</td><td class="">3 房</td><td class="num">1,755 萬 🅿</td><td class="num"><b>30.3</b></td></tr></tbody></table></div></section>
+<section class="wrap"><h2>租金行情</h2><div class="tbl"><table><thead><tr><th class="">類型</th><th class="">房型</th><th class="num">筆數</th><th class="num">月租中位</th><th class="num">坪數</th></tr></thead><tbody><tr><td class="">整層出租</td><td class="">3房</td><td class="num">5</td><td class="num">25,000 元</td><td class="num">47.8</td></tr><tr><td class="">整層出租</td><td class="">2房</td><td class="num">2</td><td class="num">15,000 元</td><td class="num">30.6</td></tr><tr><td class="">分層出租</td><td class="">2房</td><td class="num">1</td><td class="num">22,000 元</td><td class="num">14.0</td></tr></tbody></table></div><p class="note" style="margin-top:8px">以近一年租金與單價估算，毛租金報酬率約 <b>1.7%</b>（未扣管理費、稅費與空租）。</p></section>
+<section class="wrap"><h2>住進來怎麼生活</h2><ul class="clean"><li><b>台鐵</b>　五權　<span class="note">約 1,763 公尺</span></li><li><b>國中</b>　市立爽文國中　<span class="note">約 1,076 公尺</span></li><li><b>國小</b>　市立永隆國小　<span class="note">約 836 公尺</span></li><li><b>捷運</b>　大慶站　<span class="note">約 2,290 公尺</span></li></ul><p style="margin-top:12px">所在的<b>南區永和里</b>，地段力 <b>21.6</b> 分（三區 61 里中第 33 名）。</p><ul class="clean"><li>公園：2 處（永和公園、綠園道）</li></ul><p class="note"><a href="/yucheng-location">看三區地段地圖</a></p></section>
+<section class="wrap"><h2>環境與看屋提醒</h2><ul class="clean"><li>土壤液化潛勢：<b>低</b>（經濟部地質調查及礦業管理中心）</li><li>淹水潛勢：請到經濟部水利署「淹水潛勢圖」或台中市防災資訊網，用門牌查詢。</li><li>歷年成交備註提到：增建 2 筆。看屋時請確認現況是否有增建、陽台外推，合法性與貸款估價可能受影響。</li></ul></section>
+<section class="wrap"><h2>適合對象與看屋重點</h2><div class="fit"><div><b>適合</b><ul class="clean" style="margin-top:6px"><li>以2房為主（近五年 27 筆，中位總價約 1,008 萬），預算在這附近的買方</li></ul></div><div><b>不太適合</b><ul class="clean" style="margin-top:6px"><li>預算有限的首購族（單價高於南區整體約 17%）</li></ul></div></div><h3 style="margin:16px 0 6px;font-size:1.05rem">這個社區的優點</h3><ul class="clean"></ul></section>
+<section class="wrap"><h2>看屋時建議確認</h2><div class="tbl"><table><thead><tr><th class="">項目</th><th class="">要確認什麼</th></tr></thead><tbody><tr><td class="">棟別門牌</td><td class="">社區有 21 個門牌，比價時用同棟、同座向的成交最準</td></tr><tr><td class="">樓層</td><td class="">地上 15 層；看上表的樓層價差，判斷開價是否合理</td></tr><tr><td class="">座向採光</td><td class="">實地看早上與下午的日照，西曬戶夏天較熱</td></tr><tr><td class="">車位</td><td class="">確認車位種類（平面／機械）與編號，車位價格會影響單價</td></tr><tr><td class="">管理費與公設</td><td class="">確認管理費、公基金，以及公設實際使用狀況</td></tr><tr><td class="">增建與現況</td><td class="">陽台外推、夾層等增建可能影響貸款與日後轉手</td></tr></tbody></table></div></section>
+<section class="wrap"><h2>買之前，我陪您看清楚這五件事</h2><ol class="five">
+<li><b>地段</b>：實際走一趟通勤、上學、買菜的動線，平日和假日各看一次。</li>
+<li><b>預算</b>：總價、車位、貸款成數和每月還款一起算，先用<a href="/yucheng#tools">試算工具</a>抓範圍。</li>
+<li><b>行情</b>：用同棟、同樓層帶、扣車位後的單價比，不被開價帶著走。</li>
+<li><b>轉手性</b>：看這個社區每年成交幾筆、主力房型是什麼，日後比較好賣。</li>
+<li><b>風險</b>：屋齡、修繕紀錄、增建、漏水與西曬，簽約前都要確認。</li></ol></section>
+<section class="wrap"><div class="cta"><h2>下一步：告訴我預算和想要的格局</h2><p>我幫您看「總太居易」適不適合，也可以直接約看屋。</p><a class="btn" href="https://line.me/R/oaMessage/%40161cayoi/?%E7%A5%90%E6%89%BF%E5%BA%97%E9%95%B7%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E5%9C%A8%E7%9C%8B%E3%80%8C%E7%B8%BD%E5%A4%AA%E5%B1%85%E6%98%93%E3%80%8D%E7%9A%84%E8%B3%BC%E5%B1%8B%E5%88%86%E6%9E%90%EF%BC%8C%E6%83%B3%E9%80%B2%E4%B8%80%E6%AD%A5%E4%BA%86%E8%A7%A3" target="_blank" rel="noopener">LINE 問祐承這個社區</a><p style="font-size:.9rem">手機 0933-317-625｜LINE @161cayoi</p></div></section>
+</main>
+<footer><div class="wrap">
+  <p><strong>房產找祐承｜信義房屋 文心高工店</strong></p>
+  <p>經紀業：信義房屋股份有限公司文心高工店｜經紀人：李祐承 (100)不動產經紀人字第 00239 號</p>
+  <p>手機 0933-317-625｜LINE @161cayoi｜台中市南區文心南路 888 之 2 號</p>
+  <p>資料來源：內政部不動產成交案件實際資訊（實價登錄），資料完整月份 115 年 7 月；社區介紹為本店整理之公開資料；土壤液化潛勢：經濟部地質調查及礦業管理中心；設施：OpenStreetMap。本頁為統計參考，實際以實價登錄網站、謄本與現場為準。</p>
+</div></footer>
+<div class="dock"><a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a><a class="btn" href="tel:0933317625">打電話 0933-317-625</a><a class="btn" href="/yucheng#cform">預約諮詢</a></div>
+</body>
+</html>
