@@ -8,6 +8,7 @@
 // 信義頁面與 sinyiwebapi 從 Cloudflare 出口會掛住，不要先打它們。
 // 單筆硬逾時 25 秒。前端一次只打一筆，以符合免費方案 Quick Actions 約 1 次/10 秒。
 // 金鑰只用環境變數 CF_ACCOUNT_ID、CF_API_TOKEN，不要寫進程式。
+// /yucheng：祐承店長個人品牌網站（yucheng.html）。
 // /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖。
 // ================================================================
 import logic from "./prop-compare-logic.js";
