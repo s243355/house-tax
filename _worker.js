@@ -30,6 +30,8 @@ const SITEMAP_PATHS = [
   '/card',
   '/prop-compare',
   '/yucheng',
+  '/yucheng-communities',
+  '/yucheng-location',
 ];
 
 function notFoundHtml() {
