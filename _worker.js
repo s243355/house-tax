@@ -28,6 +28,7 @@ const SITEMAP_PATHS = [
   '/transaction-planner',
   '/card',
   '/prop-compare',
+  '/yucheng',
 ];
 
 function notFoundHtml() {
