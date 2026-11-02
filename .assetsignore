@@ -10,3 +10,7 @@ tests
 tests/**
 files.zip
 *.map
+scripts
+scripts/**
+.github
+.github/**
