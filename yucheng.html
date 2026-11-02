@@ -88,6 +88,11 @@ nav.menu a:hover{color:var(--green-ink);background:var(--tint)}
 /* team */
 .team{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center}
 .team .ph{aspect-ratio:16/10;border-radius:var(--r)}
+.since{display:flex;flex-direction:column;gap:4px;padding:28px;border-radius:var(--r);background:var(--tint);border-left:4px solid var(--green)}
+.since .big{font-size:5.5rem}
+.since-sub{color:var(--muted);font-size:.9rem}
+.team.solo{grid-template-columns:1fr}
+.guides.one{grid-template-columns:1fr;max-width:560px}
 .big{font-family:var(--display);font-size:3rem;font-weight:900;color:var(--green);line-height:1}
 @media (max-width:760px){.team{grid-template-columns:1fr}}
 
@@ -201,7 +206,7 @@ footer strong{color:var(--fg)}
   <a class="brand" href="#top">房產找<b>祐承</b></a>
   <nav class="menu" aria-label="主選單">
     <a href="#about">關於我</a><a href="#services">服務項目</a><a href="#guides">避坑攻略</a><a href="#tools">試算工具</a>
-    <a href="#listings">我的物件</a><a href="#cases">成交實績</a><a href="#contact">聯絡</a>
+    <a href="#contact">聯絡</a>
   </nav>
   <a class="btn solid" data-line href="#">加 LINE</a>
 </div></header>
@@ -216,10 +221,10 @@ footer strong{color:var(--fg)}
     <div class="chips"><span class="chip">首購規劃</span><span class="chip">屋主售屋</span><span class="chip">換屋銜接</span><span class="chip">置產評估</span></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <a class="btn solid" data-line href="#">LINE 聊聊你的需求</a>
-      <span class="phone" data-phone-text>0900-000-000</span>
+      <span class="phone" data-phone-text>0933-317-625</span>
     </div>
   </div>
-  <div class="ph">店長形象照<br>（直式 4:5，替換成照片）</div>
+  <div class="since"><span class="eyebrow">民國 98 年入行</span><span class="big">17</span><span>年在地成交經驗</span><span class="since-sub">信義房屋 文心高工店 店長</span></div>
 </section>
 
 <section id="about">
@@ -230,13 +235,12 @@ footer strong{color:var(--fg)}
       <p class="lead">買房賣房是家裡最大的一筆決定。我在文心高工店帶團隊，每天看的是台中的成交、屋況和社區管理。我的工作是把這些資訊攤開給你看，讓你自己做得了判斷。</p>
     </div>
     <dl class="facts">
-      <dt>稱呼</dt><dd>祐承店長</dd>
-      <dt>服務品牌</dt><dd>信義房屋 文心高工店（直營）</dd>
-      <dt>服務區域</dt><dd>台中市 南區・南屯區・西屯區（待確認）</dd>
-      <dt>熟悉商圈</dt><dd>文心南路生活圈・台中高工周邊（待確認）</dd>
-      <dt>年資</dt><dd>○ 年（待填）</dd>
-      <dt>頻道</dt><dd>YouTube「祐承店長帶您買好房」</dd>
-    </dl>
+      <dt>姓名</dt><dd>李祐承，大家叫我祐承店長</dd>
+      <dt>服務品牌</dt><dd>信義房屋 文心高工店</dd>
+      <dt>服務區域</dt><dd>台中市市區</dd>
+      <dt>熟悉商圈</dt><dd>台中市南區・大里</dd>
+      <dt>年資</dt><dd>98 年入行，已滿 17 年</dd>
+          </dl>
   </div>
   <div class="why">
     <div><h3>用實價登錄說話</h3><p>出價、開價都先拉周邊近一年成交，扣掉車位算單價，再談喜不喜歡。</p></div>
@@ -246,8 +250,7 @@ footer strong{color:var(--fg)}
 </section>
 
 <section id="team">
-  <div class="team">
-    <div class="ph">文心高工店團隊合照<br>（橫式 16:10）</div>
+  <div class="team solo">
     <div class="stack">
       <p class="eyebrow">我的團隊</p>
       <h2>一間店，一起顧你的案子</h2>
@@ -280,13 +283,10 @@ footer strong{color:var(--fg)}
     <h2>簽約之前，先把坑避開</h2>
     <p class="lead">第一線常見的踩雷狀況和完整試算，整理在我的工具站，不用留資料就能看。</p>
   </div>
-  <div class="guides" style="margin-top:22px">
+  <div class="guides one" style="margin-top:22px">
     <a class="guide" href="https://house-tax.s243355.workers.dev/" target="_blank" rel="noopener">
       <span class="k">買方・屋主</span><h3>房產稅務與貸款工具箱</h3>
       <p>房地合一稅、土增稅、重購退稅、新青安房貸、換屋資金規劃，一次算清楚。</p><span class="go">打開工具站 ↗</span></a>
-    <a class="guide" href="#" data-yt target="_blank" rel="noopener">
-      <span class="k">影片</span><h3>祐承店長帶您買好房</h3>
-      <p>台中在地房產與買賣眉角，長片拆解、短片速懂。</p><span class="go">看頻道 ↗</span></a>
   </div>
 </section>
 
@@ -363,7 +363,7 @@ footer strong{color:var(--fg)}
   </div>
 </section>
 
-<section id="listings">
+<section id="listings" hidden>
   <div class="stack">
     <p class="eyebrow">我的物件</p>
     <h2>店裡正在賣的房子</h2>
@@ -378,7 +378,7 @@ footer strong{color:var(--fg)}
   <div class="list" id="list"></div>
 </section>
 
-<section id="cases">
+<section id="cases" hidden>
   <div class="stack">
     <p class="eyebrow">成交實績・客戶見證</p>
     <h2>每一筆成交，都是一次被信任</h2>
@@ -406,17 +406,17 @@ footer strong{color:var(--fg)}
   </div>
   <div class="contact" style="margin-top:22px">
     <div class="stack">
-      <div class="cbox"><span class="lbl" style="color:var(--muted);font-size:.85rem">官方 LINE（最快回覆）</span><span class="v" data-line-id>@your-line-id</span>
+      <div class="cbox"><span class="lbl" style="color:var(--muted);font-size:.85rem">官方 LINE（最快回覆）</span><span class="v" data-line-id>@161cayoi</span>
         <div class="row"><a class="btn solid" data-line href="#">加入好友</a><button class="btn ghost" data-copytext="line">複製 ID</button></div></div>
-      <div class="cbox"><span style="color:var(--muted);font-size:.85rem">手機</span><span class="v" data-phone-text>0900-000-000</span>
+      <div class="cbox"><span style="color:var(--muted);font-size:.85rem">手機</span><span class="v" data-phone-text>0933-317-625</span>
         <div class="row"><a class="btn solid" data-tel href="#">撥打電話</a><button class="btn ghost" data-copytext="phone">複製號碼</button></div></div>
-      <div class="cbox"><span style="color:var(--muted);font-size:.85rem">門市</span><span style="font-weight:700">信義房屋 文心高工店</span><span style="font-size:.9rem;color:var(--muted)">台中市○○區文心南路○○號（待填）</span></div>
+      <div class="cbox"><span style="color:var(--muted);font-size:.85rem">門市</span><span style="font-weight:700">信義房屋 文心高工店</span><span style="font-size:.9rem;color:var(--muted)">台中市南區文心南路 888 之 2 號</span></div>
     </div>
     <form class="form" id="cform" novalidate>
       <div><label for="c-name">怎麼稱呼你</label><input id="c-name" placeholder="例如：王小姐"></div>
       <div><label for="c-phone">聯絡電話</label><input id="c-phone" inputmode="tel" placeholder="09xx-xxx-xxx"></div>
       <div><label for="c-type">你是</label><select id="c-type"><option>想買房</option><option>想賣房</option><option>想換屋</option><option>想置產</option><option>其他</option></select></div>
-      <div><label for="c-area">關注區域</label><select id="c-area"><option>南區</option><option>南屯區</option><option>西屯區</option><option>台中其他</option><option>還沒決定</option></select></div>
+      <div><label for="c-area">關注區域</label><select id="c-area"><option>台中南區</option><option>大里</option><option>台中其他市區</option><option>還沒決定</option></select></div>
       <div class="full"><label for="c-time">方便聯絡的時段</label><select id="c-time"><option>平日白天</option><option>平日晚上</option><option>假日</option><option>都可以</option></select></div>
       <div class="full"><label for="c-note">想先讓我知道的事</label><textarea id="c-note" placeholder="預算、房數、通勤、學區，或想賣的社區"></textarea></div>
       <div class="full"><button class="btn solid" type="submit" style="width:100%">整理成訊息</button></div>
@@ -429,8 +429,8 @@ footer strong{color:var(--fg)}
 
 <footer>
   <p><strong>房產找祐承｜信義房屋 文心高工店</strong></p>
-  <p>信義房屋股份有限公司（直營）｜經紀業特許字號：○○○○（待填）｜經紀人：○○○ ○○○○字第○○○號（待填）｜營業員：祐承 ○○登字第○○○號（待填）</p>
-  <p>手機 <span data-phone-text>0900-000-000</span>｜LINE <span data-line-id>@your-line-id</span></p>
+  <p>經紀業：信義房屋股份有限公司文心高工店｜經紀人：李祐承 (100)不動產經紀人字第 00239 號</p>
+  <p>手機 <span data-phone-text>0933-317-625</span>｜LINE <span data-line-id>@161cayoi</span></p>
 </footer>
 </main>
 
@@ -440,9 +440,9 @@ footer strong{color:var(--fg)}
 <script>
 /* ===== 改這裡就好 ===== */
 const CONFIG = {
-  lineId: "@your-line-id",          // 官方帳號 ID（含 @）
-  phone: "0900-000-000",
-  youtube: "https://www.youtube.com/" // 頻道網址
+  lineId: "@161cayoi",          // 官方帳號 ID（含 @）
+  phone: "0933-317-625",
+  youtube: "" // 頻道網址（之後再填）
 };
 /* ===================== */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -452,7 +452,6 @@ $$("[data-line]").forEach(a=>{a.href=lineAdd;a.target="_blank";a.rel="noopener"}
 $$("[data-tel]").forEach(a=>a.href="tel:"+CONFIG.phone.replace(/\D/g,""));
 $$("[data-phone-text]").forEach(e=>e.textContent=CONFIG.phone);
 $$("[data-line-id]").forEach(e=>e.textContent=CONFIG.lineId);
-$$("[data-yt]").forEach(a=>a.href=CONFIG.youtube);
 
 function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,1800)}
 function copy(text){navigator.clipboard.writeText(text).then(()=>toast("已複製"),()=>toast("無法自動複製，請長按選取"))}
