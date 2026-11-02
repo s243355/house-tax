@@ -96,12 +96,14 @@ nav.menu a:hover,nav.menu a.on{color:var(--green-ink);border-bottom-color:var(--
 .since{display:flex;flex-direction:column;gap:4px;padding:28px;border-radius:var(--r);background:var(--tint);border-left:4px solid var(--green)}
 .since .big{font-size:5.5rem}
 .since-sub{color:var(--muted);font-size:.9rem}
-.portrait{position:relative;margin:0;max-width:100%}
-.portrait img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 18%;border-radius:var(--r);background:var(--tint)}
+.hero>*{min-width:0}
+.portrait{position:relative;margin:0;width:100%;max-width:320px;justify-self:center}
+@media (max-width:760px){.portrait{max-width:240px;justify-self:start}}
+.portrait img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 18%;border-radius:var(--r);background:var(--tint)}
 .portrait figcaption{position:absolute;left:12px;bottom:12px;background:var(--surface);border-radius:var(--r);padding:10px 14px;box-shadow:0 4px 16px rgba(0,0,0,.15);display:flex;align-items:baseline;gap:8px}
 .portrait figcaption b{font-family:var(--display);font-size:2.2rem;font-weight:900;color:var(--green);line-height:1}
 .portrait figcaption span{font-size:.85rem;color:var(--fg);line-height:1.35}
-.award{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700}
+.award{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700}
 .team.solo{grid-template-columns:1fr}
 .guides.one{grid-template-columns:1fr;max-width:560px}
 .big{font-family:var(--display);font-size:3rem;font-weight:900;color:var(--green);line-height:1}
