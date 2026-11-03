@@ -7,4 +7,5 @@ python3 update.py
 python3 comm.py >/dev/null
 python3 loc.py >/dev/null
 python3 ana.py >/dev/null
+python3 sitemap.py
 echo "pages rebuilt"
