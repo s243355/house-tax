@@ -1,4 +1,4 @@
-name: 抓取實價登錄資料
+name: 實價登錄自動更新
 on:
   workflow_dispatch:
   schedule:
@@ -15,9 +15,11 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/fetch_lvr.py
+      - name: 重算社區行情並重建頁面
+        run: bash scripts/yucheng/build.sh
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/lvr
-          git commit -m "更新實價登錄資料（內政部開放資料）" || echo "no changes"
+          git add data/lvr data/yucheng yucheng-communities.html yucheng-location.html yucheng-a-*.html
+          git commit -m "實價登錄自動更新：重算社區行情與購屋分析頁" || echo "no changes"
           git push

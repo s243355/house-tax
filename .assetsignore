@@ -15,3 +15,6 @@ scripts/**
 .github
 .github/**
 data/lvr
+data/lvr/**
+data/yucheng
+data/yucheng/**
