@@ -114,8 +114,7 @@ export default {
       }
       if (url.pathname === '/' || url.pathname === '/yucheng' || url.pathname === '/yucheng.html') {
         if (url.pathname !== '/') return Response.redirect(`https://${YC_HOST}/`, 301);
-        const res = await env.ASSETS.fetch(new Request(new URL('/yucheng.html', url).toString(), request));
-        return new Response(res.body, res);
+        return env.ASSETS.fetch(new Request(new URL('/yucheng', url).toString(), request));
       }
     }
 
@@ -146,14 +145,7 @@ export default {
     // 靜態資產：無副檔名時補 .html（/house-tax → house-tax.html）。
     // 找不到就回 404，不要落到首頁。
     if (env.ASSETS) {
-      if (url.pathname !== '/' && !url.pathname.includes('.')) {
-        const trimmed = url.pathname.replace(/\/+$/, '');
-        const newUrl = new URL(request.url);
-        newUrl.pathname = (trimmed || '/') + '.html';
-        const res = await env.ASSETS.fetch(new Request(newUrl.toString(), request));
-        if (res.status !== 404) return res;
-        return notFoundResponse();
-      }
+      // html_handling 會自動把 /house-tax 對到 house-tax.html，不要自己補 .html（會和自動轉址互相打轉）
       const res = await env.ASSETS.fetch(request);
       if (res.status === 404) return notFoundResponse();
       return res;
