@@ -196,6 +196,6 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
 '''
     credit=f'資料來源：內政部不動產成交案件實際資訊（實價登錄），資料更新至 {DLABEL}，每月自動更新；社區介紹為本店整理之公開資料；土壤液化潛勢：經濟部地質調查及礦業管理中心；設施：OpenStreetMap。本頁為統計參考，實際以實價登錄網站、謄本與現場為準。'
     title=f'{name}｜社區購屋分析'
-    open(f'{ROOT}/yucheng-a-{A["id"]}.html','w',encoding='utf-8').write(page(title,f'{name}（台中{town}）社區購屋分析：近一年實登單價、樓層房型價差、租金、生活機能與看屋重點。｜信義房屋文心高工店 祐承店長',1,css,body,credit))
+    open(f'{ROOT}/yucheng-a-{A["id"]}.html','w',encoding='utf-8').write(page(title,f'{name}（台中{town}）社區購屋分析：近一年實登單價、樓層房型價差、租金、生活機能與看屋重點。｜信義房屋文心高工店 祐承店長',1,css,body,credit,og=f'a-{A["id"]}.jpg',path=f'/yucheng-a-{A["id"]}'))
     made.append(A['id'])
 json.dump(made,open(os.path.join(DATA,'an_ids.json'),'w'));print(made)

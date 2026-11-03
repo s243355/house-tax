@@ -5,7 +5,7 @@ HEAD = '''<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<link rel="icon" href="/favicon-32.png">
+{og}<link rel="icon" href="/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -69,7 +69,19 @@ FOOT = '''<footer><div class="wrap">
 </div></footer>
 <div class="dock"><a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a><a class="btn" href="tel:0933317625" aria-label="打電話 0933-317-625">打電話</a><a class="btn" href="/yucheng#cform">預約諮詢</a></div>
 '''
-def page(title,desc,on,extra_css,body,credit):
-    h=HEAD.replace('{title}',title).replace('{desc}',desc).replace('{extra_css}',extra_css)
+def og_tags(title,desc,img,path):
+    import json as _j,os as _o,html as _h
+    from paths import DATA as _D
+    try:v=_j.load(open(_o.path.join(_D,'stats_meta.json'),encoding='utf-8'))['data_end'].replace('-','')
+    except Exception:v='1'
+    q=lambda x:_h.escape(x,quote=True)
+    u='https://tcyucheng.com'+path
+    im=f'https://tcyucheng.com/og/{img}?v={v}'
+    return (f'<link rel="canonical" href="{u}">\n<meta property="og:type" content="website">\n<meta property="og:site_name" content="房產找祐承">\n'
+            f'<meta property="og:title" content="{q(title)}">\n<meta property="og:description" content="{q(desc)}">\n<meta property="og:url" content="{u}">\n'
+            f'<meta property="og:image" content="{im}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
+            f'<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:image" content="{im}">\n')
+def page(title,desc,on,extra_css,body,credit,og=None,path=None):
+    h=HEAD.replace('{title}',title).replace('{desc}',desc).replace('{extra_css}',extra_css).replace('{og}',og_tags(title,desc,og,path) if og else '')
     h=h.replace('{on1}',' class="on"' if on==1 else '').replace('{on2}',' class="on"' if on==2 else '')
     return h+body+FOOT.replace('{credit}',credit)+'</body>\n</html>\n'

@@ -8,4 +8,5 @@ python3 comm.py >/dev/null
 python3 loc.py >/dev/null
 python3 ana.py >/dev/null
 python3 sitemap.py
+python3 og.py
 echo "pages rebuilt"

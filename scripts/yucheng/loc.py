@@ -120,5 +120,5 @@ sv=sorted(D['villages'],key=lambda v:-(v['score'] if v['score'] is not None else
 TBL='<thead><tr><th>里</th><th>區</th><th class="num">地段力</th>'+''.join(f'<th class="num">{x}</th>' for x in ['學區','公園','商場市場','交通','醫療'])+'</tr></thead><tbody>'+''.join(f"<tr><td>{v['name']}</td><td>{v['town']}</td><td class='num'>{'%.1f'%v['score'] if v['score'] is not None else '無資料'}</td>"+''.join(f"<td class='num'>{v['n'][k] or '無收錄'}</td>" for k in ['school','park','shop','transit','medical'])+'</tr>' for v in sv)+'</tbody>'
 body=body.replace('__TBL__',TBL)
 credit='里界：內政部國土測繪中心（taiwan-atlas 1.1.0）。設施：© OpenStreetMap contributors（ODbL），'+date+'擷取。底圖 © OpenStreetMap © CARTO。地段力為生活機能統計參考，不代表房價或增值保證。'
-open(ROOT+'/yucheng-location.html','w',encoding='utf-8').write(page('地段地圖｜南區東區大里 66 里地段力','台中南區、東區、大里區 66 里的學區、公園、商場市場、交通、醫療設施密集度與地段力排行。｜信義房屋文心高工店 祐承店長',2,css,body,credit))
+open(ROOT+'/yucheng-location.html','w',encoding='utf-8').write(page('地段地圖｜南區東區大里 66 里地段力','台中南區、東區、大里區 66 里的學區、公園、商場市場、交通、醫療設施密集度與地段力排行。｜信義房屋文心高工店 祐承店長',2,css,body,credit,og='location.jpg',path='/yucheng-location'))
 print('ok',date)
