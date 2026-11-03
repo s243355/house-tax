@@ -14,3 +14,4 @@ scripts
 scripts/**
 .github
 .github/**
+data/lvr
