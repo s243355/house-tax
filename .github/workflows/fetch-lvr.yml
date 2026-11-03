@@ -20,6 +20,6 @@ jobs:
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/lvr data/yucheng yucheng-communities.html yucheng-location.html yucheng-a-*.html
+          git add data/lvr data/yucheng yucheng-communities.html yucheng-location.html yucheng-a-*.html sitemap-yucheng.xml
           git commit -m "實價登錄自動更新：重算社區行情與購屋分析頁" || echo "no changes"
           git push

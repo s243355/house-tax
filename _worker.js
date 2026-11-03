@@ -29,9 +29,6 @@ const SITEMAP_PATHS = [
   '/transaction-planner',
   '/card',
   '/prop-compare',
-  '/yucheng',
-  '/yucheng-communities',
-  '/yucheng-location',
 ];
 
 function notFoundHtml() {
@@ -90,6 +87,36 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: cors });
+    }
+
+    // ── 祐承個人網域 tcyucheng.com ──
+    // www 轉到主網域；首頁直接顯示祐承個人頁；舊 workers.dev 的祐承頁面 301 轉過來。
+    const YC_HOST = 'tcyucheng.com';
+    if (url.hostname === 'www.' + YC_HOST) {
+      url.hostname = YC_HOST;
+      return Response.redirect(url.toString(), 301);
+    }
+    const onYc = url.hostname === YC_HOST;
+    if (!onYc && /^\/yucheng(-|$|\.html$)/.test(url.pathname)) {
+      const to = new URL(url.toString());
+      to.hostname = YC_HOST;
+      to.pathname = to.pathname === '/yucheng' || to.pathname === '/yucheng.html' ? '/' : to.pathname;
+      return Response.redirect(to.toString(), 301);
+    }
+    if (onYc) {
+      if (url.pathname === '/robots.txt') {
+        return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://${YC_HOST}/sitemap-yucheng.xml\n`, {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        });
+      }
+      if (url.pathname === '/sitemap.xml') {
+        return Response.redirect(`https://${YC_HOST}/sitemap-yucheng.xml`, 301);
+      }
+      if (url.pathname === '/' || url.pathname === '/yucheng' || url.pathname === '/yucheng.html') {
+        if (url.pathname !== '/') return Response.redirect(`https://${YC_HOST}/`, 301);
+        const res = await env.ASSETS.fetch(new Request(new URL('/yucheng.html', url).toString(), request));
+        return new Response(res.body, res);
+      }
     }
 
     // ── 路由：POST /api/scrape-prop ──

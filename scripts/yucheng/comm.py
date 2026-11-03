@@ -28,7 +28,7 @@ for g,(t,col,d) in G.items():
 <div class="pr"><b>{c["p1y"]:.1f}</b> 萬/坪<small>近一年 {c["n1y"]} 筆{yoy}</small></div></article>''')
     rows.append('</div>')
 LIST='\n'.join(rows)
-LD={"@context":"https://schema.org","@type":"ItemList","name":"台中南區、東區、大里區社區清單","numberOfItems":len(C),"itemListElement":[{"@type":"ListItem","position":i+1,"item":{"@type":"Residence","name":label(c),"address":{"@type":"PostalAddress","addressRegion":"台中市","addressLocality":c['town'],"streetAddress":c['addr']},"geo":{"@type":"GeoCoordinates","latitude":c['lat'],"longitude":c['lng']},**({"url":f"https://house-tax.s243355.workers.dev/yucheng-a-{c['id']}"} if c.get('an') else {})}} for i,c in enumerate(C)]}
+LD={"@context":"https://schema.org","@type":"ItemList","name":"台中南區、東區、大里區社區清單","numberOfItems":len(C),"itemListElement":[{"@type":"ListItem","position":i+1,"item":{"@type":"Residence","name":label(c),"address":{"@type":"PostalAddress","addressRegion":"台中市","addressLocality":c['town'],"streetAddress":c['addr']},"geo":{"@type":"GeoCoordinates","latitude":c['lat'],"longitude":c['lng']},**({"url":f"https://tcyucheng.com/yucheng-a-{c['id']}"} if c.get('an') else {})}} for i,c in enumerate(C)]}
 css='''
 .band{background:var(--tint);border-bottom:1px solid var(--line)}
 .band .wrap{padding-block:22px;display:flex;flex-direction:column;gap:12px}
