@@ -14,12 +14,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: 安裝中文字型與 Pillow（產生分享預覽圖用）
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+          pip install pillow
       - run: python scripts/fetch_lvr.py
       - name: 重算社區行情並重建頁面
         run: bash scripts/yucheng/build.sh
       - run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/lvr data/yucheng yucheng-communities.html yucheng-location.html yucheng-a-*.html sitemap-yucheng.xml
+          git add data/lvr data/yucheng yucheng-communities.html yucheng-location.html yucheng-a-*.html sitemap-yucheng.xml og
           git commit -m "實價登錄自動更新：重算社區行情與購屋分析頁" || echo "no changes"
           git push

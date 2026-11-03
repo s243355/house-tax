@@ -151,5 +151,5 @@ render();
 VIL={'villages':[{'code':v['code'],'town':v['town'],'name':v['name'],'score':v['score']} for v in L['villages']],'geo':L['geo'],'towns':L['towns']}
 body=body.replace('__DATA__',json.dumps(C,ensure_ascii=False,separators=(',',':'))).replace('__VIL__',json.dumps(VIL,ensure_ascii=False,separators=(',',':'))).replace('__ST__',json.dumps(STATIONS,ensure_ascii=False))
 credit=f'資料來源：內政部不動產成交案件實際資訊（實價登錄），資料更新至 {DLABEL}，每月自動更新（申報約晚 1～3 個月）；里界：內政部國土測繪中心；車站：OpenStreetMap。底圖 © OpenStreetMap contributors。單價為統計參考，實際價格依屋況、樓層、車位而異。'
-open(ROOT+'/yucheng-communities.html','w',encoding='utf-8').write(page('祐承的商圈｜南區東區大里社區地圖','台中南區、東區、大里區屋齡30年內大樓社區地圖，附近一年實價登錄單價、生活圈與社區購屋分析。｜信義房屋文心高工店 祐承店長',1,css,body,credit))
+open(ROOT+'/yucheng-communities.html','w',encoding='utf-8').write(page('祐承的商圈｜南區東區大里社區地圖','台中南區、東區、大里區屋齡30年內大樓社區地圖，附近一年實價登錄單價、生活圈與社區購屋分析。｜信義房屋文心高工店 祐承店長',1,css,body,credit,og='communities.jpg',path='/yucheng-communities'))
 print('ok')
