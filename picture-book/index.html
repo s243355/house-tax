@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="繪本借閱">
+<meta name="theme-color" content="#F3F5FA">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>繪本借閱清單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+/* Layout: one mobile-first column (max 720px); sticky header with two tabs; current loans shown as library "date due" stamps in each card's color; forms slide up as bottom sheets */
+:root{
+  --bg:#F3F5FA; --surface:#FFFFFF; --sunken:#EBEEF6; --ink:#1D2540; --muted:#5C6582; --line:#D9DEEA;
+  --accent:#3651C9; --on-accent:#FFFFFF; --star:#E2A100; --warn:#B86E00; --danger:#C0334A; --ok:#2B8452;
+  --scrim:rgba(20,26,46,.42); --shadow:0 10px 30px rgba(29,37,64,.16);
+  --font-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131726; --surface:#1C2234; --sunken:#171C2C; --ink:#E8EBF5; --muted:#9AA2BD; --line:#2D354E;
+  --accent:#93A6FF; --on-accent:#111830; --star:#FFC933; --warn:#F2A93B; --danger:#FF7E8F; --ok:#62CC8F;
+  --scrim:rgba(0,0,0,.6); --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#131726; --surface:#1C2234; --sunken:#171C2C; --ink:#E8EBF5; --muted:#9AA2BD; --line:#2D354E;
+  --accent:#93A6FF; --on-accent:#111830; --star:#FFC933; --warn:#F2A93B; --danger:#FF7E8F; --ok:#62CC8F;
+  --scrim:rgba(0,0,0,.6); --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:grid;gap:10px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-text{flex:1;min-width:0}
+.brand h1{font-size:24px}
+.lib{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--sunken);border-radius:999px;padding:4px;gap:4px}
+.tabs button{border:0;background:transparent;border-radius:999px;min-height:38px;font-weight:500;color:var(--muted)}
+.tabs button[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:500;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,var(--line))}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* tally */
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-block:6px 18px}
+.tally div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tally b{display:block;font-family:var(--font-display);font-weight:400;font-size:26px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tally span{font-size:12px;color:var(--muted);letter-spacing:.04em}
+
+.notice{background:color-mix(in srgb,var(--warn) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+
+section{margin-bottom:24px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.sec-head h2{font-size:19px}
+
+/* current loans */
+.loans{display:grid;gap:10px}
+.loan{--c:#888;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px}
+.stamp{width:62px;text-align:center;border:2px dashed var(--c);border-radius:8px;padding:4px 0 5px;transform:rotate(-3deg);background:color-mix(in srgb,var(--c) 8%,var(--surface))}
+.stamp small{display:block;font-size:10px;letter-spacing:.2em;color:var(--muted);line-height:1.4}
+.stamp b{display:block;font-family:var(--font-display);font-weight:400;font-size:20px;line-height:1.15;font-variant-numeric:tabular-nums}
+.loan-info{min-width:0}
+.linkish{border:0;background:none;padding:0;text-align:left;font-family:var(--font-display);font-size:17px;line-height:1.35;color:var(--ink)}
+.loan-sub{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;margin-top:2px}
+.loan-acts{display:flex;flex-direction:column;gap:6px}
+.left{font-weight:700;font-variant-numeric:tabular-nums}
+.left.warn{color:var(--warn)} .left.late{color:var(--danger)} .left.okay{color:var(--muted);font-weight:500}
+@media (max-width:440px){.loan{grid-template-columns:auto 1fr}.loan-acts{grid-column:1/-1;flex-direction:row}.loan-acts .btn{flex:1}}
+
+.cardtag{--c:#888;display:inline-flex;align-items:center;gap:5px;padding:1px 9px 1px 7px;border-radius:999px;font-size:12px;font-weight:500;background:color-mix(in srgb,var(--c) 15%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 45%,transparent);white-space:nowrap}
+.cardtag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+
+/* wish bar */
+.wishbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:color-mix(in srgb,var(--star) 13%,var(--surface));border:1px solid color-mix(in srgb,var(--star) 40%,var(--line));border-radius:12px;padding:8px 8px 8px 12px;margin-bottom:12px}
+.wishbar span{display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.wishbar svg{width:18px;height:18px;fill:var(--star)}
+
+/* filters */
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:36px;padding:0 13px;font-size:14px;color:var(--muted)}
+.chip b{font-weight:500;margin-left:4px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.search{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 14px;font-size:16px;margin-bottom:12px}
+
+/* books */
+.books{display:grid;gap:10px}
+.book{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:6px}
+.book-head{display:flex;gap:8px;align-items:flex-start}
+.book-head .linkish{flex:1;min-width:0;font-size:18px}
+.star{flex:none;width:40px;height:40px;margin:-8px -8px 0 0;border:0;background:none;border-radius:50%;display:grid;place-items:center}
+.star svg{width:24px;height:24px;fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linejoin:round}
+.star[aria-pressed="true"] svg{fill:var(--star);stroke:var(--star)}
+.meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px}
+.src{border:1px solid var(--line);border-radius:6px;padding:0 6px;font-size:12px}
+.summary{margin:0;font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.summary.open{display:block}
+.state{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px}
+.pill{border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;letter-spacing:.04em}
+.pill.none{background:var(--sunken);color:var(--muted)}
+.pill.borrowed{background:color-mix(in srgb,var(--accent) 15%,var(--surface));color:var(--accent)}
+.pill.reserved{background:color-mix(in srgb,var(--warn) 15%,var(--surface));color:var(--warn)}
+.pill.returned{background:color-mix(in srgb,var(--ok) 15%,var(--surface));color:var(--ok)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.example{font-size:11px;letter-spacing:.06em;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:0 6px}
+
+.empty{text-align:center;padding:36px 16px;border:1.5px dashed var(--line);border-radius:var(--r);color:var(--muted)}
+.empty h3{font-size:18px;color:var(--ink);margin-bottom:6px}
+
+.fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:6;min-height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--accent);color:var(--on-accent);font-size:16px;font-weight:700;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:8px}
+.fab svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round}
+
+/* sheet */
+.scrim{position:fixed;inset:0;z-index:20;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease}
+.sheet{width:100%;max-width:720px;max-height:90vh;overflow:auto;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:var(--shadow);padding:6px max(18px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));animation:up .2s ease}
+.sheet::before{content:"";display:block;width:40px;height:4px;border-radius:4px;background:var(--line);margin:4px auto 10px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.sheet-head h3{font-size:20px;min-width:0}
+.x{width:40px;height:40px;border-radius:50%;border:0;background:var(--sunken);font-size:20px;line-height:1;flex:none}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.form{display:grid;gap:14px}
+.field{display:grid;gap:5px}
+.field>span,.field>legend{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.04em}
+.field input:not([type=checkbox]):not([type=radio]):not([type=color]),.field textarea,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:9px 12px;font-size:16px}
+.field textarea{min-height:88px;resize:vertical}
+fieldset.field{border:0;margin:0;padding:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--muted)}
+.err{font-size:13px;color:var(--danger)}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;font-size:15px}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.cardpick{display:flex;flex-wrap:wrap;gap:8px}
+.cardpick label{--c:#888;position:relative}
+.cardpick input{position:absolute;opacity:0;inset:0}
+.cardpick span{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);font-weight:500;cursor:pointer}
+.cardpick span::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--c)}
+.cardpick input:checked+span{border-color:var(--c);background:color-mix(in srgb,var(--c) 15%,var(--surface))}
+.cardpick input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.sheet-foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin-top:6px}
+.sheet-foot .grow{flex:1}
+.hist{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.hist li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-radius:10px;background:var(--sunken);font-size:14px}
+.hist li .grow{flex:1;min-width:0}
+.detail-sum{margin:0;font-size:15px;white-space:pre-wrap}
+.cardrow{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center}
+.cardrow input[type=color]{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--bg)}
+.copybox{width:100%;min-height:140px;font-size:14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:10px}
+
+/* stats */
+.bigs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-block:6px 18px}
+.bigs div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.bigs b{display:block;font-family:var(--font-display);font-weight:400;font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
+.bigs span{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.chart-wrap{overflow-x:auto}
+.chart{display:block;width:100%;min-width:320px;height:auto}
+.chart .ax{fill:var(--muted);font-size:10px;font-family:var(--font-body)}
+.chart .ax.now{fill:var(--ink);font-weight:700}
+.chart .val{fill:var(--ink);font-size:11px;font-weight:700;font-family:var(--font-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.bars{display:grid;gap:10px}
+.barrow{display:grid;grid-template-columns:5.5em 1fr 2.5em;gap:10px;align-items:center;font-size:14px}
+.track{height:10px;border-radius:5px;background:var(--sunken);overflow:hidden}
+.track i{display:block;height:100%;border-radius:5px}
+.rank{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.rank li{display:flex;justify-content:space-between;gap:10px;font-size:15px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rank li:last-child{border-bottom:0}
+.mtable{width:100%;border-collapse:collapse;font-size:14px}
+.mtable td,.mtable th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;font-variant-numeric:tabular-nums}
+.mtable th{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.mtable td:last-child,.mtable th:last-child{text-align:right}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:10px;font-size:14px;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
+.toast button{border:0;border-radius:999px;background:color-mix(in srgb,var(--bg) 20%,transparent);color:var(--bg);padding:4px 12px;font-weight:700}
+.toast:not(:has(button)){padding-right:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.stamp{transform:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-text">
+        <h1>繪本借閱清單</h1>
+        <div class="lib" id="libname">　</div>
+      </div>
+      <button class="btn sm" id="btn-settings" type="button">設定</button>
+    </div>
+    <nav class="tabs" aria-label="頁面">
+      <button type="button" data-view="list">書單</button>
+      <button type="button" data-view="stats">閱讀統計</button>
+    </nav>
+  </header>
+  <main id="app"></main>
+</div>
+<button class="fab" id="fab" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增繪本</button>
+
+<script>
+(function(){
+const DEFAULT_SETTINGS={library:'○○市立圖書館',loanDays:30,cards:[{id:'mom',name:'媽媽卡',color:'#D9577A'},{id:'dad',name:'爸爸卡',color:'#2E8B86'}]};
+const STAR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.9 6.1 6.6.7-5 4.5 1.4 6.6L12 17.3l-5.9 3.4 1.4-6.6-5-4.5 6.6-.7z"/></svg>';
+const STATUS_LABEL={none:'未借閱',borrowed:'借閱中',reserved:'已預約',returned:'已借過'};
+const FILTERS=[['all','全部'],['none','未借閱'],['borrowed','借閱中'],['reserved','已預約'],['wish','想借'],['returned','已借過']];
+const LS_KEY='picturebook-loans-v1';
+const S={books:[],settings:clone(DEFAULT_SETTINGS),filter:'all',q:'',view:'list',mode:'loading',loaded:false,stale:false,error:null,expanded:new Set()};
+let DB=null;
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayStr=()=>ymd(new Date());
+const parseD=s=>{const[y,m,d]=String(s).split('-').map(Number);return new Date(y,(m||1)-1,d||1)};
+const addDays=(s,n)=>{const d=parseD(s);d.setDate(d.getDate()+Number(n||0));return ymd(d)};
+const daysBetween=(a,b)=>Math.round((parseD(b)-parseD(a))/864e5);
+const md=s=>{const d=parseD(s);return (d.getMonth()+1)+'/'+d.getDate()};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const $=s=>document.querySelector(s);
+
+function normSettings(d){
+  const s=Object.assign(clone(DEFAULT_SETTINGS),d||{});
+  if(!Array.isArray(s.cards)||!s.cards.length)s.cards=clone(DEFAULT_SETTINGS.cards);
+  s.loanDays=Math.max(1,Math.min(120,parseInt(s.loanDays,10)||30));
+  return s;
+}
+const loansOf=b=>Array.isArray(b.loans)?b.loans:[];
+const activeLoan=b=>loansOf(b).find(l=>!l.returned);
+function status(b){if(activeLoan(b))return'borrowed';if(b.reserved)return'reserved';if(loansOf(b).length)return'returned';return'none'}
+function cardOf(id){return S.settings.cards.find(c=>c.id===id)||{id,name:'已移除的卡',color:'#8A8FA3'}}
+function getBook(id){const b=S.books.find(x=>x.id===id);return b?clone(b):null}
+function leftInfo(due){
+  const d=daysBetween(todayStr(),due);
+  if(d<0)return{t:'逾期 '+(-d)+' 天',c:'late'};
+  if(d===0)return{t:'今天到期',c:'late'};
+  if(d<=3)return{t:'剩 '+d+' 天',c:'warn'};
+  return{t:'剩 '+d+' 天',c:'okay'};
+}
+
+/* ---------- storage ---------- */
+async function initStore(){
+  let db=null;
+  try{if(window.claude&&typeof window.claude.use==='function')db=await window.claude.use('db')}catch(e){db=null}
+  if(!db){S.mode='local';loadLocal();S.loaded=true;render();return}
+  DB=db;S.mode='db';
+  const timer=setTimeout(()=>{if(!S.loaded){S.stale=true;render()}},10000);
+  db.collection('books').onSnapshot(snap=>{
+    S.books=snap.docs.map(d=>Object.assign({},d.data(),{id:d.id}));
+    if(!snap.metadata.fromCache){S.loaded=true;S.stale=false;clearTimeout(timer)}
+    else if(snap.docs.length)S.loaded=true;
+    render();
+  },err=>{clearTimeout(timer);S.loaded=true;S.error=err&&err.code;render()});
+  db.doc('config/settings').onSnapshot(s=>{if(s.exists){S.settings=normSettings(s.data());render()}},()=>{});
+}
+function loadLocal(){
+  try{const raw=localStorage.getItem(LS_KEY);if(raw){const d=JSON.parse(raw);S.books=Array.isArray(d.books)?d.books:[];S.settings=normSettings(d.settings)}}catch(e){}
+}
+function saveLocal(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify({books:S.books,settings:S.settings}))}catch(e){toast('這個瀏覽器無法儲存資料')}
+}
+const chains={};
+function enqueue(key,fn){
+  const p=(chains[key]||Promise.resolve()).then(fn).catch(e=>{
+    const c=e&&e.code;
+    toast(c==='quota_exceeded'?'儲存空間已滿，請刪除一些書':c==='invalid_argument'?'你目前只能檢視，無法修改':'儲存失敗，請稍後再試');
+  });
+  chains[key]=p;return p;
+}
+function saveBook(b){
+  b.updatedAt=Date.now();if(!b.createdAt)b.createdAt=b.updatedAt;
+  const i=S.books.findIndex(x=>x.id===b.id);if(i>=0)S.books[i]=b;else S.books.push(b);
+  render();
+  if(S.mode==='db'){const body=clone(b);delete body.id;return enqueue('b:'+b.id,()=>DB.collection('books').doc(b.id).set(body))}
+  saveLocal();
+}
+function deleteBook(id){
+  S.books=S.books.filter(b=>b.id!==id);render();
+  if(S.mode==='db')return enqueue('b:'+id,()=>DB.collection('books').doc(id).delete());
+  saveLocal();
+}
+function saveSettings(s){
+  S.settings=normSettings(s);render();
+  if(S.mode==='db')return enqueue('settings',()=>DB.doc('config/settings').set(clone(S.settings)));
+  saveLocal();
+}
+
+/* ---------- render ---------- */
+function render(){
+  $('#libname').textContent=S.settings.library+'・借期 '+S.settings.loanDays+' 天';
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-current',b.dataset.view===S.view?'page':'false'));
+  $('#fab').hidden=S.view!=='list';
+  const active=document.activeElement,keep=active&&active.id==='q'?[active.selectionStart,active.selectionEnd]:null;
+  $('#app').innerHTML=S.view==='stats'?renderStats():renderList();
+  if(keep){const q=$('#q');if(q){q.focus();try{q.setSelectionRange(keep[0],keep[1])}catch(e){}}}
+}
+function allLoans(){
+  const out=[];S.books.forEach(b=>loansOf(b).forEach(l=>out.push(Object.assign({},l,{bookId:b.id,title:b.title}))));return out;
+}
+function renderList(){
+  if(!S.loaded)return S.stale?'<div class="notice">暫時連不上資料，畫面會在連線後自動更新。</div>':'<div class="empty"><h3>正在讀取書單</h3><p>稍等一下。</p></div>';
+  const books=S.books,now=todayStr(),ym=now.slice(0,7);
+  const borrowed=books.filter(b=>activeLoan(b));
+  const wish=books.filter(b=>b.wish);
+  const monthCount=allLoans().filter(l=>String(l.borrow).slice(0,7)===ym).length;
+  let h='';
+  if(S.error)h+='<div class="notice">資料讀取中斷，重新開啟頁面即可恢復。</div>';
+  if(S.mode==='local'&&!S.books.length)h+='<div class="notice">資料會存在這支手機（或這台電腦）的瀏覽器裡，不同裝置之間不會同步。換裝置時，到「設定」複製備份，再到新裝置貼上還原。</div>';
+  h+='<div class="tally"><div><b>'+borrowed.length+'</b><span>借閱中</span></div><div><b>'+wish.length+'</b><span>想借</span></div><div><b>'+monthCount+'</b><span>本月借</span></div></div>';
+  if(borrowed.length){
+    const rows=borrowed.map(b=>({b,l:activeLoan(b)})).sort((x,y)=>String(x.l.due).localeCompare(String(y.l.due)));
+    const per=S.settings.cards.map(c=>{const n=rows.filter(r=>r.l.card===c.id).length;return n?'<span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+' '+n+'</span>':''}).join(' ');
+    h+='<section><div class="sec-head"><h2>正在借的書</h2><div>'+per+'</div></div><div class="loans">'+rows.map(({b,l})=>{
+      const c=cardOf(l.card),li=leftInfo(l.due);
+      return '<div class="loan" style="--c:'+esc(c.color)+'"><div class="stamp"><small>到期</small><b>'+md(l.due)+'</b></div>'+
+        '<div class="loan-info"><button class="linkish" type="button" data-act="detail" data-id="'+b.id+'">'+esc(b.title)+'</button>'+
+        '<div class="loan-sub"><span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span><span class="left '+li.c+'">'+li.t+'</span><span class="muted">'+md(l.borrow)+' 借出'+(l.renewals?'・續借 '+l.renewals+' 次':'')+'</span></div></div>'+
+        '<div class="loan-acts"><button class="btn sm primary" type="button" data-act="return" data-id="'+b.id+'">還書</button><button class="btn sm" type="button" data-act="renew" data-id="'+b.id+'">續借</button></div></div>';
+    }).join('')+'</div></section>';
+  }
+  h+='<section><div class="sec-head"><h2>書單</h2><span class="muted small num">共 '+books.length+' 本</span></div>';
+  if(wish.length)h+='<div class="wishbar"><span>'+STAR+'想借清單 <b class="num">'+wish.length+'</b> 本</span><button class="btn sm primary" type="button" data-act="copywish">一鍵複製</button></div>';
+  const cnt={all:books.length,wish:wish.length,none:0,borrowed:0,reserved:0,returned:0};books.forEach(b=>cnt[status(b)]++);
+  h+='<div class="chips">'+FILTERS.map(([k,t])=>'<button class="chip" type="button" data-filter="'+k+'" aria-pressed="'+(S.filter===k)+'">'+t+'<b>'+cnt[k]+'</b></button>').join('')+'</div>';
+  if(books.length)h+='<input class="search" id="q" type="search" placeholder="搜尋書名、作者、推薦來源" value="'+esc(S.q)+'" autocomplete="off">';
+  h+='<div class="books" id="booklist">'+renderBooks()+'</div></section>';
+  return h;
+}
+function filtered(){
+  const q=S.q.trim().toLowerCase();
+  return S.books.filter(b=>{
+    if(S.filter==='wish'&&!b.wish)return false;
+    if(S.filter!=='all'&&S.filter!=='wish'&&status(b)!==S.filter)return false;
+    if(q&&![b.title,b.author,b.source,b.summary].join(' ').toLowerCase().includes(q))return false;
+    return true;
+  }).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+}
+function renderBooks(){
+  if(!S.books.length)return '<div class="empty"><h3>還沒有任何繪本</h3><p>按右下角「新增繪本」，填書名、作者、簡介和推薦來源（老師、書展、朋友推薦都可以）。</p></div>';
+  const list=filtered();
+  if(!list.length)return '<div class="empty"><p>這個條件下沒有書。</p></div>';
+  return list.map(bookCard).join('');
+}
+function bookCard(b){
+  const st=status(b),l=activeLoan(b),n=loansOf(b).length;
+  let state='<span class="pill '+st+'">'+STATUS_LABEL[st]+'</span>';
+  if(l){const c=cardOf(l.card),li=leftInfo(l.due);state+='<span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span><span class="left '+li.c+'">'+md(l.due)+' 到期・'+li.t+'</span>'}
+  else if(b.reserved){const c=cardOf(b.reserved.card);state+='<span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span><span class="muted">'+md(b.reserved.date)+' 預約</span>'}
+  if(n&&!l)state+='<span class="muted">借過 '+n+' 次</span>';
+  let acts='';
+  if(st==='borrowed')acts='<button class="btn sm primary" type="button" data-act="return" data-id="'+b.id+'">還書</button><button class="btn sm" type="button" data-act="renew" data-id="'+b.id+'">續借</button>';
+  else if(st==='reserved')acts='<button class="btn sm primary" type="button" data-act="borrow" data-id="'+b.id+'">已取書，登記借閱</button><button class="btn sm ghost" type="button" data-act="unreserve" data-id="'+b.id+'">取消預約</button>';
+  else acts='<button class="btn sm primary" type="button" data-act="borrow" data-id="'+b.id+'">登記借閱</button><button class="btn sm" type="button" data-act="reserve" data-id="'+b.id+'">登記預約</button>';
+  return '<article class="book"><div class="book-head"><button class="linkish" type="button" data-act="detail" data-id="'+b.id+'">'+esc(b.title)+'</button>'+
+    '<button class="star" type="button" data-act="star" data-id="'+b.id+'" aria-pressed="'+(!!b.wish)+'" aria-label="'+(b.wish?'移出想借清單':'加入想借清單')+'">'+STAR+'</button></div>'+
+    '<div class="meta"><span>'+(b.author?esc(b.author):'作者未填')+'</span>'+(b.source?'<span class="src">推薦：'+esc(b.source)+'</span>':'')+(b.example?'<span class="example">示例</span>':'')+'</div>'+
+    (b.summary?'<p class="summary'+(S.expanded.has(b.id)?' open':'')+'" data-act="expand" data-id="'+b.id+'">'+esc(b.summary)+'</p>':'')+
+    '<div class="state">'+state+'</div><div class="actions">'+acts+'</div></article>';
+}
+
+/* ---------- stats ---------- */
+function renderStats(){
+  if(!S.loaded)return '<div class="empty"><h3>正在讀取</h3></div>';
+  const loans=allLoans(),now=new Date(),y=now.getFullYear(),ym=ymd(now).slice(0,7);
+  const thisYear=loans.filter(l=>String(l.borrow).startsWith(y+'-')).length;
+  const thisMonth=loans.filter(l=>String(l.borrow).slice(0,7)===ym).length;
+  const months=[];for(let i=11;i>=0;i--){const d=new Date(y,now.getMonth()-i,1);months.push(d.getFullYear()+'-'+pad(d.getMonth()+1))}
+  const cards=S.settings.cards.slice();
+  const extra=[...new Set(loans.map(l=>l.card))].filter(id=>!cards.find(c=>c.id===id));extra.forEach(id=>cards.push(cardOf(id)));
+  const grid=months.map(m=>{const ls=loans.filter(l=>String(l.borrow).slice(0,7)===m);return{m,total:ls.length,by:cards.map(c=>ls.filter(l=>l.card===c.id).length)}});
+  let h='<div class="bigs"><div><b>'+thisMonth+'</b><span>本月借閱</span></div><div><b>'+thisYear+'</b><span>'+y+' 年累計</span></div><div><b>'+loans.length+'</b><span>全部借閱</span></div></div>';
+  if(!loans.length)return h+'<div class="empty"><h3>還沒有借閱紀錄</h3><p>在書單按「登記借閱」後，這裡會畫出每月借了幾本。</p></div>';
+  // chart
+  const W=360,H=200,pl=22,pr=6,pt=18,pb=26,pw=W-pl-pr,ph=H-pt-pb;
+  const mx=Math.max(1,...grid.map(g=>g.total)),top=mx<=4?4:Math.ceil(mx/2)*2,step=pw/12,bw=step*.6;
+  let svg='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="近 12 個月每月借閱本數">';
+  [0,top/2,top].forEach(v=>{const yy=pt+ph-ph*v/top;svg+='<line class="grid" x1="'+pl+'" x2="'+(W-pr)+'" y1="'+yy+'" y2="'+yy+'"/><text class="ax" x="'+(pl-5)+'" y="'+(yy+3.5)+'" text-anchor="end">'+v+'</text>'});
+  grid.forEach((g,i)=>{
+    const x=pl+step*i+(step-bw)/2;let base=pt+ph;
+    g.by.forEach((n,ci)=>{if(!n)return;const hh=ph*n/top;base-=hh;svg+='<rect x="'+x.toFixed(1)+'" y="'+base.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hh.toFixed(1)+'" rx="2" fill="'+esc(cards[ci].color)+'"><title>'+esc(cards[ci].name)+' '+n+' 本</title></rect>'});
+    if(g.total)svg+='<text class="val" x="'+(x+bw/2).toFixed(1)+'" y="'+(base-4).toFixed(1)+'" text-anchor="middle">'+g.total+'</text>';
+    const mm=parseInt(g.m.slice(5),10);
+    svg+='<text class="ax'+(g.m===ym?' now':'')+'" x="'+(x+bw/2).toFixed(1)+'" y="'+(H-pb+15)+'" text-anchor="middle">'+mm+'月</text>';
+  });
+  svg+='</svg>';
+  h+='<section><div class="sec-head"><h2>每月借幾本</h2><span class="muted small">近 12 個月</span></div><div class="panel"><div class="chart-wrap">'+svg+'</div><div class="legend">'+cards.map(c=>'<span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span>').join('')+'</div></div></section>';
+  // by card
+  const byCard=cards.map(c=>({c,n:loans.filter(l=>l.card===c.id).length})),cmax=Math.max(1,...byCard.map(x=>x.n));
+  h+='<section><div class="sec-head"><h2>各借書證</h2><span class="muted small">全部紀錄</span></div><div class="panel bars">'+byCard.map(x=>'<div class="barrow"><span>'+esc(x.c.name)+'</span><div class="track"><i style="width:'+(x.n/cmax*100)+'%;background:'+esc(x.c.color)+'"></i></div><b class="num" style="text-align:right">'+x.n+'</b></div>').join('')+'</div></section>';
+  // top books
+  const counts={};loans.forEach(l=>{counts[l.bookId]=(counts[l.bookId]||0)+1});
+  const top5=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  h+='<section><div class="sec-head"><h2>最常借的書</h2></div><div class="panel"><ol class="rank">'+top5.map(([id,n])=>{const b=S.books.find(x=>x.id===id);return '<li><span>'+esc(b?b.title:'')+'</span><span class="muted num">'+n+' 次</span></li>'}).join('')+'</ol></div></section>';
+  // table
+  h+='<section><div class="sec-head"><h2>每月明細</h2></div><div class="panel" style="overflow-x:auto"><table class="mtable"><thead><tr><th>月份</th>'+cards.map(c=>'<th>'+esc(c.name)+'</th>').join('')+'<th>合計</th></tr></thead><tbody>'+
+    grid.slice().reverse().map(g=>'<tr><td>'+g.m.replace('-',' 年 ')+' 月</td>'+g.by.map(n=>'<td>'+(n||'–')+'</td>').join('')+'<td><b>'+g.total+'</b></td></tr>').join('')+'</tbody></table></div></section>';
+  return h;
+}
+
+/* ---------- sheets ---------- */
+let sheetEl=null;
+function openSheet(title,body,onSubmit,onMount){
+  closeSheet();
+  sheetEl=document.createElement('div');sheetEl.className='scrim';
+  sheetEl.innerHTML='<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="sheet-head"><h3 id="sheet-title">'+esc(title)+'</h3><button class="x" type="button" data-close aria-label="關閉">×</button></div><form class="form" id="sheet-form" novalidate>'+body+'</form></div>';
+  document.body.appendChild(sheetEl);
+  sheetEl.addEventListener('click',e=>{if(e.target===sheetEl||e.target.closest('[data-close]'))closeSheet()});
+  const f=sheetEl.querySelector('form');
+  f.addEventListener('submit',e=>{e.preventDefault();if(onSubmit&&onSubmit(f)!==false)closeSheet()});
+  if(onMount)onMount(f);
+  const first=f.querySelector('input:not([type=hidden]):not([type=radio]),textarea');if(first&&matchMedia('(hover:hover)').matches)first.focus();
+}
+function closeSheet(){if(sheetEl){sheetEl.remove();sheetEl=null}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+function cardPicker(sel){
+  return '<fieldset class="field"><legend>借書證</legend><div class="cardpick">'+S.settings.cards.map((c,i)=>'<label style="--c:'+esc(c.color)+'"><input type="radio" name="card" value="'+esc(c.id)+'"'+((sel?c.id===sel:i===0)?' checked':'')+'><span>'+esc(c.name)+'</span></label>').join('')+'</div></fieldset>';
+}
+function twoTap(btn,fn){
+  if(btn.dataset.armed){fn();return}
+  const t=btn.textContent;btn.dataset.armed='1';btn.textContent='再按一次確認';
+  setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.textContent=t}},3000);
+}
+
+function bookSheet(id){
+  const b=id?getBook(id):{title:'',author:'',summary:'',source:'',wish:false};
+  const sources=[...new Set(S.books.map(x=>x.source).filter(Boolean))];
+  openSheet(id?'編輯繪本':'新增繪本',
+    '<label class="field"><span>書名</span><input id="f-title" value="'+esc(b.title)+'" required maxlength="120"><div class="err" id="f-err" hidden>請填書名</div></label>'+
+    '<label class="field"><span>作者／繪者</span><input id="f-author" value="'+esc(b.author)+'" maxlength="120"></label>'+
+    '<label class="field"><span>簡介</span><textarea id="f-summary" maxlength="1500" placeholder="故事在講什麼、孩子可能喜歡的地方">'+esc(b.summary)+'</textarea></label>'+
+    '<label class="field"><span>推薦來源</span><input id="f-source" list="src-list" value="'+esc(b.source)+'" maxlength="60" placeholder="例如：幼兒園老師、圖書館新書區"><datalist id="src-list">'+sources.map(s=>'<option value="'+esc(s)+'">').join('')+'</datalist></label>'+
+    '<label class="check"><input type="checkbox" id="f-wish"'+(b.wish?' checked':'')+'>加入想借清單</label>'+
+    '<div class="sheet-foot"><button class="btn primary grow" type="submit">'+(id?'儲存':'加入書單')+'</button></div>',
+    f=>{
+      const title=f.querySelector('#f-title').value.trim();
+      if(!title){f.querySelector('#f-err').hidden=false;f.querySelector('#f-title').focus();return false}
+      const nb=id?getBook(id):{id:uid('b'),loans:[],reserved:null};
+      Object.assign(nb,{title,author:f.querySelector('#f-author').value.trim(),summary:f.querySelector('#f-summary').value.trim(),source:f.querySelector('#f-source').value.trim(),wish:f.querySelector('#f-wish').checked});
+      if(id&&nb.example)delete nb.example;
+      saveBook(nb);toast(id?'已儲存':'已加入「'+title+'」');
+    });
+}
+function borrowSheet(id){
+  const b=getBook(id);if(!b)return;const t=todayStr();
+  openSheet('登記借閱：'+b.title,
+    cardPicker(b.reserved&&b.reserved.card)+
+    '<div class="row2"><label class="field"><span>借閱日</span><input type="date" id="f-borrow" value="'+t+'"></label><label class="field"><span>到期日</span><input type="date" id="f-due" value="'+addDays(t,S.settings.loanDays)+'"></label></div>'+
+    '<div class="hint">到期日依借期 '+S.settings.loanDays+' 天自動計算，可以手動改。借閱後會自動移出想借清單。</div>'+
+    '<div class="sheet-foot"><button class="btn primary grow" type="submit">確認借閱</button></div>',
+    f=>{
+      const card=(f.querySelector('input[name=card]:checked')||{}).value,borrow=f.querySelector('#f-borrow').value||t,due=f.querySelector('#f-due').value||addDays(borrow,S.settings.loanDays);
+      const nb=getBook(id);nb.loans=loansOf(nb).concat([{id:uid('l'),card,borrow,due,returned:null,renewals:0}]);
+      const wasWish=nb.wish;nb.reserved=null;nb.wish=false;saveBook(nb);
+      toast('已登記，'+md(due)+' 到期'+(wasWish?'・已移出想借':''));
+    },
+    f=>{let touched=false;const bi=f.querySelector('#f-borrow'),di=f.querySelector('#f-due');di.addEventListener('input',()=>touched=true);bi.addEventListener('change',()=>{if(!touched&&bi.value)di.value=addDays(bi.value,S.settings.loanDays)})});
+}
+function loanSheet(bookId,loanId){
+  const b=getBook(bookId);if(!b)return;const l=loansOf(b).find(x=>x.id===loanId);if(!l)return;
+  openSheet('修改借閱紀錄',
+    cardPicker(l.card)+
+    '<div class="row2"><label class="field"><span>借閱日</span><input type="date" id="f-borrow" value="'+esc(l.borrow)+'"></label><label class="field"><span>到期日</span><input type="date" id="f-due" value="'+esc(l.due)+'"></label></div>'+
+    '<div class="row2"><label class="field"><span>歸還日（未還留空）</span><input type="date" id="f-ret" value="'+esc(l.returned||'')+'"></label><label class="field"><span>續借次數</span><input type="number" id="f-ren" min="0" max="9" inputmode="numeric" value="'+(l.renewals||0)+'"></label></div>'+
+    '<div class="sheet-foot"><button class="btn danger" type="button" id="del-loan">刪除這筆</button><button class="btn primary grow" type="submit">儲存</button></div>',
+    f=>{
+      const nb=getBook(bookId);const x=nb.loans.find(z=>z.id===loanId);
+      const ret=f.querySelector('#f-ret').value||null;
+      if(!ret&&nb.loans.some(z=>z.id!==loanId&&!z.returned)){toast('這本書已有另一筆借閱中，請先填歸還日');return false}
+      Object.assign(x,{card:(f.querySelector('input[name=card]:checked')||{}).value||x.card,borrow:f.querySelector('#f-borrow').value||x.borrow,due:f.querySelector('#f-due').value||x.due,returned:ret,renewals:Math.max(0,parseInt(f.querySelector('#f-ren').value,10)||0)});
+      saveBook(nb);toast('已更新');setTimeout(()=>detailSheet(bookId),0);
+    },
+    f=>{f.querySelector('#del-loan').addEventListener('click',e=>twoTap(e.currentTarget,()=>{const nb=getBook(bookId);nb.loans=nb.loans.filter(z=>z.id!==loanId);saveBook(nb);closeSheet();toast('已刪除借閱紀錄');detailSheet(bookId)}))});
+}
+function reserveSheet(id){
+  const b=getBook(id);if(!b)return;
+  openSheet('登記預約：'+b.title,
+    cardPicker()+'<label class="field"><span>預約日</span><input type="date" id="f-date" value="'+todayStr()+'"></label><div class="hint">圖書館通知可取書後，按「已取書，登記借閱」即可。</div>'+
+    '<div class="sheet-foot"><button class="btn primary grow" type="submit">確認預約</button></div>',
+    f=>{const nb=getBook(id);nb.reserved={card:(f.querySelector('input[name=card]:checked')||{}).value,date:f.querySelector('#f-date').value||todayStr()};saveBook(nb);toast('已登記預約')});
+}
+function detailSheet(id){
+  const b=getBook(id);if(!b)return;
+  const loans=loansOf(b).slice().sort((x,y)=>String(y.borrow).localeCompare(String(x.borrow)));
+  let body='<div class="meta" style="font-size:14px"><span>'+(b.author?esc(b.author):'作者未填')+'</span>'+(b.source?'<span class="src">推薦：'+esc(b.source)+'</span>':'')+'<span class="pill '+status(b)+'">'+STATUS_LABEL[status(b)]+'</span></div>';
+  if(b.summary)body+='<p class="detail-sum">'+esc(b.summary)+'</p>';
+  if(b.reserved){const c=cardOf(b.reserved.card);body+='<div class="state"><span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span><span>'+md(b.reserved.date)+' 預約，等待取書</span></div>'}
+  body+='<div class="field"><span>借閱紀錄（'+loans.length+'）</span>'+(loans.length?'<ul class="hist">'+loans.map(l=>{const c=cardOf(l.card);return '<li><span class="cardtag" style="--c:'+esc(c.color)+'">'+esc(c.name)+'</span><span class="grow num">'+esc(l.borrow)+' 借・'+(l.returned?esc(l.returned)+' 還':'<b>'+esc(l.due)+' 到期</b>')+(l.renewals?'・續 '+l.renewals:'')+'</span><button class="btn sm ghost" type="button" data-loan="'+l.id+'">修改</button></li>'}).join('')+'</ul>':'<div class="hint">還沒借過。</div>')+'</div>';
+  body+='<div class="sheet-foot"><button class="btn danger" type="button" id="del-book">刪除這本</button><button class="btn" type="button" id="edit-book">編輯書籍資料</button></div>';
+  openSheet(b.title,body,null,f=>{
+    f.querySelector('#edit-book').addEventListener('click',()=>bookSheet(id));
+    f.querySelector('#del-book').addEventListener('click',e=>twoTap(e.currentTarget,()=>{deleteBook(id);closeSheet();toast('已刪除「'+b.title+'」')}));
+    f.querySelectorAll('[data-loan]').forEach(x=>x.addEventListener('click',()=>loanSheet(id,x.dataset.loan)));
+  });
+}
+function settingsSheet(){
+  const s=clone(S.settings);
+  const used=new Set();S.books.forEach(b=>{loansOf(b).forEach(l=>used.add(l.card));if(b.reserved)used.add(b.reserved.card)});
+  const rowHtml=c=>'<div class="cardrow" data-cid="'+esc(c.id)+'"><input type="color" value="'+esc(c.color)+'" aria-label="顏色"><input value="'+esc(c.name)+'" maxlength="20" aria-label="借書證名稱" style="min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px;font-size:16px;width:100%"><button class="btn sm ghost" type="button" data-rm'+(used.has(c.id)?' disabled title="已有紀錄使用這張卡"':'')+'>移除</button></div>';
+  openSheet('設定',
+    '<label class="field"><span>圖書館</span><input id="s-lib" value="'+esc(s.library)+'" maxlength="40"></label>'+
+    '<label class="field"><span>借期（天）</span><input id="s-days" type="number" min="1" max="120" inputmode="numeric" value="'+s.loanDays+'"><div class="hint">新登記的借閱和續借都依這個天數計算到期日。請對照圖書館的實際規定。</div></label>'+
+    '<div class="field"><span>借書證與顏色</span><div id="s-cards" style="display:grid;gap:8px">'+s.cards.map(rowHtml).join('')+'</div><div><button class="btn sm" type="button" id="s-add">新增借書證</button></div><div class="hint">已有借閱或預約紀錄的卡不能移除，可以改名或換顏色。</div></div>'+
+    '<div class="field"><span>資料</span><div class="hint">'+(S.mode==='db'?'書單存在這個頁面的雲端資料庫，換手機或電腦登入後開同一個連結都看得到。':'目前存在這台裝置的瀏覽器，不會自動同步到其他裝置。建議偶爾複製備份，貼到 LINE 記事本保存。')+'</div><div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn sm" type="button" id="s-export">複製備份資料</button><button class="btn sm" type="button" id="s-import">從備份還原</button></div></div>'+
+    '<div class="sheet-foot"><button class="btn primary grow" type="submit">儲存設定</button></div>',
+    f=>{
+      const cards=[...f.querySelectorAll('.cardrow')].map(r=>({id:r.dataset.cid,color:r.querySelector('input[type=color]').value,name:r.querySelectorAll('input')[1].value.trim()||'借書證'}));
+      if(!cards.length){toast('至少要保留一張借書證');return false}
+      saveSettings({library:f.querySelector('#s-lib').value.trim()||'圖書館',loanDays:f.querySelector('#s-days').value,cards});toast('設定已儲存');
+    },
+    f=>{
+      const box=f.querySelector('#s-cards');
+      box.addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b&&!b.disabled){if(box.children.length<=1){toast('至少要保留一張借書證');return}b.closest('.cardrow').remove()}});
+      f.querySelector('#s-add').addEventListener('click',()=>{if(box.children.length>=6){toast('最多 6 張');return}const pal=['#E08A2E','#7A5CC9','#3A7BD5','#C94E9B'];box.insertAdjacentHTML('beforeend',rowHtml({id:uid('c'),name:'新借書證',color:pal[box.children.length%pal.length]}))});
+      f.querySelector('#s-export').addEventListener('click',()=>copyText(JSON.stringify({settings:S.settings,books:S.books},null,1),'備份資料已複製'));
+      f.querySelector('#s-import').addEventListener('click',importSheet);
+    });
+}
+
+function importSheet(){
+  openSheet('從備份還原','<label class="field"><span>貼上備份資料</span><textarea class="copybox" id="imp" placeholder="貼上在「複製備份資料」複製的整段文字"></textarea></label><div class="err" id="imp-err" hidden></div><div class="hint">還原會加入備份裡的書；同一本書（相同編號）會用備份的內容覆蓋。</div><div class="sheet-foot"><button class="btn primary grow" type="submit">開始還原</button></div>',
+  f=>{
+    const err=f.querySelector('#imp-err');let d;
+    try{d=JSON.parse(f.querySelector('#imp').value)}catch(e){err.textContent='這段文字不是完整的備份資料，請重新複製一次。';err.hidden=false;return false}
+    if(!d||!Array.isArray(d.books)){err.textContent='找不到書單資料，請確認貼上的是備份內容。';err.hidden=false;return false}
+    if(d.settings)saveSettings(d.settings);
+    let n=0;d.books.forEach(b=>{if(b&&b.id&&b.title){saveBook(Object.assign({loans:[],reserved:null},b));n++}});
+    toast('已還原 '+n+' 本');
+  });
+}
+/* ---------- actions ---------- */
+function copyText(text,okMsg){
+  const fallback=()=>openSheet('複製文字','<textarea class="copybox" id="cp" readonly>'+esc(text)+'</textarea><div class="hint">長按或全選後複製。</div>',null,f=>{const t=f.querySelector('#cp');t.focus();t.select()});
+  try{navigator.clipboard.writeText(text).then(()=>toast(okMsg),fallback)}catch(e){fallback()}
+}
+function quick(id,fn,msg){
+  const before=getBook(id);if(!before)return;const nb=getBook(id);fn(nb);saveBook(nb);
+  toast(msg,()=>saveBook(before));
+}
+document.addEventListener('click',e=>{
+  const v=e.target.closest('[data-view]');if(v){location.hash=v.dataset.view==='stats'?'#stats':'#list';return}
+  const fl=e.target.closest('[data-filter]');if(fl){S.filter=fl.dataset.filter;render();return}
+  const a=e.target.closest('[data-act]');if(!a||!$('#app').contains(a))return;
+  const id=a.dataset.id,act=a.dataset.act;
+  if(act==='detail')detailSheet(id);
+  else if(act==='expand'){S.expanded.has(id)?S.expanded.delete(id):S.expanded.add(id);a.classList.toggle('open')}
+  else if(act==='star')quick(id,b=>{b.wish=!b.wish},getBook(id).wish?'已移出想借清單':'已加入想借清單');
+  else if(act==='borrow')borrowSheet(id);
+  else if(act==='reserve')reserveSheet(id);
+  else if(act==='unreserve')quick(id,b=>{b.reserved=null},'已取消預約');
+  else if(act==='return')quick(id,b=>{const l=activeLoan(b);if(l)l.returned=todayStr()},'已登記還書');
+  else if(act==='renew')quick(id,b=>{const l=activeLoan(b);if(l){l.due=addDays(l.due,S.settings.loanDays);l.renewals=(l.renewals||0)+1}},'已續借 '+S.settings.loanDays+' 天');
+  else if(act==='copywish'){
+    const w=S.books.filter(b=>b.wish).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
+    const text='【想借清單】共 '+w.length+' 本\n'+w.map((b,i)=>(i+1)+'. '+b.title+(b.author?'／'+b.author:'')).join('\n');
+    copyText(text,'已複製 '+w.length+' 本，可以貼到 LINE 或備忘錄');
+  }
+});
+document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;$('#booklist').innerHTML=renderBooks()}});
+$('#fab').addEventListener('click',()=>bookSheet(null));
+$('#btn-settings').addEventListener('click',settingsSheet);
+let toastT=null;
+function toast(msg,undo){
+  const old=$('.toast');if(old)old.remove();clearTimeout(toastT);
+  const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;
+  if(undo){const b=document.createElement('button');b.type='button';b.textContent='復原';b.onclick=()=>{undo();t.remove()};t.appendChild(b)}
+  document.body.appendChild(t);toastT=setTimeout(()=>t.remove(),undo?5000:2600);
+}
+function route(){S.view=location.hash==='#stats'?'stats':'list';render();window.scrollTo(0,0)}
+window.addEventListener('hashchange',route);
+S.view=location.hash==='#stats'?'stats':'list';
+render();
+initStore();
+})();
+</script>
+
+</body>
+</html>
