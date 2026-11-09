@@ -53,11 +53,11 @@ footer{border-top:1px solid var(--line);padding-block:24px;font-size:.8rem;color
 </head>
 <body>
 <header class="top"><div class="wrap bar">
-  <a class="brand-wrap" href="yucheng"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
+  <a class="brand-wrap" href="/"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
   <a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a>
 </div>
 <div class="tabsrow"><nav class="wrap menu" aria-label="主選單">
-  <a href="yucheng#about">關於我</a><a href="yucheng-communities"{on1}>祐承的商圈</a><a href="yucheng-location"{on2}>地段地圖</a><a href="yucheng#services">服務項目</a><a href="yucheng#guides">避坑攻略</a><a href="yucheng#tools">試算工具</a><a href="yucheng#contact">聯絡</a>
+  <a href="/#about">關於我</a><a href="/yucheng-listings">最新好案</a><a href="/yucheng-communities"{on1}>祐承的商圈</a><a href="/yucheng-location"{on2}>地段地圖</a><a href="/#services">服務項目</a><a href="/#guides">避坑攻略</a><a href="/#tools">試算工具</a><a href="/#contact">聯絡</a>
 </nav></div></header>
 '''
 FOOT = '''<footer><div class="wrap">
