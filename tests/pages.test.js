@@ -119,12 +119,19 @@ assert.ok(!sitemap.includes('github.io'));
 const lineShare = fs.readFileSync(path.join(root, 'line-share.js'), 'utf8');
 assert.ok(lineShare.includes("location.href"), 'LINE summary must use the current page URL');
 
-const rootAbsAttr = /(?:href|src)\s*=\s*["']\/(?!\/)/i;
+const rootAbsAttr = /(?:href|src)\s*=\s*(["'])\/(?!\/)([^"']*)\1/gi;
 for (const name of fs.readdirSync(root)) {
   if (!name.endsWith('.html') && !name.endsWith('.js')) continue;
   if (name.startsWith('_')) continue;
   const text = fs.readFileSync(path.join(root, name), 'utf8');
-  assert.ok(!rootAbsAttr.test(text), name + ' root-absolute href/src');
+  rootAbsAttr.lastIndex = 0;
+  let m;
+  while ((m = rootAbsAttr.exec(text))) {
+    assert.ok(m[2].startsWith('yucheng-a-'), name + ' root-absolute ' + m[0].slice(0, 70));
+  }
 }
+const communities = fs.readFileSync(path.join(root, 'yucheng-communities.html'), 'utf8');
+assert.ok(communities.includes('class="abadge" href="/yucheng-a-'), 'LINE bot still scrapes root-absolute abadge links');
+assert.ok(!communities.includes('class="abadge" href="yucheng-a-'), 'abadge must not be rewritten to a relative URL');
 
 console.log('pages tests passed');

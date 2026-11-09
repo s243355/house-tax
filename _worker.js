@@ -8,6 +8,7 @@
 // 信義頁面與 sinyiwebapi 從 Cloudflare 出口會掛住，不要先打它們。
 // 單筆硬逾時 25 秒。前端一次只打一筆，以符合免費方案 Quick Actions 約 1 次/10 秒。
 // 金鑰只用環境變數 CF_ACCOUNT_ID、CF_API_TOKEN，不要寫進程式。
+// /yucheng：祐承店長個人品牌網站（yucheng.html）。
 // /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖。
 // ================================================================
 import logic from "./prop-compare-logic.js";
@@ -63,6 +64,35 @@ export default {
       return new Response(null, { headers: cors });
     }
 
+    // ── 祐承個人網域 tcyucheng.com ──
+    // www 轉到主網域；首頁直接顯示祐承個人頁；舊 workers.dev 的祐承頁面 301 轉過來。
+    const YC_HOST = 'tcyucheng.com';
+    if (url.hostname === 'www.' + YC_HOST) {
+      url.hostname = YC_HOST;
+      return Response.redirect(url.toString(), 301);
+    }
+    const onYc = url.hostname === YC_HOST;
+    if (!onYc && /^\/yucheng(-|$|\.html$)/.test(url.pathname)) {
+      const to = new URL(url.toString());
+      to.hostname = YC_HOST;
+      to.pathname = to.pathname === '/yucheng' || to.pathname === '/yucheng.html' ? '/' : to.pathname;
+      return Response.redirect(to.toString(), 301);
+    }
+    if (onYc) {
+      if (url.pathname === '/robots.txt') {
+        return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://${YC_HOST}/sitemap-yucheng.xml\n`, {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        });
+      }
+      if (url.pathname === '/sitemap.xml') {
+        return Response.redirect(`https://${YC_HOST}/sitemap-yucheng.xml`, 301);
+      }
+      if (url.pathname === '/' || url.pathname === '/yucheng' || url.pathname === '/yucheng.html') {
+        if (url.pathname !== '/') return Response.redirect(`https://${YC_HOST}/`, 301);
+        return env.ASSETS.fetch(new Request(new URL('/yucheng', url).toString(), request));
+      }
+    }
+
     // ── 路由：POST /api/scrape-prop ──
     if (url.pathname === '/api/scrape-prop' && request.method === 'POST') {
       return handleScrapeProp(request, env, cors);
@@ -90,27 +120,8 @@ export default {
     // 靜態資產：無副檔名時補 .html（/house-tax → house-tax.html）。
     // 找不到就回 404，不要落到首頁。
     if (env.ASSETS) {
-      if (url.pathname !== '/' && !url.pathname.includes('.')) {
-        const trimmed = url.pathname.replace(/\/+$/, '') || '/';
-        // 工具頁是 foo.html，乾淨網址沒有結尾斜線。有斜線時相對路徑會變成 /foo/line-share.js。
-        if (trimmed !== '/' && url.pathname !== trimmed) {
-          const probe = new URL(request.url);
-          probe.pathname = trimmed + '.html';
-          probe.search = '';
-          const probed = await env.ASSETS.fetch(new Request(probe.toString(), { method: 'GET', redirect: 'manual' }));
-          if (probed.status !== 404) {
-            const redir = new URL(request.url);
-            redir.pathname = trimmed;
-            return Response.redirect(redir.toString(), 308);
-          }
-          return notFoundResponse(request, env);
-        }
-        const newUrl = new URL(request.url);
-        newUrl.pathname = trimmed + '.html';
-        const res = await env.ASSETS.fetch(new Request(newUrl.toString(), request));
-        if (res.status !== 404) return res;
-        return notFoundResponse(request, env);
-      }
+      // html_handling 會自動把 /house-tax 對到 house-tax.html，不要自己補 .html（會和自動轉址互相打轉）。
+      // 有結尾斜線時平台會轉回沒有斜線的網址，相對路徑才不會變成 /foo/line-share.js。
       const res = await env.ASSETS.fetch(request);
       if (res.status === 404) return notFoundResponse(request, env);
       return res;
