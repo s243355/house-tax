@@ -2,6 +2,7 @@
 
 - og/yucheng.jpg：個人頁
 - og/communities.jpg、og/location.jpg：社區地圖、地段地圖
+- og/listings.jpg：最新好案（物件會換，所以圖上只放不會過期的字）
 - og/a-<id>.jpg：各社區購屋分析（社區名、近一年單價、屋齡戶數、祐承照片）
 內容沒變的圖不會重寫，避免每次更新都多出一堆改動。
 """
@@ -143,6 +144,8 @@ def main():
                    pills=["每個社區的近一年實登單價", f"{len(ids)} 個社區購屋分析", "每月自動更新實價登錄"]), "communities.jpg")
     n += save(card("祐承的商圈", "地段地圖", "南區・東區・大里 66 里地段力評分",
                    pills=["學區・車站・生活機能", "每一里的地段分數", "疊上社區行情一起看"]), "location.jpg")
+    n += save(card("最新好案｜祐承店長精選", "南區精選好案", "祐承挑過的物件・信義房屋官網可查",
+                   pills=["總價・坪數・屋齡・車位一次看", "點進信義官網看完整照片", "喜歡哪間，LINE 直接問"]), "listings.jpg")
     for c in C:
         if c["id"] not in ids:
             continue
