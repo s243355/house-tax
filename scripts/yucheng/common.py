@@ -5,7 +5,7 @@ HEAD = '''<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-{og}<link rel="icon" href="/favicon-32.png">
+{og}<link rel="icon" href="favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -53,11 +53,11 @@ footer{border-top:1px solid var(--line);padding-block:24px;font-size:.8rem;color
 </head>
 <body>
 <header class="top"><div class="wrap bar">
-  <a class="brand-wrap" href="/yucheng"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
+  <a class="brand-wrap" href="yucheng"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
   <a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a>
 </div>
 <div class="tabsrow"><nav class="wrap menu" aria-label="主選單">
-  <a href="/yucheng#about">關於我</a><a href="/yucheng-communities"{on1}>祐承的商圈</a><a href="/yucheng-location"{on2}>地段地圖</a><a href="/yucheng#services">服務項目</a><a href="/yucheng#guides">避坑攻略</a><a href="/yucheng#tools">試算工具</a><a href="/yucheng#contact">聯絡</a>
+  <a href="yucheng#about">關於我</a><a href="yucheng-communities"{on1}>祐承的商圈</a><a href="yucheng-location"{on2}>地段地圖</a><a href="yucheng#services">服務項目</a><a href="yucheng#guides">避坑攻略</a><a href="yucheng#tools">試算工具</a><a href="yucheng#contact">聯絡</a>
 </nav></div></header>
 '''
 FOOT = '''<footer><div class="wrap">
@@ -67,7 +67,7 @@ FOOT = '''<footer><div class="wrap">
   <p>手機 0933-317-625｜LINE @161cayoi｜台中市南區文心南路 888 之 2 號</p>
   <p>{credit}</p>
 </div></footer>
-<div class="dock"><a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a><a class="btn" href="tel:0933317625" aria-label="打電話 0933-317-625">打電話</a><a class="btn" href="/yucheng#cform">預約諮詢</a></div>
+<div class="dock"><a class="btn solid" href="https://line.me/R/ti/p/@161cayoi" target="_blank" rel="noopener">加 LINE</a><a class="btn" href="tel:0933317625" aria-label="打電話 0933-317-625">打電話</a><a class="btn" href="yucheng#cform">預約諮詢</a></div>
 '''
 def og_tags(title,desc,img,path):
     import json as _j,os as _o,html as _h

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://house-tax.s243355.workers.dev/sitemap.xml

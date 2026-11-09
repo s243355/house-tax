@@ -209,13 +209,16 @@ assert.strictEqual(loose.parkArea, 9.1);
 assert.strictEqual(loose.parkPrice, 120);
 
 const page = fs.readFileSync(path.join(__dirname, '..', 'prop-compare.html'), 'utf8');
-assert.ok(page.includes('href="/"'));
+assert.ok(page.includes('href="./"'));
+assert.ok(page.includes('fetch("api/scrape-prop"'));
+assert.ok(page.includes('"api/prop-img?u="'));
 assert.ok(page.includes("rel='noopener noreferrer'"));
 assert.ok(page.includes('aria-sort'));
 assert.ok(!page.includes('parkArea:0'));
 assert.ok(page.includes('encodeURIComponent(enc)'));
 const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-assert.ok(index.includes('href="/prop-compare"'));
+assert.ok(index.includes('href="prop-compare"'));
+assert.ok(!index.includes('href="/prop-compare"'));
 assert.ok(index.includes('物件比較分析'));
 
 console.log('prop-compare tests passed');

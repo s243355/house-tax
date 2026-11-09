@@ -143,7 +143,7 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
     life0='<ul class="clean">'+''.join(f'<li><b>{k}</b>　{e(n.replace("臺中捷運","").replace("_出入口3",""))}　<span class="note">約 {d:,} 公尺</span></li>' for k,n,d in A['poi'])+'</ul>' if A['poi'] else ''
     life=lifetbl+('<h3 style="margin:18px 0 6px;font-size:1.05rem">學區與車站</h3>'+life0 if A['poi'] else '')
     if v:
-        life+=f'<p style="margin-top:12px">所在的<b>{town}{vill}</b>，地段力 <b>{v["score"] if v["score"] is not None else "—"}</b> 分（三區 61 里中第 {VR.get((town,vill),"—")} 名）。</p><ul class="clean">'+''.join(f'<li>{t}：{v["n"][k]} 處{("（"+e("、".join(v["list"][k][:5]))+"）") if v["list"][k] else ""}</li>' for k,t in CATS.items() if v['n'][k])+f'</ul><p class="note"><a href="/yucheng-location">看三區地段地圖</a></p>'
+        life+=f'<p style="margin-top:12px">所在的<b>{town}{vill}</b>，地段力 <b>{v["score"] if v["score"] is not None else "—"}</b> 分（三區 61 里中第 {VR.get((town,vill),"—")} 名）。</p><ul class="clean">'+''.join(f'<li>{t}：{v["n"][k]} 處{("（"+e("、".join(v["list"][k][:5]))+"）") if v["list"][k] else ""}</li>' for k,t in CATS.items() if v['n'][k])+f'</ul><p class="note"><a href="yucheng-location">看三區地段地圖</a></p>'
     # risk & remarks
     rk=A.get('rmk') or {}
     risk=f'<ul class="clean"><li>土壤液化潛勢：<b>{A["liq"] or "未收錄"}</b>{"（經濟部地質調查及礦業管理中心）" if A["liq"] else ""}</li><li>淹水潛勢：請到經濟部水利署「淹水潛勢圖」或台中市防災資訊網，用門牌查詢。</li>'
@@ -168,11 +168,11 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
     check=table(['項目','要確認什麼'],[['棟別門牌',f'社區有 {A["bt"]} 個門牌，比價時用同棟、同座向的成交最準'],['樓層',f'地上 {c["floors"]} 層；看上表的樓層價差，判斷開價是否合理'],['座向採光','實地看早上與下午的日照，西曬戶夏天較熱'],['車位','確認車位種類（平面／機械）與編號，車位價格會影響單價'],['管理費與公設','確認管理費、公基金，以及公設實際使用狀況'],['增建與現況','陽台外推、夾層等增建可能影響貸款與日後轉手']])
     body=f'''<main>
 <section class="wrap hero">
-<p class="crumb"><a href="/yucheng-communities">祐承的商圈</a> ／ 社區購屋分析</p>
+<p class="crumb"><a href="yucheng-communities">祐承的商圈</a> ／ 社區購屋分析</p>
 <p class="eyebrow">社區購屋分析</p>
 <h1>{e(name)}</h1>
 <p class="lead">台中市{town}｜{vill}｜{e(c['addr'].replace(town,'',1))}｜資料至 {DLABEL}</p>
-<div class="greet"><img class="gav" src="/images/yucheng.jpg" alt="李祐承" width="60" height="60" loading="lazy"><p>嗨，我是祐承店長（李祐承）。這頁把「{e(name)}」的實價登錄、樓層房型價差、租金和生活機能整理在一起，看屋或出價前先看一遍，心裡比較有底。不確定的資料會標「待確認」，不會用猜的。</p></div>
+<div class="greet"><img class="gav" src="images/yucheng.jpg" alt="李祐承" width="60" height="60" loading="lazy"><p>嗨，我是祐承店長（李祐承）。這頁把「{e(name)}」的實價登錄、樓層房型價差、租金和生活機能整理在一起，看屋或出價前先看一遍，心裡比較有底。不確定的資料會標「待確認」，不會用猜的。</p></div>
 </section>
 <section class="wrap"><h2>買這裡之前，先看懂這幾個數字</h2>{tiles}{note}<p class="note" style="margin-top:10px">單價皆已扣除車位價格，取中位數；和其他網站「總價÷坪數」的算法不同，數字會比較低。</p></section>
 <section class="wrap"><h2>社區基本資料</h2>{basics}{feats}</section>
@@ -187,7 +187,7 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
 <section class="wrap"><h2>看屋時建議確認</h2>{check}</section>
 <section class="wrap"><h2>買之前，我陪您看清楚這五件事</h2><ol class="five">
 <li><b>地段</b>：實際走一趟通勤、上學、買菜的動線，平日和假日各看一次。</li>
-<li><b>預算</b>：總價、車位、貸款成數和每月還款一起算，先用<a href="/yucheng#tools">試算工具</a>抓範圍。</li>
+<li><b>預算</b>：總價、車位、貸款成數和每月還款一起算，先用<a href="yucheng#tools">試算工具</a>抓範圍。</li>
 <li><b>行情</b>：用同棟、同樓層帶、扣車位後的單價比，不被開價帶著走。</li>
 <li><b>轉手性</b>：看這個社區每年成交幾筆、主力房型是什麼，日後比較好賣。</li>
 <li><b>風險</b>：屋齡、修繕紀錄、增建、漏水與西曬，簽約前都要確認。</li></ol></section>
