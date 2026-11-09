@@ -2,8 +2,10 @@
 
 輸入：data/lvr/a.json（買賣）、c.json（租賃）、data/yucheng/communities.json（社區清單）
 輸出：data/yucheng/stats.json（每個社區的行情數字）、area 中位數
-比對規則：同行政區、同路段（含段巷弄）、建物總樓層數相同、建築完成年份差 1 年內，
-並以門牌號碼距離挑出最可能的那一批（同一個建築完成年月）。
+比對規則：同行政區、同路段（含段巷弄；臺／台視為同一條路）、建物總樓層數相同、
+建築完成年份差 1 年內，並以門牌號碼距離挑出最可能的那一批（同一個建築完成年月）。
+社區若臨兩條路，把另一條路的門牌寫在 communities.json 的 addrs。
+這些門牌仍須和主門牌同一批完工年月、樓高相符，而且門牌號距離在 40 號以內。
 """
 import json, re, statistics, datetime, collections, os, sys
 
@@ -38,7 +40,7 @@ PUA = {"\ue0d2": "磘", "\ue643": "磘"}
 
 
 def norm_addr(a, town):
-    a = "".join(PUA.get(ch, ch) for ch in a.translate(FW)).replace("臺中市", "").replace("台中市", "")
+    a = "".join(PUA.get(ch, ch) for ch in a.translate(FW)).replace("臺", "台").replace("台中市", "")
     if a.startswith(town):
         a = a[len(town):]
     a = re.sub(r"([一二三四五六七八九十]+)段", lambda m: f"{cn2int(m.group(1))}段", a)
@@ -136,13 +138,35 @@ def median(v):
     return round(statistics.median(v), 1) if v else None
 
 
+def road_base(st):
+    """路名去掉巷弄，同一條路的巷弄算同一路段。"""
+    return re.sub(r"\d+巷.*", "", st or "")
+
+
+def address_seeds(comm):
+    """主門牌在前。addrs 是同一棟臨另一條路的門牌，格式和 addr 相同。"""
+    raws = [comm.get("addr") or ""]
+    extra = comm.get("addrs") or []
+    if isinstance(extra, str):
+        extra = [extra]
+    raws.extend(extra)
+    seeds = []
+    for raw in raws:
+        st, no = split_addr(norm_addr(raw, comm.get("town") or ""))
+        if st and no is not None:
+            seeds.append((st, no))
+    return seeds
+
+
 def match(comm, by_st, by_built):
-    """先用同路段＋門牌相近＋完工年＋樓高找出這個社區的『建築完成年月』，
-    再把同行政區、同完成年月、樓高相近的交易都納入（涵蓋多條巷弄的大社區）。"""
-    a = norm_addr(comm["addr"], comm["town"])
-    st, no = split_addr(a)
-    if not st:
+    """先用主門牌（同路段＋門牌相近＋完工年＋樓高）找出這個社區的建築完成年月，
+    再把同行政區、同完成年月、樓高相近的交易納入。
+    主路段含同一條路的巷弄；addrs 只納入該街門牌距離 40 號以內的交易，
+    避免把整條大路或隔壁巷的別棟算進來。"""
+    seeds = address_seeds(comm)
+    if not seeds:
         return []
+    st, no = seeds[0]
     F = comm["floors"]
     ok_ft = lambda r: r["ft"] and F - 5 <= r["ft"] <= F
     cand = [r for r in by_st.get((comm["town"], st), [])
@@ -155,9 +179,19 @@ def match(comm, by_st, by_built):
     tot = sum(dates.values())
     keep = {d for d, n in dates.items() if n >= max(1, tot * 0.1)}
     fts = {r["ft"] for r in cand if r["built"] in keep}
-    base = re.sub(r"\d+巷.*", "", st)
-    return [r for d in keep for r in by_built.get((comm["town"], d), [])
-            if (r["ft"] in fts or ok_ft(r)) and re.sub(r"\d+巷.*", "", r["st"]) == base]
+    base = road_base(st)
+    extra = seeds[1:]
+    out, seen = [], set()
+    for d in keep:
+        for r in by_built.get((comm["town"], d), []):
+            if not (r["ft"] in fts or ok_ft(r)):
+                continue
+            take = road_base(r["st"]) == base or any(
+                r["st"] == est and abs(r["no"] - eno) <= 40 for est, eno in extra)
+            if take and id(r) not in seen:
+                seen.add(id(r))
+                out.append(r)
+    return out
 
 
 def claim_key(comm):
@@ -290,12 +324,16 @@ def load_rent():
 
 
 def match_rent(c, rent, today):
-    a = norm_addr(c["addr"], c["town"])
-    st, no = split_addr(a)
-    if not st:
+    seeds = address_seeds(c)
+    if not seeds:
         return None
-    rows = [r for r in rent.get((c["town"], st), []) if r["ft"] == c["floors"] and r["by"] and abs(r["by"] - c["year"]) <= 1
-            and abs(r["no"] - no) <= 40 and r["date"] >= today - datetime.timedelta(days=730)]
+    cutoff = today - datetime.timedelta(days=730)
+    rows, seen = [], set()
+    for st, no in seeds:
+        for r in rent.get((c["town"], st), []):
+            if r["ft"] == c["floors"] and r["by"] and abs(r["by"] - c["year"]) <= 1 and abs(r["no"] - no) <= 40 and r["date"] >= cutoff and id(r) not in seen:
+                seen.add(id(r))
+                rows.append(r)
     if not rows:
         return None
     g = collections.defaultdict(list)
