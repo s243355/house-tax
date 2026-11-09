@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>最新好案｜南區精選物件｜房產找祐承</title>
-<meta name="description" content="祐承店長精選台中南區好案：兩房、三房、四房、透天別墅，838 萬起。總價、坪數、屋齡、樓層、車位一次看，點進信義房屋官網看完整資料與互動看屋。">
+<title>最新好案｜降價特區・精選物件｜房產找祐承</title>
+<meta name="description" content="祐承店長精選台中好案：降價特區、兩房、三房、四房、透天別墅，838 萬起。總價、坪數、屋齡、樓層、車位一次看，點進信義房屋官網看完整資料與互動看屋。">
 <link rel="canonical" href="https://tcyucheng.com/yucheng-listings">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="房產找祐承">
-<meta property="og:title" content="最新好案｜南區兩房・三房・四房・透天別墅精選">
+<meta property="og:title" content="最新好案｜🔥降價特區＋兩房・三房・四房・透天別墅">
 <meta property="og:description" content="838 萬起。總價、坪數、屋齡、車位一次看，點進信義官網看完整照片與互動看屋。">
 <meta property="og:url" content="https://tcyucheng.com/yucheng-listings">
-<meta property="og:image" content="https://tcyucheng.com/og/listings.jpg?v=20261109">
+<meta property="og:image" content="https://tcyucheng.com/og/listings.jpg?v=20261109b">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tcyucheng.com/og/listings.jpg?v=20261109">
+<meta name="twitter:image" content="https://tcyucheng.com/og/listings.jpg?v=20261109b">
 <link rel="icon" href="/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,10 +92,19 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .cats a small{font-weight:500;margin-left:4px;color:var(--muted)}
 .cats a.on{background:var(--green);color:var(--on-green)}
 .cats a.on small{color:var(--on-green)}
+:root{--hot:#d4380d;--on-hot:#fff}
+.cats a.hot{background:var(--hot);border-color:var(--hot);color:var(--on-hot);font-size:1rem;padding:6px 18px;box-shadow:0 2px 8px rgba(212,56,13,.35)}
+.cats a.hot small{color:var(--on-hot)}
+.cats a.hot.on{outline:3px solid var(--gold);outline-offset:1px}
+.cover .chips span.hot{background:var(--hot);border-color:var(--hot);font-weight:700}
+.mosaic b.hot{background:var(--hot)}
+.cat.hot .cat-head{border-left-color:var(--hot)}
+.cat.hot .cat-head h2{color:var(--hot)}
+.cat.hot .price strong{color:var(--hot)}
 .cat{scroll-margin-top:130px;margin-top:34px}
 .cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;border-left:4px solid var(--green);padding-left:12px}
 .cat-head h2{font-size:clamp(1.4rem,4.5vw,1.8rem)}
-.cat-head span{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.cat-head span{font-size:.85rem;color:var(--muted)}
 
 /* 物件卡 */
 .list{display:flex;flex-direction:column;gap:22px;margin-top:16px}
@@ -149,7 +158,7 @@ footer strong{color:var(--fg)}
 <section class="cover" aria-label="封面">
   <div class="cover-text">
     <p class="kicker">最新好案・祐承店長精選</p>
-    <h1>南區<span>精選</span>好案</h1>
+    <h1>台中<span>精選</span>好案</h1>
     <p class="sub" id="coverSub"></p>
     <div class="chips" id="coverChips"></div>
   </div>
@@ -200,19 +209,23 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const wan = n => n.toLocaleString("zh-TW");
 const sinyi = id => `https://sinyi.in/o/${id}/${AGENT}/L`;
+const link = l => l.url || sinyi(l.id);
 const img = id => "https://res.sinyi.com.tw/buy/" + id + "/bigimg/A.JPG";
 const askUrl = t => "https://line.me/R/oaMessage/%40161cayoi/?" + encodeURIComponent(t);
 const ALL = CATS.flatMap(c => c.items);
+const K = Object.fromEntries(CATS.map(c => [c.key, c]));
 
 // 封面
 const minP = Math.min(...ALL.map(l => l.price));
 const uniq = new Set(ALL.map(l => l.id)).size;
-$("#coverSub").textContent = `兩房到透天別墅共 ${uniq} 間，${wan(minP)} 萬起。總價、坪數、屋齡、車位一次看，喜歡就點進信義官網看完整照片或互動看屋。`;
-$("#coverChips").innerHTML = CATS.map(c => `<a href="#${c.key}" style="color:#fff;text-decoration:none"><span>${esc(c.name.replace("精選",""))} ${c.items.length}</span></a>`).join("");
-$("#mosaic").innerHTML = [CATS[0].items[0], CATS[1].items[0], CATS[2].items[0], CATS[3].items[0], CATS[1].items[1]].map((l,i) =>
-  `<a href="#${CATS[i<4?i:1].key}" aria-label="${esc(CATS[i<4?i:1].name)}"><img src="${img(l.id)}" alt="" loading="eager" referrerpolicy="no-referrer"><b>${esc(CATS[i<4?i:1].name.replace("精選",""))}</b></a>`).join("");
+$("#coverSub").textContent = `降價特區＋兩房到透天別墅，共 ${uniq} 間，${wan(minP)} 萬起。總價、坪數、屋齡、車位一次看，喜歡就點進信義官網看完整照片或互動看屋。`;
+$("#coverChips").innerHTML = CATS.map(c => `<a href="#${c.key}" style="color:#fff;text-decoration:none"><span${c.hot ? ' class="hot"' : ""}>${c.hot ? "🔥 " : ""}${esc(c.name.replace("精選",""))} ${c.items.length}</span></a>`).join("");
+$("#mosaic").innerHTML = ["sale","two","three","four","villa"].filter(k => K[k] && K[k].items.length).slice(0,5).map(k => {
+  const c = K[k], l = c.items[0];
+  return `<a href="#${k}" aria-label="${esc(c.name)}"><img src="${img(l.id)}" alt="" loading="eager" referrerpolicy="no-referrer"><b${c.hot ? ' class="hot"' : ""}>${esc(c.name.replace("精選",""))}</b></a>`;
+}).join("");
 $("#updated").textContent = `更新日 ${UPDATED}・資料以信義房屋官網為準`;
-$("#cats").innerHTML = CATS.map(c => `<a href="#${c.key}">${esc(c.name.replace("精選",""))}<small>${c.items.length}</small></a>`).join("");
+$("#cats").innerHTML = CATS.map(c => `<a href="#${c.key}"${c.hot ? ' class="hot"' : ""}>${c.hot ? "🔥 " : ""}${esc(c.name.replace("精選",""))}<small>${c.items.length}</small></a>`).join("");
 
 // 物件卡
 function card(l, i, key) {
@@ -222,7 +235,7 @@ function card(l, i, key) {
   const where = [l.community, l.road, l.id].filter(Boolean).map(esc).join("・");
   const ask = `祐承店長你好，我想問這間：${l.title}（${wan(l.price)} 萬，${l.id}）`;
   return `<article class="card" id="${key}-${l.id}">
-    <a class="photo" href="${sinyi(l.id)}" target="_blank" rel="noopener" aria-label="在信義官網看 ${esc(l.title)} 的照片">
+    <a class="photo" href="${link(l)}" target="_blank" rel="noopener" aria-label="在信義官網看 ${esc(l.title)} 的照片">
       <img src="${img(l.id)}" alt="${esc(l.title)} 物件照片" loading="lazy" referrerpolicy="no-referrer">
       <span class="no">${i+1}</span><span class="more">看全部照片 ↗</span>
     </a>
@@ -234,7 +247,7 @@ function card(l, i, key) {
       <ul class="points">${l.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
       ${l.fee ? `<p class="fee">${esc(l.fee)}</p>` : ""}
       <div class="actions">
-        <a class="btn solid" href="${sinyi(l.id)}" target="_blank" rel="noopener">信義官網看詳情</a>
+        <a class="btn solid" href="${link(l)}" target="_blank" rel="noopener">信義官網看詳情</a>
         ${l.vr ? `<a class="btn ghost" href="${esc(l.vr)}" target="_blank" rel="noopener">互動看屋</a>` : ""}
         <a class="btn ghost" href="${askUrl(ask)}" target="_blank" rel="noopener">LINE 問這間</a>
       </div>
@@ -243,8 +256,8 @@ function card(l, i, key) {
 }
 $("#sections").innerHTML = CATS.map(c => {
   const lo = Math.min(...c.items.map(l => l.price)), hi = Math.max(...c.items.map(l => l.price));
-  return `<section class="cat" id="${c.key}" aria-labelledby="h-${c.key}">
-    <div class="cat-head"><h2 id="h-${c.key}">${esc(c.name)}</h2><span>${c.items.length} 間・${wan(lo)}–${wan(hi)} 萬</span></div>
+  return `<section class="cat${c.hot ? " hot" : ""}" id="${c.key}" aria-labelledby="h-${c.key}">
+    <div class="cat-head"><h2 id="h-${c.key}">${c.hot ? "🔥 " : ""}${esc(c.name)}</h2><span>${c.items.length} 間・${wan(lo)}–${wan(hi)} 萬${c.note ? "・" + esc(c.note) : ""}</span></div>
     <div class="list">${c.items.map((l,i) => card(l, i, c.key)).join("")}</div>
   </section>`;
 }).join("");
