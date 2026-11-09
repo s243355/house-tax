@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>最新好案｜南區兩房精選｜房產找祐承</title>
-<meta name="description" content="祐承店長精選台中南區兩房好案：忠明南路、興大、中山醫生活圈，838 萬起。總價、坪數、屋齡、樓層、車位一次看，點進信義房屋官網看完整資料。">
+<title>最新好案｜南區精選物件｜房產找祐承</title>
+<meta name="description" content="祐承店長精選台中南區好案：兩房、三房、四房、透天別墅，838 萬起。總價、坪數、屋齡、樓層、車位一次看，點進信義房屋官網看完整資料與互動看屋。">
 <link rel="canonical" href="https://tcyucheng.com/yucheng-listings">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="房產找祐承">
-<meta property="og:title" content="最新好案｜南區兩房精選 5 間・838 萬起">
-<meta property="og:description" content="忠明南路、興大、中山醫生活圈。總價、坪數、屋齡、車位一次看，點進信義官網看完整資料。">
+<meta property="og:title" content="最新好案｜南區兩房・三房・四房・透天別墅精選">
+<meta property="og:description" content="838 萬起。總價、坪數、屋齡、車位一次看，點進信義官網看完整照片與互動看屋。">
 <meta property="og:url" content="https://tcyucheng.com/yucheng-listings">
 <meta property="og:image" content="https://tcyucheng.com/og/listings.jpg?v=20261109">
 <meta property="og:image:width" content="1200">
@@ -85,9 +85,20 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
   .mosaic{height:auto}
 }
 .updated{font-size:.82rem;color:var(--muted);margin:10px 2px 0}
+.cats{position:sticky;top:calc(56px + env(safe-area-inset-top,0px));z-index:4;background:var(--bg);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+  padding:10px 0;margin-top:8px;border-bottom:1px solid var(--line)}
+.cats::-webkit-scrollbar{display:none}
+.cats a{flex:none;text-decoration:none;border:1.5px solid var(--green);color:var(--green-ink);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.9rem;white-space:nowrap}
+.cats a small{font-weight:500;margin-left:4px;color:var(--muted)}
+.cats a.on{background:var(--green);color:var(--on-green)}
+.cats a.on small{color:var(--on-green)}
+.cat{scroll-margin-top:130px;margin-top:34px}
+.cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;border-left:4px solid var(--green);padding-left:12px}
+.cat-head h2{font-size:clamp(1.4rem,4.5vw,1.8rem)}
+.cat-head span{font-size:.85rem;color:var(--muted);white-space:nowrap}
 
 /* 物件卡 */
-.list{display:flex;flex-direction:column;gap:22px;margin-top:26px}
+.list{display:flex;flex-direction:column;gap:22px;margin-top:16px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-columns:1fr}
 .photo{position:relative;display:block;aspect-ratio:4/3;background:var(--tint);overflow:hidden;min-width:0}
 .photo img{width:100%;height:100%;object-fit:cover}
@@ -97,7 +108,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 @media (min-width:760px){.card{grid-template-columns:380px 1fr}.photo{aspect-ratio:auto;min-height:280px}.photo img{position:absolute;inset:0}}
 .body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .where{font-size:.85rem;color:var(--muted)}
-.card h2{font-size:1.25rem}
+.card h3{font-size:1.25rem}
 .price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .price strong{font-family:var(--display);font-size:2rem;font-weight:900;color:var(--green-ink);line-height:1}
 .price strong small{font-size:1rem;margin-left:2px}
@@ -112,7 +123,7 @@ header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background
 .points li::before{content:"";position:absolute;left:4px;top:.72em;width:7px;height:7px;border-radius:50%;background:var(--green)}
 .fee{font-size:.82rem;color:var(--muted)}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
-.actions .btn{flex:1;min-width:140px;white-space:nowrap}
+.actions .btn{flex:1;min-width:110px;white-space:nowrap;padding-inline:12px}
 
 /* 底部 */
 .ask{margin-top:34px;padding:26px 22px;border-radius:14px;background:var(--tint);border-left:4px solid var(--green);display:flex;flex-direction:column;gap:12px}
@@ -138,7 +149,7 @@ footer strong{color:var(--fg)}
 <section class="cover" aria-label="封面">
   <div class="cover-text">
     <p class="kicker">最新好案・祐承店長精選</p>
-    <h1>南區<span>兩房</span>精選</h1>
+    <h1>南區<span>精選</span>好案</h1>
     <p class="sub" id="coverSub"></p>
     <div class="chips" id="coverChips"></div>
   </div>
@@ -146,7 +157,8 @@ footer strong{color:var(--fg)}
 </section>
 <p class="updated" id="updated"></p>
 
-<div class="list" id="list"></div>
+<nav class="cats" id="cats" aria-label="物件分類"></nav>
+<div id="sections"></div>
 
 <section class="ask">
   <h2>沒有剛好喜歡的？</h2>
@@ -158,7 +170,7 @@ footer strong{color:var(--fg)}
   </div>
 </section>
 
-<p class="note">※ 物件資訊整理自信義房屋官網，價格與銷售狀態可能隨時變動，請以<a href="https://www.sinyi.com.tw/" target="_blank" rel="noopener">信義房屋官網</a>為準。坪數為建物登記坪數；加蓋部分不在登記格局內。</p>
+<p class="note">※ 物件資訊整理自信義房屋官網，價格與銷售狀態可能隨時變動，請以<a href="https://www.sinyi.com.tw/" target="_blank" rel="noopener">信義房屋官網</a>為準。坪數為建物登記坪數；格局括號內的加蓋部分不在登記範圍內。</p>
 
 <footer>
   <p><strong>房產找祐承｜信義房屋 文心高工店</strong></p>
@@ -175,82 +187,161 @@ footer strong{color:var(--fg)}
 
 <script>
 /* ── 要換物件只改這裡 ──
-   id：信義物件編號（官網網址 sinyi.com.tw/buy/house/<id> 的最後一段，照片也用這個編號）
+   每一區是一個分類；items 裡每一筆是一間：
+   id：信義物件編號（照片、官網連結都用這個編號）
+   vr：互動看屋連結（sinyi.biz/...），沒有就留空字串
    price / orig：萬元；orig 留 0 表示沒有降價
-   main：主建物＋陽台坪數，官網沒寫就留空字串
+   main：主建物＋陽台坪數；land：地坪（透天才填）；官網沒寫就留空字串
+   parking：車位類型，沒車位留空字串
 */
 const UPDATED = "2026/11/09";
-const LISTINGS = [
-  { id:"2748QC", title:"閱讀城市，高樓大兩房平車", community:"閱讀城市", road:"南區忠明南路",
-    price:1198, orig:1268, ping:"32", main:"18.75", layout:"2房2廳1衛", age:"21.5年", floor:"7樓／14樓",
-    parking:"坡道平面", parkingNote:"", fee:"管理費約 1,510 元／月（含車位）",
-    points:["高樓景觀，一層兩戶、戶數單純","平面車位就在電梯旁","近大勇國小、崇倫國中"] },
-  { id:"2841PK", title:"震後典雅裝潢兩房車位", community:"鄉林凱撒", road:"南區忠明南路",
-    price:1290, orig:0, ping:"33.08", main:"21.53", layout:"2房2廳1衛", age:"21.9年", floor:"16樓／18樓",
-    parking:"坡道機械", parkingNote:"車位價 100 萬", fee:"管理費約 1,710 元／月（含車位，季繳）",
-    points:["高樓層採光好、通風佳","衛浴開窗，格局方正好利用","近學區，接送方便"] },
-  { id:"7237SB", title:"興大湛採光兩房車位", community:"興大湛", road:"南區學府路",
-    price:1286, orig:1588, ping:"31.14", main:"18.22", layout:"2房2廳1衛", age:"15.3年", floor:"2樓／14樓",
-    parking:"坡道機械", parkingNote:"", fee:"管理費約 1,584 元／月，車位另 450 元／月",
-    points:["視野綠意、採光好","社區質感佳、維護好","衛浴開窗，全室通風"] },
-  { id:"5241WG", title:"［椰城］近中山醫兩房車位", community:"椰城", road:"南區德吉街",
-    price:898, orig:0, ping:"26.13", main:"", layout:"2房2廳1衛＋加蓋1室", age:"27.8年", floor:"10樓／11樓",
-    parking:"坡道機械", parkingNote:"車位價 80 萬", fee:"管理費約 1,650 元／月（含車位）",
-    points:["大慶商圈，生活機能便利","格局方正，通風採光佳","近樹德公園"] },
-  { id:"3249WK", title:"中山醫震後精裝潢兩房", community:"公園苑", road:"南區德富路",
-    price:838, orig:0, ping:"23.07", main:"", layout:"2房2廳1衛＋加蓋1房", age:"26.5年", floor:"7樓／14樓",
-    parking:"", parkingNote:"", fee:"管理費約 1,154 元／月",
-    points:["近大慶車站、捷運站","高工商圈，採買方便","挑高格局，採光通風佳"] },
+const AGENT = "243355";
+const CATS = [
+  { key:"two", name:"兩房精選", items:[
+    { id:"2748QC", vr:"", title:"閱讀城市，高樓大兩房平車", community:"閱讀城市", road:"南區忠明南路",
+      price:1198, orig:1268, ping:"32", main:"18.75", land:"", type:"大樓", layout:"2房2廳1衛", age:"21.5年", floor:"7樓／14樓",
+      parking:"坡道平面", parkingNote:"", fee:"管理費約 1,510 元／月（含車位）",
+      points:["高樓景觀，一層兩戶、戶數單純","平面車位就在電梯旁","近大勇國小、崇倫國中"] },
+    { id:"2841PK", vr:"", title:"震後典雅裝潢兩房車位", community:"鄉林凱撒", road:"南區忠明南路",
+      price:1290, orig:0, ping:"33.08", main:"21.53", land:"", type:"大樓", layout:"2房2廳1衛", age:"21.9年", floor:"16樓／18樓",
+      parking:"坡道機械", parkingNote:"車位價 100 萬", fee:"管理費約 1,710 元／月（含車位，季繳）",
+      points:["高樓層採光好、通風佳","衛浴開窗，格局方正好利用","近學區，接送方便"] },
+    { id:"7237SB", vr:"", title:"興大湛採光兩房車位", community:"興大湛", road:"南區學府路",
+      price:1286, orig:1588, ping:"31.14", main:"18.22", land:"", type:"大樓", layout:"2房2廳1衛", age:"15.3年", floor:"2樓／14樓",
+      parking:"坡道機械", parkingNote:"", fee:"管理費約 1,584 元／月，車位另 450 元／月",
+      points:["視野綠意、採光好","社區質感佳、維護好","衛浴開窗，全室通風"] },
+    { id:"5241WG", vr:"", title:"［椰城］近中山醫兩房車位", community:"椰城", road:"南區德吉街",
+      price:898, orig:0, ping:"26.13", main:"", land:"", type:"大樓", layout:"2房2廳1衛1室（含加蓋1室）", age:"27.8年", floor:"10樓／11樓",
+      parking:"坡道機械", parkingNote:"車位價 80 萬", fee:"管理費約 1,650 元／月（含車位）",
+      points:["大慶商圈，生活機能便利","格局方正，通風採光佳","近樹德公園"] },
+    { id:"3249WK", vr:"", title:"中山醫震後精裝潢兩房", community:"公園苑", road:"南區德富路",
+      price:838, orig:0, ping:"23.07", main:"", land:"", type:"大樓", layout:"3房2廳1衛（含加蓋1房）", age:"26.5年", floor:"7樓／14樓",
+      parking:"", parkingNote:"", fee:"管理費約 1,154 元／月",
+      points:["近大慶車站、捷運站","高工商圈，採買方便","挑高格局，採光通風佳"] },
+  ]},
+  { key:"three", name:"三房精選", items:[
+    { id:"1758QB", vr:"https://sinyi.biz/3rNcZGHm1", title:"【孩子王２】樹海三房平車", community:"櫻花孩子王2", road:"南區復興路二段",
+      price:1980, orig:0, ping:"48.22", main:"27.22", land:"", type:"大樓", layout:"3房2廳2衛", age:"6.1年", floor:"12樓／15樓",
+      parking:"坡道平面", parkingNote:"車位價 160 萬", fee:"管理費約 2,901 元／月（含車位）",
+      points:["面公園綠園道，高樓視野","邊間雙面採光，正三房","近大慶、五權車站"] },
+    { id:"1833CH", vr:"https://sinyi.biz/7BC81r1kB", title:"［鼎泰鑫聚］大三房平車", community:"鼎泰鑫-聚", road:"南區建國南路一段",
+      price:1880, orig:0, ping:"50.77", main:"29.19", land:"", type:"大樓", layout:"3房2廳2衛", age:"8.1年", floor:"8樓／12樓",
+      parking:"坡道平面", parkingNote:"車位價 150 萬", fee:"管理費約 4,220 元／月（含車位）",
+      points:["近中山醫學大學","戶數單純，社區質感佳","大慶、五權車站交通便利"] },
+    { id:"9891ZS", vr:"https://sinyi.biz/7t937p3kK", title:"興大觀高樓層三房", community:"興大觀", road:"南區新榮街",
+      price:1250, orig:0, ping:"39", main:"28.09", land:"", type:"大樓", layout:"3房2廳2衛", age:"19.1年", floor:"11樓／13樓",
+      parking:"", parkingNote:"", fee:"管理費約 2,535 元／月",
+      points:["散步就到中興大學","復興園道綠意盎然","全天候警衛管理"] },
+    { id:"2130UK", vr:"https://sinyi.biz/7saysg4dv", title:"惠宇謙仁高樓視野三房平車", community:"惠宇謙仁", road:"南區建國南路一段",
+      price:2980, orig:0, ping:"48.85", main:"", land:"", type:"大樓", layout:"3房2廳2衛", age:"3.1年", floor:"15樓／15樓",
+      parking:"坡道平面", parkingNote:"", fee:"管理費約 4,088 元／月（含車位，季繳）",
+      points:["惠宇建設作品，屋齡 3 年","邊間通風好、採光佳","近中山醫、大慶車站"] },
+    { id:"0933YX", vr:"https://sinyi.biz/3jtzWoTrT", title:"惠宇國圖館三房平車", community:"", road:"南區新華街",
+      price:2628, orig:2788, ping:"47.98", main:"", land:"", type:"大樓", layout:"3房2廳2衛", age:"0.5年", floor:"13樓／26樓",
+      parking:"坡道平面", parkingNote:"車位價 220 萬", fee:"",
+      points:["惠宇建設新作，近國資圖","中興大學生活圈","衛浴皆開窗"] },
+  ]},
+  { key:"four", name:"四房精選", items:[
+    { id:"9726BN", vr:"https://sinyi.biz/7gWUVHbCi", title:"南區夏綠地四房平車", community:"森園邸", road:"南區三民西路",
+      price:2599, orig:2852, ping:"66.44", main:"39.24", land:"", type:"大樓", layout:"4房2廳2衛", age:"15.2年", floor:"8樓／15樓",
+      parking:"坡道平面", parkingNote:"", fee:"管理費約 4,171 元／月（含車位，季繳）",
+      points:["三面採光，棟距遠","B1 車道旁大平面車位","戶數少，住戶單純"] },
+    { id:"1484BU", vr:"https://sinyi.biz/3rNdj3Ab1", title:"全新完工●精華透店", community:"", road:"南區建成路",
+      price:1888, orig:2198, ping:"52.31", main:"", land:"11.5", type:"店面／透天", layout:"4房2廳4衛", age:"3.2年", floor:"1–4樓",
+      parking:"", parkingNote:"", fee:"",
+      points:["正建成路，熱鬧透店","採光充足，通風良好","近公園、公車站"] },
+    { id:"5268SY", vr:"https://sinyi.biz/3rNdj3jXf", title:"登陽中山苑未住四房雙車位", community:"中山苑", road:"南區文心南路",
+      price:3280, orig:0, ping:"75.07", main:"38.65", land:"", type:"大樓", layout:"4房2廳2衛", age:"13.2年", floor:"12樓／15樓",
+      parking:"坡道平面 ×2", parkingNote:"", fee:"",
+      points:["未住屋，四房雙平車","近大慶站，交通便利","飯店式管理"] },
+    { id:"8386NY", vr:"https://sinyi.biz/3rNdj1DxA", title:"［登陽中山苑］四房雙車位", community:"中山苑", road:"南區文心南路",
+      price:2998, orig:0, ping:"65.53", main:"32.17", land:"", type:"大樓", layout:"4房2廳2衛", age:"13.2年", floor:"5樓／15樓",
+      parking:"坡道平面 ×2", parkingNote:"", fee:"管理費約 4,015 元／月（含車位）",
+      points:["四房雙平面車位","近大慶車站","戶數單純，社區質感佳"] },
+  ]},
+  { key:"villa", name:"透天別墅精選", items:[
+    { id:"0750ZD", vr:"https://sinyi.biz/7swTPCeor", title:"店長推薦樹義國小雙車透天", community:"", road:"南區福田路",
+      price:2188, orig:2580, ping:"88.92", main:"", land:"35.36", type:"透天", layout:"4房3廳5衛3室（含加蓋3衛）", age:"36.0年", floor:"B1–4樓",
+      parking:"坡道平面", parkingNote:"地下室可停兩車", fee:"",
+      points:["近樹義國小","有裝潢，屋況佳","前院花園，中庭綠意"] },
+    { id:"3122RC", vr:"https://sinyi.biz/4jzSaw5Nv", title:"【大毅京都】工學震後美墅", community:"", road:"南區工學路",
+      price:2788, orig:0, ping:"61.13", main:"", land:"21.99", type:"透天", layout:"4房2廳4衛", age:"23.7年", floor:"1–4樓",
+      parking:"一樓平面", parkingNote:"", fee:"管理費約 3,000 元／月",
+      points:["近工學商圈、健康公園","社區環保室，免追垃圾車","格局方正，採光佳"] },
+    { id:"1484BU", vr:"https://sinyi.biz/2DjSLoHJz", title:"全新完工●精華透店", community:"", road:"南區建成路",
+      price:1888, orig:2198, ping:"52.31", main:"", land:"11.5", type:"店面／透天", layout:"4房2廳4衛", age:"3.2年", floor:"1–4樓",
+      parking:"", parkingNote:"", fee:"",
+      points:["正建成路，熱鬧透店","採光充足，通風良好","近公園、公車站"] },
+    { id:"8084FC", vr:"https://sinyi.biz/48w3Q94dV", title:"稀有釋出工學一街金透店", community:"", road:"南區工學一街",
+      price:3180, orig:3380, ping:"81.32", main:"", land:"23.6", type:"透天／店面", layout:"6房2廳6衛1室（含加蓋2房1廳1衛）", age:"29.1年", floor:"1–5樓",
+      parking:"", parkingNote:"", fee:"",
+      points:["臨路透店，稀有釋出","工學、美村商圈","格局方正，通風採光佳"] },
+    { id:"9294YT", vr:"https://sinyi.biz/6fuFwqQ5R", title:"店長推薦大慶震後別墅", community:"台灣大城", road:"南區大慶街二段",
+      price:2280, orig:0, ping:"52.89", main:"", land:"27.33", type:"透天", layout:"5房1廳3衛（含加蓋1房）", age:"22.1年", floor:"1–4樓",
+      parking:"一樓平面", parkingNote:"", fee:"",
+      points:["環境單純，寧靜清幽","走路可到便利商店","交通便利，機能方便"] },
+  ]},
 ];
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const wan = n => n.toLocaleString("zh-TW");
-const sinyi = id => "https://www.sinyi.com.tw/buy/house/" + id;
+const sinyi = id => `https://sinyi.in/o/${id}/${AGENT}/L`;
 const img = id => "https://res.sinyi.com.tw/buy/" + id + "/bigimg/A.JPG";
 const askUrl = t => "https://line.me/R/oaMessage/%40161cayoi/?" + encodeURIComponent(t);
-const ext = {target:"_blank", rel:"noopener"};
+const ALL = CATS.flatMap(c => c.items);
 
 // 封面
-const minP = Math.min(...LISTINGS.map(l => l.price));
-const roads = [...new Set(LISTINGS.map(l => l.road.replace("南區","")))];
-$("#coverSub").textContent = `${LISTINGS.length} 間精選，${wan(minP)} 萬起。總價、坪數、屋齡、車位一次看，喜歡就點進信義官網看完整照片與資料。`;
-$("#coverChips").innerHTML = roads.map(r => `<span>${esc(r)}</span>`).join("");
-$("#mosaic").innerHTML = LISTINGS.slice(0,5).map((l,i) =>
-  `<a href="#h-${l.id}" aria-label="第 ${i+1} 間：${esc(l.title)}"><img src="${img(l.id)}" alt="" loading="${i<3?"eager":"lazy"}" referrerpolicy="no-referrer"><b>${i+1}</b></a>`).join("");
+const minP = Math.min(...ALL.map(l => l.price));
+const uniq = new Set(ALL.map(l => l.id)).size;
+$("#coverSub").textContent = `兩房到透天別墅共 ${uniq} 間，${wan(minP)} 萬起。總價、坪數、屋齡、車位一次看，喜歡就點進信義官網看完整照片或互動看屋。`;
+$("#coverChips").innerHTML = CATS.map(c => `<a href="#${c.key}" style="color:#fff;text-decoration:none"><span>${esc(c.name.replace("精選",""))} ${c.items.length}</span></a>`).join("");
+$("#mosaic").innerHTML = [CATS[0].items[0], CATS[1].items[0], CATS[2].items[0], CATS[3].items[0], CATS[1].items[1]].map((l,i) =>
+  `<a href="#${CATS[i<4?i:1].key}" aria-label="${esc(CATS[i<4?i:1].name)}"><img src="${img(l.id)}" alt="" loading="eager" referrerpolicy="no-referrer"><b>${esc(CATS[i<4?i:1].name.replace("精選",""))}</b></a>`).join("");
 $("#updated").textContent = `更新日 ${UPDATED}・資料以信義房屋官網為準`;
+$("#cats").innerHTML = CATS.map(c => `<a href="#${c.key}">${esc(c.name.replace("精選",""))}<small>${c.items.length}</small></a>`).join("");
 
 // 物件卡
-$("#list").innerHTML = LISTINGS.map((l,i) => {
-  const park = l.parking ? (l.parking + (l.parkingNote ? `<br><small>${esc(l.parkingNote)}</small>` : "")) : "無";
-  const specs = [
-    ["建坪", l.ping + " 坪"],
-    [l.main ? "主＋陽" : "類型", l.main ? l.main + " 坪" : "大樓"],
-    ["屋齡", l.age],
-    ["格局", l.layout],
-    ["樓層", l.floor],
-    ["車位", park],
-  ];
+function card(l, i, key) {
+  const park = l.parking ? (esc(l.parking) + (l.parkingNote ? `<br><small>${esc(l.parkingNote)}</small>` : "")) : "無";
+  const second = l.land ? ["地坪", l.land + " 坪"] : l.main ? ["主＋陽", l.main + " 坪"] : ["類型", l.type];
+  const specs = [["建坪", l.ping + " 坪"], second, ["屋齡", l.age], ["格局", l.layout], ["樓層", l.floor], ["車位", null]];
+  const where = [l.community, l.road, l.id].filter(Boolean).map(esc).join("・");
   const ask = `祐承店長你好，我想問這間：${l.title}（${wan(l.price)} 萬，${l.id}）`;
-  return `<article class="card" id="h-${l.id}">
+  return `<article class="card" id="${key}-${l.id}">
     <a class="photo" href="${sinyi(l.id)}" target="_blank" rel="noopener" aria-label="在信義官網看 ${esc(l.title)} 的照片">
-      <img src="${img(l.id)}" alt="${esc(l.title)} 物件照片" loading="${i<2?"eager":"lazy"}" referrerpolicy="no-referrer">
+      <img src="${img(l.id)}" alt="${esc(l.title)} 物件照片" loading="lazy" referrerpolicy="no-referrer">
       <span class="no">${i+1}</span><span class="more">看全部照片 ↗</span>
     </a>
     <div class="body">
-      <p class="where">${esc(l.community)}・${esc(l.road)}・${esc(l.id)}</p>
-      <h2 id="t-${l.id}">${esc(l.title)}</h2>
+      <p class="where">${where}</p>
+      <h3>${esc(l.title)}</h3>
       <div class="price"><strong>${wan(l.price)}<small>萬</small></strong>${l.orig ? `<s>原 ${wan(l.orig)} 萬</s>` : ""}<span class="tag">${l.parking ? "含車位" : "無車位"}</span></div>
-      <dl class="specs">${specs.map(([k,v]) => `<div><dt>${k}</dt><dd>${k==="車位" ? v : esc(v)}</dd></div>`).join("")}</dl>
+      <dl class="specs">${specs.map(([k,v]) => `<div><dt>${k}</dt><dd>${k==="車位" ? park : esc(v)}</dd></div>`).join("")}</dl>
       <ul class="points">${l.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
-      <p class="fee">${esc(l.fee)}</p>
+      ${l.fee ? `<p class="fee">${esc(l.fee)}</p>` : ""}
       <div class="actions">
         <a class="btn solid" href="${sinyi(l.id)}" target="_blank" rel="noopener">信義官網看詳情</a>
+        ${l.vr ? `<a class="btn ghost" href="${esc(l.vr)}" target="_blank" rel="noopener">互動看屋</a>` : ""}
         <a class="btn ghost" href="${askUrl(ask)}" target="_blank" rel="noopener">LINE 問這間</a>
       </div>
     </div>
   </article>`;
+}
+$("#sections").innerHTML = CATS.map(c => {
+  const lo = Math.min(...c.items.map(l => l.price)), hi = Math.max(...c.items.map(l => l.price));
+  return `<section class="cat" id="${c.key}" aria-labelledby="h-${c.key}">
+    <div class="cat-head"><h2 id="h-${c.key}">${esc(c.name)}</h2><span>${c.items.length} 間・${wan(lo)}–${wan(hi)} 萬</span></div>
+    <div class="list">${c.items.map((l,i) => card(l, i, c.key)).join("")}</div>
+  </section>`;
 }).join("");
+
+// 目前看到哪一區，分類列就亮哪一個
+const links = [...document.querySelectorAll("#cats a")];
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+}), { rootMargin: "-140px 0px -60% 0px" });
+CATS.forEach(c => io.observe(document.getElementById(c.key)));
 
 $("#askLine").href = askUrl("祐承店長你好，我想找房：預算＿＿萬、區域＿＿、＿房");
 </script>
