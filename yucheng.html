@@ -189,6 +189,9 @@ nav.menu a:hover,nav.menu a.on{color:var(--green-ink);border-bottom-color:var(--
 .lchip{display:flex;flex-direction:column;gap:2px;padding:10px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);text-decoration:none;min-width:0}
 .lchip b{color:var(--green-ink)}.lchip span{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .lchip:hover{border-color:var(--green)}
+.lchip.hot{background:#d4380d;border-color:#d4380d;box-shadow:0 2px 10px rgba(212,56,13,.35)}
+.lchip.hot b,.lchip.hot span{color:#fff}
+.badge.hot{border-color:#d4380d;background:#d4380d;color:#fff}
 .lph{position:relative;display:flex;align-items:center;justify-content:center;background:var(--tint);color:var(--muted);text-decoration:none;overflow:hidden;max-width:100%}
 .lph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .card h3{margin:0;font-size:1.02rem;line-height:1.4}
@@ -577,13 +580,13 @@ $$("[data-send]").forEach(a=>a.onclick=()=>{a.href=lineMsg("祐承店長你好�
   $("#lst-lead").textContent=`文心高工店正在賣的房子，更新於 ${UPDATED}。看到喜歡的，按「LINE 問這間」直接約帶看。`;
   $("#lst-all").textContent=`看全部 ${n} 間好案 →`;
   $("#lst-cats").innerHTML=CATS.map(c=>{const p=c.items.map(l=>l.price),lo=Math.min(...p),hi=Math.max(...p);
-    return `<a class="lchip" href="yucheng-listings#${c.key}"><b>${esc(c.name)}</b><span>${c.items.length} 間・${fmt(lo)}${lo===hi?"":"–"+fmt(hi)} 萬</span></a>`}).join("");
+    return `<a class="lchip${c.hot?" hot":""}" href="yucheng-listings#${c.key}"><b>${c.hot?"🔥 ":""}${esc(c.name)}</b><span>${c.items.length} 間・${fmt(lo)}${lo===hi?"":"–"+fmt(hi)} 萬</span></a>`}).join("");
   const pick=CATS.map(c=>[c,c.items[0]]).filter(x=>x[1]);
   $("#list").innerHTML=pick.map(([c,l])=>{
     const meta=[l.community,l.ping&&l.ping+" 坪",l.layout&&l.layout.split("（")[0],l.age].filter(Boolean).map(esc).join("・");
     const was=l.orig&&l.orig>l.price?`<s class="was">${fmt(l.orig)} 萬</s>`:"";
     return `<article class="card"><a class="ph lph" href="yucheng-listings#${c.key}-${l.id}"><img src="https://res.sinyi.com.tw/buy/${l.id}/bigimg/A.JPG" alt="${esc(l.title)}" loading="lazy" onerror="this.remove()"><span>${esc(l.community||l.road)}</span></a>
-     <div class="body"><span class="badge">${esc(c.name)}</span><h3>${esc(l.title)}</h3><span class="price">${fmt(l.price)} 萬 ${was}</span>
+     <div class="body"><span class="badge${c.hot?" hot":""}">${c.hot?"🔥 ":""}${esc(c.name)}</span><h3>${esc(l.title)}</h3><span class="price">${fmt(l.price)} 萬 ${was}</span>
      <span class="meta">${meta}</span><span class="meta">${esc(l.road||"")}</span>
      <div class="lact"><a class="btn ghost" href="yucheng-listings#${c.key}-${l.id}">看詳情</a><a class="btn solid" target="_blank" rel="noopener" href="${lineMsg("祐承店長你好，我想問這間："+l.title+"（"+fmt(l.price)+" 萬，"+l.id+"）")}">LINE 問這間</a></div></div></article>`}).join("");
 })();
