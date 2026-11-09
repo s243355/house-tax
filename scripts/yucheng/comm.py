@@ -2,7 +2,7 @@ import os
 from paths import ROOT,DATA
 import json,sys,html
 sys.path.insert(0,'.')
-from common import page
+from common import page,faq_html,faq_ld
 from shared_layers import STATIONS,load
 e=html.escape
 C=json.load(open(os.path.join(DATA,'communities.json'),encoding='utf-8'))
@@ -86,16 +86,12 @@ body=f'''<main>
 </section>
 <section class="wrap">
   <h2>常見問題</h2>
-  <details><summary>這張地圖收錄哪些社區？</summary><p>台中市南區、東區、大里區，民國 85 年後完工（屋齡 30 年內）的住宅大樓與華廈，而且近一年有成交紀錄。透天、純店面、套房，以及規模太小的華廈（少於 3 個門牌）沒有列入；一樓是店面的 11 層以上住宅大樓（例如鄉林新月灣）有收錄。實價登錄沒有戶數欄位，所以用建物型態來篩出一定規模的社區。</p></details>
-  <details><summary>單價是怎麼算的？</summary><p>取該社區近一年的買賣成交，排除親友等特殊交易，把車位價格扣掉後算每坪單價，再取中位數。只有 1～2 筆成交的社區參考性較低，清單上會標示筆數。</p></details>
-  <details><summary>為什麼不同網站查到的單價差很多？</summary><p>最常見的原因是車位。有的網站用總價直接除以坪數，車位價格和車位坪數都混在裡面；這裡是扣掉車位後的房屋單價。取平均或中位數、統計期間不同，也會有差距。</p></details>
-  <details><summary>生活圈是怎麼畫的？</summary><p>以台鐵與捷運車站為中心，畫出半徑 800 公尺的範圍，大約是步行 10 分鐘。實際步行時間會受路口與地形影響，看屋時建議實際走一趟。</p></details>
-  <details><summary>地圖上的位置準嗎？</summary><p>位置取自實價登錄門牌定位，以社區代表門牌為準，大型社區的圓點落在其中一棟。發現不準的，可以用「校正位置」拖曳修正後回報。</p></details>
-  <details><summary>我想看的社區不在地圖上怎麼辦？</summary><p>可能是屋齡超過 30 年、近一年沒有成交，或是透天、店面。直接 LINE 告訴我社區名稱，我幫你查成交行情。</p></details>
+  __FAQ__
 </section>
 </main>
 <button class="fab" id="fab" type="button">☰ 社區清單</button>
 <script type="application/ld+json">{json.dumps(LD,ensure_ascii=False,separators=(',',':'))}</script>
+__FAQLD__
 <script>
 const DATA=__DATA__,VIL=__VIL__,ST=__ST__;
 const COL={{new:"#0a8a43",mid:"#b8892f",old:"#5b6f8a"}};
@@ -150,6 +146,15 @@ render();
 '''
 VIL={'villages':[{'code':v['code'],'town':v['town'],'name':v['name'],'score':v['score']} for v in L['villages']],'geo':L['geo'],'towns':L['towns']}
 body=body.replace('__DATA__',json.dumps(C,ensure_ascii=False,separators=(',',':'))).replace('__VIL__',json.dumps(VIL,ensure_ascii=False,separators=(',',':'))).replace('__ST__',json.dumps(STATIONS,ensure_ascii=False))
+FAQ=[
+('這張地圖收錄哪些社區？','台中市南區、東區、大里區，民國 85 年後完工（屋齡 30 年內）的住宅大樓與華廈，而且近一年有成交紀錄。透天、純店面、套房，以及規模太小的華廈（少於 3 個門牌）沒有列入；一樓是店面的 11 層以上住宅大樓（例如鄉林新月灣）有收錄。實價登錄沒有戶數欄位，所以用建物型態來篩出一定規模的社區。'),
+('單價是怎麼算的？','取該社區近一年的買賣成交，排除親友等特殊交易，把車位價格扣掉後算每坪單價，再取中位數。只有 1～2 筆成交的社區參考性較低，清單上會標示筆數。'),
+('為什麼不同網站查到的單價差很多？','最常見的原因是車位。有的網站用總價直接除以坪數，車位價格和車位坪數都混在裡面；這裡是扣掉車位後的房屋單價。取平均或中位數、統計期間不同，也會有差距。'),
+('生活圈是怎麼畫的？','以台鐵與捷運車站為中心，畫出半徑 800 公尺的範圍，大約是步行 10 分鐘。實際步行時間會受路口與地形影響，看屋時建議實際走一趟。'),
+('地圖上的位置準嗎？','位置取自實價登錄門牌定位，以社區代表門牌為準，大型社區的圓點落在其中一棟。發現不準的，可以用「校正位置」拖曳修正後回報。'),
+('我想看的社區不在地圖上怎麼辦？','可能是屋齡超過 30 年、近一年沒有成交，或是透天、店面。直接 LINE 告訴我社區名稱，我幫你查成交行情。'),
+]
+body=body.replace('__FAQ__',faq_html(FAQ)).replace('__FAQLD__',f'<script type="application/ld+json">{faq_ld(FAQ)}</script>')
 credit=f'資料來源：內政部不動產成交案件實際資訊（實價登錄），資料更新至 {DLABEL}，每月自動更新（申報約晚 1～3 個月）；里界：內政部國土測繪中心；車站：OpenStreetMap。底圖 © OpenStreetMap contributors。單價為統計參考，實際價格依屋況、樓層、車位而異。'
 open(ROOT+'/yucheng-communities.html','w',encoding='utf-8').write(page('祐承的商圈｜南區東區大里社區地圖','台中南區、東區、大里區屋齡30年內大樓社區地圖，附近一年實價登錄單價、生活圈與社區購屋分析。｜信義房屋文心高工店 祐承店長',1,css,body,credit,og='communities.jpg',path='/yucheng-communities'))
 print('ok')

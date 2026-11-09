@@ -81,6 +81,18 @@ def og_tags(title,desc,img,path):
             f'<meta property="og:title" content="{q(title)}">\n<meta property="og:description" content="{q(desc)}">\n<meta property="og:url" content="{u}">\n'
             f'<meta property="og:image" content="{im}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n'
             f'<meta name="twitter:card" content="summary_large_image">\n<meta name="twitter:image" content="{im}">\n')
+def faq_ld(pairs):
+    import json as _j
+    data={"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        {"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for q,a in pairs]}
+    return _j.dumps(data,ensure_ascii=False,separators=(',',':'))
+def faq_html(pairs, first_open=False):
+    import html as _h
+    parts=[]
+    for i,(q,a) in enumerate(pairs):
+        open_attr=' open' if first_open and i==0 else ''
+        parts.append(f'<details{open_attr}><summary>{_h.escape(q)}</summary><p>{_h.escape(a)}</p></details>')
+    return '\n  '.join(parts)
 def page(title,desc,on,extra_css,body,credit,og=None,path=None):
     h=HEAD.replace('{title}',title).replace('{desc}',desc).replace('{extra_css}',extra_css).replace('{og}',og_tags(title,desc,og,path) if og else '')
     h=h.replace('{on1}',' class="on"' if on==1 else '').replace('{on2}',' class="on"' if on==2 else '')
