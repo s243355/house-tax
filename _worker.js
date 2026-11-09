@@ -31,6 +31,25 @@ const SITEMAP_PATHS = [
   '/prop-compare',
 ];
 
+// 先用 30 天，觀察沒問題再加長。不上 preload，也不加 includeSubDomains。
+const HSTS = 'max-age=2592000';
+const YC_HOST = 'tcyucheng.com';
+
+function requestScheme(url) {
+  return url.protocol === 'http:' ? 'http' : 'https';
+}
+
+function withHsts(response, scheme) {
+  if (scheme !== 'https' || !response) return response;
+  const headers = new Headers(response.headers);
+  headers.set('Strict-Transport-Security', HSTS);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 async function notFoundResponse(request, env) {
   const headers = {
     'Content-Type': 'text/html; charset=utf-8',
@@ -52,7 +71,21 @@ async function notFoundResponse(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const scheme = requestScheme(url);
+    const host = url.hostname.toLowerCase();
+    // tcyucheng.com / www 的 http，以及 www 的 https，一次 301 到 https://tcyucheng.com 的同一路徑。
+    if ((host === YC_HOST || host === 'www.' + YC_HOST) && (scheme === 'http' || host !== YC_HOST)) {
+      const dest = new URL(url.toString());
+      dest.protocol = 'https:';
+      dest.hostname = YC_HOST;
+      dest.port = '';
+      return withHsts(Response.redirect(dest.toString(), 301), scheme);
+    }
+    return withHsts(await route(request, env, url), scheme);
+  },
+};
 
+async function route(request, env, url) {
     // ── CORS headers（允許你的 house-tax 網站呼叫）──
     const cors = {
       'Access-Control-Allow-Origin': '*',
@@ -65,16 +98,13 @@ export default {
     }
 
     // ── 祐承個人網域 tcyucheng.com ──
-    // www 轉到主網域；首頁直接顯示祐承個人頁；舊 workers.dev 的祐承頁面 301 轉過來。
-    const YC_HOST = 'tcyucheng.com';
-    if (url.hostname === 'www.' + YC_HOST) {
-      url.hostname = YC_HOST;
-      return Response.redirect(url.toString(), 301);
-    }
+    // www 與 http 已在入口轉到 https 主網域。這裡只處理首頁與舊 workers.dev 的祐承頁面。
     const onYc = url.hostname === YC_HOST;
     if (!onYc && /^\/yucheng(-|$|\.html$)/.test(url.pathname)) {
       const to = new URL(url.toString());
+      to.protocol = 'https:';
       to.hostname = YC_HOST;
+      to.port = '';
       to.pathname = to.pathname === '/yucheng' || to.pathname === '/yucheng.html' ? '/' : to.pathname;
       return Response.redirect(to.toString(), 301);
     }
@@ -127,8 +157,7 @@ export default {
       return res;
     }
     return notFoundResponse(request, env);
-  }
-};
+}
 
 function json(data, status, cors) {
   return new Response(JSON.stringify(data), {

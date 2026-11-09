@@ -2,7 +2,7 @@ import os
 from paths import ROOT,DATA
 import json,sys
 sys.path.insert(0,'.')
-from common import page
+from common import page,faq_html,faq_ld
 from shared_layers import STATIONS
 CM=json.load(open(os.path.join(DATA,'communities.json'),encoding='utf-8'))
 D=json.load(open(os.path.join(DATA,'loc_data.json'),encoding='utf-8'))
@@ -50,11 +50,9 @@ body='''<main>
 </section>
 <section class="wrap">
   <h2>計算方式與資料來源</h2>
-  <details open><summary>地段力怎麼算？</summary><p>每個里的五類設施數量，各自除以里面積得到密集度（個/km²），避免大面積的里占便宜。五類密集度分別換成標準分數（z 分數），等權重加總，再把 66 里中的最高分設為 100、最低分設為 0。五類都沒有收錄的里不計分。</p></details>
-  <details><summary>五類設施包含什麼？</summary><p>學區：國小、國中（含附小、附中），不含高中職與幼兒園。公園：有名稱的公園綠地。商場市場：百貨、購物中心、市場。交通：台鐵與捷運車站、客運轉運站、國道交流道。醫療：醫院、診所、牙醫。</p></details>
-  <details><summary>資料從哪裡來？</summary><p>里界：內政部國土測繪中心村（里）界，經 taiwan-atlas 1.1.0 整理。設施：OpenStreetMap 志工圖資（ODbL 授權），__DATE__ 經 Overpass API 擷取，依座標落點歸到各里。OpenStreetMap 不是政府資料，可能有漏標或未更新，「無收錄」不代表一定沒有。</p></details>
-  <details><summary>分數高就代表房價會漲嗎？</summary><p>不一定。地段力只反映生活機能的密集程度，商圈核心機能好，但也可能比較吵、比較老舊。買房還要一起看屋齡、社區管理和實價登錄，歡迎 LINE 我一起看。</p></details>
+  __FAQ__
 </section>
+__FAQLD__
 </main>
 <script>
 const D=__DATA__,CM=__CM__,ST=__ST__;
@@ -115,7 +113,14 @@ rankBox();ui();
 </script>
 '''
 date=D['poi_fetched'][:10].replace('2026-','115 年 ').replace('-',' 月 ',1)+' 日'
+FAQ=[
+('地段力怎麼算？','每個里的五類設施數量，各自除以里面積得到密集度（個/km²），避免大面積的里占便宜。五類密集度分別換成標準分數（z 分數），等權重加總，再把 66 里中的最高分設為 100、最低分設為 0。五類都沒有收錄的里不計分。'),
+('五類設施包含什麼？','學區：國小、國中（含附小、附中），不含高中職與幼兒園。公園：有名稱的公園綠地。商場市場：百貨、購物中心、市場。交通：台鐵與捷運車站、客運轉運站、國道交流道。醫療：醫院、診所、牙醫。'),
+('資料從哪裡來？',f'里界：內政部國土測繪中心村（里）界，經 taiwan-atlas 1.1.0 整理。設施：OpenStreetMap 志工圖資（ODbL 授權），{date} 經 Overpass API 擷取，依座標落點歸到各里。OpenStreetMap 不是政府資料，可能有漏標或未更新，「無收錄」不代表一定沒有。'),
+('分數高就代表房價會漲嗎？','不一定。地段力只反映生活機能的密集程度，商圈核心機能好，但也可能比較吵、比較老舊。買房還要一起看屋齡、社區管理和實價登錄，歡迎 LINE 我一起看。'),
+]
 body=body.replace('__CM__',json.dumps([{k:c.get(k) for k in ('id','name','addr','town','vill','year','p1y','grp','lat','lng','an')} for c in CM],ensure_ascii=False,separators=(',',':'))).replace('__ST__',json.dumps(STATIONS,ensure_ascii=False)).replace('__DATA__',json.dumps(D,ensure_ascii=False,separators=(',',':'))).replace('__DATE__',date)
+body=body.replace('__FAQ__',faq_html(FAQ, first_open=True)).replace('__FAQLD__',f'<script type="application/ld+json">{faq_ld(FAQ)}</script>')
 sv=sorted(D['villages'],key=lambda v:-(v['score'] if v['score'] is not None else -1))
 TBL='<thead><tr><th>里</th><th>區</th><th class="num">地段力</th>'+''.join(f'<th class="num">{x}</th>' for x in ['學區','公園','商場市場','交通','醫療'])+'</tr></thead><tbody>'+''.join(f"<tr><td>{v['name']}</td><td>{v['town']}</td><td class='num'>{'%.1f'%v['score'] if v['score'] is not None else '無資料'}</td>"+''.join(f"<td class='num'>{v['n'][k] or '無收錄'}</td>" for k in ['school','park','shop','transit','medical'])+'</tr>' for v in sv)+'</tbody>'
 body=body.replace('__TBL__',TBL)
