@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 python3 lvr_calc.py
 python3 update.py
+python3 quarters.py
 python3 comm.py >/dev/null
 python3 loc.py >/dev/null
 python3 ana.py >/dev/null

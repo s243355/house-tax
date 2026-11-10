@@ -13,7 +13,14 @@ today = datetime.date.fromisoformat(M["computed_at"])
 KEYS = ["n1y", "p1y", "n3y", "p3y", "yoy", "yrs", "fl", "rm", "sales", "pr", "mgmt", "bt", "rent", "ry"]
 updated, frozen = 0, []
 byname = {}
+# 熊貓公園市的分析檔和頁面是手動凍結的，每月重算不要覆蓋。
+FROZEN_IDS = {457647}
 for c in C:
+    if c["id"] in FROZEN_IDS:
+        for k in (c["name"], c["addr"].replace(c["town"], "", 1)):
+            if k:
+                byname[k] = c
+        continue
     s = S.get(str(c["id"]))
     p = os.path.join(DATA, "an", f"{c['id']}.json")
     A = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {"id": c["id"], "near": [], "poi": [], "presale": []}

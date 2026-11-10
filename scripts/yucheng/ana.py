@@ -14,6 +14,22 @@ VR={(v['town'],v['name']):i+1 for i,v in enumerate(scored)}
 _SM=json.load(open(os.path.join(DATA,'stats_meta.json'),encoding='utf-8'))
 AREA=_SM['area'];_de=_SM['data_end'];NOWY=int(_SM['computed_at'][:4])
 DLABEL=f"{int(_de[:4])-1911} 年 {int(_de[5:7])} 月"
+def _load(name):
+    p=os.path.join(DATA,name)
+    return json.load(open(p,encoding='utf-8')) if os.path.exists(p) else {}
+_Q=_load('quarters.json');Q={k:v for k,v in _Q.items() if not str(k).startswith('_')}
+_VF=_load('verified_fields.json');VF={k:v for k,v in _VF.items() if not str(k).startswith('_')}
+_SD=_load('school_districts.json')
+FROZEN_PAGE={457647}
+def official_schools(town,vill):
+    out=[]
+    for key in ('elementary','junior'):
+        level=(_SD.get('levels') or {}).get(key) or {}
+        hit=(level.get('areas') or {}).get(f'{town}|{vill}')
+        if not hit:continue
+        joint='共同學區，' if hit.get('joint') else ''
+        out.append({'text':f"{level.get('level')}：{'、'.join(hit['schools'])}（{town}{vill}全里，{joint}{level.get('publisher') or '臺中市政府教育局'} {level.get('school_year')} 學年度學區表）",'url':level.get('page') or '','title':level.get('title') or '學區表'})
+    return out
 CATS={'school':'學區','park':'公園','shop':'商場市場','transit':'交通','medical':'醫療'}
 e=html.escape
 def f1(x):return f'{x:.1f}'
@@ -31,6 +47,7 @@ css='''
 h2{margin-bottom:12px}
 .kv{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0}.kv dt{color:var(--muted);font-size:.9rem}.kv dd{margin:0}
 .tbd{color:var(--gold);font-size:.85rem}
+a.src{font-size:.78rem;margin-left:4px}
 .bars{display:flex;flex-direction:column;gap:8px;max-width:760px}
 .bar{display:grid;grid-template-columns:minmax(7em,11em) 1fr 4.5em;gap:10px;align-items:center;font-size:.9rem}
 .bar .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar .tr{background:var(--tint);border-radius:4px;height:14px;overflow:hidden}
@@ -62,6 +79,53 @@ def chart(yrs):
         last=i==n-1;s+=f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{5 if last else 3.5}" fill="#0a8a43" stroke="#fff" stroke-width="1.5"/>'
         if last or i==0 or n<=6:s+=f'<text x="{x:.1f}" y="{y-9:.1f}" text-anchor="middle" font-weight="700" fill="#076b34">{yrs[i][2]:.1f}</text>'
     return s+'</g></svg>'
+def qchart(rows):
+    rows=rows or []
+    known=[r for r in rows if r[2]]
+    def lab(r):
+        return f'{r[0]-1911}Q{r[1]}'
+    if len(known)<2:
+        if not known:
+            msg='近三年這段期間沒有成交，無法畫季度走勢。'
+        else:
+            bits='、'.join(f'{lab(r)} {r[3]:.1f} 萬/坪（{r[2]} 筆）' for r in known)
+            msg=f'近三年只有 {sum(r[2] for r in known)} 筆、落在 {len(known)} 個季度，樣本太少，不畫走勢。{bits}。'
+        return f'<p class="note">{msg}</p>'
+    W,H,pl,pb,pt=720,230,46,40,18
+    mx=max(r[3] for r in known)*1.18 or 1
+    n=len(rows);bw=(W-pl-12)/n
+    step=max(5,int(mx/4)//5*5 or 5)
+    s=f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="近三年每季成交中位單價"><g font-size="11" fill="currentColor">'
+    t=0
+    while t<=mx+0.1:
+        y=H-pb-(t/mx)*(H-pb-pt)
+        s+=f'<line x1="{pl}" x2="{W-6}" y1="{y:.1f}" y2="{y:.1f}" stroke="currentColor" stroke-opacity=".12"/><text x="{pl-6}" y="{y+4:.1f}" text-anchor="end" fill-opacity=".6">{t}</text>'
+        t+=step
+        if step<=0:break
+    def xy(i,v):
+        return pl+i*bw+bw/2, H-pb-(v/mx)*(H-pb-pt)
+    run=[]
+    def flush():
+        nonlocal s
+        if len(run)>=2:
+            s+='<polyline fill="none" stroke="#0a8a43" stroke-width="2.5" points="'+' '.join(f'{x:.1f},{y:.1f}' for x,y in run)+'"/>'
+        run.clear()
+    for i,r in enumerate(rows):
+        x=pl+i*bw+bw/2
+        s+=f'<text x="{x:.1f}" y="{H-18}" text-anchor="middle" fill-opacity=".7">{lab(r)}</text>'
+        if r[2]:
+            s+=f'<text x="{x:.1f}" y="{H-6}" text-anchor="middle" fill-opacity=".45">{r[2]}筆</text>'
+        if not r[2] or r[3] is None:
+            flush();continue
+        x,y=xy(i,r[3]);run.append((x,y))
+        if r[2]<3:
+            s+=f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="var(--surface)" stroke="#0a8a43" stroke-width="1.6"/>'
+        else:
+            s+=f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="#0a8a43" stroke="#fff" stroke-width="1.4"/>'
+        if r[2]>=3 or len(known)<=6:
+            s+=f'<text x="{x:.1f}" y="{y-8:.1f}" text-anchor="middle" font-weight="700" fill="#076b34">{r[3]:.1f}</text>'
+    flush()
+    return '<div class="chart">'+s+'</g></svg></div><p class="note" style="margin-top:6px">折線是每季中位單價（萬/坪，已扣車位），和上面的年度數字用同一批實價、同一套扣除。空心點代表該季不到 3 筆。中間斷開的是該季沒有成交。</p>'
 def table(head,rows,num=()):
     h='<div class="tbl"><table><thead><tr>'+''.join(f'<th class="{"num" if i in num else ""}">{x}</th>' for i,x in enumerate(head))+'</tr></thead><tbody>'
     for r in rows:h+='<tr>'+''.join(f'<td class="{"num" if i in num else ""}">{x}</td>' for i,x in enumerate(r))+'</tr>'
@@ -70,9 +134,18 @@ made=[]
 for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
     A=json.load(open(fn));
     if A['p1y']<12:continue
+    if A['id'] in FROZEN_PAGE:
+        made.append(A['id']);continue
     c=C[A['id']];name=(c['name'] or c['addr'].replace(c['town'],'',1)).replace('（2025 完工）','');town=c['town'];vill=c['vill']
     intro=IID.get(str(A['id'])) or I.get(name,{});
     intro=dict(intro);intro['sources']=[x if isinstance(x,str) else (x.get('url') or '') for x in (intro.get('sources') or [])];intro['sources']=[x for x in intro['sources'] if x.startswith('http')]
+    seen_src=set(intro['sources'])
+    for _field,_rec in (VF.get(str(A['id'])) or {}).items():
+        if not isinstance(_rec,dict):continue
+        for _s in _rec.get('sources') or []:
+            _u=_s.get('url') or ''
+            if _u.startswith('http') and _u not in seen_src:
+                intro['sources'].append(_u);seen_src.add(_u)
     age=round(c['age']);area=AREA[town]
     diff=A['p1y']/area-1
     A['sales']=[x for x in A['sales'] if x[6]>=0.4*A['p1y']];_m=sorted(y[2] for y in A['yrs']);A['yrs']=[y for y in A['yrs'] if not _m or y[2]<=2.5*_m[len(_m)//2]];A.setdefault('yoy',None);A.setdefault('rmk',{});A.setdefault('poi',[]);A.setdefault('near',[]);A.setdefault('presale',[]);A.setdefault('rent',[]);A.setdefault('liq',None)
@@ -87,19 +160,39 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
 <div class="tile"><span class="k">近一年價格變化</span><span class="v {'' if A['yoy'] is None else ('up' if A['yoy']>=0 else 'dn')}">{'樣本不足' if A['yoy'] is None else pct(A['yoy'])}</span><span class="s">和前一年中位數比較</span></div>
 </div>'''
     note=f'<p class="note" style="margin-top:10px">{e(A["note"])}</p>' if A.get('note') else ''
+    def verified_html(k):
+        rec=(VF.get(str(A['id'])) or {}).get(k)
+        if not isinstance(rec,dict) or not rec.get('value'):return None
+        src=(rec.get('sources') or [{}])[0]
+        link=f' <a class="src" href="{e(src.get("url") or "")}" target="_blank" rel="noopener">{e(src.get("title") or "來源")}</a>' if src.get('url') else ''
+        return e(rec['value'])+link
     def iv(k,fmt=lambda x:x):
-        v=intro.get(k);return e(fmt(v)) if v else '<span class="tbd">待確認</span>'
+        v=intro.get(k)
+        if isinstance(v,list):v='、'.join(v) if v else None
+        if v:return e(fmt(v))
+        return verified_html(k) or '<span class="tbd">待確認</span>'
+    offs=official_schools(town,vill)
+    school_parts=[]
+    if intro.get('schools'):
+        listed=e('、'.join(intro['schools']))
+        school_parts.append(('其他公開資料記載：'+listed) if offs else listed)
+    for item in offs:
+        school_parts.append(e(item['text'])+(f' <a class="src" href="{e(item["url"])}" target="_blank" rel="noopener">{e(item["title"])}</a>' if item.get('url') else ''))
+    if not school_parts:school_dd='<span class="tbd">待確認</span>'
+    elif len(school_parts)==1 and not offs:school_dd=school_parts[0]
+    else:school_dd=''.join(f'<div>{part}</div>' for part in school_parts)
+    pr_dd=('約 '+format(A['pr']*100,'.1f')+'%　<span class="note">歷年成交中位數，以權狀為準</span>') if A.get('pr') else (verified_html('public_ratio') or '<span class="tbd">待確認</span>')
     basics=f'''<dl class="kv">
 <dt>完工</dt><dd>{c['year']} 年・{('新成屋（未滿 1 年）' if c['age']<1 else f'屋齡約 {age} 年')}</dd>
 <dt>樓高</dt><dd>{e(intro['floors']) if intro.get('floors') else '地上 '+str(c['floors'])+' 層'}</dd>
 <dt>戶數</dt><dd>{iv('households')}</dd>
 <dt>棟數／門牌</dt><dd>{iv('buildings')}{'' if intro.get('buildings') else ''}　<span class="note">實登登記門牌 {A['bt']} 個</span></dd>
 <dt>建設公司</dt><dd>{iv('developer')}</dd>
-<dt>公設比</dt><dd>{('約 '+format(A['pr']*100,'.1f')+'%　<span class="note">歷年成交中位數，以權狀為準</span>') if A.get('pr') else '<span class="tbd">待確認</span>'}</dd>
+<dt>公設比</dt><dd>{pr_dd}</dd>
 <dt>管理費</dt><dd>{iv('mgmt_fee')}</dd>
 <dt>管理方式</dt><dd>{'有管理組織' if A['mgmt'] else '<span class="tbd">待確認</span>'}</dd>
 <dt>車位</dt><dd>{iv('parking')}</dd>
-<dt>學區</dt><dd>{e('、'.join(intro['schools'])) if intro.get('schools') else '<span class="tbd">待確認</span>'}</dd>
+<dt>學區</dt><dd>{school_dd}</dd>
 <dt>公共設施</dt><dd>{e('、'.join(intro['facilities'])) if intro.get('facilities') else '<span class="tbd">待確認</span>'}</dd>
 <dt>地址</dt><dd>台中市{e(c['addr'])}</dd>
 </dl>'''+(('<p class="note" style="margin-top:10px">社區介紹來源：'+'、'.join(f'<a href="{e(u)}" target="_blank" rel="noopener">{e(u.split("/")[2])}</a>' for u in intro['sources'])+'（以門牌比對確認為同一社區；各網站數字可能不同，以現場與權狀為準）</p>') if intro.get('sources') else '')
@@ -177,7 +270,7 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
 <section class="wrap"><h2>買這裡之前，先看懂這幾個數字</h2>{tiles}{note}<p class="note" style="margin-top:10px">單價皆已扣除車位價格，取中位數；和其他網站「總價÷坪數」的算法不同，數字會比較低。</p></section>
 <section class="wrap"><h2>社區基本資料</h2>{basics}{feats}</section>
 <section class="wrap"><h2>區域市場定位</h2><p class="note" style="margin-bottom:12px">近一年成交中位單價（萬/坪）。{pos_note}</p>{bars}{comp}</section>
-<section class="wrap"><h2>歷年行情</h2><p class="note" style="margin-bottom:8px">每年成交中位單價（萬/坪，已扣車位）</p><div class="chart">{chart(A['yrs']) or ('<p class="note">完工時間較短，目前只有一年的成交資料。</p>' if c['age']<4 else '<p class="note">成交筆數太少，只有單一年度資料，無法畫出長期走勢。</p>')}</div></section>
+<section class="wrap"><h2>歷年行情</h2><p class="note" style="margin-bottom:8px">每年成交中位單價（萬/坪，已扣車位）</p><div class="chart">{chart(A['yrs']) or ('<p class="note">完工時間較短，目前只有一年的成交資料。</p>' if c['age']<4 else '<p class="note">成交筆數太少，只有單一年度資料，無法畫出長期走勢。</p>')}</div><h3 style="margin:18px 0 6px;font-size:1.05rem">近三年每季</h3>{qchart(Q.get(str(A['id'])) or [])}</section>
 <section class="wrap"><h2>樓層、房型怎麼差</h2><p class="note" style="margin-bottom:10px">近五年成交，筆數少於 3 的組別參考性低。</p><div class="grid2"><div>{fl}</div><div>{rm}</div></div></section>
 <section class="wrap"><h2>近期實價登錄</h2><p class="note" style="margin-bottom:10px">＊單價已扣車位（萬/坪）；🅿 為含車位交易。出價前請以內政部實價登錄網站為準。</p>{sales}</section>
 <section class="wrap"><h2>租金行情</h2>{rent}</section>
@@ -194,7 +287,9 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
 <section class="wrap"><div class="cta"><h2>下一步：告訴我預算和想要的格局</h2><p>我幫您看「{e(name)}」適不適合，也可以直接約看屋。</p><a class="btn" href="{line}" target="_blank" rel="noopener">LINE 問祐承這個社區</a><p style="font-size:.9rem">手機 0933-317-625｜LINE @161cayoi</p></div></section>
 </main>
 '''
-    credit=f'資料來源：內政部不動產成交案件實際資訊（實價登錄），資料更新至 {DLABEL}，每月自動更新；社區介紹為本店整理之公開資料；土壤液化潛勢：經濟部地質調查及礦業管理中心；設施：OpenStreetMap。本頁為統計參考，實際以實價登錄網站、謄本與現場為準。'
+    credit=f'資料來源：內政部不動產成交案件實際資訊（實價登錄），資料更新至 {DLABEL}，每月自動更新；社區介紹為本店整理之公開資料；土壤液化潛勢：經濟部地質調查及礦業管理中心；設施：OpenStreetMap。'
+    if offs:credit+='國中小學區只在臺中市政府教育局學區表把該里整里劃給同一所學校（或標成共同學區）時才寫，拆到鄰的里不猜。'
+    credit+='本頁為統計參考，實際以實價登錄網站、謄本與現場為準。'
     title=f'{name}｜社區購屋分析'
     open(f'{ROOT}/yucheng-a-{A["id"]}.html','w',encoding='utf-8').write(page(title,f'{name}（台中{town}）社區購屋分析：近一年實登單價、樓層房型價差、租金、生活機能與看屋重點。｜信義房屋文心高工店 祐承店長',1,css,body,credit,og=f'a-{A["id"]}.jpg',path=f'/yucheng-a-{A["id"]}'))
     made.append(A['id'])

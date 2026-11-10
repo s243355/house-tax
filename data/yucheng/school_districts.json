@@ -1,0 +1,572 @@
+{
+ "retrieved": "2026-11-10",
+ "rule": "只標教育局學區表寫成全里、且沒有再依鄰排除或拆開的里。共同學區會並列學校。拆鄰的里維持待確認。",
+ "levels": {
+  "elementary": {
+   "level": "國小",
+   "school_year": "112",
+   "title": "臺中市國民小學學區表（112學年度）",
+   "page": "https://data.gov.tw/dataset/84169",
+   "publisher": "臺中市政府教育局",
+   "areas": {
+    "南區|南門里": {
+     "schools": [
+      "國光國小"
+     ],
+     "joint": false
+    },
+    "南區|和平里": {
+     "schools": [
+      "和平國小"
+     ],
+     "joint": false
+    },
+    "南區|平和里": {
+     "schools": [
+      "信義國小"
+     ],
+     "joint": false
+    },
+    "南區|德義里": {
+     "schools": [
+      "國光國小"
+     ],
+     "joint": false
+    },
+    "南區|新榮里": {
+     "schools": [
+      "大同國小"
+     ],
+     "joint": false
+    },
+    "南區|樹德里": {
+     "schools": [
+      "樹德國小"
+     ],
+     "joint": false
+    },
+    "南區|永和里": {
+     "schools": [
+      "信義國小"
+     ],
+     "joint": false
+    },
+    "南區|福興里": {
+     "schools": [
+      "信義國小"
+     ],
+     "joint": false
+    },
+    "南區|西川里": {
+     "schools": [
+      "大勇國小"
+     ],
+     "joint": false
+    },
+    "南區|長榮里": {
+     "schools": [
+      "大同國小"
+     ],
+     "joint": false
+    },
+    "大里區|中新里": {
+     "schools": [
+      "大元國小"
+     ],
+     "joint": false
+    },
+    "大里區|仁化里": {
+     "schools": [
+      "塗城國小"
+     ],
+     "joint": false
+    },
+    "大里區|仁德里": {
+     "schools": [
+      "塗城國小"
+     ],
+     "joint": false
+    },
+    "大里區|健民里": {
+     "schools": [
+      "健民國小"
+     ],
+     "joint": false
+    },
+    "大里區|內新里": {
+     "schools": [
+      "內新國小"
+     ],
+     "joint": false
+    },
+    "大里區|塗城里": {
+     "schools": [
+      "美群國小"
+     ],
+     "joint": false
+    },
+    "大里區|夏田里": {
+     "schools": [
+      "大里國小"
+     ],
+     "joint": false
+    },
+    "大里區|大明里": {
+     "schools": [
+      "崇光國小"
+     ],
+     "joint": false
+    },
+    "大里區|大里里": {
+     "schools": [
+      "大里國小"
+     ],
+     "joint": false
+    },
+    "大里區|新仁里": {
+     "schools": [
+      "立新國小"
+     ],
+     "joint": false
+    },
+    "大里區|日新里": {
+     "schools": [
+      "內新國小"
+     ],
+     "joint": false
+    },
+    "大里區|東昇里": {
+     "schools": [
+      "內新國小"
+     ],
+     "joint": false
+    },
+    "大里區|東湖里": {
+     "schools": [
+      "草湖國小"
+     ],
+     "joint": false
+    },
+    "大里區|東興里": {
+     "schools": [
+      "崇光國小"
+     ],
+     "joint": false
+    },
+    "大里區|永隆里": {
+     "schools": [
+      "永隆國小"
+     ],
+     "joint": false
+    },
+    "大里區|祥興里": {
+     "schools": [
+      "崇光國小"
+     ],
+     "joint": false
+    },
+    "大里區|立仁里": {
+     "schools": [
+      "立新國小"
+     ],
+     "joint": false
+    },
+    "大里區|立德里": {
+     "schools": [
+      "立新國小"
+     ],
+     "joint": false
+    },
+    "大里區|西湖里": {
+     "schools": [
+      "草湖國小"
+     ],
+     "joint": false
+    },
+    "東區|十甲里": {
+     "schools": [
+      "成功國小"
+     ],
+     "joint": false
+    },
+    "東區|合作里": {
+     "schools": [
+      "力行國小"
+     ],
+     "joint": false
+    },
+    "東區|富仁里": {
+     "schools": [
+      "進德國小"
+     ],
+     "joint": false
+    },
+    "東區|富台里": {
+     "schools": [
+      "進德國小"
+     ],
+     "joint": false
+    },
+    "東區|東信里": {
+     "schools": [
+      "成功國小"
+     ],
+     "joint": false
+    },
+    "東區|東橋里": {
+     "schools": [
+      "大智國小"
+     ],
+     "joint": false
+    },
+    "東區|東英里": {
+     "schools": [
+      "成功國小"
+     ],
+     "joint": false
+    },
+    "東區|樂成里": {
+     "schools": [
+      "成功國小"
+     ],
+     "joint": false
+    }
+   }
+  },
+  "junior": {
+   "level": "國中",
+   "school_year": "111",
+   "title": "臺中市國民中學學區劃分表（111學年度）",
+   "page": "https://data.gov.tw/dataset/130179",
+   "publisher": "臺中市政府教育局",
+   "areas": {
+    "南區|南和里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|南門里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "南區|和平里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|國光里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "南區|城隍里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "南區|崇倫里": {
+     "schools": [
+      "崇倫國中"
+     ],
+     "joint": false
+    },
+    "南區|工學里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|平和里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|德義里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|新榮里": {
+     "schools": [
+      "光明國中"
+     ],
+     "joint": false
+    },
+    "南區|樹義里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|永和里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|永興里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|福興里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|福順里": {
+     "schools": [
+      "四育國中"
+     ],
+     "joint": false
+    },
+    "南區|西川里": {
+     "schools": [
+      "崇倫國中"
+     ],
+     "joint": false
+    },
+    "南區|長春里": {
+     "schools": [
+      "光明國中"
+     ],
+     "joint": false
+    },
+    "南區|長榮里": {
+     "schools": [
+      "光明國中"
+     ],
+     "joint": false
+    },
+    "大里區|中新里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|仁德里": {
+     "schools": [
+      "成功國中"
+     ],
+     "joint": false
+    },
+    "大里區|健民里": {
+     "schools": [
+      "光正國中"
+     ],
+     "joint": false
+    },
+    "大里區|內新里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|塗城里": {
+     "schools": [
+      "光正國中"
+     ],
+     "joint": false
+    },
+    "大里區|夏田里": {
+     "schools": [
+      "市立大里高中國中部"
+     ],
+     "joint": false
+    },
+    "大里區|大元里": {
+     "schools": [
+      "市立大里高中國中部"
+     ],
+     "joint": false
+    },
+    "大里區|大明里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|大里里": {
+     "schools": [
+      "市立大里高中國中部"
+     ],
+     "joint": false
+    },
+    "大里區|新仁里": {
+     "schools": [
+      "立新國中"
+     ],
+     "joint": false
+    },
+    "大里區|日新里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|東昇里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|東湖里": {
+     "schools": [
+      "市立大里高中國中部",
+      "成功國中"
+     ],
+     "joint": true
+    },
+    "大里區|東興里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|永隆里": {
+     "schools": [
+      "爽文國中"
+     ],
+     "joint": false
+    },
+    "大里區|瑞城里": {
+     "schools": [
+      "成功國中"
+     ],
+     "joint": false
+    },
+    "大里區|祥興里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|立仁里": {
+     "schools": [
+      "立新國中"
+     ],
+     "joint": false
+    },
+    "大里區|立德里": {
+     "schools": [
+      "立新國中"
+     ],
+     "joint": false
+    },
+    "大里區|西榮里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "大里區|西湖里": {
+     "schools": [
+      "市立大里高中國中部",
+      "成功國中"
+     ],
+     "joint": true
+    },
+    "大里區|金城里": {
+     "schools": [
+      "成功國中"
+     ],
+     "joint": false
+    },
+    "大里區|長榮里": {
+     "schools": [
+      "光榮國中"
+     ],
+     "joint": false
+    },
+    "東區|十甲里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|合作里": {
+     "schools": [
+      "雙十國中"
+     ],
+     "joint": false
+    },
+    "東區|干城里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|振興里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "東區|旱溪里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|東信里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|東勢里": {
+     "schools": [
+      "雙十國中"
+     ],
+     "joint": false
+    },
+    "東區|東南里": {
+     "schools": [
+      "雙十國中"
+     ],
+     "joint": false
+    },
+    "東區|東橋里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "東區|東興里": {
+     "schools": [
+      "東峰國中"
+     ],
+     "joint": false
+    },
+    "東區|東英里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|樂成里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    },
+    "東區|泉源里": {
+     "schools": [
+      "育英國中"
+     ],
+     "joint": false
+    }
+   }
+  }
+ }
+}
