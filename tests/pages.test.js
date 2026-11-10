@@ -19,6 +19,7 @@ const pages = {
   'transaction-planner.html': '/transaction-planner',
   'card.html': '/card',
   'prop-compare.html': '/prop-compare',
+  'owner-report.html': '/owner-report',
 };
 const site = 'https://tcyucheng.com/tools';
 

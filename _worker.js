@@ -31,6 +31,7 @@ const TOOL_PAGES = [
   '/transaction-planner',
   '/card',
   '/prop-compare',
+  '/owner-report',
 ];
 const QUIZ_PAGES = [
   '/不動產經紀人 考試練習',

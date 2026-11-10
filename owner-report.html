@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。祐承店長 信義房屋 文心高工店">
+<link rel="canonical" href="https://tcyucheng.com/tools/owner-report">
+<meta property="og:type" content="website">
+<meta property="og:title" content="屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店">
+<meta property="og:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。">
+<meta property="og:url" content="https://tcyucheng.com/tools/owner-report">
+<meta property="og:image" content="https://tcyucheng.com/tools/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
+<meta name="twitter:title" content="屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店">
+<meta name="twitter:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。">
+<style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="pdf-loader.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap">
+<style>
+/* 版面：左側分段填寫表單、右側即時 A4 預覽；手機改為上下堆疊。工具外框用信義綠，報告紙面另有一組固定紙色。 */
+:root{
+  --bg:#eef2ee; --card:#ffffff; --ink:#18231c; --muted:#5d6a62; --line:#d6dfd8;
+  --g:#1f5c36; --g-soft:#e3eee6; --gold:#a37a2c; --warn:#a2400f; --warn-soft:#fbeadf;
+  --f-sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-serif:"Noto Serif TC","PMingLiU",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#101512; --card:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2b3730;
+  --g:#62c08a; --g-soft:#1c3226; --gold:#d6ad5e; --warn:#f0a36f; --warn-soft:#3a2416; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --card:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2b3730;
+  --g:#62c08a; --g-soft:#1c3226; --gold:#d6ad5e; --warn:#f0a36f; --warn-soft:#3a2416; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:14px}
+*{box-sizing:border-box}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--card)}
+.top h1{font-family:var(--f-serif);font-size:18px;margin:0;color:var(--g);flex:1 1 auto;min-width:0;text-wrap:balance}
+.top .acts{display:flex;flex-wrap:wrap;gap:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:7px 11px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:var(--g)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+button.pri{background:var(--g);border-color:var(--g);color:var(--card);font-weight:700}
+button.sm{padding:4px 8px;font-size:12px}
+button.ghost{border-color:transparent;color:var(--muted)}
+.wrap{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:16px;
+  padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.form{display:flex;flex-direction:column;gap:10px;min-width:0}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px}
+summary{cursor:pointer;padding:11px 14px;font-weight:700;display:flex;gap:8px;align-items:center;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary .no{font-family:var(--f-serif);color:var(--gold);font-size:13px;min-width:22px}
+summary .st{margin-left:auto;font-weight:400;font-size:12px;color:var(--muted)}
+.sec{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
+label.f input,label.f select,label.f textarea,.tb input{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:6px 8px;width:100%;min-width:0}
+textarea{resize:vertical;line-height:1.5}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
+.warn{font-size:12px;color:var(--warn);background:var(--warn-soft);border-radius:5px;padding:6px 8px;margin:0}
+.ok{font-size:12px;color:var(--g);background:var(--g-soft);border-radius:5px;padding:6px 8px;margin:0}
+.tbwrap{overflow-x:auto}
+.tb{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.tb th{font-size:11px;color:var(--muted);font-weight:500;text-align:left;padding:2px 3px}
+.tb td{padding:2px 3px}
+.tb input{padding:4px 5px;font-size:13px;min-width:52px}
+.tb td.calc{font-size:12px;color:var(--g);white-space:nowrap;padding-left:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chk{display:flex;gap:6px;align-items:center;font-size:13px}
+.imgs{display:flex;flex-wrap:wrap;gap:6px}
+.imgs .th{width:76px;height:56px;border-radius:4px;border:1px solid var(--line);background:var(--bg) center/cover no-repeat;position:relative}
+.imgs .th button{position:absolute;top:-6px;right:-6px;padding:0 5px;font-size:11px;border-radius:9px}
+.prevcol{min-width:0}
+.pvbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;font-size:12px;color:var(--muted)}
+.pages{display:flex;flex-direction:column;gap:14px;align-items:center}
+.pv{position:relative;width:calc(794px * var(--s,0.6));height:calc(1123px * var(--s,0.6));box-shadow:0 1px 3px rgba(0,0,0,.18),0 6px 22px rgba(0,0,0,.08)}
+.pv>.page{transform:scale(var(--s,0.6));transform-origin:0 0;position:absolute;left:0;top:0}
+.pv .pnum{position:absolute;right:calc(100% + 6px);top:0;font-size:11px;color:var(--muted)}
+.pv .dl{position:absolute;right:6px;top:6px;z-index:2;opacity:.85}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:8px 14px;border-radius:6px;font-size:13px;z-index:40;max-width:calc(100% - 32px)}
+.web-only{display:none}.no-claude .web-only{display:block}.no-claude .cl-only{display:none!important}
+.confirm{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== 報告紙面（固定 A4 794×1123px，不隨深淺色主題改變）===== */
+.page{width:794px;height:1123px;overflow:hidden;font-family:var(--f-sans);color:var(--p-ink);background:var(--p-bg);
+  --p-bg:#fbf8f0;--p-ink:#2b2a25;--p-green:#2d5a30;--p-green2:#3f7a3c;--p-gsoft:#e8efe0;--p-gold:#a57a2b;--p-gsoft2:#f4e9d0;
+  --p-line:#ddd2b9;--p-muted:#6d6555;--p-band:#2d5a30;--p-band2:#4f8a45;--p-band-ink:#ffffff;--p-red:#b8322a;--p-redbg:#fbe1de;--p-grn:#2d7a33;--p-grnbg:#dcefd4;--p-pill:#f7ecd4;--p-pill-ink:#3b2f16}
+.pages.mono .page{--p-bg:#ffffff;--p-ink:#111111;--p-green:#111111;--p-green2:#333333;--p-gsoft:#efefef;--p-gold:#444444;--p-gsoft2:#f4f4f4;
+  --p-line:#b9b9b9;--p-muted:#555555;--p-band:#ffffff;--p-band2:#ffffff;--p-band-ink:#111111;--p-red:#000000;--p-redbg:#e2e2e2;--p-grn:#000000;--p-grnbg:#f0f0f0;--p-pill:#ffffff;--p-pill-ink:#111111}
+.page *{box-sizing:border-box}
+.pg{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:14px;padding:26px 40px 0;height:72px}
+.brand .logo{height:40px}
+.brand .wm{font-family:var(--f-serif);font-weight:900;color:var(--p-green);font-size:24px;line-height:1}
+.brand .wm small{display:block;font-family:var(--f-sans);font-size:10px;letter-spacing:.18em;font-weight:700;margin-top:3px}
+.brand .sl{border-left:1px solid var(--p-ink);padding-left:14px;font-size:14px;letter-spacing:.12em}
+.ptitle{text-align:center;padding:10px 40px 0}
+.ptitle h2{font-family:var(--f-serif);font-weight:900;font-size:34px;color:var(--p-green);margin:0;letter-spacing:.04em}
+.ptitle .cm{font-size:14px;color:var(--p-gold);letter-spacing:.3em;font-weight:700;margin-bottom:2px}
+.ptitle .rule{width:360px;height:2px;margin:10px auto 0;background:linear-gradient(90deg,transparent,var(--p-gold),transparent)}
+.body{flex:1;padding:18px 40px 0;display:flex;flex-direction:column;gap:14px;min-height:0}
+.foot{height:118px;background:linear-gradient(100deg,var(--p-band),var(--p-band2));color:var(--p-band-ink);padding:18px 44px 0;display:flex;flex-direction:column;gap:2px;border-top:3px solid var(--p-gold)}
+.pages.mono .foot{border-top:3px solid #111}
+.foot .store{font-size:19px;letter-spacing:.06em;font-family:var(--f-serif)}
+.foot .who{display:flex;align-items:center;gap:18px}
+.foot .nm{font-family:var(--f-serif);font-weight:900;font-size:42px;letter-spacing:.08em}
+.foot .ph{background:var(--p-pill);color:var(--p-pill-ink);border-radius:30px;padding:4px 22px;font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;border:1.5px solid var(--p-gold)}
+.foot .ln{font-size:17px}
+.foot .disc{font-size:11px;opacity:.85;margin-top:2px}
+.sh{display:flex;align-items:center;gap:10px;font-family:var(--f-serif);font-weight:900;font-size:21px;color:var(--p-green);margin:0}
+.sh::before{content:"";width:10px;height:22px;background:var(--p-gold);border-radius:2px}
+.sh .sub{font-family:var(--f-sans);font-size:12px;font-weight:500;color:var(--p-muted)}
+.box{border:1px solid var(--p-line);border-radius:10px;background:#ffffff8c;padding:12px 14px}
+.pages.mono .box{background:#fff}
+table.kv{width:100%;border-collapse:collapse;font-size:15px}
+table.kv td{border:1px solid var(--p-line);padding:6px 10px;height:34px}
+table.kv td.k{background:var(--p-green);color:#fff;width:96px;text-align:center;font-weight:700;letter-spacing:.06em}
+.pages.mono table.kv td.k{background:#e6e6e6;color:#111}
+table.dt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;text-align:center}
+table.dt th{background:var(--p-green);color:#fff;font-weight:700;padding:7px 4px;font-size:14px;border:1px solid var(--p-green)}
+.pages.mono table.dt th{background:#111;border-color:#111}
+table.dt td{border:1px solid var(--p-line);padding:6px 4px;font-size:15px;background:#fff}
+table.dt tr:nth-child(even) td{background:var(--p-gsoft2)}
+.pages.mono table.dt tr:nth-child(even) td{background:#f6f6f6}
+table.dt td.hi-r{background:var(--p-redbg)!important;color:var(--p-red);font-weight:900}
+table.dt td.hi-g{background:var(--p-grnbg)!important;color:var(--p-grn);font-weight:900}
+table.dt td.em{font-weight:700;color:var(--p-green)}
+table.dt tr.self td{background:var(--p-gsoft)!important;font-weight:700}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{border:1px solid var(--p-line);border-radius:10px;padding:10px 14px;background:#fff;display:flex;flex-direction:column;gap:2px}
+.tile .l{font-size:14px;color:var(--p-muted);font-weight:700}
+.tile .v{font-size:30px;font-weight:900;color:var(--p-green);font-variant-numeric:tabular-nums;line-height:1.15}
+.tile .v small{font-size:14px;font-weight:700}
+.tile.r{background:var(--p-redbg)} .tile.r .v{color:var(--p-red)}
+.tile.gr{background:var(--p-grnbg)} .tile.gr .v{color:var(--p-grn)}
+.tile.note .v{font-size:15px;line-height:1.5;color:var(--p-ink);font-weight:700}
+ul.bl{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;font-size:16px;line-height:1.5}
+ul.bl li{display:flex;gap:10px}
+ul.bl li::before{content:"";flex:0 0 9px;height:9px;border-radius:50%;background:var(--p-gold);margin-top:8px}
+ol.nl{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0;font-size:16px;line-height:1.45}
+ol.nl li{display:flex;gap:12px;padding:6px 4px;border-bottom:1px dashed var(--p-line)}
+ol.nl li:last-child{border-bottom:0}
+ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.pages.mono ol.nl .n{background:#111}
+.ph-box{border:1.5px dashed var(--p-line);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--p-muted);font-size:15px;background:var(--p-gsoft2);text-align:center;line-height:1.6}
+.img{background:center/cover no-repeat;border-radius:10px}
+.imgc{background:center/contain no-repeat}
+.badge{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;background:#fff;border:2px solid var(--p-red);color:var(--p-red);border-radius:8px;padding:4px 10px;text-align:center;font-weight:900;line-height:1.2}
+.badge small{display:block;font-size:13px}
+.pages.mono .badge{border-color:#111;color:#111}
+.pv .plan{cursor:crosshair}
+.lib{display:flex;flex-direction:column;gap:6px;border:1px solid var(--g);background:var(--g-soft);border-radius:6px;padding:10px}
+.cover-name{font-family:var(--f-serif);font-weight:900;color:var(--p-green);text-align:center;letter-spacing:.08em;line-height:1.1;margin:8px 40px 0}
+.cover-band{margin:18px 60px 0;border-radius:44px;background:linear-gradient(180deg,#8a6125,#a57a2b 45%,#7a5420);color:#fff7e6;text-align:center;font-family:var(--f-serif);font-weight:900;font-size:40px;letter-spacing:.12em;padding:14px 0;border:2px solid #d9b56a}
+.pages.mono .cover-band{background:#111;color:#fff;border-color:#111}
+.cover-sub{text-align:center;font-size:20px;letter-spacing:.18em;font-weight:700;margin-top:14px;color:var(--p-ink)}
+.price2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pbox{border:1.5px solid var(--p-gold);border-radius:12px;background:#fff;padding:12px 14px;text-align:center}
+.pbox .l{font-size:17px;font-weight:900;color:var(--p-gold);letter-spacing:.06em}
+.pbox .v{font-size:40px;font-weight:900;color:var(--p-green);font-variant-numeric:tabular-nums;line-height:1.3}
+.pbox .s{font-size:13px;color:var(--p-muted)}
+.sum{border-radius:12px;background:var(--p-green);color:#fff;padding:14px 18px;font-size:17px;font-weight:700;line-height:1.6;display:flex;gap:14px;align-items:center}
+.pages.mono .sum{background:#fff;color:#111;border:2px solid #111}
+.sum .ic{flex:0 0 40px;height:40px;border-radius:50%;border:2px solid var(--p-gold);display:flex;align-items:center;justify-content:center;font-family:var(--f-serif);font-size:20px;color:var(--p-gold)}
+.tx{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;text-align:center;font-size:14px}
+.tx th,.tx td{border:1px solid var(--p-line);padding:5px 2px}
+.tx th{background:var(--p-green);color:#fff;font-weight:700;width:118px;font-size:13px}
+.pages.mono .tx th{background:#111}
+.tx td.h{background:var(--p-gsoft2);font-weight:900;color:var(--p-green);font-size:15px}
+.tx tr.net td{background:var(--p-gsoft);font-weight:900;color:var(--p-green);font-size:15px}
+.tx tr.tax td{background:#fffbea}
+.pages.mono .tx tr.tax td{background:#fafafa}
+.cmp2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp2 .c{border:1.5px solid var(--p-line);border-radius:10px;background:#fff;padding:10px 14px;font-size:15px;line-height:1.6}
+.cmp2 .c h4{margin:0 0 4px;font-size:18px;font-family:var(--f-serif);color:var(--p-red)}
+.cmp2 .c.b h4{color:var(--p-green)}
+.lvt{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lvt div{border:1.5px solid var(--p-line);border-radius:10px;padding:8px 14px;font-size:18px;font-weight:900;background:var(--p-gsoft)}
+.lvt div+div{background:var(--p-gsoft2)}
+.exp{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:14.5px;line-height:1.45}
+.exp div{display:flex;gap:8px}
+.exp b{flex:0 0 22px;height:20px;border-radius:4px;background:var(--p-green);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.pages.mono .exp b{background:#111}
+.small{font-size:12.5px;color:var(--p-muted);line-height:1.6}
+.kv2{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:16px;line-height:1.5}
+.kv2 .k{font-weight:900;color:var(--p-green)}
+.tag{display:inline-block;border-radius:4px;background:var(--p-green);color:#fff;padding:0 8px;font-size:14px;font-weight:700;margin-right:6px}
+.pages.mono .tag{background:#111}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <a class="btn" href="./" style="text-decoration:none">← 工具首頁</a>
+  <h1>屋主售屋建議報告書產生器</h1>
+  <div class="acts">
+    <button id="bNew" type="button">新案件</button>
+    <span class="confirm" id="newConfirm" hidden>清空目前資料？<button class="sm" id="bNewYes" type="button">清空</button><button class="sm" id="bNewNo" type="button">取消</button></span>
+    <button id="bJson" type="button">存檔 .json</button>
+    <label class="btn" for="fJson">讀檔</label><input type="file" id="fJson" accept=".json,application/json" hidden>
+    <button class="pri" id="bPdf" type="button">下載 PDF</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="form" id="form">
+    <p class="web-only ok" id="webNote">這是網站版：可手動填寫、試算與下載 PDF／PNG。拍照與 PDF 辨識、AI 撰寫、全店社區資料庫、周邊機能請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>。</p>
+
+    <details open id="ocrSec" class="cl-only">
+      <summary><span class="no">◎</span>上傳謄本照片自動填入<span class="st" id="stOcr"></span></summary>
+      <div class="sec">
+        <p class="hint">建物謄本（標示部＋所有權部）、土地謄本、土地增值稅試算表、買賣契約（取得價）、房屋稅單（評定現值），拍照或截圖都可以，一次選多張。辨識完會先列出結果，核對後再套用。電腦上可直接選 PDF（電子謄本、掃描檔都可以）。</p>
+        <label class="f">選擇照片或 PDF<input aria-label="選擇照片或 PDF" type="file" id="f-ocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+        <div class="imgs" id="th-ocr"></div>
+        <div class="row"><button class="pri" id="bOcr" type="button" disabled>開始辨識</button><button id="bOcrStop" type="button" hidden>停止</button><span id="ocrMsg" class="hint"></span></div>
+        <div id="ocrOut"></div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="no">〇</span>業務與樣式<span class="st" id="st0"></span></summary>
+      <div class="sec">
+        <div class="grid2">
+          <label class="f">業務<select aria-label="業務" id="i-agentSel"></select></label>
+          <label class="f">店名<input aria-label="店名" id="i-agent-store" data-k="agent.store"></label>
+        </div>
+        <div class="grid2">
+          <label class="f">配色<select aria-label="配色" id="i-theme" data-k="theme"><option value="brand">品牌色（綠＋金）</option><option value="mono">黑白列印</option></select></label>
+          <label class="f">公司標誌圖（選填，未上傳顯示文字）<input aria-label="公司標誌圖（選填，未上傳顯示文字）" type="file" id="f-logo" accept="image/*"></label>
+        </div>
+        <div class="row" id="pageToggles"></div>
+      </div>
+    </details>
+
+    <details open>
+      <summary><span class="no">一</span>本戶基本資料<span class="st" id="st1"></span></summary>
+      <div class="sec">
+        <div class="lib cl-only">
+          <label class="f">社區資料庫（全店共用）<input aria-label="社區資料庫（全店共用）" id="libName" list="libList" placeholder="輸入社區名稱"></label>
+          <datalist id="libList"></datalist>
+          <div class="row"><button class="sm pri" id="bLibLoad" type="button">帶入社區資料</button><button class="sm" id="bLibSave" type="button">存入／更新此社區</button></div>
+          <p class="hint" id="libMsg">連線中…</p>
+        </div>
+        <p class="hint">來源：謄本、建物測量成果圖、管委會。</p>
+        <div class="grid2">
+          <label class="f">社區名稱<input aria-label="社區名稱" id="i-b-community" data-k="basic.community"></label>
+          <label class="f">房屋類型<input aria-label="房屋類型" id="i-b-type" data-k="basic.type"></label>
+        </div>
+        <label class="f">地址<input aria-label="地址" id="i-b-address" data-k="basic.address"></label>
+        <div class="grid3">
+          <label class="f">建築完成日<input aria-label="建築完成日" id="i-b-built" data-k="basic.built" placeholder="100/06/15"></label>
+          <label class="f">用途<input aria-label="用途" id="i-b-use" data-k="basic.use"></label>
+          <label class="f">總樓高<input aria-label="總樓高" id="i-b-floors" data-k="basic.floors" placeholder="24樓"></label>
+          <label class="f">本戶樓層<input aria-label="本戶樓層" id="i-b-floor" data-k="basic.floor" placeholder="6樓"></label>
+          <label class="f">格局<input aria-label="格局" id="i-b-layout" data-k="basic.layout" placeholder="3房／2廳／2衛"></label>
+          <label class="f">朝向<input aria-label="朝向" id="i-b-facing" data-k="basic.facing" placeholder="大樓面南"></label>
+          <label class="f">外牆材質<input aria-label="外牆材質" id="i-b-wall" data-k="basic.wall"></label>
+          <label class="f">車位類型<input aria-label="車位類型" id="i-b-parking" data-k="basic.parking" placeholder="坡道平面"></label>
+          <label class="f">車位資料<input aria-label="車位資料" id="i-b-parkingNo" data-k="basic.parkingNo" placeholder="地下3層，編號46"></label>
+          <label class="f">邊間<input aria-label="邊間" id="i-b-corner" data-k="basic.corner"></label>
+          <label class="f">暗房<input aria-label="暗房" id="i-b-dark" data-k="basic.dark"></label>
+          <label class="f">警衛管理<input aria-label="警衛管理" id="i-b-guard" data-k="basic.guard"></label>
+        </div>
+        <p class="hint" style="margin-top:4px">面積登記資料（坪）</p>
+        <div class="grid3">
+          <label class="f">建物登記坪數<input aria-label="建物登記坪數" id="i-a-total" data-k="area.total" inputmode="decimal"></label>
+          <label class="f">主建物<input aria-label="主建物" id="i-a-main" data-k="area.main" inputmode="decimal"></label>
+          <label class="f">陽台（附屬建物）<input aria-label="陽台（附屬建物）" id="i-a-balcony" data-k="area.balcony" inputmode="decimal"></label>
+          <label class="f">公共設施<input aria-label="公共設施" id="i-a-public" data-k="area.public" inputmode="decimal"></label>
+          <label class="f">防空避難室兼車位<input aria-label="防空避難室兼車位" id="i-a-parking" data-k="area.parking" inputmode="decimal"></label>
+          <label class="f">雨遮<input aria-label="雨遮" id="i-a-canopy" data-k="area.canopy" inputmode="decimal"></label>
+          <label class="f">土地登記坪數<input aria-label="土地登記坪數" id="i-a-land" data-k="area.land" inputmode="decimal"></label>
+        </div>
+        <p id="areaCheck" class="hint"></p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="no">二</span>照片・配置圖・特色<span class="st" id="st2"></span></summary>
+      <div class="sec">
+        <label class="f">封面外觀照（1～2 張）<input aria-label="封面外觀照（1～2 張）" type="file" id="f-cover" accept="image/*,application/pdf" multiple></label>
+        <div class="imgs" id="th-cover"></div>
+        <div class="grid2">
+          <label class="f">樓層配置圖<input aria-label="樓層配置圖" type="file" id="f-plan" accept="image/*,application/pdf"></label>
+          <label class="f">周邊生活機能圖<input aria-label="周邊生活機能圖" type="file" id="f-map" accept="image/*,application/pdf"></label>
+        </div>
+        <div class="imgs" id="th-pm"></div>
+        <div class="row cl-only"><button class="sm" id="bPoi" type="button">依地址抓周邊機能</button><span id="poiMsg" class="hint">沒上傳機能圖時，會自動畫一張周邊示意圖。</span></div>
+        <div id="poiOut"></div>
+        <p class="hint">配置圖的「本戶格局」標示：在右側預覽的配置圖上點一下就會移過去。</p>
+        <div class="grid3">
+          <label class="f">配置圖標示文字<input aria-label="配置圖標示文字" id="i-planLabel" data-k="planLabel" placeholder="B5"></label>
+          <label class="f">標示位置（左 %）<input aria-label="標示位置（左 %）" id="i-planX" data-k="planX" inputmode="numeric"></label>
+          <label class="f">標示位置（上 %）<input aria-label="標示位置（上 %）" id="i-planY" data-k="planY" inputmode="numeric"></label>
+        </div>
+        <label class="f">物件／生活特色（一行一點，建議 4～5 點）<textarea aria-label="物件／生活特色（一行一點，建議 4～5 點）" id="i-features" data-k="features" rows="5"></textarea></label>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="no">三</span>社區實價登錄<span class="st" id="st3"></span></summary>
+      <div class="sec">
+        <div class="grid3">
+          <label class="f">實價登錄總筆數<input aria-label="實價登錄總筆數" id="i-m-count" data-k="market.count" inputmode="numeric"></label>
+          <label class="f">目前待售筆數<input aria-label="目前待售筆數" id="i-m-listing" data-k="market.listing" inputmode="numeric"></label>
+          <label class="f">取近幾筆算均價<input aria-label="取近幾筆算均價" id="i-m-recentN" data-k="market.recentN" inputmode="numeric"></label>
+        </div>
+        <label class="f">社區平均成交均價（萬／坪，選填）<input aria-label="社區平均成交均價（萬／坪，選填）" id="i-m-avgAll" data-k="market.avgAll" inputmode="decimal"></label>
+        <div class="box-ocr cl-only" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <label class="f">實價登錄截圖或 PDF 辨識<input aria-label="實價登錄截圖或 PDF 辨識" type="file" id="f-mocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+          <div class="imgs" id="th-mocr"></div>
+          <div class="row"><button class="pri sm" id="bMocr" type="button" disabled>辨識成交紀錄</button><button class="sm" id="bMocrStop" type="button" hidden>停止</button><span id="mocrMsg" class="hint"></span></div>
+          <div id="mocrOut"></div>
+        </div>
+        <p class="hint">「房屋坪數」填扣除車位後的坪數。拆車單價＝（總價－車位價）÷ 房屋坪數，會自動算。尚未上實價登錄的行情（店內或同業剛成交）手動新增後勾「未登」，報告會加註 ※。最多 12 筆。</p>
+        <div class="tbwrap"><table class="tb" id="mktTb"></table></div>
+        <div class="row"><button class="sm" id="bAddRow" type="button">＋新增一筆</button><button class="sm" id="bSortRow" type="button">依年月排序（新→舊）</button></div>
+        <label class="f">從 Excel 貼上（每行：年月 樓層 房屋坪數 車位坪數 車位價 總價）<textarea aria-label="從 Excel 貼上（每行：年月 樓層 房屋坪數 車位坪數 車位價 總價）" id="pasteMkt" rows="3" placeholder="115/09	24樓-5	68.15	6.72	240	3080"></textarea></label>
+        <div class="row"><button class="sm" id="bPaste" type="button">貼上取代表格</button></div>
+        <label class="f">重點結論（一行一點）<textarea aria-label="重點結論（一行一點）" id="i-m-conclusion" data-k="market.conclusion" rows="4"></textarea></label>
+        <div class="row"><button class="sm pri cl-only" type="button" data-ai="1">AI 撰寫全部文字</button><button class="sm" id="bGenMkt" type="button">依數據套句型</button><span class="hint aimsg"></span></div>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="no">四</span>稅費試算<span class="st" id="st4"></span></summary>
+      <div class="sec">
+        <div class="grid2">
+          <label class="f">所有權登記日（民國）<input aria-label="所有權登記日（民國）" id="i-t-acq" data-k="tax.acq" placeholder="109/09/18"></label>
+          <label class="f">預計出售日（算持有年限）<input aria-label="預計出售日（算持有年限）" id="i-t-sale" data-k="tax.sale" placeholder="115/11/10"></label>
+        </div>
+        <p id="regime" class="ok"></p>
+        <div class="grid2">
+          <label class="f">土地增值稅・一般用地（元）<input aria-label="土地增值稅・一般用地（元）" id="i-t-lvtG" data-k="tax.lvtG" inputmode="numeric"></label>
+          <label class="f">土地增值稅・自用住宅（元）<input aria-label="土地增值稅・自用住宅（元）" id="i-t-lvtS" data-k="tax.lvtS" inputmode="numeric"></label>
+        </div>
+        <div id="oldBox" class="grid2">
+          <label class="f">標準認定比例（%）<input aria-label="標準認定比例（%）" id="i-t-stdRate" data-k="tax.stdRate" inputmode="decimal"></label>
+          <label class="f">房屋評定現值（元，選填）<input aria-label="房屋評定現值（元，選填）" id="i-t-houseVal" data-k="tax.houseVal" inputmode="numeric"></label>
+        </div>
+        <div id="newBox" class="sec" style="padding:0">
+          <div class="grid3">
+            <label class="f">取得價（萬）<input aria-label="取得價（萬）" id="i-t-buy" data-k="tax.buy" inputmode="decimal"></label>
+            <label class="f">提列成本（萬）<input aria-label="提列成本（萬）" id="i-t-cost" data-k="tax.cost" inputmode="decimal"></label>
+            <label class="f">土地漲價總數額（萬）<input aria-label="土地漲價總數額（萬）" id="i-t-landGain" data-k="tax.landGain" inputmode="decimal" placeholder="0"></label>
+            <label class="f">試算最高價（萬）<input aria-label="試算最高價（萬）" id="i-t-top" data-k="tax.top" inputmode="decimal"></label>
+            <label class="f">價格級距（萬）<input aria-label="價格級距（萬）" id="i-t-step" data-k="tax.step" inputmode="decimal"></label>
+            <label class="f">欄數<input aria-label="欄數" id="i-t-cols" data-k="tax.cols" inputmode="numeric"></label>
+          </div>
+          <div class="grid2">
+            <label class="f">房地合一稅率<select aria-label="房地合一稅率" id="i-t-rate" data-k="tax.rate"><option value="auto">依持有年限自動</option><option value="45">45%（2年內）</option><option value="35">35%（2～5年）</option><option value="20">20%（5～10年）</option><option value="15">15%（10年以上）</option></select></label>
+            <label class="f">B方案自住優惠<select aria-label="B方案自住優惠" id="i-t-selfUse" data-k="tax.selfUse"><option value="auto">滿6年自動顯示</option><option value="on">顯示</option><option value="off">不顯示</option></select></label>
+          </div>
+          <label class="f">備註（如重購退稅）<input aria-label="備註（如重購退稅）" id="i-t-note" data-k="tax.note"></label>
+        </div>
+        <label class="f">仲介服務費（%）<input aria-label="仲介服務費（%）" id="i-t-fee" data-k="tax.fee" inputmode="decimal"></label>
+      </div>
+    </details>
+
+    <details>
+      <summary><span class="no">五</span>待售比較與價格建議<span class="st" id="st5"></span></summary>
+      <div class="sec">
+        <div class="grid2">
+          <label class="f">建議網路開價區間<input aria-label="建議網路開價區間" id="i-p-online" data-k="price.online" placeholder="2780～2880萬"></label>
+          <label class="f">客戶期望價位區間<input aria-label="客戶期望價位區間" id="i-p-expect" data-k="price.expect" placeholder="2450～2580萬"></label>
+        </div>
+        <label class="f">開價區間小字<input aria-label="開價區間小字" id="i-p-onlineNote" data-k="price.onlineNote"></label>
+        <div class="grid3">
+          <label class="f">本戶車位價（萬）<input aria-label="本戶車位價（萬）" id="i-p-parkVal" data-k="price.parkVal" inputmode="decimal" placeholder="依成交自動帶"></label>
+          <label class="f">期望價 ±%<input aria-label="期望價 ±%" id="i-p-band" data-k="price.band" inputmode="decimal"></label>
+          <label class="f">網路開價加成 %<input aria-label="網路開價加成 %" id="i-p-mark" data-k="price.mark" placeholder="10-14"></label>
+        </div>
+        <div class="row"><button class="sm pri" id="bPriceCalc" type="button">依行情試算兩個區間</button></div>
+        <p class="hint" id="priceCalcMsg">參考成交價＝近 N 筆拆車均價 × 本戶扣車坪數 ＋ 車位價。期望價＝參考價 ± 浮動；網路開價＝參考價 ×（1＋加成）。都取到 10 萬。</p>
+        <p class="hint">同社區目前待售（樓層同本戶者自動加底色）</p>
+        <div class="tbwrap"><table class="tb" id="lstTb"></table></div>
+        <div class="row"><button class="sm" id="bAddLst" type="button">＋新增待售</button></div>
+        <div class="cl-only" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <label class="f">待售物件截圖辨識（591、樂屋網、公司系統）<input aria-label="待售物件截圖辨識（591、樂屋網、公司系統）" type="file" id="f-locr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+          <div class="imgs" id="th-locr"></div>
+          <div class="row"><button class="pri sm" id="bLocr" type="button" disabled>辨識待售物件</button><span id="locrMsg" class="hint"></span></div>
+          <div id="locrOut"></div>
+        </div>
+        <label class="f">分析與建議（一行一點）<textarea aria-label="分析與建議（一行一點）" id="i-p-analysis" data-k="price.analysis" rows="6"></textarea></label>
+        <div class="row"><button class="sm pri cl-only" type="button" data-ai="1">AI 撰寫全部文字</button><button class="sm" id="bGenPrice" type="button">依數據套句型</button><span class="hint aimsg"></span></div>
+        <label class="f">總結<textarea aria-label="總結" id="i-p-summary" data-k="price.summary" rows="2"></textarea></label>
+      </div>
+    </details>
+    <p class="hint">資料只存在這台裝置的瀏覽器。換電腦或備份請按「存檔 .json」。</p>
+  </section>
+
+  <section class="prevcol">
+    <div class="pvbar"><span id="pvInfo"></span></div>
+    <div class="pages" id="pages"></div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+if(!window.claude)document.documentElement.classList.add('no-claude');
+const ROC_TODAY = (()=>{const d=new Date();return `${d.getFullYear()-1911}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`})();
+const PAGES = [['cover','封面'],['basic','本戶資料'],['market','實價登錄'],['tax','稅費'],['price','價格建議']];
+
+function blank(){return{
+  agent:{store:'信義房屋 文心高工店',name:'盧家儒',phone:'0963-265-697'},
+  theme:'brand',logo:'',show:{cover:true,basic:true,market:true,tax:true,price:true},
+  basic:{community:'',address:'',built:'',use:'住宅',type:'大樓',floors:'',floor:'',layout:'',facing:'',wall:'',parking:'',parkingNo:'',corner:'',dark:'無',guard:'全天候'},
+  area:{total:'',main:'',balcony:'',public:'',parking:'',canopy:'',land:''},
+  img:{cover:[],plan:'',map:''},planLabel:'',planX:'22',planY:'45',features:'',poi:[],poiCenter:null,
+  market:{count:'',listing:'',recentN:'5',avgAll:'',rows:[],conclusion:''},
+  tax:{acq:'',sale:ROC_TODAY,lvtG:'',lvtS:'',stdRate:'38',houseVal:'',buy:'',cost:'',landGain:'',top:'',step:'25',cols:'9',rate:'auto',selfUse:'auto',note:'',fee:'4'},
+  price:{online:'',onlineNote:'因應市場行情',expect:'',parkVal:'',band:'2.5',mark:'10-14',listings:[],analysis:'',summary:''}
+}}
+let S; try{S=JSON.parse(localStorage.getItem('osr-v1'))}catch(e){}
+if(!S) S=blank();
+S=deepMerge(blank(),S);
+function deepMerge(a,b){if(Array.isArray(b))return b;if(b&&typeof b==='object'){for(const k in b){a[k]=(a[k]&&typeof a[k]==='object'&&!Array.isArray(a[k]))?deepMerge(a[k],b[k]):b[k]}}return a}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{const n=parseFloat(String(v??'').replace(/[,，萬元坪\s]/g,''));return isFinite(n)?n:NaN};
+const f2=(n,d=2)=>isFinite(n)?(Math.round(n*10**d)/10**d).toString():'—';
+const fx=(n,d=2)=>isFinite(n)?n.toFixed(d):'—';
+const money=n=>isFinite(n)?Math.round(n).toLocaleString('en-US'):'—';
+const lines=t=>String(t||'').split(/\n/).map(x=>x.trim()).filter(Boolean);
+function getP(o,p){return p.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+function setP(o,p,v){const ks=p.split('.');let a=o;for(let i=0;i<ks.length-1;i++)a=a[ks[i]];a[ks.at(-1)]=v}
+function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,ms)}
+
+function parseROC(s){const m=String(s||'').match(/(\d{2,3})\D+(\d{1,2})\D+(\d{1,2})/)||String(s||'').match(/^(\d{3})(\d{2})(\d{2})$/);if(!m)return null;return new Date(+m[1]+1911,+m[2]-1,+m[3])}
+function holding(){const a=parseROC(S.tax.acq),b=parseROC(S.tax.sale)||new Date();if(!a)return null;
+  let mo=(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth());if(b.getDate()<a.getDate())mo--;
+  return{a,b,months:mo,years:(b-a)/(365.2425*864e5),old:a<new Date(2016,0,1)}}
+function bracket(y){if(y<=2)return[45,'持有2年以內'];if(y<=5)return[35,'持有超過2年、未滿5年'];if(y<=10)return[20,'持有超過5年、未滿10年'];return[15,'持有超過10年']}
+function holdTxt(h){return `持有約${Math.floor(h.months/12)}年${h.months%12}個月`}
+
+/* ---------- 計算 ---------- */
+function mktCalc(){const rows=S.market.rows.map(r=>{const t=num(r.total),pp=num(r.pprice)||0,pg=num(r.ping);return{...r,unit:(t-pp)/pg}}).filter(r=>r.ym||r.total);
+  const v=rows.filter(r=>isFinite(r.unit));const us=v.map(r=>r.unit);
+  const n=Math.max(1,parseInt(S.market.recentN)||5);const rec=v.slice(0,n);
+  return{rows,max:us.length?Math.max(...us):NaN,min:us.length?Math.min(...us):NaN,avg:rec.length?rec.reduce((a,r)=>a+r.unit,0)/rec.length:NaN,n:rec.length}}
+function taxCalc(){const h=holding();if(!h||h.old)return null;
+  const [autoRate,label]=bracket(h.years);const rate=S.tax.rate==='auto'?autoRate:+S.tax.rate;
+  const lbl=S.tax.rate==='auto'?label:bracket(rate===45?1:rate===35?3:rate===20?7:11)[1];
+  const top=num(S.tax.top),step=num(S.tax.step)||25,cols=Math.min(10,Math.max(3,parseInt(S.tax.cols)||9));
+  const buy=num(S.tax.buy),cost=num(S.tax.cost)||0,lg=num(S.tax.landGain)||0,fee=(num(S.tax.fee)||4)/100;
+  const showB=S.tax.selfUse==='on'||(S.tax.selfUse==='auto'&&h.years>=6);
+  const cs=[];if(isFinite(top)&&isFinite(buy))for(let i=0;i<cols;i++){const p=top-step*i;const f=p*fee;const gain=p-buy-cost-f-lg;
+    const tA=Math.max(0,gain)*rate/100,tB=Math.max(0,gain-400)*0.10;cs.push({p,f,tA,tB,nA:p-f-tA,nB:p-f-tB})}
+  return{h,rate,lbl,cs,showB,buy,cost,lg}}
+
+/* ---------- 報告頁 ---------- */
+function brand(){return `<div class="brand">${S.logo?`<img class="logo" src="${S.logo}" alt="">`:`<div class="wm">信義房屋<small>SINYI REALTY</small></div>`}<div class="sl">房屋買賣・值得信賴</div></div>`}
+function foot(extra=''){const a=S.agent;return `<div class="foot"><div class="store">｜${esc(a.store)}</div><div class="who"><span class="nm">${esc(a.name)}</span><span class="ph">☎ ${esc(a.phone)}</span><span class="ln">（同 LINE）</span></div>${extra}</div>`}
+function head(t){return `${brand()}<div class="ptitle"><h2>${esc(t)}</h2><div class="rule"></div></div>`}
+function secNo(){let i=0;const zh='一二三四五六';const o={};['basic','market','tax','price'].forEach(k=>{if(S.show[k])o[k]=zh[i++]});return o}
+function ph(text,h){return `<div class="ph-box" style="height:${h}px">${text}</div>`}
+
+function pCover(){const c=S.img.cover;const name=S.basic.community||'社區名稱';const fs=name.length<=4?78:name.length<=6?64:48;
+  let photos;if(c.length>=2)photos=`<div style="display:grid;grid-template-columns:1.15fr 1fr;gap:12px;height:100%"><div class="img" style="background-image:url(${c[0]})"></div><div class="img" style="background-image:url(${c[1]})"></div></div>`;
+  else if(c.length===1)photos=`<div class="img" style="height:100%;background-image:url(${c[0]})"></div>`;else photos=ph('上傳社區外觀照（1～2 張）','100%');
+  return `<div class="pg">${brand()}<div class="cover-name" style="font-size:${fs}px">${esc(name)}</div>
+  <div class="cover-band">屋主售屋建議報告書</div>
+  <div class="cover-sub">社區行情分析・稅費說明・價格建議</div>
+  <div style="flex:1;padding:22px 40px 24px;min-height:0">${photos}</div>${foot()}</div>`}
+
+function pBasic(no){const b=S.basic,a=S.area;const kv=(k,v)=>`<td class="k">${k}</td><td>${esc(v)||'—'}</td>`;
+  const rows=[['社區名稱',b.community,'總樓高',b.floors],['地址',b.address,'本戶樓層',b.floor],['建築完成日',b.built,'格局',b.layout],['用途',b.use,'朝向',b.facing],
+    ['房屋類型',b.type,'外牆材質',b.wall],['車位',b.parking,'車位資料',b.parkingNo],['邊間',b.corner,'暗房',b.dark],['警衛管理',b.guard,'','']];
+  const tb=rows.map(r=>`<tr>${kv(r[0],r[1])}${r[2]?kv(r[2],r[3]):'<td></td><td></td>'}</tr>`).join('');
+  const ar=[['建物登記坪數',a.total],['主建物',a.main],['公共設施',a.public],['防空避難室<br>兼車位',a.parking],['陽台',a.balcony],['雨遮',a.canopy],['土地登記坪數',a.land]];
+  const plan=S.img.plan?`<div class="imgc plan" style="position:relative;height:100%;background-image:url(${S.img.plan})">${S.planLabel?`<div class="badge" style="left:${num(S.planX)||0}%;top:${num(S.planY)||0}%;font-size:26px"><small>本戶格局</small>${esc(S.planLabel)}</div>`:''}</div>`:ph('上傳樓層配置圖<br>（可標示本戶格局）','100%');
+  const map=S.img.map?`<div class="imgc" style="height:100%;background-image:url(${S.img.map})"></div>`:S.poi&&S.poi.length?poiMap():ph('上傳周邊生活機能圖<br>或按「依地址抓周邊機能」','100%');
+  const ft=lines(S.features);
+  return `<div class="pg">${head(`${no}、本戶基本資料與社區配置`)}<div class="body">
+   <div><h3 class="sh">本戶基本資料</h3><table class="kv" style="margin-top:8px">${tb}</table></div>
+   <div><h3 class="sh">面積登記資料 <span class="sub">單位：坪</span></h3>
+    <table class="dt" style="margin-top:8px"><tr>${ar.map(x=>`<th style="font-size:13px;line-height:1.2">${x[0]}</th>`).join('')}</tr><tr>${ar.map((x,i)=>`<td class="${i===0||i===6?'em':''}" style="font-size:17px;font-weight:700">${x[1]?'約'+esc(x[1]):'—'}</td>`).join('')}</tr></table></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0;padding-bottom:14px">
+    <div style="display:flex;flex-direction:column;gap:8px;min-height:0"><h3 class="sh">社區樓層配置圖</h3><div class="box" style="flex:1;min-height:0;padding:8px">${plan}</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-height:0"><h3 class="sh">周邊環境與生活機能</h3><div class="box" style="flex:1;min-height:0;padding:8px">${map}</div>
+     ${ft.length?`<div class="box" style="padding:10px 14px"><div style="font-weight:900;color:var(--p-green);margin-bottom:4px">本案特色</div><ul class="bl" style="font-size:15px;gap:2px">${ft.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</div>
+   </div></div>${foot()}</div>`}
+
+function pMarket(no){const m=mktCalc();const rows=m.rows.slice(0,12);const fs=rows.length>10?14:15;
+  const tiles=[`<div class="tile"><span class="l">實價登錄</span><span class="v">${esc(S.market.count)||'—'}<small> 筆</small></span></div>`,
+   `<div class="tile"><span class="l">待售物件</span><span class="v">約${esc(S.market.listing)||'—'}<small> 筆</small></span></div>`,
+   `<div class="tile r"><span class="l">最高成交單價</span><span class="v">${fx(m.max)}<small> 萬／坪</small></span></div>`,
+   `<div class="tile gr"><span class="l">最低成交單價</span><span class="v">${fx(m.min)}<small> 萬／坪</small></span></div>`,
+   `<div class="tile"><span class="l">近${m.n}筆平均單價</span><span class="v">${fx(m.avg)}<small> 萬／坪</small></span></div>`,
+   S.market.avgAll?`<div class="tile"><span class="l">社區平均成交均價</span><span class="v">${esc(S.market.avgAll)}<small> 萬／坪</small></span></div>`:`<div class="tile note"><span class="v">以下成交紀錄皆以<br>拆車位後單價計算。</span></div>`];
+  const tr=rows.map(r=>{const c=isFinite(r.unit)&&r.unit===m.max?'hi-r':isFinite(r.unit)&&r.unit===m.min?'hi-g':'em';
+   return `<tr><td>${esc(r.ym)}${r.unreg?'<span style="color:var(--p-red);font-weight:900">※</span>':''}</td><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${esc(r.pping)}坪</td><td>${esc(r.pprice)}萬</td><td>${esc(r.total)}萬</td><td class="${c}">${fx(r.unit)}萬/坪</td></tr>`}).join('');
+  const cl=lines(S.market.conclusion);
+  return `<div class="pg">${head(`${no}、社區實價登錄行情分析`)}<div class="body">
+   <h3 class="sh">${esc(S.basic.community)||'社區'}</h3>
+   <div class="tiles">${tiles.join('')}</div>
+   <table class="dt" style="font-size:${fs}px"><tr><th>成交年月</th><th>樓層</th><th>房屋坪數</th><th>車位坪數</th><th>車位價</th><th>總價</th><th>拆車單價</th></tr>${tr||'<tr><td colspan="7" style="padding:30px;color:var(--p-muted)">請輸入社區成交紀錄</td></tr>'}</table>
+   ${S.market.avgAll||rows.some(r=>r.unreg)?`<div class="small" style="text-align:center">${S.market.avgAll?'以上成交紀錄皆以拆車位後單價計算：（總價－車位價）÷ 房屋坪數。':''}${rows.some(r=>r.unreg)?'<br>※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。':''}</div>`:''}
+   ${cl.length?`<div style="display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center" class="box"><div class="sh" style="font-size:22px">重點結論</div><ul class="bl">${cl.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
+   </div>${foot()}</div>`}
+
+function expenses(isNew){const fee=num(S.tax.fee)||4;return ['土地增值稅','工程受益費（簽約前已公告者由賣方繳納）','交屋前之房屋稅、地價稅、水電、瓦斯、管理費','簽約手續費 1,500元','抵押權塗銷代書費約 2,000元／順位','實價登錄手續費 1,500元／件',
+  isNew?'個人房地合一稅':'個人財產交易所得稅','房貸提前清償違約金（如有）',`仲介服務費按成交價 ${fee}%`]}
+function lvtBox(){const g=num(S.tax.lvtG),s=num(S.tax.lvtS);if(!isFinite(g)&&!isFinite(s))return '';
+  return `<div><div style="font-weight:900;margin:8px 0 6px">土地增值稅試算</div><div class="lvt"><div>一般用地　${money(g)} 元</div><div>自用住宅　${money(s)} 元</div></div></div>`}
+function pTax(no){const h=holding();const isNew=h&&!h.old;const ex=expenses(isNew);
+  const exHtml=`<div class="exp">${ex.map((x,i)=>`<div><b>${i+1}</b><span>${esc(x)}</span></div>`).join('')}</div>`;
+  if(!h)return `<div class="pg">${head(`${no}、稅費說明`)}<div class="body">${ph('請在「稅費試算」輸入所有權登記日',300)}</div>${foot()}</div>`;
+  const reg=`民國${h.a.getFullYear()-1911}年${h.a.getMonth()+1}月${h.a.getDate()}日`;
+  if(!isNew){const hv=num(S.tax.houseVal),sr=num(S.tax.stdRate);const std=isFinite(hv)&&isFinite(sr)?hv*sr/100:NaN;
+   return `<div class="pg">${head(`${no}、舊制財產交易所得稅與賣方支出說明`)}<div class="body">
+    <div class="box"><div style="font-size:18px;font-weight:900">登記日期：${reg}</div><div style="font-size:15px;margin-top:2px">本案於105年前取得，適用舊制財產交易所得稅；土地另計土地增值稅。（${holdTxt(h)}）</div>${lvtBox()}</div>
+    <div><h3 class="sh">舊制財產交易所得稅重點</h3><div class="cmp2" style="margin-top:8px">
+     <div class="c"><h4>核實認定</h4>依實際售價、取得成本及必要費用，計算房屋交易所得；須備齊相關憑證。</div>
+     <div class="c b"><h4>標準認定</h4>無完整成本憑證時，按適用標準估算。本區暫按房屋評定現值 ${esc(S.tax.stdRate)}% 評估。${isFinite(std)?`<br><b>房屋評定現值 ${money(hv)} 元 × ${esc(S.tax.stdRate)}% ≈ 財產交易所得 ${money(std)} 元</b>，併入當年度綜合所得申報。`:''}</div></div>
+     <div class="small" style="margin-top:4px">※ 實際適用方式、稅額須依出售年度規定及稅務機關核定。</div></div>
+    <div><h3 class="sh">賣方常見支出項目</h3><div class="box" style="margin-top:8px">${exHtml}</div></div>
+    <div class="box" style="font-size:16px;font-weight:700"><span class="tag">提醒</span>若有其他細節欲了解，歡迎來電聯繫。</div>
+   </div>${foot()}</div>`}
+  const t=taxCalc();const cs=t.cs;const d=v=>f2(v,1);
+  const tbl=(k,label,taxRow)=>cs.length?`<table class="tx"><tr><th>成交價（萬）</th>${cs.map(c=>`<td class="h">${d(c.p)}</td>`).join('')}</tr>
+    <tr><th>仲介費（萬）</th>${cs.map(c=>`<td>${d(c.f)}</td>`).join('')}</tr>
+    <tr class="tax"><th>${label}</th>${cs.map(c=>`<td>${d(c[taxRow])}</td>`).join('')}</tr>
+    <tr class="net"><th>稅後金額（萬）</th>${cs.map(c=>`<td>${d(c[k])}</td>`).join('')}</tr></table>`:ph('請輸入取得價與試算最高價',120);
+  return `<div class="pg">${head(`${no}、房地合一稅與稅後金額試算`)}<div class="body" style="gap:11px">
+   <div class="box" style="font-size:15.5px;line-height:1.6"><div><b>試算基礎：</b>取得價 ${esc(S.tax.buy)||'—'}萬、提列成本 ${esc(S.tax.cost)||0}萬${t.lg?`、土地漲價總數額 ${f2(t.lg)}萬`:''}（暫定，裝潢未計）</div>
+    <div><span class="tag">登記日</span>${reg}，${holdTxt(t.h)}。</div>${S.tax.note?`<div><b>備註：</b>${esc(S.tax.note)}</div>`:''}</div>
+   <div><h3 class="sh" style="font-size:19px">A方案｜${t.lbl}，房地合一稅率${t.rate}%</h3><div style="margin-top:6px">${tbl('nA',`房地合一稅<br>（${t.rate}%）（萬）`,'tA')}</div></div>
+   ${t.showB?`<div><h3 class="sh" style="font-size:19px">B方案｜符合自住優惠：設籍持有滿6年，400萬免稅，超過部分10%</h3><div style="margin-top:6px">${tbl('nB','房地合一稅<br>（優惠試算）（萬）','tB')}</div></div>`:`<div class="small">本戶持有未滿6年，暫不適用自住房地400萬免稅優惠。</div>`}
+   ${lvtBox()}
+   <div><h3 class="sh" style="font-size:19px">賣方常見支出項目</h3><div class="box" style="margin-top:6px;padding:8px 14px">${exHtml}</div></div>
+   <div class="small">※ 應稅所得＝成交價－取得價－提列成本－仲介費－土地漲價總數額；稅後金額未扣房貸餘額、土地增值稅、代書費及提前清償費用。實際稅率與免稅額依持有年限、自住條件與申報規定認定。</div>
+  </div>${foot()}</div>`}
+
+function pPrice(no){const p=S.price;const fl=String(S.basic.floor).replace(/\D/g,'');
+  const tr=p.listings.filter(r=>r.floor||r.price).map(r=>{const self=fl&&String(r.floor).replace(/\D/g,'')===fl&&(!S.area.total||num(r.ping)===num(S.area.total));
+   return `<tr class="${self?'self':''}"><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${esc(r.layout)}</td><td class="em">開價${esc(r.price)}萬</td></tr>`}).join('');
+  const an=lines(p.analysis);
+  return `<div class="pg">${head(`${no}、待售物件比較與價格建議`)}<div class="body">
+   <div class="price2"><div class="pbox"><div class="l">建議網路開價區間</div><div class="v">${esc(p.online)||'—'}</div><div class="s">${esc(p.onlineNote)}</div></div>
+    <div class="pbox"><div class="l">客戶期望價位區間</div><div class="v">${esc(p.expect)||'—'}</div><div class="s">&nbsp;</div></div></div>
+   <div><h3 class="sh">同社區目前待售比較</h3><table class="dt" style="margin-top:8px"><tr><th>樓層</th><th>坪數</th><th>格局</th><th>開價</th></tr>${tr||'<tr><td colspan="4" style="padding:20px;color:var(--p-muted)">目前無同社區待售資料</td></tr>'}</table></div>
+   ${an.length?`<div><h3 class="sh">分析與建議</h3><div class="box" style="margin-top:8px;padding:6px 14px"><ol class="nl">${an.map((x,i)=>`<li><span class="n">${i+1}</span><span>${esc(x)}</span></li>`).join('')}</ol></div></div>`:''}
+   ${p.summary?`<div class="sum"><span class="ic">結</span><span>${esc(p.summary)}</span></div>`:''}
+  </div>${foot()}</div>`}
+
+function pageList(){const no=secNo();const out=[];
+  if(S.show.cover)out.push(['cover',pCover()]);if(S.show.basic)out.push(['basic',pBasic(no.basic)]);if(S.show.market)out.push(['market',pMarket(no.market)]);
+  if(S.show.tax)out.push(['tax',pTax(no.tax)]);if(S.show.price)out.push(['price',pPrice(no.price)]);return out}
+
+/* ---------- 畫面 ---------- */
+function scale(){const w=$('#pages').clientWidth;const s=Math.min(1,(w-30)/794);document.documentElement.style.setProperty('--s',s.toFixed(4))}
+function render(){const el=$('#pages');el.className='pages'+(S.theme==='mono'?' mono':'');
+  const L=pageList();el.innerHTML=L.map(([k,h],i)=>`<div class="pv" data-i="${i}"><button class="dl sm" type="button" data-png="${i}">下載此頁 PNG</button><div class="page">${h}</div></div>`).join('');
+  $('#pvInfo').textContent=`共 ${L.length} 頁・A4 直式・PNG 適合直接傳 LINE`;scale();status();save()}
+let rt;function schedule(){clearTimeout(rt);rt=setTimeout(render,180)}
+
+function status(){const b=S.basic,a=S.area;const req=[b.community,b.address,b.floor,b.layout,a.total];
+  $('#st1').textContent=`${req.filter(Boolean).length}/${req.length} 必填`;
+  $('#st2').textContent=`照片 ${S.img.cover.length} 張・${S.img.plan?'配置圖✓':'配置圖—'}・${S.img.map?'機能圖✓':'機能圖—'}`;
+  const m=mktCalc();$('#st3').textContent=`${m.rows.length} 筆・近${m.n}筆均 ${fx(m.avg)}`;
+  const h=holding();$('#st4').textContent=h?(h.old?'舊制':'房地合一'):'缺登記日';
+  $('#st5').textContent=S.price.online?S.price.online:'未填';if(typeof libStatus==='function')libStatus();$('#st0').textContent=S.agent.name;
+  const parts=['main','balcony','public','parking','canopy'].map(k=>num(a[k])).filter(isFinite);const sum=parts.reduce((x,y)=>x+y,0);
+  const ac=$('#areaCheck');if(parts.length&&isFinite(num(a.total))){const ok=Math.abs(sum-num(a.total))<0.02;ac.className=ok?'ok':'warn';ac.textContent=ok?`分項加總 ${f2(sum)} 坪＝建物登記坪數 ✓`:`分項加總 ${f2(sum)} 坪，與建物登記 ${a.total} 坪不符，請核對謄本`}else{ac.className='hint';ac.textContent=''}
+  const r=$('#regime');if(!h){r.className='warn';r.textContent='請輸入所有權登記日，會自動判斷新舊制'}else if(h.old){r.className='ok';r.textContent=`105年前取得 → 舊制財產交易所得稅（${holdTxt(h)}）`}else{const [rt,l]=bracket(h.years);r.className='ok';r.textContent=`105年後取得 → 房地合一稅・${holdTxt(h)}・${l}，稅率${rt}%${h.years>=6?'・可評估自住優惠':''}`}
+  $('#oldBox').hidden=!(h&&h.old);$('#newBox').hidden=!!(h&&h.old)}
+
+const TEAM=[['李祐承','0933-317-625','店長'],['盧家儒','0963-265-697'],['曹維綱','0921-652-092'],['張宏瑜','0980-114-476'],['陳宥玥','0965-569-009']];
+function syncAgentSel(){const sel=$('#i-agentSel');const list=[...TEAM];
+  if(S.agent.name&&!list.some(t=>t[0]===S.agent.name))list.push([S.agent.name,S.agent.phone,'舊資料']);
+  sel.innerHTML=list.map(t=>`<option value="${esc(t[0])}">${esc(t[0])}${t[2]?'（'+esc(t[2])+'）':''}　${esc(t[1])}</option>`).join('');
+  sel.value=S.agent.name;sel.onchange=()=>{const t=list.find(x=>x[0]===sel.value);S.agent.name=t[0];S.agent.phone=t[1];render()}}
+function bindInputs(){document.querySelectorAll('[data-k]').forEach(el=>{const v=getP(S,el.dataset.k);el.value=v??''});syncAgentSel()}
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;setP(S,k,e.target.value);schedule()});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){setP(S,k,e.target.value);schedule()}});
+
+function drawToggles(){$('#pageToggles').innerHTML=PAGES.map(([k,n])=>`<label class="chk"><input type="checkbox" id="pg-${k}" ${S.show[k]?'checked':''}>${n}</label>`).join('');
+  PAGES.forEach(([k])=>$('#pg-'+k).onchange=e=>{S.show[k]=e.target.checked;render()})}
+function drawMkt(){const m=mktCalc();const t=$('#mktTb');
+  t.innerHTML=`<tr><th>年月</th><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>車位價</th><th>總價</th><th>拆車單價</th><th>未登</th><th></th></tr>`+S.market.rows.map((r,i)=>`<tr>${['ym','floor','ping','pping','pprice','total'].map(f=>`<td><input id="m-${i}-${f}" data-k="market.rows.${i}.${f}" value="${esc(r[f])}"></td>`).join('')}<td class="calc" id="mu-${i}">${fx((num(r.total)-(num(r.pprice)||0))/num(r.ping))}</td><td style="text-align:center"><input type="checkbox" id="m-${i}-unreg" ${r.unreg?'checked':''} style="width:auto;min-width:0" aria-label="尚未上實價登錄"></td><td><button class="sm ghost" type="button" data-delrow="${i}" aria-label="刪除">✕</button></td></tr>`).join('')}
+document.addEventListener('change',e=>{const m=e.target.id&&e.target.id.match(/^m-(\d+)-unreg$/);if(m){S.market.rows[+m[1]].unreg=e.target.checked;render()}});
+function drawLst(){$('#lstTb').innerHTML=`<tr><th>樓層</th><th>坪數</th><th>格局</th><th>開價(萬)</th><th></th></tr>`+S.price.listings.map((r,i)=>`<tr>${['floor','ping','layout','price'].map(f=>`<td><input id="l-${i}-${f}" data-k="price.listings.${i}.${f}" value="${esc(r[f])}"></td>`).join('')}<td><button class="sm ghost" type="button" data-dellst="${i}" aria-label="刪除">✕</button></td></tr>`).join('')}
+document.addEventListener('input',e=>{const m=e.target.id.match(/^m-(\d+)-/);if(m){const r=S.market.rows[m[1]];$('#mu-'+m[1]).textContent=fx((num(r.total)-(num(r.pprice)||0))/num(r.ping))}});
+document.addEventListener('click',e=>{const d=e.target.dataset;
+  if(d.delrow){S.market.rows.splice(+d.delrow,1);drawMkt();render()}
+  if(d.dellst){S.price.listings.splice(+d.dellst,1);drawLst();render()}
+  if(d.png){exportPng(+d.png)}
+  if(d.rmimg){const[k,i]=d.rmimg.split(':');if(k==='cover')S.img.cover.splice(+i,1);else S.img[k]='';drawThumbs();render()}});
+$('#bAddRow').onclick=()=>{if(S.market.rows.length>=12)return toast('最多 12 筆，版面才放得下');S.market.rows.push({ym:'',floor:'',ping:'',pping:'',pprice:'',total:''});drawMkt();render()};
+$('#bSortRow').onclick=()=>{const k=s=>{const m=String(s).match(/(\d+)\D+(\d+)/);return m?+m[1]*100+ +m[2]:0};S.market.rows.sort((a,b)=>k(b.ym)-k(a.ym));drawMkt();render()};
+$('#bAddLst').onclick=()=>{S.price.listings.push({floor:'',ping:'',layout:'',price:''});drawLst();render()};
+$('#bPaste').onclick=()=>{const rows=$('#pasteMkt').value.split(/\n/).map(l=>l.trim()).filter(Boolean).map(l=>l.split(/\t|\s{1,}|,/).map(x=>x.replace(/[萬坪]/g,'').trim()).filter(Boolean)).filter(c=>c.length>=6).slice(0,12)
+   .map(c=>({ym:c[0],floor:c[1],ping:c[2],pping:c[3],pprice:c[4],total:c[5]}));
+  if(!rows.length)return toast('沒有讀到資料，每行需要 6 欄：年月 樓層 房屋坪數 車位坪數 車位價 總價');S.market.rows=rows;$('#pasteMkt').value='';drawMkt();render();toast(`已匯入 ${rows.length} 筆`)};
+$('#bGenMkt').onclick=()=>{const m=mktCalc();if(!m.rows.length)return toast('請先輸入成交紀錄');
+  const us=m.rows.map(r=>r.unit).filter(isFinite).sort((a,b)=>a-b);const q=i=>us[Math.floor((us.length-1)*i)];
+  S.market.conclusion=[`近${m.n}筆均價約${fx(m.avg)}萬／坪。`,`社區單價落在${fx(m.min)}～${fx(m.max)}萬／坪。`,`近期主流成交多在${Math.floor(q(.25))}～${Math.ceil(q(.75))}萬／坪。`,
+   `本戶${S.basic.floor||'○樓'}${S.basic.parking?'、'+S.basic.parking+'車位':''}，定價需兼顧行情與市場接受度。`].join('\n');bindInputs();render()};
+$('#bGenPrice').onclick=()=>{const own=num(S.area.total);let best=null;S.price.listings.forEach(r=>{const d=Math.abs(num(r.ping)-own);if(isFinite(d)&&(!best||d<best.d))best={...r,d}});
+  const L=[];if(best)L.push(`本戶與開價${best.price}萬的${best.ping}坪待售案條件最接近，屬主要競品。`);
+  L.push('近期房市氣氛偏保守，若希望提高成交機會，價格需較市場理想值更具彈性。');
+  if(S.basic.parking)L.push(`本戶為${S.basic.parking}車位（${S.basic.parkingNo||''}），定價需反映買方接受度。`);
+  if(S.features)L.push(`${lines(S.features).slice(0,3).join('、')}，仍具吸引力。`);
+  L.push('「穩健開價、保留議價空間」策略。');S.price.analysis=L.join('\n');
+  if(!S.price.summary)S.price.summary='綜合社區行情、機能優勢與目前市場條件，建議以合理區間進場，提升買方詢問度與成交機會。';bindInputs();render()};
+
+/* ---------- 圖片 ---------- */
+async function shrink(file,max=1600){if(isPdf(file)){const pg=await pdfPages(file,1,max);return pg.dataUrls[0]}return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL(file.type==='image/png'?'image/png':'image/jpeg',0.86))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+function drawThumbs(){$('#th-cover').innerHTML=S.img.cover.map((u,i)=>`<div class="th" style="background-image:url(${u})"><button type="button" data-rmimg="cover:${i}" aria-label="移除">✕</button></div>`).join('');
+  $('#th-pm').innerHTML=['plan','map'].filter(k=>S.img[k]).map(k=>`<div class="th" style="background-image:url(${S.img[k]})"><button type="button" data-rmimg="${k}:0" aria-label="移除">✕</button></div>`).join('')}
+$('#f-cover').onchange=async e=>{for(const f of [...e.target.files]){S.img.cover.push(await shrink(f))}S.img.cover=S.img.cover.slice(-2);e.target.value='';drawThumbs();render()};
+$('#f-plan').onchange=async e=>{if(e.target.files[0])S.img.plan=await shrink(e.target.files[0],1800);e.target.value='';drawThumbs();render()};
+$('#f-map').onchange=async e=>{if(e.target.files[0])S.img.map=await shrink(e.target.files[0],1800);e.target.value='';drawThumbs();render()};
+$('#f-logo').onchange=async e=>{if(e.target.files[0])S.logo=await shrink(e.target.files[0],600);e.target.value='';render()};
+
+/* ---------- 存檔 ---------- */
+let warned=false;
+function save(){try{localStorage.setItem('osr-v1',JSON.stringify(S))}catch(e){try{const t={...S,img:{cover:[],plan:'',map:''},logo:''};localStorage.setItem('osr-v1',JSON.stringify(t));if(!warned){warned=true;toast('照片太大，瀏覽器只暫存文字資料。請用「存檔 .json」保存完整案件',4500)}}catch(e2){}}}
+function loadState(o){S=deepMerge(blank(),o);bindInputs();drawToggles();drawMkt();drawLst();drawThumbs();render()}
+$('#bNew').onclick=()=>{$('#newConfirm').hidden=false;$('#bNew').hidden=true};
+$('#bNewNo').onclick=()=>{$('#newConfirm').hidden=true;$('#bNew').hidden=false};
+$('#bNewYes').onclick=()=>{const a=S.agent,th=S.theme,lg=S.logo;const n=blank();n.agent=a;n.theme=th;n.logo=lg;loadState(n);$('#newConfirm').hidden=true;$('#bNew').hidden=false;toast('已清空，可以開始新案件')};
+$('#fJson').onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{try{loadState(JSON.parse(fr.result));toast('已讀入案件')}catch(err){toast('檔案格式不對，請選擇本工具存出的 .json')}};fr.readAsText(f);e.target.value=''};
+
+/* ---------- 匯出 ---------- */
+let DL=null;(async()=>{try{if(window.claude&&claude.use)DL=await claude.use('downloads')}catch(e){}})();
+async function saveFile(name,blob){if(DL){try{await DL.save({filename:name,data:blob});toast('已存檔：'+name)}catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'上一個存檔視窗還沒關，請稍候再試':'這個檢視無法存檔，請在電腦瀏覽器開啟')}return}
+  const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+const baseName=()=>`${S.basic.community||'社區'}_屋主售屋建議報告書`;
+async function capture(i){if(window.loadPdfLibs)await loadPdfLibs();await document.fonts.ready;const src=document.querySelectorAll('.pv .page')[i];
+  const host=document.createElement('div');host.className=$('#pages').className;host.style.cssText='position:fixed;left:-10000px;top:0;width:794px';
+  const c=src.cloneNode(true);c.style.transform='none';host.appendChild(c);document.body.appendChild(host);
+  try{return await html2canvas(c,{scale:2,useCORS:true,backgroundColor:null,logging:false,width:794,height:1123})}finally{host.remove()}}
+async function exportPng(i){if(window.loadPdfLibs){try{await loadPdfLibs()}catch(e){}}if(!window.html2canvas)return toast('匯出元件載入失敗，請重新整理');toast('產生圖片中…',8000);const cv=await capture(i);const b=await new Promise(r=>cv.toBlob(r,'image/png'));
+  const k=pageList()[i][0];await saveFile(`${baseName()}_${String(i+1).padStart(2,'0')}_${PAGES.find(p=>p[0]===k)[1]}.png`,b)}
+$('#bPdf').onclick=async()=>{if(window.loadPdfLibs){try{await loadPdfLibs()}catch(e){}}if(!window.jspdf||!window.html2canvas)return toast('匯出元件載入失敗，請重新整理');const n=pageList().length;
+  const pdf=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+  for(let i=0;i<n;i++){toast(`產生 PDF：第 ${i+1}/${n} 頁`,20000);const cv=await capture(i);if(i)pdf.addPage();pdf.addImage(cv.toDataURL('image/jpeg',0.9),'JPEG',0,0,210,297)}
+  await saveFile(`${baseName()}.pdf`,pdf.output('blob'))};
+$('#bJson').onclick=()=>saveFile(`${baseName()}_資料.json`,new Blob([JSON.stringify(S)],{type:'application/json'}));
+
+/* ---------- PDF 支援（pdf.js，第一次用到才載入） ---------- */
+const isPdf=f=>f&&(f.type==='application/pdf'||/\.pdf$/i.test(f.name||''));
+let pdfLib=null;
+function addScript(src){return new Promise((res,rej)=>{const el=document.createElement('script');el.src=src;el.onload=res;el.onerror=()=>rej(new Error('load'));document.head.appendChild(el)})}
+async function loadPdf(){if(pdfLib)return pdfLib;const base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  await addScript(base+'pdf.min.js');await addScript(base+'pdf.worker.min.js');window.pdfjsLib.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.js';pdfLib=window.pdfjsLib;return pdfLib}
+async function pdfPages(file,maxPages=5,maxSide=2000){const lib=await loadPdf();const doc=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+  const out={blobs:[],dataUrls:[],text:'',pages:doc.numPages};
+  for(let i=1;i<=doc.numPages;i++){const page=await doc.getPage(i);
+    try{const tc=await page.getTextContent();out.text+=tc.items.map(x=>x.str).join(' ').replace(/\s+/g,' ')+'\n'}catch(e){}
+    if(i<=maxPages){const v0=page.getViewport({scale:1});const sc=Math.min(3,maxSide/Math.max(v0.width,v0.height));const v=page.getViewport({scale:sc});
+      const c=document.createElement('canvas');c.width=Math.round(v.width);c.height=Math.round(v.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+      await page.render({canvasContext:x,viewport:v}).promise;const du=c.toDataURL('image/jpeg',0.88);out.dataUrls.push(du);out.blobs.push(dataUrlBlob(du))}}
+  return out}
+async function prepFiles(files){const blobs=[];let text='';let skipped=0;
+  for(const f of files){if(isPdf(f)){const pg=await pdfPages(f,OCR_MAX);pg.blobs.forEach(b=>blobs.push(b));if(pg.pages>OCR_MAX)skipped+=pg.pages-OCR_MAX;if(pg.text.trim())text+=`【${f.name}】\n${pg.text}\n`}else blobs.push(f)}
+  if(blobs.length>OCR_MAX){skipped+=blobs.length-OCR_MAX;blobs.length=OCR_MAX}
+  if(skipped)toast(`頁數超過 ${OCR_MAX} 頁，後面 ${skipped} 頁只用文字辨識`,4500);
+  return{blobs,text:text.trim()?`\n\n以下是 PDF 內嵌的文字（若與圖片不同，以這段文字為準）：\n${text.slice(0,60000)}`:''}}
+/* ---------- 謄本照片辨識 ---------- */
+let SAMPLE=null,OCR_MAX=5,ocrFiles=[],ocrCtl=null,ocrRes=[];
+(async()=>{try{if(window.claude&&claude.use){const s=await claude.use('sample');if(s){const l=await s.limits().catch(()=>null);if(l&&l.images){SAMPLE=s;OCR_MAX=l.images.maxCount||5}}}}catch(e){}
+  if(!SAMPLE){const m='這個檢視無法使用照片辨識，請在 claude.ai 開啟本工具。';$('#ocrMsg').textContent=m;$('#mocrMsg').textContent=m;$('#f-ocr').disabled=true;$('#f-mocr').disabled=true;$('#f-locr').disabled=true;$('#locrMsg').textContent=m}else{ocrReady();mReady();lReady()}})();
+function ocrReady(){$('#bOcr').disabled=!SAMPLE||!ocrFiles.length;$('#stOcr').textContent=ocrFiles.length?`${ocrFiles.length} 張`:''}
+$('#f-ocr').onchange=e=>{ocrFiles=[...ocrFiles,...e.target.files].slice(0,OCR_MAX);e.target.value='';drawOcrThumbs();if(ocrFiles.length>=OCR_MAX)$('#ocrMsg').textContent=`一次最多 ${OCR_MAX} 張`};
+function drawOcrThumbs(){document.querySelectorAll('#th-ocr .th').forEach(t=>URL.revokeObjectURL(t.dataset.u));
+  $('#th-ocr').innerHTML=ocrFiles.map((f,i)=>{const u=URL.createObjectURL(f);return `<div class="th" data-u="${u}" style="${isPdf(f)?'display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g)':`background-image:url(${u})`}">${isPdf(f)?'PDF':''}<button type="button" data-rmocr="${i}" aria-label="移除">✕</button></div>`}).join('');ocrReady()}
+document.addEventListener('click',e=>{const i=e.target.dataset&&e.target.dataset.rmocr;if(i!=null){ocrFiles.splice(+i,1);drawOcrThumbs()}});
+const OCR_PROMPT=`你會看到台灣不動產文件的照片，可能包含：建物登記謄本（標示部、所有權部）、土地登記謄本、土地增值稅試算表（地方稅務局的土地增值稅概算）。請只依照片上看得到的文字擷取資料，看不清楚或沒有出現的欄位填 null，不要推測。
+只回傳一個 JSON 物件，欄位如下：
+{"address": 建物門牌（完整地址，阿拉伯數字，例："台中市南屯區永春東路100號6樓之1"）,
+"built": 建築完成日期，民國格式 "YYY/MM/DD",
+"use": 主要用途（例：住家用 請寫成 "住宅"）,
+"floors": 層數，例 "24樓",
+"floor": 本戶層次，例 "6樓",
+"main_m2": 主建物層次面積合計（平方公尺，數字）,
+"balcony_m2": 附屬建物中陽台面積合計,
+"canopy_m2": 附屬建物中雨遮面積合計,
+"other_attached_m2": 其他附屬建物（花台、露台、平台等）面積合計，沒有填 0,
+"common_m2": 共有部分持分面積合計（每個共有建號的 面積×權利範圍 加總，包含停車位部分）,
+"parking_m2": 共有部分中「其中含停車位」的面積合計，沒有車位填 null,
+"parking_no": 停車位編號，例 "編號24、25",
+"land_m2": 土地持分面積合計（每筆土地 面積×權利範圍 加總）,
+"acq_date": 所有權部 登記日期，民國 "YYY/MM/DD"（有多次以最新一次所有權登記為準）,
+"acq_reason": 所有權部 登記原因（買賣、繼承、贈與、拍賣、判決等）,
+"lvt_general": 土地增值稅 一般用地稅額（元，數字）,
+"lvt_self": 土地增值稅 自用住宅用地稅額（元，數字）,
+"buy_price_wan": 本戶取得時的買賣總價（萬元；來自買賣契約書，沒有填 null）,
+"house_value": 房屋評定現值（元；來自房屋稅單的評定現值或課稅現值，沒有填 null）,
+"warnings": [需要人工確認的地方，繁體中文短句，例如字跡模糊、權利範圍不確定、多位所有權人]}
+數字一律用阿拉伯數字，不加單位與逗號。權利範圍是分數時請自行乘算成面積。`;
+$('#bOcrStop').onclick=()=>ocrCtl&&ocrCtl.abort();
+$('#bOcr').onclick=async()=>{if(!SAMPLE||!ocrFiles.length)return;ocrCtl=new AbortController();
+  $('#bOcr').disabled=true;$('#bOcrStop').hidden=false;$('#ocrOut').innerHTML='';$('#ocrMsg').textContent='辨識中，約需 20～60 秒…';
+  try{$('#ocrMsg').textContent='讀取檔案中…';const P=await prepFiles(ocrFiles);$('#ocrMsg').textContent='辨識中，約需 20～60 秒…';const r=await SAMPLE.json(OCR_PROMPT+P.text,{images:P.blobs,signal:ocrCtl.signal,modelTier:'default'});showOcr(r||{});$('#ocrMsg').textContent='辨識完成，請核對後套用'}
+  catch(e){const c=e&&e.code;$('#ocrMsg').textContent=c==='cancelled'?'已停止':c==='not_granted'||c==='sampling_disabled'?'未允許此工具使用 Claude，無法辨識':c==='image_rejected'?'照片格式或大小不符，請換成 JPG／PNG':c==='rate_limited'?'使用量暫時到上限，請稍後再試':c==='invalid_json'?'辨識結果無法解讀，請換清楚一點的照片再試':'辨識失敗，請稍後再試'}
+  finally{$('#bOcrStop').hidden=true;ocrReady()}};
+function showOcr(r){const n=x=>{const v=num(x);return isFinite(v)?v:NaN};const pg=x=>isFinite(x)?(Math.round(x*0.3025*100)/100).toFixed(2):'';
+  const main=n(r.main_m2),bal=(n(r.balcony_m2)||0)+(n(r.other_attached_m2)||0),can=n(r.canopy_m2),com=n(r.common_m2),park=n(r.parking_m2),land=n(r.land_m2);
+  const pub=isFinite(com)?com-(isFinite(park)?park:0):NaN;
+  const parts=[main,n(r.balcony_m2)||0,n(r.other_attached_m2)||0,isFinite(can)?can:0,isFinite(com)?com:0];const tot=isFinite(main)?parts.reduce((a,b)=>a+b,0):NaN;
+  const yen=x=>isFinite(n(x))?String(Math.round(n(x))):'';const s=x=>x==null?'':String(x).trim();
+  ocrRes=[['basic.address','地址',s(r.address)],['basic.built','建築完成日',s(r.built)],['basic.use','用途',s(r.use)],['basic.floors','總樓高',s(r.floors)],['basic.floor','本戶樓層',s(r.floor)],['basic.parkingNo','車位資料',s(r.parking_no)],
+   ['area.total','建物登記坪數',pg(tot)],['area.main','主建物',pg(main)],['area.balcony','陽台',bal?pg(bal):''],['area.public','公共設施',pg(pub)],['area.parking','防空避難室兼車位',pg(park)],['area.canopy','雨遮',pg(can)],['area.land','土地登記坪數',pg(land)],
+   ['tax.acq','所有權登記日',s(r.acq_date)],['tax.lvtG','土增稅・一般用地',yen(r.lvt_general)],['tax.lvtS','土增稅・自用住宅',yen(r.lvt_self)],['tax.buy','取得價（萬）',isFinite(n(r.buy_price_wan))?String(n(r.buy_price_wan)):''],['tax.houseVal','房屋評定現值（元）',yen(r.house_value)]].filter(f=>f[2]&&f[2]!=='null');
+  const w=Array.isArray(r.warnings)?r.warnings.filter(Boolean).map(String):[];
+  if(n(r.other_attached_m2)>0)w.push(`其他附屬建物 ${pg(n(r.other_attached_m2))} 坪已併入陽台欄`);
+  if(isFinite(com)&&!isFinite(park))w.push('未辨識到車位面積，共有部分全部算入公設；有車位請手動拆分');
+  if(r.acq_reason&&!/買賣/.test(r.acq_reason))w.push(`登記原因為「${r.acq_reason}」，取得成本與稅制可能不同，請另行確認`);
+  if(!ocrRes.length){$('#ocrOut').innerHTML='<p class="warn">照片中沒有讀到可用的欄位，請確認是謄本或增值稅試算表，並拍清楚一點。</p>';return}
+  $('#ocrOut').innerHTML=`<div class="tbwrap"><table class="tb"><tr><th></th><th>欄位</th><th>目前</th><th>辨識結果</th></tr>${ocrRes.map((f,i)=>{const cur=getP(S,f[0])||'';return `<tr><td><input type="checkbox" id="oc-${i}" checked style="width:auto;min-width:0"></td><td>${f[1]}</td><td style="color:var(--muted)">${esc(cur)||'—'}</td><td class="calc"${cur&&cur!==f[2]?' style="color:var(--warn)"':''}>${esc(f[2])}</td></tr>`}).join('')}</table></div>
+   ${w.length?`<div class="warn" style="margin-top:6px">${w.map(esc).join('<br>')}</div>`:''}
+   <p class="hint" style="margin-top:6px">坪數＝平方公尺 × 0.3025，四捨五入到小數兩位。外牆、朝向、邊間、車位類型謄本上沒有，仍需手動填。</p>
+   <div class="row" style="margin-top:6px"><button class="pri" type="button" id="bOcrApply">套用勾選欄位</button></div>`;
+  $('#bOcrApply').onclick=()=>{let k=0;ocrRes.forEach((f,i)=>{if($('#oc-'+i).checked){setP(S,f[0],f[2]);k++}});bindInputs();drawMkt();drawLst();render();$('#ocrOut').innerHTML=`<p class="ok">已填入 ${k} 個欄位。</p>`;ocrFiles=[];drawOcrThumbs()}}
+
+/* ---------- 實價登錄截圖辨識 ---------- */
+let mFiles=[],mCtl=null,mRes=null;
+function mReady(){$('#bMocr').disabled=!SAMPLE||!mFiles.length}
+$('#f-mocr').onchange=e=>{mFiles=[...mFiles,...e.target.files].slice(0,OCR_MAX);e.target.value='';drawMThumbs()};
+function drawMThumbs(){document.querySelectorAll('#th-mocr .th').forEach(t=>URL.revokeObjectURL(t.dataset.u));
+  $('#th-mocr').innerHTML=mFiles.map((f,i)=>{const u=URL.createObjectURL(f);return `<div class="th" data-u="${u}" style="${isPdf(f)?'display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g)':`background-image:url(${u})`}">${isPdf(f)?'PDF':''}<button type="button" data-rmm="${i}" aria-label="移除">✕</button></div>`}).join('');mReady()}
+document.addEventListener('click',e=>{const i=e.target.dataset&&e.target.dataset.rmm;if(i!=null){mFiles.splice(+i,1);drawMThumbs()}});
+const M_PROMPT=`你會看到台灣實價登錄的成交紀錄截圖（可能來自內政部實價登錄網站、房仲內部系統或其他實價查詢網站），內容是同一個社區的多筆買賣成交。請逐筆擷取，只依截圖上看得到的數字，看不清楚的欄位填 null，不要推測。
+只回傳一個 JSON 物件：
+{"community": 社區名稱（有的話）,
+"count": 截圖上顯示的成交總筆數（有的話，數字）,
+"rows": [{"ym": 成交年月，民國 "YYY/MM",
+  "floor": 樓層，照截圖寫法（例 "24樓-5"、"6樓"）,
+  "ping": 扣除車位後的房屋坪數（數字）。若截圖只有含車位的總坪數和車位坪數，請相減；若面積是平方公尺請乘 0.3025 換成坪,
+  "pping": 車位坪數（沒有車位填 0）,
+  "pprice": 車位價（萬元；沒有車位或車位未分開標價填 0）,
+  "total": 成交總價（萬元；若為元請除以 10000）,
+  "note": 備註（親友交易、含增建、特殊交易等，沒有填 null）}],
+"warnings": [需要人工確認的地方，繁體中文短句]}
+rows 依成交年月由新到舊排列。數字不加單位與逗號。`;
+$('#bMocrStop').onclick=()=>mCtl&&mCtl.abort();
+$('#bMocr').onclick=async()=>{if(!SAMPLE||!mFiles.length)return;mCtl=new AbortController();
+  $('#bMocr').disabled=true;$('#bMocrStop').hidden=false;$('#mocrOut').innerHTML='';$('#mocrMsg').textContent='辨識中，約需 20～60 秒…';
+  try{$('#mocrMsg').textContent='讀取檔案中…';const P=await prepFiles(mFiles);$('#mocrMsg').textContent='辨識中，約需 20～60 秒…';const r=await SAMPLE.json(M_PROMPT+P.text,{images:P.blobs,signal:mCtl.signal,modelTier:'default'});showMocr(r||{});}
+  catch(e){const c=e&&e.code;$('#mocrMsg').textContent=c==='cancelled'?'已停止':c==='not_granted'||c==='sampling_disabled'?'未允許此工具使用 Claude，無法辨識':c==='image_rejected'?'照片格式或大小不符，請換成 JPG／PNG':c==='rate_limited'?'使用量暫時到上限，請稍後再試':c==='invalid_json'?'辨識結果無法解讀，請換清楚一點的截圖再試':'辨識失敗，請稍後再試'}
+  finally{$('#bMocrStop').hidden=true;mReady()}};
+function showMocr(r){const s=x=>x==null?'':String(x).trim();const nv=x=>{const v=num(x);return isFinite(v)?String(v):''};
+  const ymk=x=>{const m=String(x).match(/(\d+)\D+(\d+)/);return m?+m[1]*100+ +m[2]:0};
+  const rows=(Array.isArray(r.rows)?r.rows:[]).map(x=>({ym:s(x.ym),floor:s(x.floor),ping:nv(x.ping),pping:nv(x.pping)||'0',pprice:nv(x.pprice)||'0',total:nv(x.total),note:s(x.note)})).filter(x=>x.ym||x.total).sort((a,b)=>ymk(b.ym)-ymk(a.ym));
+  mRes={rows,count:nv(r.count)};
+  const w=Array.isArray(r.warnings)?r.warnings.filter(Boolean).map(String):[];
+  if(!rows.length){$('#mocrMsg').textContent='';$('#mocrOut').innerHTML='<p class="warn">截圖中沒有讀到成交紀錄，請確認截圖清楚、包含價格與坪數欄位。</p>';return}
+  $('#mocrMsg').textContent=`讀到 ${rows.length} 筆，請核對後套用`;
+  $('#mocrOut').innerHTML=`<div class="tbwrap"><table class="tb"><tr><th></th><th>年月</th><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>車位價</th><th>總價</th><th>拆車單價</th></tr>${rows.map((x,i)=>{const u=(num(x.total)-(num(x.pprice)||0))/num(x.ping);
+    return `<tr><td><input type="checkbox" id="mo-${i}" ${x.note?'':'checked'} style="width:auto;min-width:0"></td><td>${esc(x.ym)}</td><td>${esc(x.floor)}</td><td>${esc(x.ping)||'?'}</td><td>${esc(x.pping)}</td><td>${esc(x.pprice)}</td><td>${esc(x.total)||'?'}</td><td class="calc">${fx(u)}${x.note?`<br><span style="color:var(--warn)">${esc(x.note)}</span>`:''}</td></tr>`}).join('')}</table></div>
+   ${w.length?`<div class="warn" style="margin-top:6px">${w.map(esc).join('<br>')}</div>`:''}
+   <p class="hint" style="margin-top:6px">有備註的特殊交易預設不勾。${mRes.count?`截圖顯示總筆數 ${mRes.count} 筆，套用時會一併填入。`:''}</p>
+   <div class="row" style="margin-top:6px"><button class="pri sm" type="button" id="bMoReplace">取代表格</button><button class="sm" type="button" id="bMoAppend">加在現有紀錄後面</button></div>`;
+  const apply=mode=>{const pick=mRes.rows.filter((x,i)=>$('#mo-'+i).checked).map(({note,...x})=>x);
+    let all=mode==='replace'?[...S.market.rows.filter(x=>x.unreg),...pick]:[...S.market.rows,...pick];
+    all.sort((a,b)=>ymk(b.ym)-ymk(a.ym));if(all.length>12){toast(`超過 12 筆，只保留最新 12 筆`);all=all.slice(0,12)}
+    S.market.rows=all;if(mRes.count)S.market.count=mRes.count;bindInputs();drawMkt();render();
+    $('#mocrOut').innerHTML=`<p class="ok">已套用 ${pick.length} 筆。可在下方表格繼續修改、勾選未登或新增。</p>`;$('#mocrMsg').textContent='';mFiles=[];drawMThumbs()};
+  $('#bMoReplace').onclick=()=>apply('replace');$('#bMoAppend').onclick=()=>apply('append')}
+
+/* ---------- 共用：呼叫 Claude ---------- */
+function aiErr(e){const c=e&&e.code;return c==='cancelled'?'已停止':c==='not_granted'||c==='sampling_disabled'?'未允許此工具使用 Claude':c==='image_rejected'?'照片格式或大小不符，請換成 JPG／PNG':c==='rate_limited'?'使用量暫時到上限，請稍後再試':c==='invalid_json'?'結果無法解讀，請再試一次':'處理失敗，請稍後再試'}
+const ymKey=x=>{const m=String(x).match(/(\d+)\D+(\d+)/);return m?+m[1]*100+ +m[2]:0};
+
+/* ---------- 社區資料庫（全店共用） ---------- */
+let DB=null,ASSETS=null,LIB=[],libLoaded='';
+function cid(n){let h=5381;for(const ch of String(n).trim())h=((h*33)^ch.codePointAt(0))>>>0;return 'c'+h.toString(36)}
+(async()=>{try{if(window.claude&&claude.use){DB=await claude.use('db');ASSETS=await claude.use('assets')}}catch(e){}
+  if(!DB){$('#libMsg').textContent='共用資料庫需在 claude.ai 開啟本工具才能使用。';$('#bLibLoad').disabled=true;$('#bLibSave').disabled=true;return}
+  const timer=setTimeout(()=>{$('#libMsg').textContent='資料庫暫時連不上，稍後會自動更新。'},10000);
+  DB.collection('communities').onSnapshot(snap=>{if(!snap.metadata.fromCache)clearTimeout(timer);
+    LIB=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+    $('#libList').innerHTML=LIB.map(c=>`<option value="${esc(c.name)}">`).join('');libStatus()},
+   e=>{clearTimeout(timer);$('#libMsg').textContent=e&&e.code==='unavailable'?'資料庫暫時連不上，請稍後重新整理。':'無法讀取共用資料庫。'})})();
+function libFind(n){n=String(n||'').trim();return LIB.find(c=>c.name===n)}
+function libStatus(){if(!DB)return;const c=libFind(S.basic.community);const el=$('#libMsg');
+  if(c&&libLoaded!==c.name){el.textContent=`資料庫已有「${c.name}」（${new Date(c.updatedAt).toLocaleDateString('zh-TW')} ${c.updatedByName||''}更新），可按「帶入社區資料」。`}
+  else el.textContent=`資料庫共 ${LIB.length} 個社區。`}
+$('#bLibLoad').onclick=()=>{const n=$('#libName').value.trim()||S.basic.community;const c=libFind(n);if(!c)return toast(n?`資料庫找不到「${n}」`:'請輸入社區名稱');
+  const b=c.basic||{};S.basic.community=c.name;['built','use','type','floors','wall','guard'].forEach(k=>{if(b[k])S.basic[k]=b[k]});
+  if(b.address&&!S.basic.address)S.basic.address=b.address;
+  if(c.features)S.features=c.features;if(c.img){if(c.img.cover&&c.img.cover.length)S.img.cover=c.img.cover;if(c.img.plan)S.img.plan=c.img.plan;if(c.img.map)S.img.map=c.img.map}
+  if(c.market)S.market=deepMerge(blank().market,c.market);if(c.listings)S.price.listings=c.listings;if(c.poi){S.poi=c.poi;S.poiCenter=c.poiCenter||null}
+  libLoaded=c.name;$('#libName').value='';bindInputs();drawMkt();drawLst();drawThumbs();render();toast(`已帶入「${c.name}」社區資料，本戶資料請另外填`)};
+function dataUrlBlob(u){const [h,b]=u.split(',');const mt=(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mt})}
+async function upImg(u){if(!u||!u.startsWith('data:'))return u;if(!ASSETS)return '';const r=await ASSETS.upload(dataUrlBlob(u));return '/_blob/'+r.id}
+$('#bLibSave').onclick=async()=>{const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');const btn=$('#bLibSave');btn.disabled=true;$('#libMsg').textContent='上傳中…';
+  let imgNote='';try{
+   try{S.img.cover=(await Promise.all(S.img.cover.map(upImg))).filter(Boolean);S.img.plan=await upImg(S.img.plan);S.img.map=await upImg(S.img.map)}
+   catch(e){imgNote='（照片沒有上傳成功，只存文字資料）'}
+   if(!ASSETS&&[S.img.plan,S.img.map,...S.img.cover].some(u=>u&&u.startsWith('data:')))imgNote='（你的權限無法上傳照片，只存文字資料）';
+   const keep=u=>u&&!u.startsWith('data:')?u:'';
+   const b=S.basic;const doc={name:n,basic:{address:String(b.address||'').replace(/\d+樓.*$/,''),built:b.built,use:b.use,type:b.type,floors:b.floors,wall:b.wall,guard:b.guard},
+    features:S.features,img:{cover:S.img.cover.map(keep).filter(Boolean),plan:keep(S.img.plan),map:keep(S.img.map)},
+    market:{count:S.market.count,listing:S.market.listing,recentN:S.market.recentN,avgAll:S.market.avgAll,rows:S.market.rows,conclusion:S.market.conclusion},
+    listings:S.price.listings,poi:S.poi||[],poiCenter:S.poiCenter||null,updatedAt:Date.now(),updatedByName:S.agent.name};
+   await DB.collection('communities').doc(cid(n)).set(doc);libLoaded=n;drawThumbs();render();toast(`已存入「${n}」${imgNote}`,4000)}
+  catch(e){toast(e&&e.code==='permission_denied'||e&&e.code==='not_granted'?'你的權限只能查看，請店長把你設成可編輯':'存入失敗，請稍後再試')}
+  finally{btn.disabled=false;libStatus()}};
+
+/* ---------- 周邊機能（ToEstate） ---------- */
+let MCP=null;(async()=>{try{if(window.claude&&claude.use)MCP=await claude.use('mcp')}catch(e){}})();
+const POI_CLR={mrt:'#1b6fb5',tra:'#1b6fb5',hsr:'#1b6fb5',school:'#c77d14',park:'#2e7d32',hospital:'#c0392b'};
+const POI_TXT={mrt:'捷運',tra:'火車',hsr:'高鐵',school:'學校',park:'公園',hospital:'醫院'};
+const shortPoi=n=>String(n).replace(/^(臺|台)(北|中|南)?捷運|^(臺|台)?(北|中|南)?(市立|縣立|國立|私立)/,'').replace(/^(臺|台)(北|中|南)?捷運/,'');
+$('#bPoi').onclick=async()=>{const addr=String(S.basic.address||'').replace(/\d+樓.*$/,'').trim();if(!addr)return toast('請先填地址');
+  if(!MCP){$('#poiMsg').textContent='需在 claude.ai 開啟並連接 ToEstate 才能抓周邊機能。';return}
+  const btn=$('#bPoi');btn.disabled=true;$('#poiMsg').textContent='查詢中…';
+  try{const r1=await MCP.callTool('toestate','search',{query:addr,limit:3});const it=((r1&&r1.payload&&r1.payload.items)||[]).find(x=>isFinite(x.lat));
+   if(!it){$('#poiMsg').textContent='找不到這個地址的座標，請確認地址寫法。';return}
+   const r2=await MCP.callTool('toestate','get_nearby_poi',{lat:it.lat,lng:it.lng,radius_m:1200,limit:60});
+   const items=((r2&&r2.payload&&r2.payload.items)||[]).filter(x=>x.name&&isFinite(x.lat)).sort((a,b)=>a.distance_m-b.distance_m);
+   S.poiCenter={lat:it.lat,lng:it.lng};const seen=new Set();
+   S.poi=items.filter(x=>{const k=x.name;if(seen.has(k))return false;seen.add(k);return true}).slice(0,10).map(x=>({name:x.name,type:x.poi_type,sub:x.poi_subtype||'',lat:x.lat,lng:x.lng,d:Math.round(x.distance_m)}));
+   if(!S.poi.length){$('#poiMsg').textContent='1.2 公里內沒有找到捷運、學校、公園等設施。';render();return}
+   const L=[];const by=t=>S.poi.filter(p=>p.type===t);const mrt=[...by('mrt'),...by('tra'),...by('hsr')].sort((a,b)=>a.d-b.d)[0];
+   if(mrt)L.push(`步行約${Math.ceil(mrt.d/80)}分鐘到${shortPoi(mrt.name)}`);
+   const el=by('school').find(p=>/國小/.test(p.sub+p.name)),jh=by('school').find(p=>/國中/.test(p.sub+p.name));
+   if(el||jh)L.push(`學區：${[el,jh].filter(Boolean).map(p=>shortPoi(p.name)).join('、')}`);
+   const pk=by('park')[0];if(pk)L.push(`鄰近${shortPoi(pk.name)}，約${pk.d}公尺`);const hp=by('hospital')[0];if(hp)L.push(`${shortPoi(hp.name)}約${hp.d}公尺`);
+   $('#poiMsg').textContent=`找到 ${S.poi.length} 個周邊設施，已畫成示意圖。`;
+   $('#poiOut').innerHTML=L.length?`<div class="ok" style="display:flex;flex-direction:column;gap:4px">${L.map((x,i)=>`<label class="chk"><input type="checkbox" id="poiL-${i}" checked>${esc(x)}</label>`).join('')}<div class="row"><button class="sm pri" type="button" id="bPoiAdd">加入本案特色</button></div></div>`:'';
+   if(L.length)$('#bPoiAdd').onclick=()=>{const add=L.filter((x,i)=>$('#poiL-'+i).checked);S.features=[...lines(S.features),...add].join('\n');bindInputs();render();$('#poiOut').innerHTML='<p class="ok">已加入本案特色。</p>'};
+   render()}
+  catch(e){const c=e&&e.code;$('#poiMsg').textContent=c==='server_not_connected'?'請先在 claude.ai 設定 → 連接器加入 ToEstate。':c==='not_in_manifest'||c==='approval_required'?'需要允許此工具使用 ToEstate 才能查詢。':c==='needs_reauth'?'ToEstate 連線過期，請到 claude.ai 設定重新連接。':'查詢失敗，請稍後再試。'}
+  finally{btn.disabled=false}};
+function poiMap(){const W=340,H=300,c=S.poiCenter||{lat:S.poi[0].lat,lng:S.poi[0].lng};const k=Math.cos(c.lat*Math.PI/180)*111320;
+  const R=Math.max(500,...S.poi.map(p=>p.d))*1.12;const sc=Math.min(W,H)/2/R*0.9;const cx=W/2,cy=H/2;
+  const pts=S.poi.map(p=>({...p,x:cx+(p.lng-c.lng)*k*sc,y:cy-(p.lat-c.lat)*110540*sc}));
+  const lastY={l:[],r:[]};const labels=pts.sort((a,b)=>a.y-b.y).map(p=>{const side=p.x>W*0.62?'l':'r';let ly=p.y+4;
+    for(const y of lastY[side])if(Math.abs(y-ly)<13)ly=y+13;lastY[side].push(ly);const col=S.theme==='mono'?'#111':POI_CLR[p.type]||'#555';
+    return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="5" fill="${col}"/><text x="${(side==='r'?p.x+8:p.x-8).toFixed(1)}" y="${ly.toFixed(1)}" font-size="11" fill="#222" text-anchor="${side==='r'?'start':'end'}" font-weight="700">${esc(shortPoi(p.name))}<tspan fill="#666" font-weight="400"> ${p.d}m</tspan></text>`}).join('');
+  const ring=m=>m<R?`<circle cx="${cx}" cy="${cy}" r="${(m*sc).toFixed(1)}" fill="none" stroke="#bbb" stroke-dasharray="4 4"/><text x="${cx+4}" y="${(cy-m*sc-3).toFixed(1)}" font-size="10" fill="#888">${m}m</text>`:'';
+  const legend=[...new Set(S.poi.map(p=>p.type))].map((t,i)=>`<circle cx="${12+i*58}" cy="${H-10}" r="4" fill="${S.theme==='mono'?'#111':POI_CLR[t]||'#555'}"/><text x="${19+i*58}" y="${H-6}" font-size="10" fill="#444">${POI_TXT[t]||t}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="font-family:var(--f-sans);display:block">
+   <rect width="${W}" height="${H}" fill="#ffffff"/>${ring(500)}${ring(1000)}
+   <text x="12" y="20" font-size="13" font-weight="900" fill="#222">N ↑</text>${labels}
+   <rect x="${cx-9}" y="${cy-9}" width="18" height="18" rx="3" fill="${S.theme==='mono'?'#111':'#b8322a'}"/><text x="${cx}" y="${cy+4}" font-size="11" fill="#fff" text-anchor="middle" font-weight="900">家</text>
+   <text x="${cx}" y="${cy+24}" font-size="11" font-weight="900" fill="#222" text-anchor="middle">${esc(S.basic.community||'本案')}</text>${legend}</svg>`}
+
+/* ---------- 配置圖點擊標示 ---------- */
+$('#pages').addEventListener('click',e=>{const p=e.target.closest('.plan');if(!p||e.target.closest('button'))return;const r=p.getBoundingClientRect();
+  S.planX=((e.clientX-r.left)/r.width*100).toFixed(1);S.planY=((e.clientY-r.top)/r.height*100).toFixed(1);if(!S.planLabel)S.planLabel='本戶';bindInputs();render()});
+
+/* ---------- 價格試算 ---------- */
+$('#bPriceCalc').onclick=()=>{const m=mktCalc();if(!isFinite(m.avg))return toast('請先輸入實價登錄成交紀錄');
+  const tot=num(S.area.total);if(!isFinite(tot))return toast('請先填建物登記坪數');const ping=tot-(num(S.area.parking)||0);
+  let park=num(S.price.parkVal);if(!isFinite(park)){const ps=m.rows.map(r=>num(r.pprice)).filter(v=>v>0);park=ps.length?Math.round(ps.reduce((a,b)=>a+b,0)/ps.length/10)*10:0;S.price.parkVal=String(park)}
+  const ref=m.avg*ping+park;const band=(num(S.price.band)||2.5)/100;const mk=String(S.price.mark||'10-14').split(/[-～~、,]/).map(num).filter(isFinite);const lo=mk[0]??10,hi=mk[1]??mk[0]??14;
+  const r10=v=>Math.round(v/10)*10;S.price.expect=`${r10(ref*(1-band))}～${r10(ref*(1+band))}萬`;S.price.online=`${r10(ref*(1+lo/100))}～${r10(ref*(1+hi/100))}萬`;
+  $('#priceCalcMsg').textContent=`近${m.n}筆均價 ${fx(m.avg)}萬 × 本戶扣車 ${f2(ping)}坪 ＋ 車位 ${park}萬 ＝ 參考成交價約 ${Math.round(ref)}萬。數字可直接改。`;bindInputs();render()};
+
+/* ---------- 待售物件截圖辨識 ---------- */
+let lFiles=[],lRes=[];
+function lReady(){$('#bLocr').disabled=!SAMPLE||!lFiles.length}
+$('#f-locr').onchange=e=>{lFiles=[...lFiles,...e.target.files].slice(0,OCR_MAX);e.target.value='';drawLThumbs()};
+function drawLThumbs(){document.querySelectorAll('#th-locr .th').forEach(t=>URL.revokeObjectURL(t.dataset.u));
+  $('#th-locr').innerHTML=lFiles.map((f,i)=>{const u=URL.createObjectURL(f);return `<div class="th" data-u="${u}" style="${isPdf(f)?'display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g)':`background-image:url(${u})`}">${isPdf(f)?'PDF':''}<button type="button" data-rml="${i}" aria-label="移除">✕</button></div>`}).join('');lReady()}
+document.addEventListener('click',e=>{const i=e.target.dataset&&e.target.dataset.rml;if(i!=null){lFiles.splice(+i,1);drawLThumbs()}});
+const L_PROMPT=`你會看到台灣售屋網站或房仲系統的待售物件截圖（例如 591、樂屋網、信義房屋網），內容是同一社區正在賣的房子。逐筆擷取，只依截圖上看得到的內容，看不清楚填 null，不要推測。
+只回傳一個 JSON 物件：{"rows":[{"floor": 樓層，例 "18樓"（若寫 18/24F 請寫 "18樓"）, "ping": 權狀坪數或建坪（數字）, "layout": 格局，例 "4房2廳4衛", "price": 開價（萬元，數字）}], "warnings": [需要人工確認的地方]}
+數字不加單位與逗號。`;
+$('#bLocr').onclick=async()=>{if(!SAMPLE||!lFiles.length)return;$('#bLocr').disabled=true;$('#locrMsg').textContent='辨識中，約需 20～60 秒…';$('#locrOut').innerHTML='';
+  try{const P=await prepFiles(lFiles);const r=await SAMPLE.json(L_PROMPT+P.text,{images:P.blobs,modelTier:'default'});const s=x=>x==null?'':String(x).trim();
+   lRes=(Array.isArray(r&&r.rows)?r.rows:[]).map(x=>({floor:s(x.floor),ping:isFinite(num(x.ping))?String(num(x.ping)):'',layout:s(x.layout),price:isFinite(num(x.price))?String(num(x.price)):''})).filter(x=>x.floor||x.price);
+   const w=Array.isArray(r&&r.warnings)?r.warnings.filter(Boolean).map(String):[];
+   if(!lRes.length){$('#locrMsg').textContent='';$('#locrOut').innerHTML='<p class="warn">截圖中沒有讀到待售物件。</p>';return}
+   $('#locrMsg').textContent=`讀到 ${lRes.length} 筆，請核對後套用`;
+   $('#locrOut').innerHTML=`<div class="tbwrap"><table class="tb"><tr><th></th><th>樓層</th><th>坪數</th><th>格局</th><th>開價(萬)</th></tr>${lRes.map((x,i)=>`<tr><td><input type="checkbox" id="lo-${i}" checked style="width:auto;min-width:0"></td><td>${esc(x.floor)}</td><td>${esc(x.ping)}</td><td>${esc(x.layout)}</td><td class="calc">${esc(x.price)}</td></tr>`).join('')}</table></div>${w.length?`<div class="warn" style="margin-top:6px">${w.map(esc).join('<br>')}</div>`:''}
+    <div class="row" style="margin-top:6px"><button class="pri sm" type="button" id="bLoReplace">取代表格</button><button class="sm" type="button" id="bLoAppend">加在後面</button></div>`;
+   const ap=mode=>{const pick=lRes.filter((x,i)=>$('#lo-'+i).checked);S.price.listings=mode==='replace'?pick:[...S.price.listings,...pick];drawLst();render();$('#locrOut').innerHTML=`<p class="ok">已套用 ${pick.length} 筆。</p>`;$('#locrMsg').textContent='';lFiles=[];drawLThumbs()};
+   $('#bLoReplace').onclick=()=>ap('replace');$('#bLoAppend').onclick=()=>ap('append')}
+  catch(e){$('#locrMsg').textContent=aiErr(e)}finally{lReady()}};
+
+/* ---------- AI 撰寫文字 ---------- */
+let aiUndo=null;
+function aiData(){const b=S.basic,a=S.area,m=mktCalc(),h=holding(),t=taxCalc();
+  const L=[`社區：${b.community}；地址：${b.address}；建築完成：${b.built}；總樓高${b.floors}，本戶${b.floor}；格局${b.layout}；朝向${b.facing}；邊間：${b.corner}；車位：${b.parking}（${b.parkingNo}）`,
+   `面積：建物登記${a.total}坪（主建物${a.main}、陽台${a.balcony}、公設${a.public}、車位${a.parking}、雨遮${a.canopy}），土地${a.land}坪`,
+   `本案特色：${lines(S.features).join('、')}`,
+   `周邊設施：${(S.poi||[]).map(p=>`${shortPoi(p.name)}${p.d}m`).join('、')}`,
+   `實價登錄總筆數${S.market.count}，目前待售約${S.market.listing}筆，社區平均${S.market.avgAll||'未提供'}`,
+   `成交紀錄（拆車單價萬/坪，※為未上實登）：`+m.rows.map(r=>`${r.ym} ${r.floor} 總價${r.total}萬 房屋${r.ping}坪 車位${r.pprice}萬 單價${fx(r.unit)}${r.unreg?'※':''}`).join('；'),
+   `統計：最高${fx(m.max)}、最低${fx(m.min)}、近${m.n}筆均價${fx(m.avg)}`,
+   `稅制：${h?(h.old?'舊制財產交易所得稅':`房地合一，持有約${(h.years).toFixed(1)}年，稅率${t?t.rate:''}%`):'未填'}`,
+   `同社區待售：`+S.price.listings.map(r=>`${r.floor} ${r.ping}坪 ${r.layout} 開價${r.price}萬`).join('；'),
+   `建議網路開價區間：${S.price.online}；客戶期望價位區間：${S.price.expect}`];return L.join('\n')}
+document.addEventListener('click',async e=>{if(!e.target.dataset||!e.target.dataset.ai)return;const msgs=document.querySelectorAll('.aimsg');const btns=document.querySelectorAll('[data-ai]');
+  if(!SAMPLE){msgs.forEach(x=>x.textContent='需在 claude.ai 開啟本工具才能使用 AI 撰寫');return}
+  btns.forEach(x=>x.disabled=true);msgs.forEach(x=>x.textContent='撰寫中，約需 20～60 秒…');
+  const prompt=`你是信義房屋的資深房仲，要替「屋主售屋建議報告書」撰寫文字，讀者是準備委託賣房的屋主。
+規則：繁體中文；只能使用下方資料裡的事實與數字，不可自行補充資料以外的地點、設施或數據；語氣專業、穩健、誠實，不誇大也不打壓屋主；不可出現「免費估價」；每一點不超過 45 個字，不加編號。
+只回傳 JSON：{"conclusion":[4點，社區實價登錄的行情重點結論，含單價區間、主流成交帶、異常個案提醒、本戶條件影響], "analysis":[5點，待售比較與價格建議分析，含主要競品、市場氣氛、本戶優缺點、定價策略], "summary": 一句總結建議（60字內）}
+資料：
+${aiData()}`;
+  try{const r=await SAMPLE.json(prompt,{modelTier:'default',cache:false});aiUndo={c:S.market.conclusion,a:S.price.analysis,s:S.price.summary};
+   if(Array.isArray(r.conclusion)&&r.conclusion.length)S.market.conclusion=r.conclusion.map(String).join('\n');
+   if(Array.isArray(r.analysis)&&r.analysis.length)S.price.analysis=r.analysis.map(String).join('\n');
+   if(r.summary)S.price.summary=String(r.summary);bindInputs();render();
+   msgs.forEach(x=>{x.innerHTML='已寫入結論、分析與總結，可直接修改。<button class="sm ghost" type="button" data-aiundo="1">復原</button>'})}
+  catch(err){msgs.forEach(x=>x.textContent=aiErr(err))}finally{btns.forEach(x=>x.disabled=false)}});
+document.addEventListener('click',e=>{if(!e.target.dataset||!e.target.dataset.aiundo||!aiUndo)return;S.market.conclusion=aiUndo.c;S.price.analysis=aiUndo.a;S.price.summary=aiUndo.s;aiUndo=null;bindInputs();render();document.querySelectorAll('.aimsg').forEach(x=>x.textContent='已復原')});
+
+window.addEventListener('resize',scale);
+bindInputs();drawToggles();drawMkt();drawLst();drawThumbs();render();
+
+</script>
+
+</body>
+</html>
