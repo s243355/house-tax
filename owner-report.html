@@ -801,8 +801,7 @@ const OCR_PROMPT=`你會看到台灣不動產文件的照片，可能包含：�
 "balcony_m2": 附屬建物中陽台面積合計,
 "canopy_m2": 附屬建物中雨遮面積合計,
 "other_attached_m2": 其他附屬建物（花台、露台、平台等）面積合計，沒有填 0,
-"common_m2": 共有部分持分面積合計（每個共有建號的 面積×權利範圍 加總，包含停車位部分）,
-"parking_m2": 共有部分中「其中含停車位」的面積合計，沒有車位填 null,
+"common_parts": 共有部分逐筆照抄，不要自己相乘：[{"area_m2": 該共有建號的總面積（平方公尺）, "share": 權利範圍原文 例 "10000分之410", "parking":[該建號下「含停車位」逐筆：{"no": 車位編號, "share": 權利範圍原文, "area_m2": 有寫面積才填否則 null}]}]，沒有共有部分填 [],
 "parking_no": 停車位編號，例 "編號24、25",
 "land_m2": 土地持分面積合計（每筆土地 面積×權利範圍 加總）,
 "acq_date": 所有權部 登記日期，民國 "YYY/MM/DD"（有多次以最新一次所有權登記為準）,
@@ -819,26 +818,34 @@ $('#bOcr').onclick=async()=>{if(!SAMPLE||!ocrFiles.length)return;ocrCtl=new Abor
   try{$('#ocrMsg').textContent='讀取檔案中…';const P=await prepFiles(ocrFiles);$('#ocrMsg').textContent='辨識中，約需 20～60 秒…';const r=await SAMPLE.json(OCR_PROMPT+P.text,{images:P.blobs,signal:ocrCtl.signal,modelTier:'default'});showOcr(r||{});$('#ocrMsg').textContent='辨識完成，請核對後套用'}
   catch(e){const c=e&&e.code;$('#ocrMsg').textContent=c==='cancelled'?'已停止':c==='not_granted'||c==='sampling_disabled'?'未允許此工具使用 Claude，無法辨識':c==='image_rejected'?'照片格式或大小不符，請換成 JPG／PNG':c==='rate_limited'?'使用量暫時到上限，請稍後再試':c==='invalid_json'?'辨識結果無法解讀，請換清楚一點的照片再試':'辨識失敗，請稍後再試'}
   finally{$('#bOcrStop').hidden=true;ocrReady()}};
+function shareOf(t){const m=String(t||'').replace(/[,，\s]/g,'').match(/(\d+(?:\.\d+)?)分之(\d+(?:\.\d+)?)/);if(m)return +m[2]/+m[1];const f=String(t||'').match(/(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);if(f)return +f[1]/+f[2];const v=num(t);return isFinite(v)&&v<=1?v:NaN}
 function mapOcr(r){const n=x=>{const v=num(x);return isFinite(v)?v:NaN};const pg=x=>isFinite(x)?(Math.round(x*0.3025*100)/100).toFixed(2):'';
-  const main=n(r.main_m2),bal=(n(r.balcony_m2)||0)+(n(r.other_attached_m2)||0),can=n(r.canopy_m2),com=n(r.common_m2),park=n(r.parking_m2),land=n(r.land_m2);
+  let com=n(r.common_m2),park=n(r.parking_m2);const cw=[];
+  if(Array.isArray(r.common_parts)&&r.common_parts.length){com=0;park=0;let hasPark=false;
+    r.common_parts.forEach(c=>{const A=n(c.area_m2),k=shareOf(c.share);if(isFinite(A)&&isFinite(k))com+=A*k;else cw.push('有一筆共有部分看不清楚面積或權利範圍，公設請核對');
+      (Array.isArray(c.parking)?c.parking:[]).forEach(q=>{hasPark=true;const pa=n(q.area_m2),pk=shareOf(q.share);if(isFinite(pa))park+=pa;else if(isFinite(A)&&isFinite(pk))park+=A*pk;else cw.push('車位面積看不清楚，請核對')})});
+    if(!hasPark)park=NaN}
+  const main=n(r.main_m2),bal=(n(r.balcony_m2)||0)+(n(r.other_attached_m2)||0),can=n(r.canopy_m2),land=n(r.land_m2);
   const pub=isFinite(com)?com-(isFinite(park)?park:0):NaN;
-  const parts=[main,n(r.balcony_m2)||0,n(r.other_attached_m2)||0,isFinite(can)?can:0,isFinite(com)?com:0];const tot=isFinite(main)?parts.reduce((a,b)=>a+b,0):NaN;
+  const P={main:pg(main),bal:bal?pg(bal):'',pub:pg(pub),park:pg(park),can:pg(can)};const tot=isFinite(main)&&isFinite(com)?Object.values(P).reduce((a,v)=>a+(num(v)||0),0):NaN;
   const yen=x=>isFinite(n(x))?String(Math.round(n(x))):'';const s=x=>x==null?'':String(x).trim();
   const list=[['basic.address','地址',s(r.address)],['basic.built','建築完成日',s(r.built)],['basic.use','用途',s(r.use)],['basic.floors','總樓高',s(r.floors)],['basic.floor','本戶樓層',s(r.floor)],['basic.parkingNo','車位資料',s(r.parking_no)],
-   ['area.total','建物登記坪數',pg(tot)],['area.main','主建物',pg(main)],['area.balcony','陽台',bal?pg(bal):''],['area.public','公共設施',pg(pub)],['area.parking','防空避難室兼車位',pg(park)],['area.canopy','雨遮',pg(can)],['area.land','土地登記坪數',pg(land)],
+   ['area.total','建物登記坪數',isFinite(tot)?tot.toFixed(2):''],['area.main','主建物',P.main],['area.balcony','陽台',P.bal],['area.public','公共設施',P.pub],['area.parking','防空避難室兼車位',P.park],['area.canopy','雨遮',P.can],['area.land','土地登記坪數',pg(land)],
    ['tax.acq','所有權登記日',s(r.acq_date)],['tax.lvtG','土增稅・一般用地',yen(r.lvt_general)],['tax.lvtS','土增稅・自用住宅',yen(r.lvt_self)],['tax.buy','取得價（萬）',isFinite(n(r.buy_price_wan))?String(n(r.buy_price_wan)):''],['tax.houseVal','房屋評定現值（元）',yen(r.house_value)]].filter(f=>f[2]&&f[2]!=='null');
-  const w=Array.isArray(r.warnings)?r.warnings.filter(Boolean).map(String):[];
+  const w=[...(Array.isArray(r.warnings)?r.warnings.filter(Boolean).map(String):[]),...cw];
+  if(isFinite(main)&&!isFinite(com))w.push('沒有讀到共有部分（公設、車位），建物登記坪數無法計算，請補上謄本的共有部分頁');
   if(n(r.other_attached_m2)>0)w.push(`其他附屬建物 ${pg(n(r.other_attached_m2))} 坪已併入陽台欄`);
   if(isFinite(com)&&!isFinite(park))w.push('未辨識到車位面積，共有部分全部算入公設；有車位請手動拆分');
   if(r.acq_reason&&!/買賣/.test(r.acq_reason))w.push(`登記原因為「${r.acq_reason}」，取得成本與稅制可能不同，請另行確認`);
-  return{list,w}}
+  const clear=isFinite(main)?['area.total','area.main','area.balcony','area.public','area.parking','area.canopy'].filter(p=>!list.some(f=>f[0]===p)):[];
+  return{list,w,clear}}
 function showOcr(r){const mo=mapOcr(r);ocrRes=mo.list;const w=mo.w;
   if(!ocrRes.length){$('#ocrOut').innerHTML='<p class="warn">照片中沒有讀到可用的欄位，請確認是謄本或增值稅試算表，並拍清楚一點。</p>';return}
   $('#ocrOut').innerHTML=`<div class="tbwrap"><table class="tb"><tr><th></th><th>欄位</th><th>目前</th><th>辨識結果</th></tr>${ocrRes.map((f,i)=>{const cur=getP(S,f[0])||'';return `<tr><td><input type="checkbox" id="oc-${i}" checked style="width:auto;min-width:0"></td><td>${f[1]}</td><td style="color:var(--muted)">${esc(cur)||'—'}</td><td class="calc"${cur&&cur!==f[2]?' style="color:var(--warn)"':''}>${esc(f[2])}</td></tr>`}).join('')}</table></div>
    ${w.length?`<div class="warn" style="margin-top:6px">${w.map(esc).join('<br>')}</div>`:''}
    <p class="hint" style="margin-top:6px">坪數＝平方公尺 × 0.3025，四捨五入到小數兩位。外牆、朝向、邊間、車位類型謄本上沒有，仍需手動填。</p>
    <div class="row" style="margin-top:6px"><button class="pri" type="button" id="bOcrApply">套用勾選欄位</button></div>`;
-  $('#bOcrApply').onclick=()=>{let k=0;ocrRes.forEach((f,i)=>{if($('#oc-'+i).checked){setP(S,f[0],f[2]);k++}});bindInputs();drawMkt();drawLst();render();$('#ocrOut').innerHTML=`<p class="ok">已填入 ${k} 個欄位。</p>`;ocrFiles=[];drawOcrThumbs()}}
+  $('#bOcrApply').onclick=()=>{(mo.clear||[]).forEach(p=>setP(S,p,''));let k=0;ocrRes.forEach((f,i)=>{if($('#oc-'+i).checked){setP(S,f[0],f[2]);k++}});bindInputs();drawMkt();drawLst();render();$('#ocrOut').innerHTML=`<p class="ok">已填入 ${k} 個欄位。</p>`;ocrFiles=[];drawOcrThumbs()}}
 
 /* ---------- 實價登錄截圖辨識 ---------- */
 let mFiles=[],mCtl=null,mRes=null;
@@ -1310,7 +1317,7 @@ const ALL_SPEC=`每一張的種類只能是：建物謄本、土地謄本、增�
 只回傳一個 JSON 物件：
 {"items":[{"id":編號,"type":種類}],
 "property":{"address":建物門牌（阿拉伯數字）,"built":建築完成日 民國"YYY/MM/DD","use":主要用途（住家用寫"住宅"）,"floors":層數 例"24樓","floor":本戶層次 例"6樓",
- "main_m2":主建物面積合計(平方公尺),"balcony_m2":陽台,"canopy_m2":雨遮,"other_attached_m2":其他附屬建物合計 沒有填0,"common_m2":共有部分持分面積合計（含車位）,"parking_m2":共有部分中含停車位的面積合計 沒有填null,"parking_no":車位編號,
+ "main_m2":主建物面積合計（謄本「總面積」或各層次面積加總，平方公尺）,"balcony_m2":陽台,"canopy_m2":雨遮,"other_attached_m2":其他附屬建物合計 沒有填0,"common_parts":共有部分逐筆照抄不要相乘 [{"area_m2":該共有建號總面積,"share":權利範圍原文 例"10000分之410","parking":[{"no":車位編號,"share":權利範圍原文,"area_m2":有寫車位面積才填否則null}]}],"parking_no":車位編號,
  "land_m2":土地持分面積合計,"acq_date":所有權登記日期 民國"YYY/MM/DD","acq_reason":登記原因,"lvt_general":土增稅一般用地稅額(元),"lvt_self":土增稅自用住宅稅額(元),"buy_price_wan":買賣契約總價(萬),"house_value":房屋評定現值(元)},
 "market":{"count":實價登錄總筆數,"rows":[{"ym":民國"YYY/MM","floor":樓層,"ping":扣除車位後房屋坪數,"pping":車位坪數,"pprice":車位價(萬),"total":總價(萬),"note":特殊交易備註或null}]},
 "listings":[{"floor":樓層,"ping":坪數,"layout":格局 例"3房2廳2衛","price":開價(萬)}],
@@ -1323,9 +1330,9 @@ const allPromptExt=names=>`我會依序上傳 ${names.length} 個檔案，依序
 function mergeAll(a,b){if(!a)return b;const o={...a};o.items=[...(a.items||[]),...(b.items||[])];o.property={...(b.property||{}),...Object.fromEntries(Object.entries(a.property||{}).filter(([k,v])=>v!=null&&v!==''))};
   o.market={count:(a.market&&a.market.count)||(b.market&&b.market.count),rows:[...((a.market&&a.market.rows)||[]),...((b.market&&b.market.rows)||[])]};o.listings=[...(a.listings||[]),...(b.listings||[])];
   o.uncertain=[...(a.uncertain||[]),...(b.uncertain||[])];o.warnings=[...(a.warnings||[]),...(b.warnings||[])];return o}
-const UNC_MAP={address:'basic.address',built:'basic.built',floors:'basic.floors',floor:'basic.floor',parking_no:'basic.parkingNo',main_m2:'area.main',balcony_m2:'area.balcony',canopy_m2:'area.canopy',common_m2:'area.public',parking_m2:'area.parking',land_m2:'area.land',acq_date:'tax.acq',lvt_general:'tax.lvtG',lvt_self:'tax.lvtS',buy_price_wan:'tax.buy',house_value:'tax.houseVal'};
+const UNC_MAP={address:'basic.address',built:'basic.built',floors:'basic.floors',floor:'basic.floor',parking_no:'basic.parkingNo',main_m2:'area.main',common_parts:'area.public',balcony_m2:'area.balcony',canopy_m2:'area.canopy',common_m2:'area.public',parking_m2:'area.parking',land_m2:'area.land',acq_date:'tax.acq',lvt_general:'tax.lvtG',lvt_self:'tax.lvtS',buy_price_wan:'tax.buy',house_value:'tax.houseVal'};
 async function applyAll(r,blobOf){const report=[];const w=[];
-  if(r.property){const mo=mapOcr(r.property);w.push(...mo.w);let k=0;mo.list.forEach(([p,l,v])=>{const old=String(getP(S,p)||'').trim();if(old&&old!==String(v))FLAGS.add(p);setP(S,p,v);k++});if(k)report.push(`物件資料 ${k} 欄`)}
+  if(r.property){const mo=mapOcr(r.property);w.push(...mo.w);(mo.clear||[]).forEach(p=>{setP(S,p,'');if(p==='area.total')FLAGS.add(p)});let k=0;mo.list.forEach(([p,l,v])=>{const old=String(getP(S,p)||'').trim();if(old&&old!==String(v))FLAGS.add(p);setP(S,p,v);k++});if(k)report.push(`物件資料 ${k} 欄`)}
   (r.uncertain||[]).forEach(u=>{const p=UNC_MAP[u]||u;if(/^(basic|area|tax)\./.test(p))FLAGS.add(p)});
   const s=x=>x==null?'':String(x).trim(),nv=x=>{const v=num(x);return isFinite(v)?String(v):''};
   const rows=((r.market&&r.market.rows)||[]).map(x=>({ym:s(x.ym),floor:s(x.floor),ping:nv(x.ping),pping:nv(x.pping),pprice:nv(x.pprice)||'0',total:nv(x.total),note:s(x.note)})).filter(x=>(x.ym||x.total)&&!x.note);
