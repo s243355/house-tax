@@ -20,7 +20,7 @@ const pages = {
   'card.html': '/card',
   'prop-compare.html': '/prop-compare',
 };
-const site = 'https://house-tax.s243355.workers.dev';
+const site = 'https://tcyucheng.com/tools';
 
 for (const [file, route] of Object.entries(pages)) {
   const html = fs.readFileSync(path.join(root, file), 'utf8');
