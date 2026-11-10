@@ -820,7 +820,7 @@ function syncAgentSel(){const sel=$('#i-agentSel');const list=[...TEAM];
   sel.innerHTML=list.map(t=>`<option value="${esc(t[0])}">${esc(t[0])}${t[2]?'（'+esc(t[2])+'）':''}　${esc(t[1])}</option>`).join('');
   sel.value=S.agent.name;sel.onchange=()=>{const t=list.find(x=>x[0]===sel.value);S.agent.name=t[0];S.agent.phone=t[1];try{localStorage.setItem('osr-agent',JSON.stringify({name:t[0],phone:t[1]}))}catch(e){}render()}}
 function bindInputs(){document.querySelectorAll('[data-k]').forEach(el=>{const v=getP(S,el.dataset.k);el.value=v??'';el.classList.toggle('flag',FLAGS.has(el.dataset.k))});syncAgentSel();const ex=$('#i-m-exPre');if(ex)ex.checked=S.market.excludePresale!==false}
-document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;setP(S,k,e.target.value);if(k==='basic.address')syncStd(false);if(k==='tax.stdRate')S.tax.stdAuto=false;schedule()});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;setP(S,k,e.target.value);if(k==='basic.address')syncStd(false);if(k==='tax.stdRate')S.tax.stdAuto=false;if(k==='price.parkVal')S.price.parkAuto=false;schedule()});
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){setP(S,k,e.target.value);schedule()}});
 
 function drawToggles(){$('#pageToggles').innerHTML=PAGES.map(([k,n])=>`<label class="chk"><input type="checkbox" id="pg-${k}" ${S.show[k]?'checked':''}>${n}</label>`).join('');
@@ -1220,7 +1220,7 @@ $('#pages').addEventListener('click',e=>{const p=e.target.closest('.plan');if(!p
 /* ---------- 價格試算 ---------- */
 $('#bPriceCalc').onclick=()=>{const m=mktCalc();if(!isFinite(m.avg))return toast('請先輸入實價登錄成交紀錄');
   const tot=num(S.area.total);if(!isFinite(tot))return toast('請先填建物登記坪數');const ping=tot-(num(S.area.parking)||0);
-  let park=num(S.price.parkVal);if(!isFinite(park)){const ps=m.rows.map(r=>num(r.pprice)).filter(v=>v>0);park=ps.length?Math.round(ps.reduce((a,b)=>a+b,0)/ps.length/10)*10:0;S.price.parkVal=String(park)}
+  let park=num(S.price.parkVal);if(!isFinite(park)||S.price.parkAuto){const ps=m.rows.filter(r=>!r.skip).map(r=>num(r.pprice)).filter(v=>v>0);park=ps.length?Math.round(ps.reduce((a,b)=>a+b,0)/ps.length/10)*10:0;S.price.parkVal=String(park);S.price.parkAuto=true}
   const base=m.comp?m.comp.avg:m.avg;const ref=base*ping+park;const band=(num(S.price.band)||2.5)/100;const mk=String(S.price.mark||'10-14').split(/[-～~、,]/).map(num).filter(isFinite);const lo=mk[0]??10,hi=mk[1]??mk[0]??14;
   const r10=v=>Math.round(v/10)*10;S.price.expect=`${r10(ref*(1-band))}～${r10(ref*(1+band))}萬`;S.price.online=`${r10(ref*(1+lo/100))}～${r10(ref*(1+hi/100))}萬`;
   $('#priceCalcMsg').textContent=`${m.comp?`同格局可比 ${m.comp.n} 筆（${m.comp.rule}）均價`:`近${m.n}筆均價（同格局可比成交不足 3 筆，改用全社區）`} ${fx(base)}萬 × 本戶扣車 ${f2(ping)}坪 ＋ 車位 ${park}萬 ＝ 參考成交價約 ${Math.round(ref)}萬。數字可直接改。`;bindInputs();render()};
@@ -1361,9 +1361,9 @@ async function findByAddress(quiet){let addr=String(S.basic.address||'').replace
     if(L.est)FLAGS.add('market.rows')}
   bindInputs();drawMkt();render();
   let msg=[got.length?'已填入'+got.join('、'):'',L.msg||'沒有資料'].filter(Boolean).join('；');
-  if(c.sinyiId&&!S.img.cover.length){say(msg+'；正在帶入信義官網資料…');$('#sinyiUrl').value=c.sinyiId;try{await $('#bSinyi').onclick();msg+='；'+$('#sinyiMsg').textContent}catch(e){}}
+  if(c.sinyiId&&!S.img.cover.length){say(msg+'；正在帶入信義官網資料…');$('#sinyiUrl').value=c.sinyiId;try{await $('#bSinyi').onclick();const sm=$('#sinyiMsg').textContent;if(/^已帶入/.test(sm))msg=[got.length?'已填入'+got.join('、'):'',sm].filter(Boolean).join('；')}catch(e){}}
   else if(L.rows&&L.rows.length&&!c.sinyiId)msg+='。外觀照、待售可再貼信義官網連結帶入。';
-  if(S.market.rows.length&&(!S.price.online||!S.price.expect)){try{$('#bPriceCalc').onclick()}catch(e){}}
+  if(S.market.rows.length&&(!S.price.online||!S.price.expect||S.price.parkAuto)){try{$('#bPriceCalc').onclick()}catch(e){}}
   say(msg);return msg}
 $('#bLvr').onclick=async()=>{const btn=$('#bLvr');btn.disabled=true;try{await findByAddress(false)}catch(e){$('#lvrMsg').textContent='查詢失敗，請再試一次'}finally{btn.disabled=false}};
 
