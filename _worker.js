@@ -165,7 +165,7 @@ function isApiPath(pathname) {
   let path = decodePath(pathname);
   if (path.startsWith('/tools/')) path = path.slice('/tools'.length);
   if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
-  return path === '/api/scrape-prop' || path === '/api/prop-img';
+  return path === '/api/scrape-prop' || path === '/api/prop-img' || path === '/api/sinyi-community';
 }
 
 function isYuchengPath(pathname) {
@@ -345,6 +345,11 @@ async function route(request, env, url) {
 
     if (apiPath === '/api/prop-img' && request.method === 'GET') {
       return handlePropImg(url);
+    }
+
+    // ── 屋主售屋建議報告書：從信義官網社區頁帶入社區資料、實價登錄、待售、生活機能 ──
+    if (apiPath === '/api/sinyi-community' && request.method === 'POST') {
+      return handleSinyiCommunity(request, env, cors);
     }
 
     if ((decodePath(url.pathname) === '/tools' || decodePath(url.pathname).startsWith('/tools/')) && env.ASSETS) {
@@ -714,3 +719,119 @@ async function fetchListingDirect(code, ms) {
   }
 }
 
+
+// ================================================================
+// /api/sinyi-community：讀信義官網社區頁（Browser Rendering /content），取 __NEXT_DATA__ 的社區資料。
+// 輸入 {id} 或 {url}，回傳精簡後的社區資料。快取 6 小時。
+// ================================================================
+const toHalf = (v) => String(v == null ? '' : v).replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).trim();
+const r2 = (v) => Math.round(Number(v) * 100) / 100;
+
+function parseSinyiCommunity(html, id) {
+  const m = String(html || '').match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (!m) return null;
+  let data;
+  try { data = JSON.parse(m[1]); } catch (err) { return null; }
+  const st = (data && data.props && data.props.initialReduxState) || {};
+  const c = st.communityReducer || {};
+  const cc = c.communityContentList || {};
+  if (!cc.name) return null;
+  const trades = (Array.isArray(c.tradeData) ? c.tradeData : []).map((t) => {
+    const sd = String(t.soldDate || '');
+    const pping = Number(t.refparkingping || t.parkingRange || 0) || 0;
+    const pprice = Number(t.parkingprice || t.refparkingprice || 0) || 0;
+    const area = Number(t.areaBuilding) || 0;
+    return {
+      ym: sd.length >= 5 ? sd.slice(0, sd.length - 2) + '/' + sd.slice(-2) : sd,
+      floor: t.floor ? String(t.floor) + '樓' : '',
+      totalFloor: t.totalfloor ? String(t.totalfloor) : '',
+      ping: area ? String(r2(area - pping)) : '',
+      pping: pping ? String(r2(pping)) : '',
+      pprice: String(Math.round(pprice)),
+      total: t.totalPrice != null ? String(t.totalPrice) : '',
+      layout: t.layout || '',
+      special: t.special || null,
+    };
+  }).filter((t) => t.total && t.ping);
+  const listings = (c.communityObj && Array.isArray(c.communityObj.object) ? c.communityObj.object : []).map((o) => ({
+    floor: o.floor ? String(o.floor) + '樓' : '',
+    ping: o.areaBuilding != null ? String(o.areaBuilding) : '',
+    layout: o.totalLayout || o.layout || '',
+    price: o.totalPrice != null ? String(o.totalPrice) : '',
+    title: o.name || '',
+  }));
+  const typeOf = { A: 'mrt', B: 'school', C: 'shop', D: 'hospital', E: 'park', F: 'pet' };
+  const life = [];
+  const groups = (c.communityDetailList && Array.isArray(c.communityDetailList.utilitylifeInfo)) ? c.communityDetailList.utilitylifeInfo : [];
+  groups.forEach((g) => (g.poiList || []).forEach((sub) => (sub.pois || []).slice(0, 2).forEach((p) => {
+    life.push({ name: p.title, type: typeOf[g.utilityType] || 'other', d: Math.round(Number(p.distance) || 0), lat: p.poiLatitude, lng: p.poiLongitude });
+  })));
+  life.sort((a, b) => a.d - b.d);
+  return {
+    ok: true,
+    id: cc.commId || id,
+    name: cc.name,
+    address: toHalf(cc.address),
+    district: cc.zipName || '',
+    age: cc.age || '',
+    floors: cc.floorRange ? toHalf(cc.floorRange) + '樓' : '',
+    houseCount: cc.houseCount || '',
+    layout: cc.layout || '',
+    publicPercent: cc.publicpercent || '',
+    amenities: cc.publicDesc || '',
+    developer: cc.constructCompany || '',
+    structure: cc.buildingStructure || '',
+    wall: cc.wallStructure || '',
+    guard: cc.hasmanager || '',
+    typeCode: cc.houselandtype || '',
+    lat: cc.latitude || null,
+    lng: cc.longitude || null,
+    images: (Array.isArray(cc.images) ? cc.images : []).filter((u) => typeof u === 'string').slice(0, 6),
+    tradeCount: c.tradeCount || trades.length,
+    trades: trades,
+    listings: listings,
+    life: life.slice(0, 12),
+    url: 'https://www.sinyi.com.tw/communitylist/communityinfo/' + (cc.commId || id),
+  };
+}
+
+async function handleSinyiCommunity(request, env, cors) {
+  let id = '';
+  try {
+    const body = await request.json();
+    const raw = String((body && (body.id || body.url)) || '').trim();
+    const m = raw.match(/communityinfo\/([A-Za-z0-9]{5,12})/) || raw.match(/^([A-Za-z0-9]{5,12})$/);
+    id = m ? m[1].toUpperCase() : '';
+    if (!id) return json({ ok: false, error: '請貼上信義房屋社區頁的連結或社區編號' }, 400, cors);
+    const origin = new URL(request.url).origin;
+    const key = cacheRequest(origin, '/__cache/sinyi-community/' + id);
+    const hit = await cacheMatch(key);
+    if (hit) {
+      try { const data = await hit.json(); if (data && data.ok) return json(Object.assign({}, data, { source: 'cache' }), 200, cors); } catch (err) { /* 重新讀取 */ }
+    }
+    if (!env || !env.CF_ACCOUNT_ID || !env.CF_API_TOKEN) return json({ ok: false, error: '尚未設定 Browser Rendering 金鑰' }, 502, cors);
+    const endpoint = 'https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/browser-rendering/content';
+    const gate = openUpstream(endpoint, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + env.CF_API_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: 'https://www.sinyi.com.tw/communitylist/communityinfo/' + encodeURIComponent(id), gotoOptions: { waitUntil: 'domcontentloaded', timeout: 20000 } }),
+    }, 25000);
+    let html = '';
+    try {
+      const res = await gate.response;
+      if (!res.ok) return json({ ok: false, error: res.status === 429 ? '讀取次數太頻繁，請稍後再試' : '信義官網暫時讀不到' }, 502, cors);
+      const payload = await res.json();
+      if (payload && typeof payload.result === 'string') html = payload.result;
+      else if (payload && payload.result && typeof payload.result.content === 'string') html = payload.result.content;
+    } finally {
+      gate.done();
+    }
+    const data = parseSinyiCommunity(html, id);
+    if (!data) return json({ ok: false, error: '讀不到這個社區的資料，請確認連結是信義房屋社區頁' }, 502, cors);
+    await cachePut(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=21600' } }));
+    return json(data, 200, cors);
+  } catch (err) {
+    console.error('handleSinyiCommunity error:', id, err && (err.name || err.message));
+    return json({ ok: false, error: /abort/i.test(String(err && (err.name || err.message))) ? '讀取逾時，請再試一次' : '讀取失敗，請稍後再試' }, 502, cors);
+  }
+}

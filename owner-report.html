@@ -252,9 +252,23 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <div class="row"><button class="sm pri" id="bLibLoad" type="button">帶入社區資料</button><button class="sm" id="bLibSave" type="button">只更新社區資料</button></div>
           <p class="hint" id="libMsg">連線中…</p>
         </div>
+        <div class="web-only" style="border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <label class="f">從信義官網帶入（貼社區頁連結或社區編號）<input aria-label="信義官網社區頁連結或社區編號" id="sinyiUrl" placeholder="https://www.sinyi.com.tw/communitylist/communityinfo/0016889"></label>
+          <div class="row" style="margin-top:6px"><button class="sm pri" id="bSinyi" type="button">帶入官網資料</button><a class="btn" href="https://www.sinyi.com.tw/communitylist/Taichung-city/index" target="_blank" rel="noopener" style="text-decoration:none">到信義官網找社區</a></div>
+          <p class="hint" id="sinyiMsg" style="margin-top:4px">會帶入社區基本資料、外觀照、最新 5 筆實價登錄（含車位價與車位坪數）、待售物件與生活機能。</p>
+        </div>
         <p class="hint" id="wzLast"></p>
       </div>
       <div class="wz-step" id="wz2"><div class="wz-h"><b>2</b>丟資料</div>
+        <details class="prep"><summary class="hint" style="padding:0;font-weight:700;color:var(--g)">要準備哪些資料？（點開看清單）</summary>
+          <div class="hint" style="line-height:1.7;margin-top:6px">
+            <b>每份都要：</b>① 建物謄本（標示部＋<b>共有部分</b>＋所有權部，全部頁數）② 土地謄本 ③ 土地增值稅試算表<br>
+            <b>依情況：</b>④ 買賣契約總價頁（105 年後取得）⑤ 房屋稅單（105 年前取得）<br>
+            <b>新社區才要：</b>⑥ 外觀照 1～2 張 ⑦ 樓層配置圖 ⑧ 實價登錄截圖（近 10 筆，Claude 版可省略）⑨ 同社區待售截圖<br>
+            <b>現場記下：</b>朝向、邊間、暗房、外牆、車位類型、屋主期望價<br>
+            電子謄本直接用 PDF 最準；拍照要拍正、拍完整、不反光。
+          </div>
+        </details>
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="選擇或拖入所有資料">把謄本、稅單、契約、實價登錄截圖、待售截圖、外觀照、配置圖<b>全部丟進來</b><br><span class="hint">拖曳到這裡，或點這裡選檔（可多選，PDF 也可以）</span></div>
         <input type="file" id="f-all" multiple accept="image/*,application/pdf" hidden aria-label="選擇所有資料">
         <div class="imgs" id="th-all"></div><span class="hint" id="allCount"></span>
@@ -1150,6 +1164,28 @@ $('#bAuthAdd').onclick=()=>{const email=$('#auEmail').value.trim();if(!email)ret
 document.addEventListener('click',e=>{const d=e.target.dataset||{};const i=d.ausave??d.aureset;if(i==null)return;const u=window._AU[+i];
   adminUpsert({email:u.email,name:u.name,read:$(`#au-${i}-read`).checked,pick:$(`#au-${i}-pick`).checked,save:$(`#au-${i}-save`).checked,enabled:$(`#au-${i}-en`).checked,resetCode:d.aureset!=null},d.aureset!=null)});
 webLogin();
+
+
+/* ---------- 網站版：從信義官網社區頁帶入 ---------- */
+function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;
+  if(d.floors)S.basic.floors=d.floors;if(d.wall)S.basic.wall=d.wall;if(d.guard)S.basic.guard=d.guard;if(d.typeCode==='L'&&!b.type)S.basic.type='大樓';
+  const am=String(d.amenities||'').split(/[,、，]/).map(x=>x.trim()).filter(Boolean).slice(0,6);const L=[];
+  if(am.length)L.push(`社區公設：${am.join('、')}`);if(d.developer||d.houseCount)L.push([d.developer&&`${d.developer}興建`,d.houseCount&&`共 ${d.houseCount} 戶`].filter(Boolean).join('，'));
+  const near=t=>(d.life||[]).find(x=>x.type===t);const tr=near('mrt'),sc=near('school'),pk=near('park'),sh=near('shop');
+  if(tr)L.push(`${tr.name}約 ${tr.d} 公尺`);if(sc)L.push(`鄰近${sc.name}`);if(pk||sh)L.push(`近${[pk&&pk.name,sh&&sh.name].filter(Boolean).join('、')}`);
+  if(L.length)S.features=L.join('\n');
+  if(d.images&&d.images.length)S.img.cover=d.images.slice(0,2).map(u=>'api/prop-img?u='+encodeURIComponent(u));
+  const rows=(d.trades||[]).map(t=>({ym:t.ym,floor:t.floor,ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total}));
+  if(rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...rows].sort((a,b)=>ymKey(b.ym)-ymKey(a.ym)).slice(0,12);S.market.count=String(d.tradeCount||rows.length)}
+  if(d.listings&&d.listings.length){S.price.listings=d.listings.map(({title,...x})=>x);S.market.listing=String(d.listings.length)}
+  if(d.life&&d.life.length&&isFinite(d.lat)){S.poi=d.life;S.poiCenter={lat:d.lat,lng:d.lng}}
+  if(S.market.rows.length&&(!S.price.online||!S.price.expect)){try{$('#bPriceCalc').onclick()}catch(e){}}
+  bindInputs();drawMkt();drawLst();drawThumbs();render();
+  return `已帶入：社區資料、外觀照 ${S.img.cover.length} 張、成交 ${rows.length} 筆（官網共 ${d.tradeCount||rows.length} 筆，網頁只提供最新 5 筆）、待售 ${(d.listings||[]).length} 筆、生活機能 ${(d.life||[]).length} 項。`}
+$('#bSinyi').onclick=async()=>{const v=$('#sinyiUrl').value.trim();if(!v)return toast('請貼上信義官網社區頁的連結');const btn=$('#bSinyi');btn.disabled=true;$('#sinyiMsg').textContent='讀取信義官網中，約 10～20 秒…';
+  try{const r=await (await fetch('api/sinyi-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:v})})).json();
+   if(!r.ok){$('#sinyiMsg').textContent=r.error||'讀取失敗，請稍後再試';return}$('#sinyiMsg').textContent=applySinyi(r)}
+  catch(e){$('#sinyiMsg').textContent='讀取失敗：網站版才能使用，或網路暫時不穩，請再試一次'}finally{btn.disabled=false}};
 
 /* ---------- 用 ChatGPT／Gemini 辨識：複製指令、貼回結果 ---------- */
 const EXT_TAIL='\n\n請把結果放在一個 ```json 程式碼區塊裡回覆，只回這一段，不要其他說明。';
