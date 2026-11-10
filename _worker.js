@@ -13,6 +13,7 @@
 // /api/prop-img 只轉送 https://res.sinyi.com.tw/ 的圖。
 // ================================================================
 import logic from "./prop-compare-logic.js";
+import { toHalf, lvrKey, selectLvrRows } from "./lvr-addr.js";
 
 // 工具頁現在的正式網址是 https://tcyucheng.com/tools/...
 // 這裡留的是舊路徑，用來 301，也讓測試能對到 '/house-tax' 這類字串。
@@ -727,10 +728,9 @@ async function fetchListingDirect(code, ms) {
 // /api/sinyi-community：讀信義官網社區頁（Browser Rendering /content），取 __NEXT_DATA__ 的社區資料。
 // 輸入 {id} 或 {url}，回傳精簡後的社區資料。快取 6 小時。
 // ================================================================
-const toHalf = (v) => String(v == null ? '' : v).replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).trim();
 const r2 = (v) => Math.round(Number(v) * 100) / 100;
 
-function parseSinyiCommunity(html, id) {
+export function parseSinyiCommunity(html, id) {
   const m = String(html || '').match(/<script[^>]*id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i);
   if (!m) return null;
   let data;
@@ -757,13 +757,19 @@ function parseSinyiCommunity(html, id) {
     };
   }).filter((t) => t.total && t.ping);
   const myId = String(cc.commId || id);
-  const listings = (c.communityObj && Array.isArray(c.communityObj.object) ? c.communityObj.object : []).filter((o) => String(o.commId || '') === myId).map((o) => ({
-    floor: o.floor ? String(o.floor) + '樓' : '',
-    ping: o.areaBuilding != null ? String(o.areaBuilding) : '',
-    layout: o.totalLayout || o.layout || '',
-    price: o.totalPrice != null ? String(o.totalPrice) : '',
-    title: o.name || '',
-  }));
+  const listings = (c.communityObj && Array.isArray(c.communityObj.object) ? c.communityObj.object : []).filter((o) => String(o.commId || '') === myId).map((o) => {
+    const gross = Number(o.areaBuilding) || 0;
+    const pping = Number(o.parkingRange || o.areaParking || o.refparkingping || 0) || 0;
+    const house = gross ? r2(Math.max(0, gross - pping)) : 0;
+    return {
+      floor: o.floor ? String(o.floor) + '樓' : '',
+      ping: house ? String(house) : (gross ? String(r2(gross)) : ''),
+      pping: pping ? String(r2(pping)) : '',
+      layout: o.totalLayout || o.layout || '',
+      price: o.totalPrice != null ? String(o.totalPrice) : '',
+      title: o.name || '',
+    };
+  });
   const typeOf = { A: 'mrt', B: 'school', C: 'shop', D: 'hospital', E: 'park', F: 'pet' };
   const life = [];
   const groups = (c.communityDetailList && Array.isArray(c.communityDetailList.utilitylifeInfo)) ? c.communityDetailList.utilitylifeInfo : [];
@@ -832,6 +838,7 @@ async function handleSinyiCommunity(request, env, cors) {
     }
     const data = parseSinyiCommunity(html, id);
     if (!data) return json({ ok: false, error: '讀不到這個社區的資料，請確認連結是信義房屋社區頁' }, 502, cors);
+    data.fetchedAt = new Date().toISOString().slice(0, 10);
     await cachePut(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=21600' } }));
     return json(data, 200, cors);
   } catch (err) {
@@ -843,47 +850,19 @@ async function handleSinyiCommunity(request, env, cors) {
 // ================================================================
 // /api/lvr-community：用門牌查近 3 年實價登錄（內政部開放資料，data/lvr-idx/<行政區>.json）。
 // ================================================================
-function lvrKey(raw) {
-  let s = toHalf(String(raw || '').replace(/[－]/g, '-'));
-  s = s.replace(/^(臺中市|台中市)/, '').replace(/^[^\d]{1,3}?區/, '');
-  const m = s.match(/^(.+?\d+(?:之\d+)?號)/);
-  return m ? m[1] : '';
-}
 async function handleLvrCommunity(request, env, cors) {
   try {
     const body = await request.json();
     const address = String((body && body.address) || '');
     const tm = toHalf(address).match(/(?:臺中市|台中市)?\s*([^\s\d市]{1,3}?區)/);
     const town = tm ? tm[1] : '';
-    const key = lvrKey(address);
-    if (!town || !key) return json({ ok: false, error: '地址要包含行政區與門牌號碼' }, 400, cors);
+    if (!town || !lvrKey(address)) return json({ ok: false, error: '地址要包含行政區與門牌號碼' }, 400, cors);
     if (!env || !env.ASSETS) return json({ ok: false, error: '資料暫時讀不到' }, 502, cors);
     const res = await env.ASSETS.fetch(new Request(new URL('/data/lvr-idx/' + encodeURIComponent(town) + '.json', request.url).toString()));
     if (!res.ok) return json({ ok: false, error: town + '的實價登錄資料尚未建立', town: town, covered: false }, 404, cors);
     const idx = await res.json();
-    const data = idx.data || {};
-    const split = (k) => { const m = String(k).match(/^(.*?)(\d+)(?:之\d+)?號$/); return m ? { pre: m[1], no: Number(m[2]) } : null; };
-    const me = split(key);
-    // 同一社區常有好幾個門牌：同路巷、門牌相近（±10 號）、建築完成日與總樓層都相同，就視為同社區
-    const sig = new Set();
-    Object.keys(data).forEach((k) => { const s = split(k); if (s && me && s.pre === me.pre && s.no === me.no) data[k].forEach((r) => { if (r[11]) sig.add(r[11] + '|' + r[12]); }); });
-    const hintFloors = parseInt(toHalf(body.floors || ''), 10) || 0;
-    const hintAge = parseInt(toHalf(body.age || ''), 10) || 0;
-    const rocNow = new Date().getFullYear() - 1911;
-    const sameComm = (r) => {
-      if (sig.size) return sig.has(r[11] + '|' + r[12]);
-      if (!hintFloors || !hintAge || !r[11]) return false;
-      return r[12] === hintFloors && Math.abs(Math.floor(r[11] / 10000) - (rocNow - hintAge)) <= 1;
-    };
-    const rows = [];
-    const addrs = [];
-    Object.keys(data).forEach((k) => {
-      const s = split(k);
-      if (!s || !me || s.pre !== me.pre || Math.abs(s.no - me.no) > 10) return;
-      const hit = s.no === me.no && !sig.size && !hintFloors ? data[k] : data[k].filter(sameComm);
-      if (hit.length) { rows.push(...hit); if (addrs.indexOf(k) < 0) addrs.push(k); }
-    });
-    rows.sort((a, b) => b[0] - a[0]);
+    const found = selectLvrRows(idx.data || {}, address, body || {});
+    const rows = found.rows;
     // 車位沒分開計價時的推估：先用同社區有分開計價的同類車位，沒有再用當區近 3 年同類車位中位數
     const commPark = {};
     rows.forEach((r) => { if (r[5] > 0 && r[6]) (commPark[r[6]] = commPark[r[6]] || []).push(r[5]); });
@@ -912,7 +891,7 @@ async function handleLvrCommunity(request, env, cors) {
         note: r[10] || '',
       };
     });
-    return json({ ok: true, town: town, key: key, addrs: addrs.sort(), latest: idx.latest, rows: out }, 200, cors);
+    return json({ ok: true, town: town, key: found.key, addrs: found.addrs, latest: idx.latest, hint: found.hint, rows: out }, 200, cors);
   } catch (err) {
     console.error('handleLvrCommunity error:', err && err.message);
     return json({ ok: false, error: '讀取失敗，請稍後再試' }, 502, cors);

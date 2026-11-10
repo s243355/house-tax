@@ -13,6 +13,7 @@ SRC = "data/lvr/a.json"
 OUT = "data/lvr-idx"
 FW = str.maketrans("０１２３４５６７８９－", "0123456789-")
 NUM = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+CN = {"零": 0, "〇": 0, "一": 1, "二": 2, "兩": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
 SKIP_NOTE = re.compile("親友|特殊關係|共有人|瑕疵|凶|急買|急賣|債權|法拍|政府機關")
 
 
@@ -30,10 +31,27 @@ def cn_floor(s):
     return NUM.get(t, "")
 
 
+def cn_int(t):
+    t = str(t or "")
+    if t.isdigit():
+        return str(int(t))
+    if t == "十":
+        return "10"
+    if "十" in t:
+        a, _, b = t.partition("十")
+        return str((CN.get(a, 1) if a else 1) * 10 + (CN.get(b, 0) if b else 0))
+    if len(t) == 1 and t in CN:
+        return str(CN[t])
+    return t
+
+
 def addr_key(raw):
-    s = str(raw or "").translate(FW)
-    s = re.sub(r"^(臺中市|台中市)", "", s)
-    s = re.sub(r"^[^\d]{1,3}?區", "", s)
+    # 與 lvr-addr.js 的 lvrKey 相同：二段／2段、之一／之1、全形數字合成同一鍵。
+    s = str(raw or "").translate(FW).replace("臺", "台").replace("—", "-").replace("–", "-")
+    s = re.sub(r"^(台中市)", "", s)
+    s = re.sub(r"^[^\d]{1,4}區", "", s)
+    s = re.sub(r"([零〇一二三四五六七八九十兩]+)段", lambda m: cn_int(m.group(1)) + "段", s)
+    s = re.sub(r"之([零〇一二三四五六七八九十兩]+)", lambda m: "之" + cn_int(m.group(1)), s)
     m = re.match(r"^(.+?\d+(?:之\d+)?號)", s)
     return m.group(1) if m else ""
 

@@ -22,6 +22,8 @@
 <meta name="twitter:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。">
 <style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="pdf-loader.js"></script>
+<script src="holding-period.js"></script>
+<script src="owner-report-logic.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap">
 <style>
 /* 版面：左側分段填寫表單、右側即時 A4 預覽；手機改為上下堆疊。工具外框用信義綠，報告紙面另有一組固定紙色。 */
@@ -255,8 +257,8 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         </div>
         <div class="web-only" style="border:1px dashed var(--line);border-radius:6px;padding:10px">
           <label class="f">從信義官網帶入（貼社區頁連結或社區編號）<input aria-label="信義官網社區頁連結或社區編號" id="sinyiUrl" placeholder="https://www.sinyi.com.tw/communitylist/communityinfo/0016889"></label>
-          <div class="row" style="margin-top:6px"><button class="sm pri" id="bSinyi" type="button">帶入官網資料</button><a class="btn" href="https://www.sinyi.com.tw/communitylist/Taichung-city/index" target="_blank" rel="noopener" style="text-decoration:none">到信義官網找社區</a></div>
-          <p class="hint" id="sinyiMsg" style="margin-top:4px">會帶入社區基本資料、外觀照、最新 5 筆實價登錄（含車位價與車位坪數）、待售物件與生活機能。</p>
+          <div class="row" style="margin-top:6px"><button class="sm pri" id="bSinyi" type="button">帶入官網資料</button><button class="sm" id="bSample" type="button">載入範例報告（同興協記 In House）</button><a class="btn" href="https://www.sinyi.com.tw/communitylist/Taichung-city/index" target="_blank" rel="noopener" style="text-decoration:none">到信義官網找社區</a></div>
+          <p class="hint" id="sinyiMsg" style="margin-top:4px">不用登入。會帶入社區基本資料、外觀照、最新 5 筆實價登錄（含車位價與車位坪數）、待售物件與生活機能，並標資料讀取日。範例是信義官網社區頁 0032737。</p>
         </div>
         <p class="hint" id="wzLast"></p>
       </div>
@@ -332,7 +334,8 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <label class="f">社區名稱<input aria-label="社區名稱" id="i-b-community" data-k="basic.community"></label>
           <label class="f">房屋類型<input aria-label="房屋類型" id="i-b-type" data-k="basic.type"></label>
         </div>
-        <label class="f">地址<input aria-label="地址" id="i-b-address" data-k="basic.address"></label>
+        <label class="f">地址<input aria-label="地址" id="i-b-address" data-k="basic.address" placeholder="台中市南區復興路2段71巷55號"></label>
+        <div class="row"><button class="sm pri" id="bLvr" type="button">查近三年實價</button><span class="hint" id="lvrMsg">填台中市、行政區和門牌就能查，不用貼信義連結。路段「二段／2段」、之號「之一／之1」會對成同一地址。</span></div>
         <div class="grid3">
           <label class="f">建築完成日<input aria-label="建築完成日" id="i-b-built" data-k="basic.built" placeholder="100/06/15"></label>
           <label class="f">用途<input aria-label="用途" id="i-b-use" data-k="basic.use"></label>
@@ -391,6 +394,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <label class="f">目前待售筆數<input aria-label="目前待售筆數" id="i-m-listing" data-k="market.listing" inputmode="numeric"></label>
           <label class="f">取近幾筆算均價<input aria-label="取近幾筆算均價" id="i-m-recentN" data-k="market.recentN" inputmode="numeric"></label>
         </div>
+        <label class="chk"><input type="checkbox" id="i-m-exPre" aria-label="近 N 筆均價排除預售屋／分件登記" checked>近 N 筆均價排除預售屋／分件登記</label>
         <label class="f">社區平均成交均價（萬／坪，選填）<input aria-label="社區平均成交均價（萬／坪，選填）" id="i-m-avgAll" data-k="market.avgAll" inputmode="decimal"></label>
         <div class="box-ocr" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
           <label class="f cl-only">實價登錄截圖或 PDF 辨識<input aria-label="實價登錄截圖或 PDF 辨識" type="file" id="f-mocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
@@ -405,7 +409,8 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <span id="mocrMsg" class="hint"></span>
           <div id="mocrOut"></div>
         </div>
-        <p class="hint">「房屋坪數」填扣除車位後的坪數。拆車單價＝（總價－車位價）÷ 房屋坪數，會自動算。尚未上實價登錄的行情（店內或同業剛成交）手動新增後勾「未登」，報告會加註 ※。報告表格列出最新 16 筆，最高、最低單價以全部紀錄計算。</p>
+        <p class="hint">「房屋坪數」填扣除車位後的坪數。拆車單價＝（總價－車位價）÷ 房屋坪數；含車單價＝總價 ÷（房屋坪＋車位坪）。黃底車位價是推估。尚未上實價登錄的行情勾「未登」，報告會加註 ※。近 N 筆均價預設排除備註含「預售屋／分件登記」的成交。報告表格列出最新 16 筆。</p>
+        <p class="hint" id="mktEst"></p>
         <div class="tbwrap"><table class="tb" id="mktTb"></table></div>
         <div class="row"><button class="sm" id="bAddRow" type="button">＋新增一筆</button><button class="sm" id="bSortRow" type="button">依年月排序（新→舊）</button></div>
         <label class="f">從 Excel 貼上（每行：年月 樓層 房屋坪數 車位坪數 車位價 總價）<textarea aria-label="從 Excel 貼上（每行：年月 樓層 房屋坪數 車位坪數 車位價 總價）" id="pasteMkt" rows="3" placeholder="115/09	24樓-5	68.15	6.72	240	3080"></textarea></label>
@@ -419,8 +424,8 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
       <summary><span class="no">四</span>稅費試算<span class="st" id="st4"></span></summary>
       <div class="sec">
         <div class="grid2">
-          <label class="f">所有權登記日（民國）<input aria-label="所有權登記日（民國）" id="i-t-acq" data-k="tax.acq" placeholder="109/09/18"></label>
-          <label class="f">預計出售日（算持有年限）<input aria-label="預計出售日（算持有年限）" id="i-t-sale" data-k="tax.sale" placeholder="115/11/10"></label>
+          <label class="f">所有權登記日（民國或西元）<input aria-label="所有權登記日（民國或西元）" id="i-t-acq" data-k="tax.acq" placeholder="105/01/01 或 2020-01-01"></label>
+          <label class="f">預計出售日（算持有年限）<input aria-label="預計出售日（算持有年限）" id="i-t-sale" data-k="tax.sale" placeholder="115/11/10 或 2026-11-10"></label>
         </div>
         <p id="regime" class="ok"></p>
         <div class="grid2">
@@ -428,9 +433,10 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <label class="f">土地增值稅・自用住宅（元）<input aria-label="土地增值稅・自用住宅（元）" id="i-t-lvtS" data-k="tax.lvtS" inputmode="numeric"></label>
         </div>
         <div id="oldBox" class="grid2">
-          <label class="f">標準認定比例（%）<input aria-label="標準認定比例（%）" id="i-t-stdRate" data-k="tax.stdRate" inputmode="decimal"></label>
+          <label class="f">114年度標準認定比例（%）<input aria-label="114年度標準認定比例（%）" id="i-t-stdRate" data-k="tax.stdRate" inputmode="decimal"></label>
           <label class="f">房屋評定現值（元，選填）<input aria-label="房屋評定現值（元，選填）" id="i-t-houseVal" data-k="tax.houseVal" inputmode="numeric"></label>
         </div>
+        <p class="hint">依地址的行政區帶入 114 年度臺中市標準（財政部台財稅字第11400690240號令，例如南區 35%、東區與西區 32%、大里與烏日 26%、南屯 38%），欄位可以改。高價宅另有以成交價歸屬房屋收入再乘 20% 的算法，這裡只帶一般標準。</p>
         <div id="newBox" class="sec" style="padding:0">
           <div class="grid3">
             <label class="f">取得價（萬）<input aria-label="取得價（萬）" id="i-t-buy" data-k="tax.buy" inputmode="decimal"></label>
@@ -465,7 +471,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         </div>
         <div class="row"><button class="sm pri" id="bPriceCalc" type="button">依行情試算兩個區間</button></div>
         <p class="hint" id="priceCalcMsg">參考成交價＝近 N 筆拆車均價 × 本戶扣車坪數 ＋ 車位價。期望價＝參考價 ± 浮動；網路開價＝參考價 ×（1＋加成）。都取到 10 萬。</p>
-        <p class="hint">同社區目前待售（樓層同本戶者自動加底色）</p>
+        <p class="hint">同社區目前待售（樓層同本戶者自動加底色）。房屋坪已從含車建坪扣掉車位坪。開價扣車單價＝（開價－車位價）÷ 房屋坪；沒有個別車位價時，用本戶車位價或成交車位價中位數，並標黃。</p>
         <div class="tbwrap"><table class="tb" id="lstTb"></table></div>
         <div class="row"><button class="sm" id="bAddLst" type="button">＋新增待售</button></div>
         <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
@@ -543,8 +549,8 @@ function blank(){let ag=null;try{ag=JSON.parse(localStorage.getItem('osr-agent')
   basic:{community:'',address:'',built:'',use:'住宅',type:'大樓',floors:'',floor:'',layout:'',facing:'',wall:'',parking:'',parkingNo:'',corner:'',dark:'無',guard:'全天候'},
   area:{total:'',main:'',balcony:'',public:'',parking:'',canopy:'',land:''},
   img:{cover:[],plan:'',map:''},planLabel:'',planX:'22',planY:'45',features:'',poi:[],poiCenter:null,
-  market:{count:'',listing:'',recentN:'5',avgAll:'',rows:[],conclusion:''},
-  tax:{acq:'',sale:ROC_TODAY,lvtG:'',lvtS:'',stdRate:'38',houseVal:'',buy:'',cost:'',landGain:'',top:'',step:'25',cols:'9',rate:'auto',selfUse:'auto',note:'',fee:'4'},
+  market:{count:'',listing:'',recentN:'5',excludePresale:true,avgAll:'',asOf:'',rows:[],conclusion:''},
+  tax:{acq:'',sale:ROC_TODAY,lvtG:'',lvtS:'',stdRate:'',stdYear:'114',stdAuto:true,houseVal:'',buy:'',cost:'',landGain:'',top:'',step:'25',cols:'9',rate:'auto',selfUse:'auto',note:'',fee:'4'},
   price:{online:'',onlineNote:'因應市場行情',expect:'',parkVal:'',band:'2.5',mark:'10-14',listings:[],analysis:'',summary:''}
 }}
 let S; try{S=JSON.parse(localStorage.getItem('osr-v1'))}catch(e){}
@@ -563,27 +569,44 @@ function getP(o,p){return p.split('.').reduce((a,k)=>a==null?a:a[k],o)}
 function setP(o,p,v){const ks=p.split('.');let a=o;for(let i=0;i<ks.length-1;i++)a=a[ks[i]];a[ks.at(-1)]=v}
 function toast(m,ms=2600){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,ms)}
 
-function parseROC(s){const m=String(s||'').match(/(\d{2,3})\D+(\d{1,2})\D+(\d{1,2})/)||String(s||'').match(/^(\d{3})(\d{2})(\d{2})$/);if(!m)return null;return new Date(+m[1]+1911,+m[2]-1,+m[3])}
-function holding(){const a=parseROC(S.tax.acq),b=parseROC(S.tax.sale)||new Date();if(!a)return null;
-  let mo=(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth());if(b.getDate()<a.getDate())mo--;
-  return{a,b,months:mo,years:(b-a)/(365.2425*864e5),old:a<new Date(2016,0,1)}}
-function bracket(y){if(y<=2)return[45,'持有2年以內'];if(y<=5)return[35,'持有超過2年、未滿5年'];if(y<=10)return[20,'持有超過5年、未滿10年'];return[15,'持有超過10年']}
+function parseROC(s){return OwnerReport.parseAcquireDate(s)}
+function holding(){const a=parseROC(S.tax.acq),b=parseROC(S.tax.sale)||new Date();if(!a||!window.HoldingPeriod)return null;
+  const hp=HoldingPeriod.analyze(OwnerReport.toIso(a),OwnerReport.toIso(b));if(!hp||!hp.valid)return null;
+  return{a,b,months:hp.years*12+hp.months,years:hp.bracketYears,old:a<new Date(2016,0,1),tier:hp.tier,rate:hp.rate,fullSix:hp.fullSix}}
+function bracket(y){if(y<=2)return[45,'持有2年以內'];if(y<=5)return[35,'持有超過2年、未逾5年'];if(y<=10)return[20,'持有超過5年、未逾10年'];return[15,'持有超過10年']}
 function holdTxt(h){return `持有約${Math.floor(h.months/12)}年${h.months%12}個月`}
+function syncStd(fromUser){if(fromUser){S.tax.stdAuto=false;return}
+  const d=OwnerReport.districtOf(S.basic.address),rate=OwnerReport.stdRate(d);if(!rate)return;
+  const legacy=S.tax.stdRate==='38'&&d!=='南屯區';
+  if(S.tax.stdAuto!==false&&(S.tax.stdAuto===true||!S.tax.stdRate||legacy)){S.tax.stdRate=rate;S.tax.stdYear='114';S.tax.stdAuto=true}}
+function unitsOf(r){return{split:OwnerReport.splitUnit(r.total,r.pprice,r.ping),gross:OwnerReport.grossUnit(r.total,r.ping,r.pping)}}
+function estLabel(src){return src==='community'?'同社區近三年同類車位中位數':src==='town'?'當區近三年同類車位中位數':src==='sinyi'?'信義官網相近車位坪的參考車位價':'推估'}
+function estNote(rows){const est=(rows||[]).filter(r=>r.est);if(!est.length)return '';
+  const bits=[...new Set(est.map(r=>estLabel(r.estSrc)))];
+  return `黃底＊車位價為推估（${est.length} 筆）：${bits.join('、')}。來源：內政部實價登錄開放資料。`}
 
 /* ---------- 計算 ---------- */
-function mktCalc(){const rows=S.market.rows.map(r=>{const t=num(r.total),pp=num(r.pprice)||0,pg=num(r.ping);return{...r,unit:(t-pp)/pg}}).filter(r=>r.ym||r.total);
-  const v=rows.filter(r=>isFinite(r.unit));const us=v.map(r=>r.unit);
-  const n=Math.max(1,parseInt(S.market.recentN)||5);const rec=v.slice(0,n);
-  return{rows,max:us.length?Math.max(...us):NaN,min:us.length?Math.min(...us):NaN,avg:rec.length?rec.reduce((a,r)=>a+r.unit,0)/rec.length:NaN,n:rec.length}}
+function mktCalc(){const rows=S.market.rows.map(r=>{const u=unitsOf(r);return{...r,unit:u.split,gross:u.gross}}).filter(r=>r.ym||r.total);
+  const v=rows.filter(r=>isFinite(r.unit));
+  const pool=S.market.excludePresale===false?v:v.filter(r=>!OwnerReport.isExcludedTrade(r.note));
+  const us=pool.map(r=>r.unit);
+  const n=Math.max(1,parseInt(S.market.recentN)||5);const rec=pool.slice(0,n);
+  return{rows,max:us.length?Math.max(...us):NaN,min:us.length?Math.min(...us):NaN,avg:rec.length?rec.reduce((a,r)=>a+r.unit,0)/rec.length:NaN,n:rec.length,skipped:v.length-pool.length}}
 function taxCalc(){const h=holding();if(!h||h.old)return null;
-  const [autoRate,label]=bracket(h.years);const rate=S.tax.rate==='auto'?autoRate:+S.tax.rate;
-  const lbl=S.tax.rate==='auto'?label:bracket(rate===45?1:rate===35?3:rate===20?7:11)[1];
+  const autoRate=h.rate,label='持有'+h.tier;const rate=S.tax.rate==='auto'?autoRate:+S.tax.rate;
+  const manual={45:'持有2年以內',35:'持有超過2年、未逾5年',20:'持有超過5年、未逾10年',15:'持有超過10年'};
+  const lbl=S.tax.rate==='auto'?label:(manual[rate]||label);
   const top=num(S.tax.top),step=num(S.tax.step)||25,cols=Math.min(10,Math.max(3,parseInt(S.tax.cols)||9));
   const buy=num(S.tax.buy),cost=num(S.tax.cost)||0,lg=num(S.tax.landGain)||0,fee=(num(S.tax.fee)||4)/100;
-  const showB=S.tax.selfUse==='on'||(S.tax.selfUse==='auto'&&h.years>=6);
+  const showB=S.tax.selfUse==='on'||(S.tax.selfUse==='auto'&&h.fullSix);
+  const g=num(S.tax.lvtG),s=num(S.tax.lvtS);
+  const lvtA=isFinite(g)?g/10000:(isFinite(s)?s/10000:NaN);
+  const lvtB=isFinite(s)?s/10000:(isFinite(g)?g/10000:NaN);
+  const hasLvt=isFinite(lvtA)||isFinite(lvtB);
   const cs=[];if(isFinite(top)&&isFinite(buy))for(let i=0;i<cols;i++){const p=top-step*i;const f=p*fee;const gain=p-buy-cost-f-lg;
-    const tA=Math.max(0,gain)*rate/100,tB=Math.max(0,gain-400)*0.10;cs.push({p,f,tA,tB,nA:p-f-tA,nB:p-f-tB})}
-  return{h,rate,lbl,cs,showB,buy,cost,lg}}
+    const tA=Math.max(0,gain)*rate/100,tB=Math.max(0,gain-400)*0.10;const nA=p-f-tA,nB=p-f-tB;
+    cs.push({p,f,tA,tB,nA,nB,takeA:isFinite(lvtA)?nA-lvtA:NaN,takeB:isFinite(lvtB)?nB-lvtB:NaN})}
+  return{h,rate,lbl,cs,showB,buy,cost,lg,hasLvt,lvtA,lvtB}}
 
 /* ---------- 報告頁 ---------- */
 const SINYI_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWsAAABgCAMAAADsKKM9AAAAkFBMVEUAAAAOWjPYFxbx+PEqa0mizrJZkHCSspiz6crU69hxqorY7tqxGhtMc1gINhjN4tDwo5y528aysrJ+fn7UYF2t8602hl2xz7m4S0fUyrh//38A/wCn6eeZn3r+s7N3xp284sv/AAD8/Ld//////wDdjnjIz7y3QjxvtLIA//9xuHHxfIPIPUT//3//f3//usAusiLDAAAAMHRSTlMA/v4O/vT9/fZa/vX+/P6b+6IDAvwD/q/85wIBBP4D/mwBAwIB/q39BAED/v0CAuXM9vQTAAAguklEQVR42u1dC3PbOK+VS71VWZYU27XjJmnSpo/ddv//v7s4AEiRejhOmnS/ubOcqZs4liwdgiAeB1AU/TeeGMb4v/yHx3/jX5DB/yB4hcX7L53mt6/BLP/B/HuQdV03esO84Lumx9yb3wDKFGbpBkz30rv/9In+8ek/nR+fx+MTnc3g0M84D96Y+8pPn5+4qOMsut/9a70+d/z2tDVHwjr4nv6+647PRfgag0DqHzo6n9nSuec+FswhHfH9wtPfyEtRvVgGbm4M/bvRn90wNyQZNzwVT62ZojD8mTMf682LVuziUddTKdxutxed4riN+o4+3GFsO7syjz2GvPbHrvtGfztuTSDgvPgM3e5Lhp5IzjhZxoWx5z8j2n3UJknSmOEkwfndJS6v26Ldt2Ysb3RHmEIzv5a7/tuJhjHAi/7/trVfJAMH02mTpHgS+5n7Dm/PXgCdtaqqhl5MU71gNHRUUTT0r+Dfi2A0/Df61JmreTg2SV2nGe6qaJLRaHnkPBdz2sPQFBRJlpYJycpJvoVee1McMhp00kuXK8NL15rn+F4cnJUpnbeZ7GSmaIZbvLujQ6rqDneLIa/ygTue7V4P+xWZavNW4+B+AtjLe1BSrtarNGkikye4PR76fyY3XZaQsFD9fjLYu44n0ybxapVWZvtAU9p33wjyb1GT1atVnTThAhn2PVoKbSEIsQi3OaEMmDN8N406prPiFG1krn0xNQeaiSTJx2LB7+osZcO7dqpInVabqw8YX79+/fA3jasr/hnjyh/8h2cOnBPjalOd2++TlLCuCcsiSen+4jjWV3/UWWLGa1PPUJXxehUnd8FpE3pzXWe5mf3OApAoLDoE4TTdxXIBPNYQAuNvkFhGNc1DTbPBQy/PH/or3k/dZd/Tlvjlw/u3Hh82Fa3lm3kbxAjWuKWCZHFNt7fG4DvVn/Cvzkyosq1mbfIS0KTJnfxO8mpMxSeNy6S1ch0YNST18Uow0rlczQ8RghBrvsrV4tCLl6Nj3Fdvsb76OoDy7t27AKR350f4ifAI9yOwvqqaaF7AsDNitRMqhn9arx3CVrJkAGvjSTUrZFmmJS+HNFjQskJI38qyHiluqK31IrxuyBxijs3lWPtHr1elL9dXT2P6e+P9+ytg/aswM1hvoyJnWLI2Ohna5GibhLKs02GUvL6z1pw6T6YP2fAhFsvYO0TfiXfyG32SwO5msB4U1ozawp6RJftA2QvW3rmhdnZWodihF6EyZBXXH8F6s1kwvegK7hK+9AzGFdlC+WTQJg/rwPgGF4k4QY07VohUkhTiqYzV2eNgUl/TCpIDd/78lHZgufA+WdEOOrJDaEHxsbRi9Pr4w8GQd5LSLos/jPXS1vhNrIgYFkPRLpid/HYBU8tt6rKSz67g2FehMWE9eBSkr+mvu7J0Kmc0u5UYscXUov4mWO9u8+ZOrL6JpYu3yLjJb9MJ1u/eHOt3i1iTBZWzFVI6mwn6l1/K8hb/y0spxpRdzyzXmCIVZAj0aIcbVAFtgyTXIx3CWOdsT89Or3oH7OJFoQ5h4bjNA3RNYdREF7AFa/pguY88ff3ubaHG5riI9dY0YoVk2OBgI6nNtdvJ6879LIZfEf1QrA/O9FaDvLzlPXJFikEN9Nvb27JUkzcxfbg3si7FUp+sfyvnqgpg2fcTrOlYmRW7EvL93k4UTlpVvD2vyvZPY31YMq6LSrUabzhP7uy0gzol0uz37UhRljveIxUppw/ypC3MyA6JeVIGVZ0uDHZpzeBG9arrd+MPDha6vz/HoR1yFutogOz1sabgHOxgxjqpL7CjBqxlNIPssSMncp0mgXzSSzMOY8i+deEY2TDtc44d9LVgfW6Qx/juNwV/Gesj+3y4ojJntb2KnVnLr6KAnTZmHWL9ig7Oeer0zU7tPGv84S0cwYopKUYBcou1ekr2de3Pt/sFcJ0mWK+fGoPbeSHWDLY6Oa+MNbtzItZxWTUZW9KZBkI8C6wcAiPwAkeBFHdTgeMzuuusGaUSpnKtE+WZj+4lTTwFxDrkcsHGSrxcXyMYcpEX+Xysv0Vs8NEt0RXd0ebSUhCoyu2OM7YL2kDrbk+IefBiGMHkvGQrr3Czo8BNF6x3qbezDsMzt1NrIhsr2A/kEKS+5zSSiVBpsw+1vXxvvNp8uXoLrCl8Rj7jSrG2bvBSZHfsCeHXCmHB1N6ghQamYLjpZXuK7N//nOyNqd0+rSnh2yN54I64mfpGWMubY5N8zpzJhjjfJVi/f3f1ZbNB1OS1se7EjwHWJbAkvya3FpoEN8Wmw0sC/XHqwihylXvmGTw9DYyUbmMkN4P+2kw8ErX5crhJcFgQv7dB7GaY7rxkdyTzsD4K1nE5MsvFqm4Gs09nrIkGy+lprNnvI7SvXtm+RmQzVa1GWNNWr3vd/Kj98JH5bJKZUe5Y5GD7is1XVS0mYr/fh662s68BCiUjSHHlnJQIkKLJqzXqdd+N/Psy8cTXzng+DWrTVX+/GGsB+/C4eWWsvyFwHbsdhBQiBYZXNpY6s81ke3+HIoM8rkN7FvaI2CFlkpSqQmiz5R+zwCMRrG0+oszmtS0U7iTCKHbI1L5esM5LG1O9CGsOaDRR9eWFtt881oY0SGbNuphtuQI29np5Rx+wZhf9jD0+hKMkxMQBkcTL64gilujeJHoyNk6mWMeryywR7MvWTL0o9sRyXVH+5nWxjpqkdtFMuqCTgaxyOJJfR/HJ1PcogHUQQ45nAk4O9Tq2hq6ZtfnUbFyCS7A25pOP9WrGIJ/NGsTPxPrrl1fHmq3j2EVB4Q/SW22SJYvjLrCtRYXs3HDRkzgQ7h1iy9AEJNdmLNcj6Yxj78iR67cNsPZDW/Ek2BWsFDfFl2K9QZb9y/tXxHqLoKi9rtiPc5hiYu6Re2nGM1XxtNxyeKn0FDaw3UlOxrP72Hec2te7UTAECh+amE+503nieIj3/bnYixTqKiVNKdDrefiF5IAzDTCoiujy+DVUCKVVomZz9WKs/9rMuOcwOjRZHVPk0bIy8nG6gCwE/AuiR7hw3vMHqOl/wnpXSk6M01+5bpEc/m+8rdHa17c2ci3xlFuAvUtv89DESELKhdohOXMV6Co44MWpA5dQB9r0Dlwwd6DmwJ7eGQ2xydgQeYFsz2JNqncvasDpkCO9Y510QW/wzPDi51iPyISXKsqx0yOczKWAVKrGc5GXtaCOm/aYB/vSs5GFw8KwiTWn2QmXNvBt8++SZ6BjG+ZDUKByx7/S75bOlAtfouIp6i/HmjWIkHagsV+G9dVmJu5UIGGYZTbbuGXb4lzEbG9649vm8SgvYMMPnFWjuy/Uqowl/uOrIcU6Cb3E29S+W3lR2SSg4xB0irVyrjhdmnpcIRizZCTxTHru19NYE9RXlH66IcrBw0bUzXPxnscaKpfUXZ4MWFNyaR3GkoI9PU4GDpGyStYjMwQnOp3IG2W7oy1yTpTFQvGYxq9HYevdLrZW9yg0/egn8B8Va4h70cqUp3kxsOFMI9nfNKk8puuTWAOnQ0OUHZ7CzYuCUPNYSya3aXJPrn34VhPOhm+00U+5zbnvNAkOdQL2FJxoxjoH+Qw8kLRMRtySfSYZnPipTCXPcphA26eqf9p9nruQeVUwG4609T6xS86X9ic5C+B2HAphDJN6qjYvSQQvYs2xt7xUX8YwG2kIJamedrSFcrCvmfzZ2K2oFLuDU15JDrESHUK3T58B2sI+2kbTPHq8aBevV35M9nHAWsLAhHUiFgcPusDEBQz1Tb0G891cgjVTlkiqSYP0xWZTBGBfDPqyXGNFOqxPNq8FdmjuJ1zwI+1Ud84a6LBQK2uwiCGwE+VLzMGmQsQIQbxK/6xgd2Osh0Sm+o9O7fvTsF5HFP++n2B9G69ChsnI2JaLqoroEqyFHcbBTrrMLEM47C/78cvle94Osfx8uXLGemBjF0yfbRzbFVG0xufyKCNPJGknt3WrmTCNhK6wGLIkFwuwLr14iMV6WD11bE1kP0qr8RSeqP4M1jNaTzMN9DGb0zmLtUo1eHg/YDR8oGVO7uOHF+yNi1hrYgb6uoPbCKlGOlpYozY+mUjcLhn42LjjOnTTdoPSsRGtWh0aZBRiks0u9EfSMmSk4XfP+kjYPEFSvIFsuu8W7tBtnvhYj8hT+E6EYXiTuXkSawmDnHil93CJU/rxvqg20TPBPod1NGANRvC5hDYpBUenYaLX1FY5Q4EEsc7XuYw1tCkP4QORa5MP+aDc6ih2XCNHvxSsiYuT7KzmYP9SkIYVK+F3xNIlJdQ9gTUzHlWqEVkuscfjN9Lbz5Rs+vBlWDNTZLVg8wWGyCzWmvea7nNjrHu1u62ZcKQwGKtvVUPjkZutGfKVTAJa7WhasA8yZ4h9RrH9MrDz70CB53fq7GCewBqGHREeRVeTvqF5j2NNBRXPtkaWse5CuS49rNdT1uiAdahDQp+m9pTIzgYrEBg9WKwpxMi5N1C2IdUnwXoV0vtKGyEhQ32wYSzhitYEa7lG/iuUAVp6fO8mIS/40dmpC1iLUG80AtFR2hV8gDjntaRgvwrWW8UaiW6LtbMCgqzMSiJ19sJ/yt7Iy9WxnXgrk/ULy2TFsRGEnTgdMOyN0Bm18j6+m6LrzVnKR5xViA5cuxUVr8VPod2riSRSZhzWLQd1WnDMaEV47v28L8NCvSmUWroFCLFi3Qnj6HlgL/P5Aqw5IyZEXJ+nUCKgJg5Pg5CV0wOFxjHy2x0rAHW4IWoa2GAqVEomSMXFSwr1iW/IUpKo/Ova5uLmIwSgdR4D2uWaXZmi8jiIOWfLML0qAQjslBQH7uymOof1e8l5cZafPtkp1IR1IlUvpMGbf65eBeuHEGtyqMFY58w2p3k5BQgbxGLdh8ziMdZ823uaA4k+iRoVZ3IQsAHrXCvMWvGppwzsOFbx9/zVBFkKKAt2XDmZwamNeBTEVhJQdL2MNTTKFbZe8csd1MBao8jk2zT/bC62sM/wVM1YrslIyun2m4Y3I2Mr1Ziohw2DFrJwIFGroVvX7aBD+Nazir1RruAQAU/2o6iXjzXVjGlGLM1s3j4TukHJCKZeVZSNw8QIJ8br8869i3otcBYka16oUWh+iAyI/iTWwNHWn8KFvNChef8+WuZOWqxbh3WQFhC4hWAZM3dAikp77Dyp9ZGDShXOybfM0mEzF0JIC8SLTBimkBJhjbHeyoIinlsi1X0JZdTv7rBkkkzMlcGT6TQBTXqlSQads14yOb0Yzoh/LebHprEVtOYhanOXqYqJ3urF2ZrNhQwd9j6X7BBVlWDO8sLH1aE42aDumUdHZYtVFlA+OY+ertYBrUxvmAxcYG3ZEE5eYXzpOmkqy8QhJfZDS8ZIlApX76R+VpFYrI3jMAvHHljTblhLLr9mjnccT3QIZ9FVPrnm7m/F671oaoTGRX/QzgWoXVaw9L70F0nbgS3t95fUFVRLe2MxsJQbvbOZSlnBmjLhA9bZOOcu1h6tfCSRqiG6DU1C+CBWZ6zFp1iTeYGdXwKvdHc/rChRkSR+LNhc+ejdNleQsaaj4BDzhTJlD5VCAU5tRSaroyyxhZ03rCkIaw9pCPWNrX61RNCBxUGB8KGOncyAS2T7EqwHHVInubL5tQKb7A3V12O5dmQyV79Czn2DOEojhCVZxTmRI1bOl3mgpWzNFPZRGOp1LGl6RubHdosKYLJ1ec/0Km2MeEHAGlPRwBDSzF0OHhDWSiMhnPyuRSAserD10Yy1ywB8+GsDZfnLBuGK3NZ2DtrHa4dwgwj0YfP1abCvzuqQEOu4HLOHmDtmsTZ2f2vUFyaz7lZTXlJ/zuW3ltmHOg0qAMd2liasAa8ja9ZAr8NMr4XR0JLG9M0V+j9HFeQqi6SWwZXpSG6A8DRaxs8WkWLNlDUyvZuBt+bpEBHNvyHThVfGR+a5ULbc9jpwHdShMCC/HYRZ+XtYl4p1kP8eZUwIa1euy5hyWRBIfSkzuAuOEFZ5JgaYuEWcqOVJdD46WHqxWIK0cIXqWus8EkmQ0jnaNaBJONOQ3dmbPlqiRU0zm1fCuuSMZFMlYird5kFhB9Wpe2k7xVq3ROsDkxqD7h9vrLihrdegoUF+/UlF8oQOcXtjnp4t6gLWnn3NySbGWgiOpEGLyoq0S47tbBkNLLxOaubg4pHOocQKGxprdgMRaCRrsGItm3DyHonhIN5rL5crqWztlF16mkCT2CE8MMpcsKtj9+Se5JoLxnlLtDsw/bsT/TOureK8WndtoxL94+FAt3s4nxx7//fmn6UmLcrpg31dSZBiHmtE9dXP87JgCPvQriSpXAAlxQXYNGOhiawkvmnDtsKfhigT1AkzVJjZlMAl5ew8Y1lrfFaqAd1ihgaXQKlWUoEkkQ51o7GuSi683g3uDB1+vyWdS6bbFenpooh+GbE9TmjIkZXxDAOIBcBY0UYxFvVSOJA8EUX7DGn474t8GbH54rHZJFFLa/O5cNvRaP1sXYsBkJvCLQyENiUqvfaLA3qW6zukkMkJNZY+yDd1tNYzvzdkali7PPg5BuyMuNT16ilXRgorOXKFvfEXqQBC2rB/YvtvAOl4lm6FQE5uTcae98ZsA9muDsIanhXvq7NyHfqNccDU58iClTDf5hTOw2D2AesmF55rzGu8MXf5QGuosRP2YofAkiOOnmANul5SiJvajdLLWujk7VGCdYkl6IVw17beei5uTpRPFzeX8tQb2RpodySZlr12YICFswewrdImkaZuGoL2hoR7vtxjEeutRoNjjvOJ36jE5pxz0rZTC1Qu4nwmXBK1VwPdnjQ+C5HmpkZcdxBbyBoKMmn1KgUyyFbXj3OzDG5Fck8+aZvVQYwW2fhoxEohU70th/VnWzV42UsvnFJ7WPP33EgjIWzsJEZ1HIr0aLrikt0Ni3ZzIEVC9pfty+Lwfu/tjf+c0SFa3yUc4bpkRlehtrXugmxc4Gsf/MQwp91TobImqBWF346djYE+wd9UtrrYYlu7lvaST2uYDAR6lBmih6R50nSo/efEfGA3ZeTL03+lBE+G9iNeaNKrcOVYrnd8hHB5j3CsM0xtmdu4R4N1els6wen0QNmxCGbfwcMa4v1h6JMhacvNYlu1hms1SLS+aQOVsNkQtaliKciFVnc9Ipi4kg+OK+B3LmCKuk5omMUd/R3eZCCdPIuE6yMdCaQd1qwWXfkIh0ZCYskRmbo78oGqpEFOtKJlh8Y6d1p0w782jatxbZNhIl2vOQKaiYZjkfYJrrF7Jy6zVmQHdteBR9B+CNok+jr0ajlE5xpjUf2XZCEeHwHUdXTdjXoGRXP9q7rIEi6HHl8anIxcaxhTPO4f4TicghZ18gIHISylERsbzInCnjf4zpP9ntE1GdMUwa9m9I67D3Jq87JMw9YQ3k8T4gNnIFiArmmWSF0DbRKFjzREwr98sd2LyKY804PIK+syi23eDC//axMtdkw8cu4VYv9964Gx7byJ8cRr23sHnutSZo7TXoL6te4Uvd/Kse/PdESEq5SVytR6qiTCewO6THrCkWRnQ18pwP3xiz+uvpCyvF/sOXna9nr1hMFiw0ljovk2kD2Cgss9Hw066W3N9dwZO9out+FZZYa+Uf+9U7ed73hi3Cv6Jrq0Bym478Ov9PPDaC0Kl98mFZYYABPFrSYrJZmA9qk4BG2qFG1PpTTmdRqkTs8CD5eF+PMLeoIaZxy8UQdcM9pYs/o5pey+1U5mDu1qLdcH5kD7Ywi4+/nw+GZdfAft+W+1FjbnWtSGWDNz+wXDbppgRKBvWJ6ELdg+uuHF6f8/jhtz4WS+HGsPdNhsCGqJxvZA5ld01jgUb4v19f9aM+i5U74C1koPT2zYeZBplfA0GxX3/Av3+9bffe6w18VaE1ASXyTjTwF3+iSpTNQ/t5H1b7SuNvfRH+4Of8kU/S7WAeVYOvG45qJooqltRpsX3ER4wP2v6H93YVymwizWryHbGs3kDKvfvJV+eZZc8+7tPv5AjoILW5v5Ju433f3w/tYstDuaJ4Bvzen7XH9b8lomhxwnjTUMTkBmJ3L+6h+ZoAWPMW+DtasYrkf9O9Kg7n7c4Vtadm8Dd2LkRDr6YT/83plJF9vw02FAkZKGP+DWnPy5+BmKZT8G6TQyJMKP/OxGS9A6v5391PaH1yR9+wpYn+3Io3HF5GlFce3+p9DhUOVm/B7Sbg5MUESHDCucGURnmmJ2Hx4/KWaIIRoTzcu1mURDZt6QPL9WNurFmEjikWFLd8K6fQWs46ebeS0/gGEvo1ABQKkB6fmD3qkG+Dg0RfSfRyYWwNnFm718vlGj0nBr6pnm4Ai/Jvwt3PWaC/DE539MpHCLNZ3nBfTgsgaFjRIBfAzeePR0JY5HrAqXsJdkAG7OO8drYH1R47TF8HWmusbunyCCUkyaAto/9e8UY25MRzEdijdzv19OsXJDkA56BWFoqWgxODSdgH3cKiENpGpyBjQkLXVntlUuQtlDlQf3jeHo9QAtf+nBrrGf6Mb4cWgDASIhCKdyNQVnoVu+nEov582xlshJmSxs3y1yf5pY2eNBGtp/Acz0nvNVlKtBs1WIc5Nxsuya+wZIt2OjnURqaZzMBKcyCXdiJAB8Y4uh4H2v0QSUfd9jwyNp4xKzWn+qlNd7R9P/WHtlSGumVtE5tUrmZJNtjbk2f06u41l9fd0bIWzVqe14alybd8b6KNXGa+2o3GbrdQbeAlhPqPBkWhE4uitZtrYbfyjXRrF2nQZqSchvbSGI6sDaVTGSYdKWkh9rBooqUmapY8hIXsfx8OkO+ColO4w+P0jbxv7V/CbW8aVY5wtEnDoWskWKhvdSb+6wNoK1dEtpgWrpeoqJyFCLQ8jmWjvTolk5Mq/7CdYoP4+1lI6ntYFGliXBldJl8CAJ7UQFmsSQAjO5pBr9qptEW1oIjY+0eY9MXi3MZj6Hd8C/KddU25hxZwTueB+vpdVPF6kOMZHqEOH2a2oyVd4CIF6jEwbESHmRnWDtJ65dKZL2T9CSA9JphjtZ17b5W+s3/zOurpem87vlmTI5Ogt470h2aVMHJL9kS9xnYIhV3L0UAm5cPcMbYh172eB5rDHxJROWaPOSqInF+tFiHTMzgIhRA9bwTKAuKP2ey39MexSI0BfqxwzhZ5dIX7fE0nx5s7VTENrJfEDMuXtHF2Wsg9aqkigBKWUnlQuwO7UsJWWa/fC0AmMGrOP4bfbF+BzWrBSReOXMaMu8k457jDGJwco189UTIpM5rCPVImkmUkprV3i1ulCiIDkm2+3ulqt/89IqUSN7o23QTubLd3FQuf4IeoGVhtGHf5k8HW2WUc+U4pS1GTlJnRn4lRQfiv3yD2OcDlnFb6RF4qGpqJn259PeD8Lnler8jivUpTYGWO/ghjLXqBJ54Z4rsMJtvUMtXiljXU6whvzKZwXTUnmUR2HzeGRNfmQHznxUyWSa9rAZ5mqHbH1XZsufxSXcD91chGAplWuDe+uwXr0q4D5pW7G+nmDdi43GNLAalfpGlK7oRcG6AdYgbKAQAwvbbuuO4QrGk9jFRmhJ8czeyCohds+MEBuy0xLccb2FqiJK8PGX28psrhsKsXYaI3guSh+1rtNF620dW+2k8frqI/aL4Jd8dNMmjiWBB23wAs5Z6cK264i5tGMtw4q9VKy3ohta2/Smshg5fR1E3jqv6aKljWmlpo+11w4YX0dF0EzmjJkmZNze2FCQxJgx1n6DETQhKmv9HuN3ebFYv4HGdm3ZFnwZqOdC+D9W2h6M3hObwBbrhDY00iJp7EnQUSvndqV9AJbT1/tQX1msda3V8oivPlJ9zfKuBKVrcc+1MjfXqnWtcBCsW3zAeHQRYZ35nbt63WayPGwHNsh1/DY+4+oM1ojTsGkgzDx48rNY542au/7mZOTBAanr0PF9kGszJbJhEyylb0tu2LrmugHbfbUi7o0sB/cAmVRKWK3MWqzBdAh1SDx+8oQRW4o0yCnQN2+jQyYMwMWncuGJSkb46mxgi76uVYc0uh8a26MSWJ8s0ygXrBvZ09i+rrkOoJvBmhWwNQ6EHcw2H3YKWRmdsbxun5MkvQOvxeTc2dp05ehYrMMu+71QE7MieH7pSWtW38raGzc3H/UOKam3K5PsK5EOxrot7aJUmw/gIPQbK9/9aMkv8kfpOdH5WJsZ4jHKjgtb1td3zjhzu7K9rEJ2UmcKY6r7yJr3ufEj692wN3Z+5FWxDiZ9q/GXOH4bo09VZDbzODDtWEASfFdIzUtq5XoVYl3DGpNtLPYKO6UWjBSM7bneK9b7MDFh/UY8CK/RcBCbIeo3si3YolrfWiG1ON3Sz0kCBNL7jEs0mKdsH+25iLX9mhDr+A9gPWPzmZ8SEkIJQFaqj9Zbb5KxPtq4RxNZ2zT1nnbH/nmae40uVF+Pnyol/fJQESGRKrbIO1XMsfYakrSoGoK0gbZ3LTpI1hogkDifY+KricEF9Th3KMIcLIgnWL+tvrZNjZOZhKu1r601nlofPZWYW29rANj70gKE4UkcvYumGl4ONp439mUs1pixbxKG8310V2qLAHbBQWedDaEiw4+SGIAazdr/hlbJydWn12OsEVkdy3X/B/ZGrpIwS6mC2jH4hwBSHItcG6uvjS3BqtPEqyCR0JGQKn9Gn9mIo0h9O+PLqANjJMTNlqNEW1wbs5oTFNZebpUqnbNWahVrr5lJIpV4AmCdFIHJwbM41df7l/D5ni/XZqEtTp7Z3o5aNWA0/wHgf3KdBmL41+wolpy+OTo5wWMFaVJ+wIT4JOufmD95MbH5HrOUg9Ydzq6Pc9xqVsi1cycys5EKj5SnCw+Wlo/IdErVgnsOr+gyNpXGnYS5nqwOHrekFXtl+tZj8RHDndD4+SHGemF8U4mQ0vhnG1cG2Fxb8D3oEhrYEEhP5mOGOd4+8LMleuVAHyrNYBbaIJgpW4dKGjLaBqqG40W4mkZDevh+Cl+13jPCNMcZ3t8ROaTpTVMxezJ9AOFkUP4zv2QkezcS9ywKqtE2y48vdznsLpqwP0xkqwZmWCHRtNrALFFWjavT8Hmt3wE82ekuj/55clLjP5PbFGbma+cf2W2m+fxrKakunhgmevIj+rnwGdgzD+UbXVI/IRUYV2IxfdJ4+Ej6fkI6eph/an1wULfIKOvdeyYs+GDlLZfadf3Muc3cF3qU8P8DZIljyBJajZYAAAAASUVORK5CYII=';
@@ -626,16 +649,16 @@ function pMarket(no){const m=mktCalc();const rows=m.rows.slice(0,16);const fs=ro
    `<div class="tile"><span class="l">待售物件</span><span class="v">約${esc(S.market.listing)||'—'}<small> 筆</small></span></div>`,
    `<div class="tile r"><span class="l">最高成交單價</span><span class="v">${fx(m.max)}<small> 萬／坪</small></span></div>`,
    `<div class="tile gr"><span class="l">最低成交單價</span><span class="v">${fx(m.min)}<small> 萬／坪</small></span></div>`,
-   `<div class="tile"><span class="l">近${m.n}筆平均單價</span><span class="v">${fx(m.avg)}<small> 萬／坪</small></span></div>`,
-   S.market.avgAll?`<div class="tile"><span class="l">社區平均成交均價</span><span class="v">${esc(S.market.avgAll)}<small> 萬／坪</small></span></div>`:`<div class="tile note"><span class="v">以下成交紀錄皆以<br>拆車位後單價計算。</span></div>`];
+   `<div class="tile"><span class="l">近${m.n}筆平均單價（拆車）</span><span class="v">${fx(m.avg)}<small> 萬／坪</small></span></div>`,
+   S.market.avgAll?`<div class="tile"><span class="l">社區平均成交均價</span><span class="v">${esc(S.market.avgAll)}<small> 萬／坪</small></span></div>`:`<div class="tile note"><span class="v">拆車單價＝（總價－車位價）÷房屋坪。<br>含車單價＝總價÷（房屋坪＋車位坪）。</span></div>`];
   const tr=rows.map(r=>{const c=isFinite(r.unit)&&r.unit===m.max?'hi-r':isFinite(r.unit)&&r.unit===m.min?'hi-g':'em';
-   return `<tr><td>${esc(r.ym)}${r.unreg?'<span style="color:var(--p-red);font-weight:900">※</span>':''}</td><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${r.pping?esc(r.pping)+'坪':'—'}</td><td>${esc(r.pprice)}萬</td><td>${esc(r.total)}萬</td><td class="${c}">${fx(r.unit)}萬/坪</td></tr>`}).join('');
+   return `<tr><td>${esc(r.ym)}${r.unreg?'<span style="color:var(--p-red);font-weight:900">※</span>':''}</td><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${r.pping?esc(r.pping)+'坪':'—'}</td><td${r.est?' style="background:#fff3cd"':''}>${esc(r.pprice)}萬${r.est?'＊':''}</td><td>${esc(r.total)}萬</td><td class="${c}">${fx(r.unit)}</td><td>${fx(r.gross)}</td></tr>`}).join('');
   const cl=lines(S.market.conclusion);
   return `<div class="pg">${head(`${no}、社區實價登錄行情分析`)}<div class="body">
    <h3 class="sh">${esc(S.basic.community)||'社區'}</h3>
    <div class="tiles">${tiles.join('')}</div>
-   <table class="dt${rows.length>12?' compact':''}" style="font-size:${fs}px"><tr><th>成交年月</th><th>樓層</th><th>房屋坪數</th><th>車位坪數</th><th>車位價</th><th>總價</th><th>拆車單價</th></tr>${tr||'<tr><td colspan="7" style="padding:30px;color:var(--p-muted)">請輸入社區成交紀錄</td></tr>'}</table>
-   ${m.rows.length>rows.length?`<div class="small" style="text-align:center">近三年共 ${m.rows.length} 筆，表列最新 ${rows.length} 筆；最高、最低單價以全部 ${m.rows.length} 筆計算。</div>`:''}${S.market.avgAll||rows.some(r=>r.unreg)?`<div class="small" style="text-align:center">${S.market.avgAll?'以上成交紀錄皆以拆車位後單價計算：（總價－車位價）÷ 房屋坪數。':''}${rows.some(r=>r.unreg)?'<br>※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。':''}</div>`:''}
+   <table class="dt${rows.length>12?' compact':''}" style="font-size:${fs}px"><tr><th>成交年月</th><th>樓層</th><th>房屋坪數</th><th>車位坪數</th><th>車位價</th><th>總價</th><th>拆車單價</th><th>含車單價</th></tr>${tr||'<tr><td colspan="8" style="padding:30px;color:var(--p-muted)">請輸入社區成交紀錄</td></tr>'}</table>
+   <div class="small" style="text-align:center">${[m.rows.length>rows.length?`近三年共 ${m.rows.length} 筆，表列最新 ${rows.length} 筆；最高、最低拆車單價以${S.market.excludePresale===false?'全部':'排除預售屋／分件後的'}紀錄計算。`:'',m.skipped?`近${m.n}筆均價已排除預售屋／分件登記 ${m.skipped} 筆。`:'',S.market.asOf?`資料時間：${esc(S.market.asOf)}`:'',estNote(m.rows),rows.some(r=>r.unreg)?'※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。':''].filter(Boolean).join('<br>')}</div>
    ${cl.length?`<div style="display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center" class="box"><div class="sh" style="font-size:22px">重點結論</div><ul class="bl">${cl.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
    </div>${foot()}</div>`}
 
@@ -652,34 +675,40 @@ function pTax(no){const h=holding();const isNew=h&&!h.old;const ex=expenses(isNe
     <div class="box"><div style="font-size:18px;font-weight:900">登記日期：${reg}</div><div style="font-size:15px;margin-top:2px">本案於105年前取得，適用舊制財產交易所得稅；土地另計土地增值稅。（${holdTxt(h)}）</div>${lvtBox()}</div>
     <div><h3 class="sh">舊制財產交易所得稅重點</h3><div class="cmp2" style="margin-top:8px">
      <div class="c"><h4>核實認定</h4>依實際售價、取得成本及必要費用，計算房屋交易所得；須備齊相關憑證。</div>
-     <div class="c b"><h4>標準認定</h4>無完整成本憑證時，按適用標準估算。本區暫按房屋評定現值 ${esc(S.tax.stdRate)}% 評估。${isFinite(std)?`<br><b>房屋評定現值 ${money(hv)} 元 × ${esc(S.tax.stdRate)}% ≈ 財產交易所得 ${money(std)} 元</b>，併入當年度綜合所得申報。`:''}</div></div>
+     <div class="c b"><h4>標準認定</h4>無完整成本憑證時，按 114 年度${esc(OwnerReport.districtOf(S.basic.address)||'本區')}標準估算（財政部${OwnerReport.STD_DECREE}，可改）。${S.tax.stdRate?`房屋評定現值 ${esc(S.tax.stdRate)}%。`:''}${isFinite(std)?`<br><b>房屋評定現值 ${money(hv)} 元 × ${esc(S.tax.stdRate)}% ≈ 財產交易所得 ${money(std)} 元</b>，併入當年度綜合所得申報。`:''}</div></div>
      <div class="small" style="margin-top:4px">※ 實際適用方式、稅額須依出售年度規定及稅務機關核定。</div></div>
     <div><h3 class="sh">賣方常見支出項目</h3><div class="box" style="margin-top:8px">${exHtml}</div></div>
     <div class="box" style="font-size:16px;font-weight:700"><span class="tag">提醒</span>若有其他細節欲了解，歡迎來電聯繫。</div>
    </div>${foot()}</div>`}
   const t=taxCalc();const cs=t.cs;const d=v=>f2(v,1);
-  const tbl=(k,label,taxRow)=>cs.length?`<table class="tx"><tr><th>成交價（萬）</th>${cs.map(c=>`<td class="h">${d(c.p)}</td>`).join('')}</tr>
+  const tbl=(k,label,taxRow,takeKey)=>cs.length?`<table class="tx"><tr><th>成交價（萬）</th>${cs.map(c=>`<td class="h">${d(c.p)}</td>`).join('')}</tr>
     <tr><th>仲介費（萬）</th>${cs.map(c=>`<td>${d(c.f)}</td>`).join('')}</tr>
     <tr class="tax"><th>${label}</th>${cs.map(c=>`<td>${d(c[taxRow])}</td>`).join('')}</tr>
-    <tr class="net"><th>稅後金額（萬）</th>${cs.map(c=>`<td>${d(c[k])}</td>`).join('')}</tr></table>`:ph('請輸入取得價與試算最高價',120);
-  return `<div class="pg">${head(`${no}、房地合一稅與稅後金額試算`)}<div class="body" style="gap:11px">
+    <tr class="net"><th>未扣土增稅與貸款<br>的稅後參考（萬）</th>${cs.map(c=>`<td>${d(c[k])}</td>`).join('')}</tr>
+    ${t.hasLvt?`<tr class="net"><th>實拿（再扣土增稅）（萬）</th>${cs.map(c=>`<td>${isFinite(c[takeKey])?d(c[takeKey]):'—'}</td>`).join('')}</tr>`:''}</table>`:ph('請輸入取得價與試算最高價',120);
+  return `<div class="pg">${head(`${no}、房地合一稅與稅後參考`)}<div class="body" style="gap:11px">
    <div class="box" style="font-size:15.5px;line-height:1.6"><div><b>試算基礎：</b>取得價 ${esc(S.tax.buy)||'—'}萬、提列成本 ${esc(S.tax.cost)||0}萬${t.lg?`、土地漲價總數額 ${f2(t.lg)}萬`:''}（暫定，裝潢未計）</div>
     <div><span class="tag">登記日</span>${reg}，${holdTxt(t.h)}。</div>${S.tax.note?`<div><b>備註：</b>${esc(S.tax.note)}</div>`:''}</div>
-   <div><h3 class="sh" style="font-size:19px">A方案｜${t.lbl}，房地合一稅率${t.rate}%</h3><div style="margin-top:6px">${tbl('nA',`房地合一稅<br>（${t.rate}%）（萬）`,'tA')}</div></div>
-   ${t.showB?`<div><h3 class="sh" style="font-size:19px">B方案｜符合自住優惠：設籍持有滿6年，400萬免稅，超過部分10%</h3><div style="margin-top:6px">${tbl('nB','房地合一稅<br>（優惠試算）（萬）','tB')}</div></div>`:`<div class="small">本戶持有未滿6年，暫不適用自住房地400萬免稅優惠。</div>`}
+   <div><h3 class="sh" style="font-size:19px">A方案｜${t.lbl}，房地合一稅率${t.rate}%</h3><div style="margin-top:6px">${tbl('nA',`房地合一稅<br>（${t.rate}%）（萬）`,'tA','takeA')}</div></div>
+   ${t.showB?`<div><h3 class="sh" style="font-size:19px">B方案｜符合自住優惠：設籍持有滿6年，400萬免稅，超過部分10%</h3><div style="margin-top:6px">${tbl('nB','房地合一稅<br>（優惠試算）（萬）','tB','takeB')}</div></div>`:`<div class="small">本戶尚未屆滿6年（屆滿當日即算滿），暫不適用自住房地400萬免稅優惠。</div>`}
    ${lvtBox()}
    <div><h3 class="sh" style="font-size:19px">賣方常見支出項目</h3><div class="box" style="margin-top:6px;padding:8px 14px">${exHtml}</div></div>
-   <div class="small">※ 應稅所得＝成交價－取得價－提列成本－仲介費－土地漲價總數額；稅後金額未扣房貸餘額、土地增值稅、代書費及提前清償費用。實際稅率與免稅額依持有年限、自住條件與申報規定認定。</div>
+   <div class="small">※ 應稅所得＝成交價－取得價－提列成本－仲介費－土地漲價總數額。「未扣土增稅與貸款的稅後參考」尚未扣除土地增值稅、房貸餘額、代書費及提前清償費用。有填土地增值稅時，「實拿」再扣該稅額（A 方案用一般用地，沒有才改用自用；B 方案相反）。持有期間以曆年比較，2 年以內、未逾 5 年、未逾 10 年都含屆滿當日。</div>
   </div>${foot()}</div>`}
 
-function pPrice(no){const p=S.price;const fl=String(S.basic.floor).replace(/\D/g,'');
-  const tr=p.listings.filter(r=>r.floor||r.price).map(r=>{const self=fl&&String(r.floor).replace(/\D/g,'')===fl&&(!S.area.total||num(r.ping)===num(S.area.total));
-   return `<tr class="${self?'self':''}"><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${esc(r.layout)}</td><td class="em">開價${esc(r.price)}萬</td></tr>`}).join('');
+function sameHouse(r){const fl=String(S.basic.floor).replace(/\D/g,'');if(!fl||String(r.floor).replace(/\D/g,'')!==fl)return false;const own=num(S.area.total);if(!isFinite(own))return true;const ping=num(r.ping),pp=num(r.pping)||0;return ping===own||Math.abs(ping+pp-own)<0.05}
+function listUnit(r){const ping=num(r.ping),price=num(r.price);let park=num(r.pprice),est=false;
+  if(!(park>0)&&num(r.pping)>0){park=num(S.price.parkVal);if(!(park>0)){const vals=S.market.rows.map(x=>num(x.pprice)).filter(v=>v>0).sort((a,b)=>a-b);park=vals.length?vals[Math.floor(vals.length/2)]:NaN}est=park>0}
+  return{unit:OwnerReport.askUnit(price,park>0?park:0,ping),est:est&&!(num(r.pprice)>0)}}
+function pPrice(no){const p=S.price;
+  const tr=p.listings.filter(r=>r.floor||r.price).map(r=>{const self=sameHouse(r);const u=listUnit(r);
+   return `<tr class="${self?'self':''}"><td>${esc(r.floor)}</td><td>${esc(r.ping)}坪</td><td>${r.pping?esc(r.pping)+'坪':'—'}</td><td>${esc(r.layout)}</td><td class="em">開價${esc(r.price)}萬</td><td${u.est?' style="background:#fff3cd"':''}>${fx(u.unit)}${u.est?'＊':''}</td></tr>`}).join('');
   const an=lines(p.analysis);
   return `<div class="pg">${head(`${no}、待售物件比較與價格建議`)}<div class="body">
    <div class="price2"><div class="pbox"><div class="l">建議網路開價區間</div><div class="v">${esc(p.online)||'—'}</div><div class="s">${esc(p.onlineNote)}</div></div>
     <div class="pbox"><div class="l">客戶期望價位區間</div><div class="v">${esc(p.expect)||'—'}</div><div class="s">&nbsp;</div></div></div>
-   <div><h3 class="sh">同社區目前待售比較</h3><table class="dt" style="margin-top:8px"><tr><th>樓層</th><th>坪數</th><th>格局</th><th>開價</th></tr>${tr||'<tr><td colspan="4" style="padding:20px;color:var(--p-muted)">目前無同社區待售資料</td></tr>'}</table></div>
+   <div><h3 class="sh">同社區目前待售比較</h3><table class="dt" style="margin-top:8px"><tr><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>格局</th><th>開價</th><th>開價扣車單價</th></tr>${tr||'<tr><td colspan="6" style="padding:20px;color:var(--p-muted)">目前無同社區待售資料</td></tr>'}</table>
+   <div class="small">房屋坪＝含車建坪－車位坪。開價扣車單價＝（開價－車位價）÷ 房屋坪。黃底＊表示車位價用本戶車位價或成交車位價中位數推估。</div></div>
    ${an.length?`<div><h3 class="sh">分析與建議</h3><div class="box" style="margin-top:8px;padding:6px 14px"><ol class="nl">${an.map((x,i)=>`<li><span class="n">${i+1}</span><span>${esc(x)}</span></li>`).join('')}</ol></div></div>`:''}
    ${p.summary?`<div class="sum"><span class="ic">結</span><span>${esc(p.summary)}</span></div>`:''}
   </div>${foot()}</div>`}
@@ -703,7 +732,7 @@ function status(){const b=S.basic,a=S.area;const req=[b.community,b.address,b.fl
   $('#st5').textContent=S.price.online?S.price.online:'未填';if(typeof libStatus==='function')libStatus();if(typeof drawChecks==='function')drawChecks();$('#st0').textContent=S.agent.name;
   const parts=['main','balcony','public','parking','canopy'].map(k=>num(a[k])).filter(isFinite);const sum=parts.reduce((x,y)=>x+y,0);
   const ac=$('#areaCheck');if(parts.length&&isFinite(num(a.total))){const ok=Math.abs(sum-num(a.total))<0.02;ac.className=ok?'ok':'warn';ac.textContent=ok?`分項加總 ${f2(sum)} 坪＝建物登記坪數 ✓`:`分項加總 ${f2(sum)} 坪，與建物登記 ${a.total} 坪不符，請核對謄本`}else{ac.className='hint';ac.textContent=''}
-  const r=$('#regime');if(!h){r.className='warn';r.textContent='請輸入所有權登記日，會自動判斷新舊制'}else if(h.old){r.className='ok';r.textContent=`105年前取得 → 舊制財產交易所得稅（${holdTxt(h)}）`}else{const [rt,l]=bracket(h.years);r.className='ok';r.textContent=`105年後取得 → 房地合一稅・${holdTxt(h)}・${l}，稅率${rt}%${h.years>=6?'・可評估自住優惠':''}`}
+  const r=$('#regime');if(!h){r.className='warn';r.textContent='請輸入所有權登記日，會自動判斷新舊制'}else if(h.old){r.className='ok';r.textContent=`105年前取得 → 舊制財產交易所得稅（${holdTxt(h)}）`}else{r.className='ok';r.textContent=`105年後取得 → 房地合一稅・${holdTxt(h)}・持有${h.tier}，稅率${h.rate}%${h.fullSix?'・可評估自住優惠':''}`}
   $('#oldBox').hidden=!(h&&h.old);$('#newBox').hidden=!!(h&&h.old)}
 
 const TEAM=[['李祐承','0933-317-625','店長'],['盧家儒','0963-265-697'],['曹維綱','0921-652-092'],['張宏瑜','0980-114-476'],['陳宥玥','0965-569-009']];
@@ -711,17 +740,20 @@ function syncAgentSel(){const sel=$('#i-agentSel');const list=[...TEAM];
   if(S.agent.name&&!list.some(t=>t[0]===S.agent.name))list.push([S.agent.name,S.agent.phone,'舊資料']);
   sel.innerHTML=list.map(t=>`<option value="${esc(t[0])}">${esc(t[0])}${t[2]?'（'+esc(t[2])+'）':''}　${esc(t[1])}</option>`).join('');
   sel.value=S.agent.name;sel.onchange=()=>{const t=list.find(x=>x[0]===sel.value);S.agent.name=t[0];S.agent.phone=t[1];try{localStorage.setItem('osr-agent',JSON.stringify({name:t[0],phone:t[1]}))}catch(e){}render()}}
-function bindInputs(){document.querySelectorAll('[data-k]').forEach(el=>{const v=getP(S,el.dataset.k);el.value=v??'';el.classList.toggle('flag',FLAGS.has(el.dataset.k))});syncAgentSel()}
-document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;setP(S,k,e.target.value);schedule()});
+function bindInputs(){document.querySelectorAll('[data-k]').forEach(el=>{const v=getP(S,el.dataset.k);el.value=v??'';el.classList.toggle('flag',FLAGS.has(el.dataset.k))});syncAgentSel();const ex=$('#i-m-exPre');if(ex)ex.checked=S.market.excludePresale!==false}
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;setP(S,k,e.target.value);if(k==='basic.address')syncStd(false);if(k==='tax.stdRate')S.tax.stdAuto=false;schedule()});
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){setP(S,k,e.target.value);schedule()}});
 
 function drawToggles(){$('#pageToggles').innerHTML=PAGES.map(([k,n])=>`<label class="chk"><input type="checkbox" id="pg-${k}" ${S.show[k]?'checked':''}>${n}</label>`).join('');
   PAGES.forEach(([k])=>$('#pg-'+k).onchange=e=>{S.show[k]=e.target.checked;render()})}
-function drawMkt(){const m=mktCalc();const t=$('#mktTb');
-  t.innerHTML=`<tr><th>年月</th><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>車位價</th><th>總價</th><th>拆車單價</th><th>未登</th><th></th></tr>`+S.market.rows.map((r,i)=>`<tr>${['ym','floor','ping','pping','pprice','total'].map(f=>`<td><input id="m-${i}-${f}" data-k="market.rows.${i}.${f}" value="${esc(r[f])}"></td>`).join('')}<td class="calc" id="mu-${i}">${fx((num(r.total)-(num(r.pprice)||0))/num(r.ping))}</td><td style="text-align:center"><input type="checkbox" id="m-${i}-unreg" ${r.unreg?'checked':''} style="width:auto;min-width:0" aria-label="尚未上實價登錄"></td><td><button class="sm ghost" type="button" data-delrow="${i}" aria-label="刪除">✕</button></td></tr>`).join('')}
-document.addEventListener('change',e=>{const m=e.target.id&&e.target.id.match(/^m-(\d+)-unreg$/);if(m){S.market.rows[+m[1]].unreg=e.target.checked;render()}});
-function drawLst(){$('#lstTb').innerHTML=`<tr><th>樓層</th><th>坪數</th><th>格局</th><th>開價(萬)</th><th></th></tr>`+S.price.listings.map((r,i)=>`<tr>${['floor','ping','layout','price'].map(f=>`<td><input id="l-${i}-${f}" data-k="price.listings.${i}.${f}" value="${esc(r[f])}"></td>`).join('')}<td><button class="sm ghost" type="button" data-dellst="${i}" aria-label="刪除">✕</button></td></tr>`).join('')}
-document.addEventListener('input',e=>{const m=e.target.id.match(/^m-(\d+)-/);if(m){const r=S.market.rows[m[1]];$('#mu-'+m[1]).textContent=fx((num(r.total)-(num(r.pprice)||0))/num(r.ping))}});
+function drawMkt(){const t=$('#mktTb');
+  t.innerHTML=`<tr><th>年月</th><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>車位價</th><th>總價</th><th>拆車單價</th><th>含車單價</th><th>未登</th><th></th></tr>`+S.market.rows.map((r,i)=>{const u=unitsOf(r);return `<tr>${['ym','floor','ping','pping','pprice','total'].map(f=>`<td><input id="m-${i}-${f}" data-k="market.rows.${i}.${f}" class="${f==='pprice'&&r.est?'flag':''}" title="${f==='pprice'&&r.est?estLabel(r.estSrc):''}" value="${esc(r[f])}"></td>`).join('')}<td class="calc" id="mu-${i}">${fx(u.split)}</td><td class="calc" id="mg-${i}">${fx(u.gross)}</td><td style="text-align:center"><input type="checkbox" id="m-${i}-unreg" ${r.unreg?'checked':''} style="width:auto;min-width:0" aria-label="尚未上實價登錄"></td><td><button class="sm ghost" type="button" data-delrow="${i}" aria-label="刪除">✕</button></td></tr>`}).join('');
+  const note=$('#mktEst');if(note)note.textContent=estNote(S.market.rows)}
+document.addEventListener('change',e=>{const m=e.target.id&&e.target.id.match(/^m-(\d+)-unreg$/);if(m){S.market.rows[+m[1]].unreg=e.target.checked;render()}
+  if(e.target.id==='i-m-exPre'){S.market.excludePresale=e.target.checked;render()}});
+function drawLst(){$('#lstTb').innerHTML=`<tr><th>樓層</th><th>房屋坪</th><th>車位坪</th><th>格局</th><th>開價(萬)</th><th>開價扣車單價</th><th></th></tr>`+S.price.listings.map((r,i)=>{const u=listUnit(r);return `<tr>${['floor','ping','pping','layout','price'].map(f=>`<td><input id="l-${i}-${f}" data-k="price.listings.${i}.${f}" value="${esc(r[f]||'')}"></td>`).join('')}<td class="calc${u.est?' flag':''}" id="lu-${i}">${fx(u.unit)}</td><td><button class="sm ghost" type="button" data-dellst="${i}" aria-label="刪除">✕</button></td></tr>`}).join('')}
+document.addEventListener('input',e=>{const m=e.target.id&&e.target.id.match(/^m-(\d+)-/);if(m){const r=S.market.rows[m[1]];const u=unitsOf(r);const a=$('#mu-'+m[1]),b=$('#mg-'+m[1]);if(a)a.textContent=fx(u.split);if(b)b.textContent=fx(u.gross)}
+  const l=e.target.id&&e.target.id.match(/^l-(\d+)-/);if(l){const u=listUnit(S.price.listings[l[1]]);const el=$('#lu-'+l[1]);if(el){el.textContent=fx(u.unit);el.classList.toggle('flag',u.est)}}});
 document.addEventListener('click',e=>{const d=e.target.dataset;
   if(d.delrow){S.market.rows.splice(+d.delrow,1);drawMkt();render()}
   if(d.dellst){S.price.listings.splice(+d.dellst,1);drawLst();render()}
@@ -1169,21 +1201,24 @@ webLogin();
 
 /* ---------- 網站版：從信義官網社區頁帶入 ---------- */
 /* 近三年實價登錄（內政部開放資料，網站後端依門牌查詢），與官網最新 5 筆合併；未分開計價的車位依官網參考車位價推估 */
+function fmtLatest(n){const s=String(n||'');if(!/^\d{6,7}$/.test(s))return '';return `${s.slice(0,s.length-4)}/${s.slice(-4,-2)}/${s.slice(-2)}`}
 async function loadLvr(address,sinyiRows,hint){try{const r=await (await fetch('api/lvr-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address,floors:(hint&&hint.floors)||'',age:(hint&&hint.age)||''})})).json();
-   if(!r.ok)return{msg:r.covered===false?`${r.town}還沒有建立實價登錄資料，只帶入官網最新 5 筆`:'',rows:null};
+   if(!r.ok)return{msg:r.covered===false?`${r.town}還沒有建立實價登錄資料，只帶入官網最新 5 筆`:(r.error||'查詢失敗'),rows:null};
+   if(!r.rows.length)return{rows:[],msg:r.hint||'沒有對到近三年實價。路段「二段／2段」或「之一／之1」可能不同，或這個地址還沒有登錄。',latest:r.latest};
    const ref=(sinyiRows||[]).filter(x=>num(x.pping)>0&&num(x.pprice)>0);let est=0;
-   const out=r.rows.map(x=>{const y={ym:x.ym,floor:x.floor,ping:x.ping,pping:x.pping,pprice:x.pprice,total:x.total};
-     if(!x.priced&&num(x.pping)>0){let p='';
-       if(x.pestSrc==='community')p=x.pest;
-       else{let best=null;ref.forEach(q=>{const dd=Math.abs(num(q.pping)-num(x.pping));if(!best||dd<best.dd)best={dd,p:q.pprice}});p=best?best.p:x.pest}
-       if(p){y.pprice=String(p);y.est=1;est++}}return y});
+   const out=r.rows.map(x=>{const y={ym:x.ym,floor:x.floor,ping:x.ping,pping:x.pping,pprice:x.pprice,total:x.total,note:x.note||''};
+     if(!x.priced&&num(x.pping)>0){let p='',src='';
+       if(x.pestSrc==='community'){p=x.pest;src='community'}
+       else{let best=null;ref.forEach(q=>{const dd=Math.abs(num(q.pping)-num(x.pping));if(!best||dd<best.dd)best={dd,p:q.pprice}});if(best){p=best.p;src='sinyi'}else{p=x.pest;src=x.pestSrc||'town'}}
+       if(p){y.pprice=String(p);y.est=1;y.estSrc=src;est++}}return y});
    const key=x=>`${x.ym}|${x.floor}|${x.total}`;const seen=new Set(out.map(key));const merged=[...out];(sinyiRows||[]).forEach(x=>{if(!seen.has(key(x)))merged.push(x)});
    merged.sort((a,b)=>ymKey(b.ym)-ymKey(a.ym));const multi=(r.addrs||[]).length>1?`（含 ${r.addrs.join('、')}）`:'';
-   return{rows:merged.slice(0,60),msg:`近三年實價登錄 ${merged.length} 筆${multi}${est?`，其中 ${est} 筆車位未分開計價，車位價為推估（表格標黃，請核對）`:''}`,est}}
-  catch(e){return{msg:'',rows:[]}}}
+   const asOf=fmtLatest(r.latest);
+   return{rows:merged.slice(0,60),latest:r.latest,msg:`近三年實價登錄 ${merged.length} 筆${multi}${asOf?`，索引至 ${asOf}`:''}${est?`，其中 ${est} 筆車位未分開計價，車位價為推估（黃底，${estNote(out)}）`:''}`,est}}
+  catch(e){return{msg:'查詢失敗，請再試一次',rows:[]}}}
 
 const sinyiRows=d=>(d.trades||[]).filter(t=>!/親友|特殊關係|共有人|員工/.test(t.special||'')).map(t=>({ym:t.ym,floor:t.floor,ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total}));
-function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;
+function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;syncStd(false);
   if(d.floors)S.basic.floors=d.floors;if(d.wall)S.basic.wall=d.wall;if(d.guard)S.basic.guard=d.guard;if(d.typeCode==='L'&&!b.type)S.basic.type='大樓';
   const am=String(d.amenities||'').split(/[,、，]/).map(x=>x.trim()).filter(Boolean).slice(0,6);const L=[];
   if(am.length)L.push(`社區公設：${am.join('、')}`);if(d.developer||d.houseCount)L.push([d.developer&&`${d.developer}興建`,d.houseCount&&`共 ${d.houseCount} 戶`].filter(Boolean).join('，'));
@@ -1194,6 +1229,7 @@ function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.tes
   const rows=sinyiRows(d);
   if(rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...rows].sort((a,b)=>ymKey(b.ym)-ymKey(a.ym)).slice(0,60);S.market.count=String(d.tradeCount||rows.length)}
   if(d.listings&&d.listings.length){S.price.listings=d.listings.map(({title,...x})=>x);S.market.listing=String(d.listings.length)}
+  if(d.fetchedAt)S.market.asOf=`信義官網讀取 ${d.fetchedAt}`;
   if(d.life&&d.life.length&&isFinite(d.lat)){S.poi=d.life;S.poiCenter={lat:d.lat,lng:d.lng}}
   if(S.market.rows.length&&(!S.price.online||!S.price.expect)){try{$('#bPriceCalc').onclick()}catch(e){}}
   bindInputs();drawMkt();drawLst();drawThumbs();render();
@@ -1202,10 +1238,22 @@ $('#bSinyi').onclick=async()=>{const v=$('#sinyiUrl').value.trim();if(!v)return 
   try{const r=await (await fetch('api/sinyi-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:v})})).json();
    if(!r.ok){$('#sinyiMsg').textContent=r.error||'讀取失敗，請稍後再試';return}const hadPrice=!!(S.price.online&&S.price.expect);let m=applySinyi(r);$('#sinyiMsg').textContent=m+' 正在查近三年實價登錄…';
    const L=await loadLvr(r.address,sinyiRows(r),{floors:r.floors,age:r.age});
-   if(L.rows&&L.rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...L.rows].slice(0,60);S.market.count=String(Math.max(num(r.tradeCount)||0,L.rows.length));if(L.est)FLAGS.add('market.rows');
+   if(L.rows&&L.rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...L.rows].slice(0,60);S.market.count=String(Math.max(num(r.tradeCount)||0,L.rows.length));
+     const bits=[];if(r.fetchedAt)bits.push(`信義官網讀取 ${r.fetchedAt}`);if(fmtLatest(L.latest))bits.push(`實價登錄索引至 ${fmtLatest(L.latest)}`);if(bits.length)S.market.asOf=bits.join('；');
+     if(L.est)FLAGS.add('market.rows');
      if(!hadPrice){try{$('#bPriceCalc').onclick()}catch(e){}}bindInputs();drawMkt();render();m=m.replace(/成交 \d+ 筆（[^）]*）/,L.msg)}else if(L.msg)m+=' '+L.msg;
    $('#sinyiMsg').textContent=m}
   catch(e){$('#sinyiMsg').textContent='讀取失敗：網站版才能使用，或網路暫時不穩，請再試一次'}finally{btn.disabled=false}};
+const bSample=$('#bSample');if(bSample)bSample.onclick=()=>{$('#sinyiUrl').value='https://www.sinyi.com.tw/communitylist/communityinfo/0032737';$('#bSinyi').click()};
+$('#bLvr').onclick=async()=>{let addr=String(S.basic.address||'').replace(/\d+樓.*$/,'').trim();if(!addr)return toast('請先填地址');
+  if(!/台中市|臺中市/.test(addr))addr='台中市'+addr;if(!/區/.test(addr)||!/\d+號/.test(addr))return toast('地址要有台中市、行政區和門牌，例如台中市南區復興路2段71巷55號');
+  const btn=$('#bLvr');btn.disabled=true;$('#lvrMsg').textContent='查詢近三年實價登錄…';
+  try{const L=await loadLvr(addr,[],{floors:S.basic.floors});
+   if(L.rows&&L.rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...L.rows].slice(0,60);S.market.count=String(L.rows.length);
+    if(fmtLatest(L.latest))S.market.asOf=`實價登錄索引至 ${fmtLatest(L.latest)}（本次查詢 ${new Date().toISOString().slice(0,10)}）`;
+    if(L.est)FLAGS.add('market.rows');bindInputs();drawMkt();render()}
+   $('#lvrMsg').textContent=L.msg||'沒有資料'}
+  catch(e){$('#lvrMsg').textContent='查詢失敗，請再試一次'}finally{btn.disabled=false}};
 
 /* ---------- 用 ChatGPT／Gemini 辨識：複製指令、貼回結果 ---------- */
 const EXT_TAIL='\n\n請把結果放在一個 ```json 程式碼區塊裡回覆，只回這一段，不要其他說明。';
@@ -1304,13 +1352,14 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
 
   if(S.show.market){const sl=p.addSlide();head(sl,`${no.market}、社區實價登錄行情分析`);const m=mktCalc();const rows=m.rows.slice(0,16);
     sh(sl,S.basic.community||'社區',40,148);
-    const tiles=[['實價登錄',`${S.market.count||'—'} 筆`,C.white,C.green],['待售物件',`約${S.market.listing||'—'} 筆`,C.white,C.green],['最高成交單價',`${fx(m.max)} 萬／坪`,C.redbg,C.red],['最低成交單價',`${fx(m.min)} 萬／坪`,C.grnbg,C.grn],[`近${m.n}筆平均單價`,`${fx(m.avg)} 萬／坪`,C.white,C.green],S.market.avgAll?['社區平均成交均價',`${S.market.avgAll} 萬／坪`,C.white,C.green]:['','以下成交紀錄皆以拆車位後單價計算。',C.white,C.ink]];
+    const tiles=[['實價登錄',`${S.market.count||'—'} 筆`,C.white,C.green],['待售物件',`約${S.market.listing||'—'} 筆`,C.white,C.green],['最高拆車單價',`${fx(m.max)} 萬／坪`,C.redbg,C.red],['最低拆車單價',`${fx(m.min)} 萬／坪`,C.grnbg,C.grn],[`近${m.n}筆均價（拆車）`,`${fx(m.avg)} 萬／坪`,C.white,C.green],S.market.avgAll?['社區平均成交均價',`${S.market.avgAll} 萬／坪`,C.white,C.green]:['','拆車＝（總價－車位）÷房屋坪；含車＝總價÷（房屋＋車位）坪。',C.white,C.ink]];
     tiles.forEach((t,i)=>{const x=40+(i%3)*241,y=182+Math.floor(i/3)*84;R(sl,x,y,231,74,{fill:t[2],line:C.line,radius:0.08});
       if(t[0]){T(sl,t[0],x+12,y+6,207,22,{size:14,bold:true,color:C.muted});T(sl,t[1],x+12,y+30,207,38,{size:26,bold:true,color:t[3]})}else T(sl,t[1],x+12,y,207,74,{size:15,bold:true})});
     const body=rows.length?rows.map(r=>{const hi=isFinite(r.unit)&&r.unit===m.max?[C.redbg,C.red]:isFinite(r.unit)&&r.unit===m.min?[C.grnbg,C.grn]:[C.white,C.green];
-      return [cell(r.ym+(r.unreg?'※':'')),cell(r.floor),cell(r.ping+'坪'),cell(r.pping?r.pping+'坪':'—'),cell(r.pprice+'萬'),cell(r.total+'萬'),cell(fx(r.unit)+'萬/坪',{bold:true,fill:hi[0],color:hi[1]})]}):[[cell('請輸入社區成交紀錄',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell(''),cell('')]];
-    const rh=rows.length>12?22:rows.length>10?26:28;tbl(sl,[['成交年月','樓層','房屋坪數','車位坪數','車位價','總價','拆車單價'].map(hdr),...body],40,352,[96,96,104,104,90,96,128],[30,...body.map(()=>rh)]);
-    let y=352+30+body.length*rh+8;const notes=[];if(S.market.avgAll)notes.push('以上成交紀錄皆以拆車位後單價計算：（總價－車位價）÷ 房屋坪數。');if(rows.some(r=>r.unreg))notes.push('※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。');
+      const parkFill=r.est?(S.theme==='mono'?'F4F4F4':'FFF3CD'):C.white;
+      return [cell(r.ym+(r.unreg?'※':'')),cell(r.floor),cell(r.ping+'坪'),cell(r.pping?r.pping+'坪':'—'),cell((r.pprice||'')+'萬'+(r.est?'＊':''),{fill:parkFill}),cell(r.total+'萬'),cell(fx(r.unit),{bold:true,fill:hi[0],color:hi[1]}),cell(fx(r.gross))]}):[[cell('請輸入社區成交紀錄',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell(''),cell(''),cell('')]];
+    const rh=rows.length>12?20:rows.length>10?24:26;tbl(sl,[['成交年月','樓層','房屋坪','車位坪','車位價','總價','拆車單價','含車單價'].map(hdr),...body],40,352,[78,62,86,78,74,78,129,129],[28,...body.map(()=>rh)]);
+    let y=352+28+body.length*rh+8;const notes=[];if(m.skipped)notes.push(`近${m.n}筆均價已排除預售屋／分件登記 ${m.skipped} 筆。`);const en=estNote(rows);if(en)notes.push(en);if(S.market.asOf)notes.push('資料時間：'+S.market.asOf);if(rows.some(r=>r.unreg))notes.push('※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。');
     if(notes.length){T(sl,notes.join('\n'),40,y,714,notes.length*18,{size:12.5,color:C.muted,align:'center'});y+=notes.length*18+8}
     const cl=lines(S.market.conclusion);if(cl.length){const h=Math.min(990-y,cl.length*30+24);R(sl,40,y,714,h,{line:C.line,radius:0.08});T(sl,'重點結論',52,y,140,h,{size:22,bold:true,color:C.green,align:'center'});bullets(sl,cl,200,y+10,544,h-16,16)}
     foot(sl)}
@@ -1325,27 +1374,30 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
       R(sl,40,150,714,180,{line:C.line,radius:0.08});T(sl,`登記日期：${reg}`,54,158,680,28,{size:18,bold:true});T(sl,`本案於105年前取得，適用舊制財產交易所得稅；土地另計土地增值稅。（${holdTxt(h)}）`,54,186,680,26,{size:15});
       const yy=lvt(220);sh(sl,'舊制財產交易所得稅重點',40,345);
       T(sl,[{text:'核實認定',options:{fontSize:pt(18),bold:true,color:C.red,breakLine:true}},{text:'依實際售價、取得成本及必要費用，計算房屋交易所得；須備齊相關憑證。',options:{fontSize:pt(15)}}],40,380,350,150,{fill:'FFFFFF',line:C.line,lw:1.5,radius:0.08,valign:'top',margin:0.12});
-      T(sl,[{text:'標準認定',options:{fontSize:pt(18),bold:true,color:C.green,breakLine:true}},{text:`無完整成本憑證時，按適用標準估算。本區暫按房屋評定現值 ${S.tax.stdRate}% 評估。`+(isFinite(std)?`\n房屋評定現值 ${money(hv)} 元 × ${S.tax.stdRate}% ≈ 財產交易所得 ${money(std)} 元，併入當年度綜合所得申報。`:''),options:{fontSize:pt(15)}}],404,380,350,150,{fill:'FFFFFF',line:C.line,lw:1.5,radius:0.08,valign:'top',margin:0.12});
+      T(sl,[{text:'標準認定',options:{fontSize:pt(18),bold:true,color:C.green,breakLine:true}},{text:`無完整成本憑證時，按 114 年度${OwnerReport.districtOf(S.basic.address)||'本區'}標準估算（${OwnerReport.STD_DECREE}，可改）。`+(S.tax.stdRate?`房屋評定現值 ${S.tax.stdRate}%。`:'')+(isFinite(std)?`\n房屋評定現值 ${money(hv)} 元 × ${S.tax.stdRate}% ≈ 財產交易所得 ${money(std)} 元，併入當年度綜合所得申報。`:''),options:{fontSize:pt(15)}}],404,380,350,150,{fill:'FFFFFF',line:C.line,lw:1.5,radius:0.08,valign:'top',margin:0.12});
       T(sl,'※ 實際適用方式、稅額須依出售年度規定及稅務機關核定。',40,536,714,20,{size:12.5,color:C.muted});
       sh(sl,'賣方常見支出項目',40,568);expBox(602,230);T(sl,'提醒　若有其他細節欲了解，歡迎來電聯繫。',40,848,714,44,{size:16,bold:true,line:C.line,radius:0.08,margin:0.14})}
-     else{head(sl,`${no.tax}、房地合一稅與稅後金額試算`);const t=taxCalc();const cs=t.cs;const d=v=>f2(v,1);
+     else{head(sl,`${no.tax}、房地合一稅與稅後參考`);const t=taxCalc();const cs=t.cs;const d=v=>f2(v,1);
       const base=`試算基礎：取得價 ${S.tax.buy||'—'}萬、提列成本 ${S.tax.cost||0}萬${t.lg?`、土地漲價總數額 ${f2(t.lg)}萬`:''}（暫定，裝潢未計）\n登記日：${reg}，${holdTxt(t.h)}。`+(S.tax.note?`\n備註：${S.tax.note}`:'');
       const bh=S.tax.note?100:70;T(sl,base,40,148,714,bh,{size:15,fill:'FFFFFF',line:C.line,radius:0.08,margin:0.12,valign:'top'});let y=148+bh+12;
-      const ttab=(label,k,tk)=>{if(!cs.length){holder(sl,'請輸入取得價與試算最高價',40,y,714,100);y+=110;return}const cw=(714-118)/cs.length;
-        tbl(sl,[[cell('成交價（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c.p),{bold:true,fill:C.gsoft2,color:C.green}))],[cell('仲介費（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c.f),{size:14}))],[cell(label,{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c[tk]),{size:14,fill:S.theme==='mono'?'FAFAFA':'FFFBEA'}))],[cell('稅後金額（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c[k]),{bold:true,fill:C.gsoft,color:C.green}))]],40,y,[118,...cs.map(()=>cw)],[30,28,30,30]);y+=140};
-      sh(sl,`A方案｜${t.lbl}，房地合一稅率${t.rate}%`,40,y,700);y+=34;ttab(`稅額 ${t.rate}%（萬）`,'nA','tA');
-      if(t.showB){sh(sl,'B方案｜自住：設籍持有滿6年，400萬免稅，超過部分10%',40,y,700);y+=34;ttab('稅額 優惠（萬）','nB','tB')}else{T(sl,'本戶持有未滿6年，暫不適用自住房地400萬免稅優惠。',40,y,714,22,{size:13,color:C.muted});y+=30}
-      y=lvt(y);sh(sl,'賣方常見支出項目',40,y);y+=32;const eh=Math.max(120,Math.min(170,960-y-50));expBox(y,eh);y+=eh+6;
-      T(sl,'※ 應稅所得＝成交價－取得價－提列成本－仲介費－土地漲價總數額；稅後金額未扣房貸餘額、土地增值稅、代書費及提前清償費用。實際依稅捐機關核定為準。',40,y,714,Math.max(30,1000-y),{size:12,color:C.muted,valign:'top'})}}
+      const ttab=(label,k,tk,take)=>{if(!cs.length){holder(sl,'請輸入取得價與試算最高價',40,y,714,100);y+=110;return}const cw=(714-130)/cs.length;
+        const grid=[[cell('成交價（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:12}),...cs.map(c=>cell(d(c.p),{bold:true,fill:C.gsoft2,color:C.green,size:12}))],[cell('仲介費（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:12}),...cs.map(c=>cell(d(c.f),{size:12}))],[cell(label,{fill:C.green,color:'FFFFFF',bold:true,size:12}),...cs.map(c=>cell(d(c[tk]),{size:12,fill:S.theme==='mono'?'FAFAFA':'FFFBEA'}))],[cell('稅後參考（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:12}),...cs.map(c=>cell(d(c[k]),{bold:true,fill:C.gsoft,color:C.green,size:12}))]];
+        const hs=[26,24,26,28];
+        if(t.hasLvt){grid.push([cell('實拿再扣土增稅',{fill:C.green,color:'FFFFFF',bold:true,size:12}),...cs.map(c=>cell(isFinite(c[take])?d(c[take]):'—',{bold:true,size:12}))]);hs.push(26)}
+        tbl(sl,grid,40,y,[130,...cs.map(()=>cw)],hs);y+=hs.reduce((a,b)=>a+b,0)+10};
+      sh(sl,`A方案｜${t.lbl}，房地合一稅率${t.rate}%`,40,y,700);y+=30;ttab(`稅額 ${t.rate}%`, 'nA','tA','takeA');
+      if(t.showB){sh(sl,'B方案｜自住：設籍持有滿6年，400萬免稅，超過部分10%',40,y,700);y+=30;ttab('稅額 優惠','nB','tB','takeB')}else{T(sl,'本戶尚未屆滿6年（屆滿當日即算滿），暫不適用自住房地400萬免稅優惠。',40,y,714,22,{size:13,color:C.muted});y+=26}
+      y=lvt(y);sh(sl,'賣方常見支出項目',40,y);y+=28;const eh=Math.max(100,Math.min(160,960-y-40));expBox(y,eh);y+=eh+4;
+      T(sl,'※「稅後參考」未扣土地增值稅與房貸。有填土增稅時，「實拿」再扣該稅額。持有期間以曆年比較，以內、未逾都含屆滿當日。',40,y,714,Math.max(24,1000-y),{size:12,color:C.muted,valign:'top'})}}
     foot(sl)}
 
   if(S.show.price){const sl=p.addSlide();head(sl,`${no.price}、待售物件比較與價格建議`);const pr=S.price;
     [['建議網路開價區間',pr.online,pr.onlineNote],['客戶期望價位區間',pr.expect,'']].forEach((b,i)=>{const x=40+i*364;R(sl,x,150,350,112,{line:C.gold,lw:1.5,radius:0.1});
       T(sl,b[0],x,156,350,26,{size:17,bold:true,color:C.gold,align:'center'});T(sl,b[1]||'—',x,182,350,52,{size:38,bold:true,color:C.green,align:'center'});if(b[2])T(sl,b[2],x,234,350,20,{size:13,color:C.muted,align:'center'})});
-    sh(sl,'同社區目前待售比較',40,280);const fl=String(S.basic.floor).replace(/\D/g,'');
-    const ls=pr.listings.filter(r=>r.floor||r.price);const body=ls.length?ls.map(r=>{const self=fl&&String(r.floor).replace(/\D/g,'')===fl&&(!S.area.total||num(r.ping)===num(S.area.total));const f=self?C.gsoft:C.white;
-      return [cell(r.floor,{fill:f,bold:self}),cell(r.ping+'坪',{fill:f,bold:self}),cell(r.layout,{fill:f,bold:self}),cell('開價'+r.price+'萬',{fill:f,bold:true,color:C.green})]}):[[cell('目前無同社區待售資料',{color:C.muted}),cell(''),cell(''),cell('')]];
-    tbl(sl,[['樓層','坪數','格局','開價'].map(hdr),...body],40,314,[160,180,200,174],[30,...body.map(()=>30)]);let y=314+30+body.length*30+18;
+    sh(sl,'同社區目前待售比較',40,280);
+    const ls=pr.listings.filter(r=>r.floor||r.price);const body=ls.length?ls.map(r=>{const self=sameHouse(r);const u=listUnit(r);const f=self?C.gsoft:C.white;const uf=u.est?(S.theme==='mono'?'F4F4F4':'FFF3CD'):f;
+      return [cell(r.floor,{fill:f,bold:self}),cell((r.ping||'')+'坪',{fill:f,bold:self}),cell(r.pping?r.pping+'坪':'—',{fill:f}),cell(r.layout,{fill:f}),cell('開價'+r.price+'萬',{fill:f,bold:true,color:C.green}),cell(fx(u.unit)+(u.est?'＊':''),{fill:uf,bold:true})]}):[[cell('目前無同社區待售資料',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell('')]];
+    tbl(sl,[['樓層','房屋坪','車位坪','格局','開價','開價扣車單價'].map(hdr),...body],40,314,[90,90,80,150,154,150],[28,...body.map(()=>26)]);let y=314+28+body.length*26+14;
     const an=lines(pr.analysis);const sumH=pr.summary?84:0;if(an.length){sh(sl,'分析與建議',40,y);y+=34;const h=Math.min(990-sumH-12-y,an.length*44+16);R(sl,40,y,714,h,{line:C.line,radius:0.08});bullets(sl,an,52,y+6,690,h-12,16,true);y+=h+12}
     if(pr.summary)T(sl,pr.summary,40,Math.min(y,990-sumH),714,sumH-6,{size:17,bold:true,color:S.theme==='mono'?C.ink:'FFFFFF',fill:S.theme==='mono'?'FFFFFF':C.green,line:S.theme==='mono'?'111111':undefined,lw:2,radius:0.1,margin:0.18});
     foot(sl)}
@@ -1459,7 +1511,7 @@ $('#bDone').onclick=async()=>{const must=checks().filter(x=>x.must&&!x.ok);if(mu
   catch(e){toast('完成時發生問題，請再按一次，或改用上方各別按鈕')}finally{btn.disabled=false}};
 
 window.addEventListener('resize',scale);
-bindInputs();drawToggles();drawMkt();drawLst();drawThumbs();render();
+syncStd(false);bindInputs();drawToggles();drawMkt();drawLst();drawThumbs();render();
 
 </script>
 
