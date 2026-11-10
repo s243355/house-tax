@@ -403,6 +403,11 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
       <div class="sec">
         <p class="hint">按右上角「完成並存檔」會留下這份報告的 PDF 和所有欄位，並把社區基本資料同步建檔，下次在「選擇社區」直接帶入。</p>
         <div class="row"><button class="sm pri" id="bArchLoad" type="button">讀取存檔</button><button class="sm" id="bCsvComm" type="button" hidden>匯出社區資料 CSV</button><button class="sm" id="bCsvRep" type="button" hidden>匯出報告清單 CSV</button></div>
+        <div id="driveBox" hidden style="display:flex;flex-direction:column;gap:6px">
+          <label class="f">雲端硬碟存檔資料夾（貼資料夾連結）<input aria-label="雲端硬碟存檔資料夾（貼資料夾連結）" id="driveIn"></label>
+          <label class="f">社區資料庫試算表（貼試算表連結）<input aria-label="社區資料庫試算表（貼試算表連結）" id="sheetIn"></label>
+          <div class="row"><button class="sm" id="bDrive" type="button">儲存設定</button><a class="btn" id="sheetLink" target="_blank" rel="noopener" hidden>開啟社區資料庫試算表</a><span class="hint" id="driveMsg"></span></div>
+        </div>
         <label class="f">搜尋社區、業務或地址<input aria-label="搜尋社區、業務或地址" id="archQ"></label>
         <div id="archList"></div>
       </div>
@@ -792,7 +797,8 @@ const distOf=a=>(String(a||'').match(/(?:市|縣)(\S{1,3}?[區鄉鎮市])/)||[])
 (async()=>{try{if(window.claude&&claude.use){DB=await claude.use('db');ASSETS=await claude.use('assets');USER=await claude.use('user')}}catch(e){}
   if(!DB){$('#libMsg').textContent='共用資料庫需在 claude.ai 開啟本工具才能使用。';['#bLibLoad','#bLibSave','#bArchive'].forEach(s=>$(s).disabled=true);return}
   try{if(USER){UID=await USER.id();IS_ADMIN=!!(await USER.canEdit())}}catch(e){}
-  $('#archSec').hidden=false;$('#archTitle').textContent=IS_ADMIN?'店長後台：全店報告存檔與社區資料':'我的報告存檔';$('#bCsvComm').hidden=!IS_ADMIN;$('#bCsvRep').hidden=!IS_ADMIN;
+  DB.doc('settings/drive').onSnapshot(d=>{const x=d.exists?d.data():{};DRIVE_FOLDER=x.folderId||'';SHEET_ID=x.sheetId||'';$('#driveIn').value=x.folderUrl||DRIVE_FOLDER;$('#sheetIn').value=x.sheetUrl||SHEET_ID;$('#sheetLink').hidden=!SHEET_ID;$('#sheetLink').href=x.sheetUrl||('https://docs.google.com/spreadsheets/d/'+SHEET_ID);$('#driveMsg').textContent=DRIVE_FOLDER?'每次存檔會同步存到這個雲端硬碟資料夾。':'尚未設定雲端硬碟資料夾。'},()=>{});
+  $('#archSec').hidden=false;$('#driveBox').hidden=!IS_ADMIN;$('#archTitle').textContent=IS_ADMIN?'店長後台：全店報告存檔與社區資料':'我的報告存檔';$('#bCsvComm').hidden=!IS_ADMIN;$('#bCsvRep').hidden=!IS_ADMIN;
   const timer=setTimeout(()=>{$('#libMsg').textContent='資料庫暫時連不上，稍後會自動更新。'},10000);
   DB.collection('communities').onSnapshot(snap=>{if(!snap.metadata.fromCache)clearTimeout(timer);
     LIB=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant'));drawLibSel();libStatus()},
@@ -836,13 +842,46 @@ async function makePdfBlob(scale=2){if(window.loadPdfLibs){try{await loadPdfLibs
 $('#bArchive').onclick=async()=>{const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!DB)return toast('存檔需在 claude.ai 開啟本工具');
   if(!UID)return toast('無法辨識你的帳號，請重新整理後再試');const btn=$('#bArchive');btn.disabled=true;
   try{toast('上傳照片中…',20000);const note=await uploadImages();drawThumbs();render();await new Promise(r=>setTimeout(r,300));
-   let pdf='';try{const blob=await makePdfBlob(1.5);if(ASSETS){toast('上傳報告 PDF 中…',20000);const r=await ASSETS.upload(blob);pdf='/_blob/'+r.id}}catch(e){}
+   let pdf='',pdfBlob=null;try{pdfBlob=await makePdfBlob(1.5);if(ASSETS){toast('上傳報告 PDF 中…',20000);const r=await ASSETS.upload(pdfBlob);pdf='/_blob/'+r.id}}catch(e){}
    const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:st.img.cover.map(keepUrl).filter(Boolean),plan:keepUrl(st.img.plan),map:keepUrl(st.img.map)};
-   const rep={community:n,communityId:cid(n),agent:S.agent.name,createdAt:Date.now(),floor:S.basic.floor,address:S.basic.address,layout:S.basic.layout,area:S.area.total,online:S.price.online,expect:S.price.expect,pdf,state:st};
+   const dr=await saveToDrive(n,pdfBlob,st);const sm=await saveToSheet(n,dr.url);
+   const rep={community:n,communityId:cid(n),agent:S.agent.name,createdAt:Date.now(),floor:S.basic.floor,address:S.basic.address,layout:S.basic.layout,area:S.area.total,online:S.price.online,expect:S.price.expect,pdf,drive:dr.url||'',state:st};
    await DB.doc('reports/'+UID).set({agentName:S.agent.name,lastAt:Date.now()});
    await DB.collection('reports/'+UID+'/items').add(rep);await saveCommunity(true);
-   toast(`已存檔，「${n}」社區資料已同步建檔${note}${pdf?'':'（報告 PDF 未上傳，資料已存）'}`,5000);loadArchive()}
+   toast(`已存檔，「${n}」社區資料已同步建檔${note}${pdf?'':'（報告 PDF 未上傳，資料已存）'}${dr.msg}${sm}`,7000);loadArchive()}
   catch(e){toast(e&&(e.code==='permission_denied'||e.code==='not_granted')?'你的權限只能查看，請店長把你設成可使用或可編輯':'存檔失敗，請稍後再試')}finally{btn.disabled=false}};
+
+
+/* 雲端硬碟存檔：每次「完成並存檔」把 PDF、可編輯 PPTX、資料檔放進店長指定的資料夾 */
+let DRIVE_FOLDER='';
+function blobB64(b){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=rej;fr.readAsDataURL(b)})}
+async function saveToDrive(n,pdfBlob,st){if(!DRIVE_FOLDER)return{msg:''};if(!MCP)return{msg:'；雲端硬碟未存（需在 claude.ai 開啟）'};
+  const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');let url='',ok=0;
+  const up=async(title,args)=>{const r=await MCP.callTool('Google Drive','create_file',{title,parentId:DRIVE_FOLDER,disableConversionToGoogleType:true,...args});const pl=(r&&r.payload)||{};if(!url&&pl.viewUrl)url=pl.viewUrl;ok++};
+  try{toast('存到雲端硬碟中…',30000);
+   if(pdfBlob)await up(base+'.pdf',{base64Content:await blobB64(pdfBlob),contentMimeType:'application/pdf'});
+   try{const pp=await buildPptx();const pb=await pp.write({outputType:'blob'});await up(base+'.pptx',{base64Content:await blobB64(pb),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}
+   await up(base+'_資料.json',{textContent:JSON.stringify(st),contentMimeType:'application/json'});
+   return{url,msg:`；雲端硬碟已存 ${ok} 個檔案`}}
+  catch(e){const c=e&&e.code;return{url,msg:c==='server_not_connected'?'；雲端硬碟未存：請先在 claude.ai 設定 → 連接器加入 Google Drive':c==='not_in_manifest'||c==='approval_required'?'；雲端硬碟未存：需要允許此工具使用 Google Drive':c==='needs_reauth'?'；雲端硬碟未存：Google Drive 連線過期，請重新連接':c==='tool_error'?'；雲端硬碟未存：沒有存檔資料夾的編輯權限，請向店長要權限':`；雲端硬碟未存（已存 ${ok} 個）`}}}
+function driveId(v){const m=String(v||'').match(/folders\/([\w-]{10,})/)||String(v||'').match(/^([\w-]{10,})$/);return m?m[1]:''}
+
+/* 雲端試算表資料庫：社區資料（一社區一列，存檔時更新）＋報告紀錄（每次存檔新增一列） */
+let SHEET_ID='';
+const tw=()=>{const d=new Date();return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+async function saveToSheet(n,driveUrl){if(!SHEET_ID)return '';if(!MCP)return '；試算表未更新（需在 claude.ai 開啟）';
+  const m=mktCalc(),b=S.basic,a=S.area,h=holding();const sv=v=>v==null?'':String(v);
+  const commRow=[n,distOf(b.address),String(b.address||'').replace(/\d+樓.*$/,''),b.built,b.use,b.type,b.floors,b.wall,b.guard,b.parking,lines(S.features).join('；'),S.market.count,S.market.listing,fx(m.avg),fx(m.max),fx(m.min),String(m.rows.length),'',tw(),S.agent.name].map(sv);
+  const repRow=[tw(),S.agent.name,n,b.address,b.floor,b.layout,a.total,a.main,a.public,a.parking,a.land,[b.parking,b.parkingNo].filter(Boolean).join(' '),S.tax.acq,h?(h.old?'舊制':'房地合一'):'',S.price.online,S.price.expect,fx(m.avg),driveUrl||''].map(sv);
+  try{const g=await MCP.callTool('Google Sheets','get_values',{spreadsheetId:SHEET_ID,range:'社區資料!A:R'});const vals=((g&&g.payload&&g.payload.values)||[]);
+   const idx=vals.findIndex((r,i)=>i>0&&String(r[0]||'').trim()===n);
+   if(idx>0){const old=vals[idx];commRow.forEach((v,i)=>{if(v===''||v==='—')commRow[i]=old[i]??''});commRow[17]=String((parseInt(old[17])||0)+1);
+     await MCP.callTool('Google Sheets','update_values',{spreadsheetId:SHEET_ID,range:`社區資料!A${idx+1}:T${idx+1}`,values:[commRow]})}
+   else{commRow[17]='1';await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'社區資料!A1',values:[commRow]})}
+   await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'報告紀錄!A1',values:[repRow]});return '；試算表已更新'}
+  catch(e){const c=e&&e.code;return c==='server_not_connected'?'；試算表未更新：請先在 claude.ai 連接 Google Sheets':c==='not_in_manifest'||c==='approval_required'?'；試算表未更新：需要允許此工具使用 Google Sheets':c==='tool_error'?'；試算表未更新：沒有試算表的編輯權限，請向店長要權限':'；試算表未更新'}}
+function sheetId(v){const m=String(v||'').match(/spreadsheets\/d\/([\w-]{20,})/)||String(v||'').match(/^([\w-]{20,})$/);return m?m[1]:''}
 
 /* 報告存檔清單 */
 let ARCH=[];
@@ -856,6 +895,7 @@ function drawArchive(){const q=$('#archQ').value.trim();const list=ARCH.filter(r
 document.addEventListener('click',async e=>{const d=e.target.dataset||{};
   if(d.arcopen!=null){const r=ARCH[+d.arcopen];if(r&&r.state){loadState(r.state);toast(`已開啟 ${r.community} ${r.floor||''} 的存檔（${r.agent}）`);window.scrollTo({top:0})}}
   if(d.arcpdf!=null){const r=ARCH[+d.arcpdf];try{const b=await (await fetch(r.pdf)).blob();await saveFile(`${r.community}_${r.floor||''}_屋主售屋建議報告書.pdf`,b)}catch(err){toast('PDF 讀取失敗')}}});
+$('#bDrive').onclick=async()=>{const v=$('#driveIn').value.trim();const id=driveId(v);if(v&&!id)return toast('看不懂這個連結，請貼雲端硬碟資料夾的網址');const sv=$('#sheetIn').value.trim();const sid=sheetId(sv);if(sv&&!sid)return toast('看不懂這個連結，請貼試算表的網址');try{await DB.doc('settings/drive').set({folderId:id,folderUrl:v,sheetId:sid,sheetUrl:sv,updatedAt:Date.now()});toast(id?'已設定雲端硬碟資料夾':'已停用雲端硬碟存檔')}catch(e){toast('只有店長能修改這個設定')}};
 $('#archQ').oninput=drawArchive;$('#bArchLoad').onclick=loadArchive;
 function csvCell(v){v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 const csv=rows=>'﻿'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
