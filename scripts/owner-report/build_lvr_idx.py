@@ -103,6 +103,38 @@ def main():
         with open(os.path.join(OUT, town + ".json"), "w", encoding="utf-8") as fh:
             json.dump({"latest": latest, "park": park, "data": m}, fh, ensure_ascii=False, separators=(",", ":"))
     print({t: len(m) for t, m in idx.items()}, "latest", latest)
+    build_comm()
+
+
+def build_comm():
+    """門牌 → [社區名稱, 社區頁編號, 信義社區編號]。來源：網站社區頁資料（data/yucheng）＋ data/owner-report/sinyi-ids.json 手動補充。"""
+    try:
+        comms = json.load(open("data/yucheng/communities.json", encoding="utf-8"))
+    except (OSError, ValueError):
+        return
+    try:
+        intro = json.load(open("data/yucheng/intro_by_id.json", encoding="utf-8"))
+    except (OSError, ValueError):
+        intro = {}
+    try:
+        extra = json.load(open("data/owner-report/sinyi-ids.json", encoding="utf-8"))
+    except (OSError, ValueError):
+        extra = {}
+    out = {}
+    for c in comms:
+        town = c.get("town", "")
+        key = addr_key("台中市" + str(c.get("addr", "")))
+        if not town or not key:
+            continue
+        sid = ""
+        m = re.search(r"communityinfo/([A-Za-z0-9]{5,12})", json.dumps(intro.get(str(c.get("id")), {}), ensure_ascii=False))
+        if m:
+            sid = m.group(1).upper()
+        sid = str(extra.get(str(c.get("id")), sid) or "")
+        out.setdefault(town, {})[key] = [c.get("name", ""), c.get("id", ""), sid]
+    with open(os.path.join(OUT, "comm.json"), "w", encoding="utf-8") as fh:
+        json.dump(out, fh, ensure_ascii=False, separators=(",", ":"))
+    print("comm", {t: len(v) for t, v in out.items()}, "sinyi", sum(1 for v in out.values() for x in v.values() if x[2]))
 
 
 if __name__ == "__main__":

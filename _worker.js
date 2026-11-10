@@ -814,8 +814,19 @@ async function handleSinyiCommunity(request, env, cors) {
     id = m ? m[1].toUpperCase() : '';
     if (!id) return json({ ok: false, error: '請貼上信義房屋社區頁的連結或社區編號' }, 400, cors);
     const origin = new URL(request.url).origin;
+    // 夜間預抓（GitHub Actions 每晚寫入 data/sinyi-cache/<id>.json），4 天內的直接用
+    if (!body.fresh && env && env.ASSETS) {
+      try {
+        const pre = await env.ASSETS.fetch(new Request(new URL('/data/sinyi-cache/' + id + '.json', request.url).toString()));
+        if (pre.ok) {
+          const data = await pre.json();
+          const at = Number(data && data.fetchedTs) || Date.parse((data && data.fetchedAt) || '') || 0;
+          if (data && data.ok && Date.now() - at < 4 * 864e5) return json(Object.assign({}, data, { source: 'nightly' }), 200, cors);
+        }
+      } catch (err) { /* 沒有預抓檔就即時讀取 */ }
+    }
     const key = cacheRequest(origin, '/__cache/sinyi-community-v2/' + id);
-    const hit = await cacheMatch(key);
+    const hit = body.fresh ? null : await cacheMatch(key);
     if (hit) {
       try { const data = await hit.json(); if (data && data.ok) return json(Object.assign({}, data, { source: 'cache' }), 200, cors); } catch (err) { /* 重新讀取 */ }
     }
@@ -839,6 +850,7 @@ async function handleSinyiCommunity(request, env, cors) {
     const data = parseSinyiCommunity(html, id);
     if (!data) return json({ ok: false, error: '讀不到這個社區的資料，請確認連結是信義房屋社區頁' }, 502, cors);
     data.fetchedAt = new Date().toISOString().slice(0, 10);
+    data.fetchedTs = Date.now();
     await cachePut(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=21600' } }));
     return json(data, 200, cors);
   } catch (err) {
@@ -850,6 +862,29 @@ async function handleSinyiCommunity(request, env, cors) {
 // ================================================================
 // /api/lvr-community：用門牌查近 3 年實價登錄（內政部開放資料，data/lvr-idx/<行政區>.json）。
 // ================================================================
+// 社區名稱與信義社區編號（data/lvr-idx/comm.json，由 build_lvr_idx.py 依網站社區頁資料產生）；
+// 建築完成日、總樓層取這組成交最常見的值。
+export async function lvrCommunityInfo(env, base, town, keys, rows) {
+  let community = null;
+  try {
+    const cr = await env.ASSETS.fetch(new Request(new URL('/data/lvr-idx/comm.json', base).toString()));
+    if (cr.ok) {
+      const cm = (await cr.json())[town] || {};
+      const norm = {};
+      Object.keys(cm).forEach((k) => { norm[lvrKey(k)] = cm[k]; });
+      const hit = keys.map((k) => norm[lvrKey(k)] || norm[lvrKey(String(k).replace(/之\d+號$/, '號'))]).find(Boolean);
+      if (hit) community = { name: hit[0], toId: hit[1], sinyiId: hit[2] || '' };
+    }
+  } catch (err) { /* 沒有對照表就只回成交 */ }
+  const mode = (arr) => { const c = {}; let best = '', n = 0; arr.forEach((v) => { if (!v) return; c[v] = (c[v] || 0) + 1; if (c[v] > n) { n = c[v]; best = v; } }); return best; };
+  const b = String(mode((rows || []).map((r) => r[11])) || '');
+  const floors = mode((rows || []).map((r) => r[12]));
+  return {
+    community: community,
+    built: b.length >= 6 ? b.slice(0, b.length - 4) + '/' + b.slice(-4, -2) + '/' + b.slice(-2) : '',
+    floors: floors ? floors + '樓' : '',
+  };
+}
 async function handleLvrCommunity(request, env, cors) {
   try {
     const body = await request.json();
@@ -889,11 +924,13 @@ async function handleLvrCommunity(request, env, cors) {
         pestSrc: pestSrc,
         ptype: r[6] || '',
         layout: r[7] !== '' ? r[7] + '房' + r[8] + '廳' + r[9] + '衛' : '',
+        rooms: r[7] !== '' && Number(r[7]) < 10 ? String(Number(r[7])) : '',
         note: r[10] || '',
         addr: e.addr,
       };
     });
-    return json({ ok: true, town: town, key: found.key, addrs: found.addrs, matchBy: found.matchBy, latest: idx.latest, hint: found.hint, rows: out }, 200, cors);
+    const extra = await lvrCommunityInfo(env, request.url, town, [found.key].concat(found.addrs || []), rows.map((e) => e.row));
+    return json(Object.assign({ ok: true, town: town, key: found.key, addrs: found.addrs, matchBy: found.matchBy, latest: idx.latest, hint: found.hint, rows: out }, extra), 200, cors);
   } catch (err) {
     console.error('handleLvrCommunity error:', err && err.message);
     return json({ ok: false, error: '讀取失敗，請稍後再試' }, 502, cors);

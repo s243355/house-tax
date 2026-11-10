@@ -29,7 +29,8 @@ function iso(d) {
   assert.deepStrictEqual(q1.addrs, q2.addrs);
   assert.strictEqual(q1.rows.length, q2.rows.length);
   assert.ok(q1.rows.length >= 30, 'In House should return the indexed door set, got ' + q1.rows.length);
-  const exact = (idx.data['復興路二段71巷55號'] || []).length;
+  // 索引重建後鍵會正規化成「2段」，舊索引是「二段」，兩種都接受
+  const exact = (idx.data['復興路2段71巷55號'] || idx.data['復興路二段71巷55號'] || []).length;
   assert.strictEqual(exact, 30);
   assert.ok(q1.rows.length >= exact);
 

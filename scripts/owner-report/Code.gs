@@ -69,6 +69,8 @@ function doPost(e) {
     if (action === 'admin_upsert') return adminUpsert_(body.user || {});
     return out_({ ok: false, error: 'action' });
   }
+  // 夜間預抓用：只回傳店內社區資料庫存過的信義社區編號（公開資訊，不含任何個資）
+  if (action === 'hot') return hot_();
   const u = who_(body);
   if (!u) return out_({ ok: false, error: 'auth' });
   if (action === 'whoami') return out_({ ok: true, user: u });
@@ -139,6 +141,19 @@ function list_() {
   return out_({ ok: true, communities: communities });
 }
 
+/* ---------- 夜間預抓清單 ---------- */
+function hot_() {
+  const sh = ss_().getSheetByName(COMM);
+  const last = sh.getLastRow();
+  const ids = [];
+  if (last >= 2) {
+    sh.getRange(2, COL_JSON, last - 1, 1).getValues().forEach(function (r) {
+      try { const d = JSON.parse(r[0] || 'null'); const id = d && String(d.sinyiId || '').toUpperCase(); if (/^[A-Z0-9]{5,12}$/.test(id) && ids.indexOf(id) < 0) ids.push(id); } catch (err) {}
+    });
+  }
+  return out_({ ok: true, ids: ids.slice(0, 80) });
+}
+
 /* ---------- 自己存過的報告 ---------- */
 function myReports_(u) {
   const sh = ss_().getSheetByName(REPORTS);
@@ -161,6 +176,7 @@ function mergeDoc_(o, d) {
   outDoc.basic = Object.assign({}, o.basic || {});
   Object.keys(d.basic || {}).forEach(function (k) { outDoc.basic[k] = nz_(d.basic[k], o.basic && o.basic[k]); });
   outDoc.features = nz_(d.features, o.features);
+  outDoc.sinyiId = nz_(d.sinyiId, o.sinyiId);
   if (!(d.market && d.market.rows && d.market.rows.length)) outDoc.market = o.market;
   if (!(d.listings && d.listings.length)) outDoc.listings = o.listings;
   if (!(d.poi && d.poi.length)) { outDoc.poi = o.poi; outDoc.poiCenter = o.poiCenter; }

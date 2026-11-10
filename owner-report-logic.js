@@ -150,6 +150,7 @@
         && (excludePresale ? !isExcludedTrade(r.note) : true);
     });
     var rec = pool.slice(0, recentN);
+    var comp = opts.subject ? pickComps(pool, opts.subject, recentN) : null;
     var dated = annotated.filter(function (r) { return ymKey(r.ym); }).slice().sort(byDateDesc);
     var latest = dated[0] ? dated[0].ym : '';
     return {
@@ -162,9 +163,79 @@
       latest: latest,
       months: latest ? monthsSinceYm(latest, opts.now) : null,
       count: dated.length,
+      comp: comp,
       noPark: annotated.filter(function (r) { return r.noPark; }).length,
       skipped: annotated.filter(function (r) { return isFinite(splitUnit(r.total, r.pprice, r.ping)) && excludePresale && isExcludedTrade(r.note); }).length
     };
+  }
+
+  // ---------- 可比案例 ----------
+  function roomsOf(x) {
+    var m = String(x == null ? '' : x).match(/(\d+)\s*房/);
+    if (m) return +m[1];
+    var v = parseInt(x, 10);
+    return v > 0 && v < 10 ? v : NaN;
+  }
+  function floorOf(x) {
+    var s = half(x);
+    var m = s.match(/(\d+)\s*[樓Ff]/) || s.match(/^(\d+)/);
+    return m ? +m[1] : NaN;
+  }
+  function rowKey(r) { return [r.ym, r.floor, r.total].join('|'); }
+  // 同房數、房屋坪相差 15% 以內；不足 3 筆放寬到 25%，再不足才不分房數。本戶不是 1 樓就不拿 1 樓比。
+  // rows 需已算好 unit，並依日期新到舊排序（tradeStats 的 pool）。
+  function pickComps(rows, subj, n) {
+    if (!subj || !(subj.ping > 0)) return null;
+    var fl = subj.floor, rm = subj.rooms;
+    var base = (rows || []).filter(function (r) { var f = floorOf(r.floor); return !(isFinite(fl) && fl > 1 && f === 1); });
+    var tiers = [[0.15, true], [0.25, true], [0.15, false], [0.25, false]];
+    for (var i = 0; i < tiers.length; i++) {
+      var tol = tiers[i][0], useRm = tiers[i][1];
+      if (useRm && !isFinite(rm)) continue;
+      var c = base.filter(function (r) {
+        return Math.abs(Number(r.ping) - subj.ping) / subj.ping <= tol + 1e-9 && (!useRm || roomsOf(r.rooms) === rm);
+      });
+      if (c.length >= 3) {
+        var k = c.slice(0, Math.max(3, n || 5));
+        return {
+          rows: k, keys: k.map(rowKey), n: k.length,
+          avg: k.reduce(function (a, r) { return a + r.unit; }, 0) / k.length,
+          rule: (useRm ? '同' + rm + '房、' : '') + '房屋坪相差' + Math.round(tol * 100) + '%以內' + (isFinite(fl) && fl > 1 ? '、不含1樓' : '')
+        };
+      }
+    }
+    return null;
+  }
+
+  // ---------- 稅務優惠條件（值：'' 未確認、'y' 符合、'n' 不符合）----------
+  // 土地稅法第 9、34 條；所得稅法第 14-4 條第 3 項。
+  var TAX_CHK = {
+    lvt: [['lvt1', '屋主或配偶、直系親屬已在這戶辦好戶籍登記'], ['lvt2', '出售前 1 年內沒有出租或營業使用'], ['lvt3', '都市土地持分未超過 3 公畝（約 90.75 坪）']],
+    lvtHouse: [['lvt4', '出售時本人、配偶及未成年子女只有這一戶房屋'], ['lvt5', '本人、配偶或未成年子女設籍，且持有這戶連續滿 6 年'], ['lvt6', '出售前 5 年內沒有出租或營業使用'], ['lvt7', '都市土地持分未超過 1.5 公畝（約 45.38 坪）']],
+    ho: [['ho1', '本人、配偶或未成年子女在這戶設籍，並實際居住連續滿 6 年'], ['ho2', '這 6 年內沒有出租、營業或執行業務使用'], ['ho3', '本人、配偶及未成年子女交易前 6 年內沒用過這項優惠']]
+  };
+  // 能從資料判斷的先自動判斷：土地持分面積、是否持有滿 6 年；同仁手動選的不覆蓋。
+  function taxChkAuto(chk, landPing, fullSix) {
+    var c = Object.assign({}, chk || {});
+    if (!c.lvt3 && landPing > 0 && landPing <= 90.75) c.lvt3 = 'y';
+    if (!c.lvt7 && landPing > 0 && landPing <= 45.38) c.lvt7 = 'y';
+    if (fullSix === false) { c.lvt5 = 'n'; c.ho1 = 'n'; }
+    return c;
+  }
+  function chkStatus(c, ids) {
+    var v = ids.map(function (i) { return (c || {})[i] || ''; });
+    if (v.indexOf('n') >= 0) return 'no';
+    return v.every(function (x) { return x === 'y'; }) ? 'ok' : 'pending';
+  }
+  function lvtStatus(c) {
+    c = c || {};
+    var base = ['lvt1', 'lvt2', 'lvt3'];
+    if (!c.lvtMode) return chkStatus(c, base) === 'no' ? 'no' : 'pending';
+    return chkStatus(c, c.lvtMode === 'house' ? base.concat(['lvt4', 'lvt5', 'lvt6', 'lvt7']) : base);
+  }
+  function hoStatus(c, fullSix) {
+    if (fullSix === false) return 'no';
+    return chkStatus(c, ['ho1', 'ho2', 'ho3']);
   }
 
   return {
@@ -184,6 +255,14 @@
     median: median,
     byDateDesc: byDateDesc,
     noPark: noPark,
-    tradeStats: tradeStats
+    tradeStats: tradeStats,
+    roomsOf: roomsOf,
+    floorOf: floorOf,
+    rowKey: rowKey,
+    pickComps: pickComps,
+    TAX_CHK: TAX_CHK,
+    taxChkAuto: taxChkAuto,
+    lvtStatus: lvtStatus,
+    hoStatus: hoStatus
   };
 });
