@@ -861,13 +861,42 @@ async function handleLvrCommunity(request, env, cors) {
     const res = await env.ASSETS.fetch(new Request(new URL('/data/lvr-idx/' + encodeURIComponent(town) + '.json', request.url).toString()));
     if (!res.ok) return json({ ok: false, error: town + '的實價登錄資料尚未建立', town: town, covered: false }, 404, cors);
     const idx = await res.json();
-    const base = key.replace(/之\d+號$/, '號');
+    const data = idx.data || {};
+    const split = (k) => { const m = String(k).match(/^(.*?)(\d+)(?:之\d+)?號$/); return m ? { pre: m[1], no: Number(m[2]) } : null; };
+    const me = split(key);
+    // 同一社區常有好幾個門牌：同路巷、門牌相近（±10 號）、建築完成日與總樓層都相同，就視為同社區
+    const sig = new Set();
+    Object.keys(data).forEach((k) => { const s = split(k); if (s && me && s.pre === me.pre && s.no === me.no) data[k].forEach((r) => { if (r[11]) sig.add(r[11] + '|' + r[12]); }); });
+    const hintFloors = parseInt(toHalf(body.floors || ''), 10) || 0;
+    const hintAge = parseInt(toHalf(body.age || ''), 10) || 0;
+    const rocNow = new Date().getFullYear() - 1911;
+    const sameComm = (r) => {
+      if (sig.size) return sig.has(r[11] + '|' + r[12]);
+      if (!hintFloors || !hintAge || !r[11]) return false;
+      return r[12] === hintFloors && Math.abs(Math.floor(r[11] / 10000) - (rocNow - hintAge)) <= 1;
+    };
     const rows = [];
-    Object.keys(idx.data || {}).forEach((k) => { if (k === key || k.replace(/之\d+號$/, '號') === base) rows.push(...idx.data[k]); });
+    const addrs = [];
+    Object.keys(data).forEach((k) => {
+      const s = split(k);
+      if (!s || !me || s.pre !== me.pre || Math.abs(s.no - me.no) > 10) return;
+      const hit = s.no === me.no && !sig.size && !hintFloors ? data[k] : data[k].filter(sameComm);
+      if (hit.length) { rows.push(...hit); if (addrs.indexOf(k) < 0) addrs.push(k); }
+    });
     rows.sort((a, b) => b[0] - a[0]);
+    // 車位沒分開計價時的推估：先用同社區有分開計價的同類車位，沒有再用當區近 3 年同類車位中位數
+    const commPark = {};
+    rows.forEach((r) => { if (r[5] > 0 && r[6]) (commPark[r[6]] = commPark[r[6]] || []).push(r[5]); });
+    const med = (a) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
+    const townPark = idx.park || {};
     const out = rows.map((r) => {
       const d = String(r[0]);
       const pingAll = r[3] * 0.3025, pp = r[4] * 0.3025;
+      let pest = '', pestSrc = '';
+      if (!(r[5] > 0) && pp > 0) {
+        if (commPark[r[6]]) { pest = String(Math.round(med(commPark[r[6]]) / 1e4)); pestSrc = 'community'; }
+        else if (townPark[r[6]]) { pest = String(Math.round(townPark[r[6]][0] / 1e4)); pestSrc = 'town'; }
+      }
       return {
         ym: d.slice(0, d.length - 4) + '/' + d.slice(-4, -2),
         floor: r[1] ? r[1] + '樓' : '',
@@ -876,12 +905,14 @@ async function handleLvrCommunity(request, env, cors) {
         pping: pp ? String(Math.round(pp * 100) / 100) : '',
         pprice: String(Math.round(r[5] / 1e4)),
         priced: r[5] > 0 || !pp,
+        pest: pest,
+        pestSrc: pestSrc,
         ptype: r[6] || '',
         layout: r[7] !== '' ? r[7] + '房' + r[8] + '廳' + r[9] + '衛' : '',
         note: r[10] || '',
       };
     });
-    return json({ ok: true, town: town, key: key, latest: idx.latest, rows: out }, 200, cors);
+    return json({ ok: true, town: town, key: key, addrs: addrs.sort(), latest: idx.latest, rows: out }, 200, cors);
   } catch (err) {
     console.error('handleLvrCommunity error:', err && err.message);
     return json({ ok: false, error: '讀取失敗，請稍後再試' }, 502, cors);

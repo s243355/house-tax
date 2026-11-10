@@ -1169,15 +1169,20 @@ webLogin();
 
 /* ---------- 網站版：從信義官網社區頁帶入 ---------- */
 /* 近三年實價登錄（內政部開放資料，網站後端依門牌查詢），與官網最新 5 筆合併；未分開計價的車位依官網參考車位價推估 */
-async function loadLvr(address,sinyiRows){try{const r=await (await fetch('api/lvr-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address})})).json();
-   if(!r.ok)return{msg:r.covered===false?`${r.town}還沒有建立實價登錄資料，只帶入官網最新 5 筆`:'',rows:[]};
+async function loadLvr(address,sinyiRows,hint){try{const r=await (await fetch('api/lvr-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address,floors:(hint&&hint.floors)||'',age:(hint&&hint.age)||''})})).json();
+   if(!r.ok)return{msg:r.covered===false?`${r.town}還沒有建立實價登錄資料，只帶入官網最新 5 筆`:'',rows:null};
    const ref=(sinyiRows||[]).filter(x=>num(x.pping)>0&&num(x.pprice)>0);let est=0;
    const out=r.rows.map(x=>{const y={ym:x.ym,floor:x.floor,ping:x.ping,pping:x.pping,pprice:x.pprice,total:x.total};
-     if(!x.priced&&num(x.pping)>0){let best=null;ref.forEach(q=>{const dd=Math.abs(num(q.pping)-num(x.pping));if(!best||dd<best.dd)best={dd,p:q.pprice}});if(best){y.pprice=String(best.p);est++}}return y});
+     if(!x.priced&&num(x.pping)>0){let p='';
+       if(x.pestSrc==='community')p=x.pest;
+       else{let best=null;ref.forEach(q=>{const dd=Math.abs(num(q.pping)-num(x.pping));if(!best||dd<best.dd)best={dd,p:q.pprice}});p=best?best.p:x.pest}
+       if(p){y.pprice=String(p);y.est=1;est++}}return y});
    const key=x=>`${x.ym}|${x.floor}|${x.total}`;const seen=new Set(out.map(key));const merged=[...out];(sinyiRows||[]).forEach(x=>{if(!seen.has(key(x)))merged.push(x)});
-   merged.sort((a,b)=>ymKey(b.ym)-ymKey(a.ym));return{rows:merged.slice(0,60),msg:`近三年實價登錄 ${merged.length} 筆${est?`（其中 ${est} 筆車位未分開計價，車位價依官網參考價推估）`:''}`,est}}
+   merged.sort((a,b)=>ymKey(b.ym)-ymKey(a.ym));const multi=(r.addrs||[]).length>1?`（含 ${r.addrs.join('、')}）`:'';
+   return{rows:merged.slice(0,60),msg:`近三年實價登錄 ${merged.length} 筆${multi}${est?`，其中 ${est} 筆車位未分開計價，車位價為推估（表格標黃，請核對）`:''}`,est}}
   catch(e){return{msg:'',rows:[]}}}
 
+const sinyiRows=d=>(d.trades||[]).filter(t=>!/親友|特殊關係|共有人|員工/.test(t.special||'')).map(t=>({ym:t.ym,floor:t.floor,ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total}));
 function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;
   if(d.floors)S.basic.floors=d.floors;if(d.wall)S.basic.wall=d.wall;if(d.guard)S.basic.guard=d.guard;if(d.typeCode==='L'&&!b.type)S.basic.type='大樓';
   const am=String(d.amenities||'').split(/[,、，]/).map(x=>x.trim()).filter(Boolean).slice(0,6);const L=[];
@@ -1186,7 +1191,7 @@ function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.tes
   if(tr)L.push(`${tr.name}約 ${tr.d} 公尺`);if(sc)L.push(`鄰近${sc.name}`);if(pk||sh)L.push(`近${[pk&&pk.name,sh&&sh.name].filter(Boolean).join('、')}`);
   if(L.length)S.features=L.join('\n');
   if(d.images&&d.images.length)S.img.cover=d.images.slice(0,2).map(u=>'api/prop-img?u='+encodeURIComponent(u));
-  const rows=(d.trades||[]).map(t=>({ym:t.ym,floor:t.floor,ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total}));
+  const rows=sinyiRows(d);
   if(rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...rows].sort((a,b)=>ymKey(b.ym)-ymKey(a.ym)).slice(0,60);S.market.count=String(d.tradeCount||rows.length)}
   if(d.listings&&d.listings.length){S.price.listings=d.listings.map(({title,...x})=>x);S.market.listing=String(d.listings.length)}
   if(d.life&&d.life.length&&isFinite(d.lat)){S.poi=d.life;S.poiCenter={lat:d.lat,lng:d.lng}}
@@ -1195,9 +1200,10 @@ function applySinyi(d){const b=S.basic;S.basic.community=d.name;if(!/\d+樓/.tes
   return `已帶入：社區資料、外觀照 ${S.img.cover.length} 張、成交 ${rows.length} 筆（官網共 ${d.tradeCount||rows.length} 筆，網頁只提供最新 5 筆）、待售 ${(d.listings||[]).length} 筆、生活機能 ${(d.life||[]).length} 項。`}
 $('#bSinyi').onclick=async()=>{const v=$('#sinyiUrl').value.trim();if(!v)return toast('請貼上信義官網社區頁的連結');const btn=$('#bSinyi');btn.disabled=true;$('#sinyiMsg').textContent='讀取信義官網中，約 10～20 秒…';
   try{const r=await (await fetch('api/sinyi-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:v})})).json();
-   if(!r.ok){$('#sinyiMsg').textContent=r.error||'讀取失敗，請稍後再試';return}let m=applySinyi(r);$('#sinyiMsg').textContent=m+' 正在查近三年實價登錄…';
-   const L=await loadLvr(r.address,(r.trades||[]).map(t=>({ym:t.ym,floor:t.floor,ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total})));
-   if(L.rows.length>(r.trades||[]).length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...L.rows].slice(0,60);if(L.est)FLAGS.add('market.rows');bindInputs();drawMkt();render();m=m.replace(/成交 \d+ 筆（[^）]*）/,L.msg)}else if(L.msg)m+=' '+L.msg;
+   if(!r.ok){$('#sinyiMsg').textContent=r.error||'讀取失敗，請稍後再試';return}const hadPrice=!!(S.price.online&&S.price.expect);let m=applySinyi(r);$('#sinyiMsg').textContent=m+' 正在查近三年實價登錄…';
+   const L=await loadLvr(r.address,sinyiRows(r),{floors:r.floors,age:r.age});
+   if(L.rows&&L.rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...L.rows].slice(0,60);S.market.count=String(Math.max(num(r.tradeCount)||0,L.rows.length));if(L.est)FLAGS.add('market.rows');
+     if(!hadPrice){try{$('#bPriceCalc').onclick()}catch(e){}}bindInputs();drawMkt();render();m=m.replace(/成交 \d+ 筆（[^）]*）/,L.msg)}else if(L.msg)m+=' '+L.msg;
    $('#sinyiMsg').textContent=m}
   catch(e){$('#sinyiMsg').textContent='讀取失敗：網站版才能使用，或網路暫時不穩，請再試一次'}finally{btn.disabled=false}};
 

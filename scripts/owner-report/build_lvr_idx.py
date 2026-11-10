@@ -1,8 +1,11 @@
 """把 data/lvr/a.json（內政部實價登錄開放資料）整理成「依門牌查社區成交」的精簡索引，給屋主售屋建議報告書用。
 
 輸出 data/lvr-idx/<行政區>.json：
-  { "文心南路888號": [[成交日 yyymmdd, 樓層, 總價元, 建物移轉m2, 車位m2, 車位價元, 車位類別, 房, 廳, 衛, 備註], ...], ... }
+  { "latest": yyymmdd,
+    "park": { 車位類別: [當區近 3 年有分開計價的車位單價中位數(元), 筆數] },
+    "data": { "文心南路888號": [[成交日 yyymmdd, 樓層, 總價元, 建物移轉m2, 車位m2, 車位價元, 車位類別, 房, 廳, 衛, 備註, 建築完成年月 yyymmdd, 總樓層], ...] } }
 只留近 3 年、有建物的買賣，排除僅車位、親友等特殊交易。
+同一社區常有好幾個門牌（例如 16 號、18 號、18 之 1 號），網站後端用「同一條路巷、門牌相近、建築完成日與總樓層相同」把它們合併。
 """
 import json, os, re, datetime
 
@@ -63,13 +66,24 @@ def main():
             f("車位移轉總面積平方公尺"), int(f("車位總價元")), v.get("車位類別", ""),
             v.get("建物現況格局-房", ""), v.get("建物現況格局-廳", ""), v.get("建物現況格局-衛", ""),
             (v.get("備註", "") or "")[:30],
+            int(str(v.get("建築完成年月") or "0")) if str(v.get("建築完成年月") or "").isdigit() else 0,
+            cn_floor(str(v.get("總樓層數") or "").replace("層", "") + "層"),
         ])
     os.makedirs(OUT, exist_ok=True)
     for town, m in idx.items():
+        prices = {}
         for k in m:
             m[k].sort(key=lambda r: -r[0])
+            for r in m[k]:
+                # 只取一個車位、有分開計價的成交，當作當區車位價參考
+                if r[6] and r[5] > 0 and 0 < r[4] < 60 and "無法拆分" not in r[10]:
+                    prices.setdefault(r[6], []).append(r[5])
+        park = {}
+        for t, arr in prices.items():
+            arr.sort()
+            park[t] = [arr[len(arr) // 2], len(arr)]
         with open(os.path.join(OUT, town + ".json"), "w", encoding="utf-8") as fh:
-            json.dump({"latest": latest, "data": m}, fh, ensure_ascii=False, separators=(",", ":"))
+            json.dump({"latest": latest, "park": park, "data": m}, fh, ensure_ascii=False, separators=(",", ":"))
     print({t: len(m) for t, m in idx.items()}, "latest", latest)
 
 
