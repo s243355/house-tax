@@ -1053,7 +1053,7 @@ function showLocr(r){const s=x=>x==null?'':String(x).trim();
 
 
 /* ---------- 網站版：店內資料庫、授權與存檔（Google Apps Script） ---------- */
-const GAS_URL='';
+const GAS_URL='https://script.google.com/macros/s/AKfycbwpaYYxKxUb3rh484fIeHz-7hanpnkaZYHBbYQ6xgdKSlea-YljeYJE-6xnvzb3_po/exec';
 let WEBLIB=[],WEBUSER=null;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){return ''}};
 const cred=()=>({email:ls('osr-email'),code:ls('osr-code')});
