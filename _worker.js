@@ -862,13 +862,14 @@ async function handleLvrCommunity(request, env, cors) {
     if (!res.ok) return json({ ok: false, error: town + '的實價登錄資料尚未建立', town: town, covered: false }, 404, cors);
     const idx = await res.json();
     const found = selectLvrRows(idx.data || {}, address, body || {});
-    const rows = found.rows;
+    const rows = found.entries || [];
     // 車位沒分開計價時的推估：先用同社區有分開計價的同類車位，沒有再用當區近 3 年同類車位中位數
     const commPark = {};
-    rows.forEach((r) => { if (r[5] > 0 && r[6]) (commPark[r[6]] = commPark[r[6]] || []).push(r[5]); });
+    rows.forEach((e) => { const r = e.row; if (r[5] > 0 && r[6]) (commPark[r[6]] = commPark[r[6]] || []).push(r[5]); });
     const med = (a) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
     const townPark = idx.park || {};
-    const out = rows.map((r) => {
+    const out = rows.map((e) => {
+      const r = e.row;
       const d = String(r[0]);
       const pingAll = r[3] * 0.3025, pp = r[4] * 0.3025;
       let pest = '', pestSrc = '';
@@ -889,9 +890,10 @@ async function handleLvrCommunity(request, env, cors) {
         ptype: r[6] || '',
         layout: r[7] !== '' ? r[7] + '房' + r[8] + '廳' + r[9] + '衛' : '',
         note: r[10] || '',
+        addr: e.addr,
       };
     });
-    return json({ ok: true, town: town, key: found.key, addrs: found.addrs, latest: idx.latest, hint: found.hint, rows: out }, 200, cors);
+    return json({ ok: true, town: town, key: found.key, addrs: found.addrs, matchBy: found.matchBy, latest: idx.latest, hint: found.hint, rows: out }, 200, cors);
   } catch (err) {
     console.error('handleLvrCommunity error:', err && err.message);
     return json({ ok: false, error: '讀取失敗，請稍後再試' }, 502, cors);

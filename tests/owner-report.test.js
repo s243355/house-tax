@@ -137,7 +137,62 @@ function iso(d) {
   assert.strictEqual(parsed.listings[0].pping, '9.91');
   assert.strictEqual(parsed.listings[0].price, '1495');
 
-  console.log('owner-report tests ok', { inHouse: q1.rows.length, addrs: q1.addrs, gong: g1.rows.length, gongAddrs: g1.addrs });
+  assert.strictEqual(api2.matchBy, 'exact');
+  const lv = await query('台中市南區工學路155巷16號');
+  assert.strictEqual(lv.ok, true);
+  assert.strictEqual(lv.rows.length, 4, '綠豐華 16號含同棟 18號應為 4 筆');
+  assert.strictEqual(lv.matchBy, 'building');
+  const shaped = lv.rows.map((r) => ({
+    ym: r.ym, floor: r.floor, ping: r.ping, pping: r.pping, total: r.total, note: r.note, ptype: r.ptype, addr: r.addr,
+    est: !r.priced && !!r.pest,
+    estSrc: r.pestSrc,
+    pprice: (!r.priced && r.pest) ? r.pest : r.pprice,
+  }));
+  const estN = shaped.filter((r) => r.est).length;
+  const st = logic.tradeStats(shaped, { now: new Date(2026, 10, 10), recentN: 5 });
+  const odd = st.rows.find((r) => r.ym === '113/02' && r.floor === '12樓');
+  assert.ok(odd, 'missing 113/02 12樓');
+  assert.ok(Math.abs(odd.unit - 46.29) < 0.02, 'unit ' + odd.unit);
+  assert.strictEqual(odd.outlier, true);
+  assert.strictEqual(odd.est, true);
+  assert.strictEqual(st.latest, '114/04');
+  assert.strictEqual(st.months, 19);
+  assert.strictEqual(st.count, 4);
+  assert.ok(st.count < 5 && st.months > 12);
+
+  const added = logic.tradeStats([
+    { ym: '113/02', total: '100', ping: '10', pprice: '0', pping: '0' },
+    { ym: '115/10', total: '200', ping: '10', pprice: '0', pping: '0' },
+  ], { recentN: 1 });
+  assert.strictEqual(added.rows.slice().sort(logic.byDateDesc)[0].ym, '115/10');
+  assert.strictEqual(added.avg, 20);
+
+  assert.strictEqual(logic.toIso(logic.parseAcquireDate('990601')), '2010-06-01');
+  assert.strictEqual(logic.toIso(logic.parseAcquireDate('105.05.01')), '2016-05-01');
+  assert.strictEqual(logic.toIso(logic.parseAcquireDate('2016/05/01')), '2016-05-01');
+  assert.strictEqual(logic.ymKey('11306'), logic.ymKey('113-06'));
+  assert.strictEqual(logic.ymKey('11306'), logic.ymKey('113年6月'));
+  assert.strictEqual(logic.ymKey('11306'), logic.ymKey('2024/06'));
+  assert.ok(logic.ymKey('115/10') > logic.ymKey('11306'));
+  assert.strictEqual(logic.ymKey(''), 0);
+
+  const bare = logic.tradeStats([{ ym: '115/01', total: '1000', ping: '20', pping: '5', pprice: '0' }]);
+  assert.strictEqual(bare.noPark, 1);
+  assert.strictEqual(bare.rows[0].noPark, true);
+  const skipped = logic.tradeStats([
+    { ym: '115/10', total: '300', ping: '10', pprice: '0', pping: '0', skip: true },
+    { ym: '115/09', total: '100', ping: '10', pprice: '0', pping: '0' },
+  ], { recentN: 5 });
+  assert.strictEqual(skipped.avg, 10);
+  assert.strictEqual(skipped.max, 10);
+
+  const hint = selectLvrRows({
+    '某路12號': [[1150101, 3, 100, 30, 0, 0, '', '', '', '', '', 1000101, 12]],
+  }, '台中市南區某路8號', { floors: '12樓', age: '15' });
+  assert.strictEqual(hint.matchBy, 'hint');
+  assert.deepStrictEqual(hint.addrs, ['某路12號']);
+
+  console.log('owner-report tests ok', { inHouse: q1.rows.length, addrs: q1.addrs, gong: g1.rows.length, gongAddrs: g1.addrs, lvfengEst: estN, odd: odd && odd.unit });
 })().catch((err) => {
   console.error(err);
   process.exit(1);

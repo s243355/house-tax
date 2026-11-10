@@ -57,15 +57,23 @@ export function selectLvrRows(data, address, hints) {
     return r[12] === hintFloors && Math.abs(Math.floor(r[11] / 10000) - (rocNow - hintAge)) <= 1;
   };
   const rows = [];
+  const entries = [];
   const addrs = [];
   if (me) {
     grouped.forEach((list, k) => {
       const s = splitDoor(k);
       if (!s || s.pre !== me.pre || Math.abs(s.no - me.no) > 10) return;
       const hit = s.no === me.no && !sig.size && !hintFloors ? list : list.filter(sameComm);
-      if (hit.length) { rows.push(...hit); addrs.push(k); }
+      if (hit.length) {
+        hit.forEach((row) => { rows.push(row); entries.push({ addr: k, row: row }); });
+        addrs.push(k);
+      }
     });
   }
+  entries.sort((a, b) => b.row[0] - a.row[0]);
   rows.sort((a, b) => b[0] - a[0]);
-  return { key, rows, addrs: addrs.sort(), hint: rows.length ? '' : EMPTY_HINT };
+  const exactCount = ((me && grouped.get(key)) || []).length;
+  let matchBy = '';
+  if (rows.length) matchBy = exactCount ? (addrs.length > 1 ? 'building' : 'exact') : 'hint';
+  return { key, rows, entries, addrs: addrs.sort(), matchBy, hint: rows.length ? '' : EMPTY_HINT };
 }
