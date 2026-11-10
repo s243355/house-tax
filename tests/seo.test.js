@@ -96,8 +96,8 @@ assert.ok(panda.includes('<h1>熊貓公園市</h1>'));
 assert.ok(!panda.includes('FAQPage'));
 
 const house = read('house-tax.html');
-assert.ok(house.includes('rel="canonical" href="https://house-tax.s243355.workers.dev/house-tax"'));
-assert.ok(house.includes('property="og:url" content="https://house-tax.s243355.workers.dev/house-tax"'));
+assert.ok(house.includes('rel="canonical" href="https://tcyucheng.com/tools/house-tax"'));
+assert.ok(house.includes('property="og:url" content="https://tcyucheng.com/tools/house-tax"'));
 
 let missingTwitter = 0;
 for (const name of fs.readdirSync(root)) {
@@ -162,6 +162,7 @@ assert.ok(!flat.includes('○○'));
     async fetch(request) {
       const url = new URL(request.url);
       if (url.pathname === '/yucheng') return new Response('home', { status: 200, headers: { 'Content-Type': 'text/html' } });
+      if (url.pathname === '/house-tax') return new Response('tool-house', { status: 200, headers: { 'Content-Type': 'text/html' } });
       if (url.pathname === '/404.html') return new Response('missing', { status: 200 });
       return new Response('nope', { status: 404 });
     },
@@ -174,10 +175,14 @@ assert.ok(!flat.includes('○○'));
     ['http://tcyucheng.com/robots.txt', 'https://tcyucheng.com/robots.txt'],
     ['http://tcyucheng.com/yucheng-communities', 'https://tcyucheng.com/yucheng-communities'],
     ['http://www.tcyucheng.com/yucheng-communities?x=1&y=2', 'https://tcyucheng.com/yucheng-communities?x=1&y=2'],
-    ['http://www.tcyucheng.com/house-tax', 'https://tcyucheng.com/house-tax'],
+    ['http://www.tcyucheng.com/house-tax', 'https://tcyucheng.com/tools/house-tax'],
     ['https://www.tcyucheng.com/yucheng-a-457623', 'https://tcyucheng.com/yucheng-a-457623'],
     ['http://house-tax.s243355.workers.dev/yucheng', 'https://tcyucheng.com/'],
     ['http://house-tax.s243355.workers.dev/yucheng-communities', 'https://tcyucheng.com/yucheng-communities'],
+    ['https://house-tax.s243355.workers.dev/', 'https://tcyucheng.com/tools/'],
+    ['https://house-tax.s243355.workers.dev/house-tax', 'https://tcyucheng.com/tools/house-tax'],
+    ['https://tcyucheng.com/house-tax/', 'https://tcyucheng.com/tools/house-tax'],
+    ['https://tcyucheng.com/tools', 'https://tcyucheng.com/tools/'],
   ];
   for (const [from, to] of casesToCheck) {
     const res = await hit(from);
@@ -189,18 +194,31 @@ assert.ok(!flat.includes('○○'));
   }
   const robots = await hit('https://tcyucheng.com/robots.txt');
   assert.strictEqual(robots.status, 200);
-  assert.ok((await robots.text()).includes('Sitemap: https://tcyucheng.com/sitemap-yucheng.xml'));
+  const robotsText = await robots.text();
+  assert.ok(robotsText.includes('Sitemap: https://tcyucheng.com/sitemap-yucheng.xml'));
+  assert.ok(robotsText.includes('Sitemap: https://tcyucheng.com/sitemap-tools.xml'));
   assert.strictEqual(robots.headers.get('strict-transport-security'), 'max-age=2592000');
   const homeRes = await hit('https://tcyucheng.com/');
   assert.strictEqual(homeRes.status, 200);
   assert.strictEqual(await homeRes.text(), 'home');
   assert.strictEqual(homeRes.headers.get('strict-transport-security'), 'max-age=2592000');
   const tool = await hit('https://house-tax.s243355.workers.dev/robots.txt');
-  assert.strictEqual(tool.status, 200);
-  assert.ok((await tool.text()).includes('https://house-tax.s243355.workers.dev/sitemap.xml'));
-  assert.strictEqual(tool.headers.get('strict-transport-security'), 'max-age=2592000');
+  assert.strictEqual(tool.status, 301);
+  assert.strictEqual(tool.headers.get('location'), 'https://tcyucheng.com/robots.txt');
   const toolHttp = await hit('http://house-tax.s243355.workers.dev/house-tax');
-  assert.notStrictEqual(toolHttp.status, 301);
+  assert.strictEqual(toolHttp.status, 301);
+  assert.strictEqual(toolHttp.headers.get('location'), 'https://tcyucheng.com/tools/house-tax');
+  const api = await hit('https://house-tax.s243355.workers.dev/api/scrape-prop', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  });
+  assert.strictEqual(api.status, 400);
+  const toolApi = await hit('https://tcyucheng.com/tools/api/prop-img');
+  assert.strictEqual(toolApi.status, 400);
+  const toolsPage = await hit('https://tcyucheng.com/tools/house-tax');
+  assert.strictEqual(toolsPage.status, 200);
+  assert.strictEqual(await toolsPage.text(), 'tool-house');
   const missing = await hit('https://tcyucheng.com/no-such-page');
   assert.strictEqual(missing.status, 404);
   assert.strictEqual(missing.headers.get('strict-transport-security'), 'max-age=2592000');

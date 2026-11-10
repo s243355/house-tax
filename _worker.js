@@ -1,8 +1,9 @@
 // ================================================================
 // 信義房屋物件比較 - Cloudflare Worker
 //
-// 正式站 workers.dev 只由 Cloudflare Workers Builds 部署。
-// GitHub Actions 的 pages-build-deployment 只發佈 GitHub Pages，不會更新 workers.dev。
+// 正式站由 Cloudflare Workers Builds 部署到 tcyucheng.com 與 workers.dev。
+// 工具頁的正式網址是 https://tcyucheng.com/tools/ 。workers.dev 與 /house-tax 會 301 過去。
+// GitHub Actions 的 pages-build-deployment 只發佈 GitHub Pages，不會更新 Worker。
 //
 // /api/scrape-prop：Cache API（命中就不再開瀏覽器）→ Browser Rendering /content。
 // 信義頁面與 sinyiwebapi 從 Cloudflare 出口會掛住，不要先打它們。
@@ -13,8 +14,9 @@
 // ================================================================
 import logic from "./prop-compare-logic.js";
 
-const SITEMAP_PATHS = [
-  '/',
+// 工具頁現在的正式網址是 https://tcyucheng.com/tools/...
+// 這裡留的是舊路徑，用來 301，也讓測試能對到 '/house-tax' 這類字串。
+const TOOL_PAGES = [
   '/house-tax',
   '/old-tax',
   '/repurchase-refund',
@@ -30,10 +32,93 @@ const SITEMAP_PATHS = [
   '/card',
   '/prop-compare',
 ];
+const QUIZ_PAGES = [
+  '/不動產經紀人 考試練習',
+  '/信義房仲模擬考練習',
+  '/信義房仲考試練習',
+];
+const SITEMAP_PATHS = ['/', ...TOOL_PAGES];
 
 // 先用 30 天，觀察沒問題再加長。不上 preload，也不加 includeSubDomains。
 const HSTS = 'max-age=2592000';
 const YC_HOST = 'tcyucheng.com';
+const WORKERS_HOST = 'house-tax.s243355.workers.dev';
+
+function decodePath(pathname) {
+  try { return decodeURIComponent(pathname); }
+  catch (err) { return pathname; }
+}
+
+function isApiPath(pathname) {
+  let path = decodePath(pathname);
+  if (path.startsWith('/tools/')) path = path.slice('/tools'.length);
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+  return path === '/api/scrape-prop' || path === '/api/prop-img';
+}
+
+function isYuchengPath(pathname) {
+  const path = decodePath(pathname).toLowerCase();
+  return path === '/yucheng' || path === '/yucheng.html' || path.startsWith('/yucheng-') || path === '/sitemap-yucheng.xml';
+}
+
+function withoutHtml(pathname) {
+  const path = decodePath(pathname);
+  return path.toLowerCase().endsWith('.html') ? path.slice(0, -5) : path;
+}
+
+// 工具首頁必須以 /tools/ 結尾，相對連結 house-tax 才會落在 /tools/ 底下。
+// 內頁不要結尾斜線，holding-period.js 這類相對路徑才不會變成 /tools/house-tax/holding-period.js。
+function preferredToolPath(url) {
+  const host = url.hostname.toLowerCase();
+  const onWorkers = host === WORKERS_HOST;
+  const onYc = host === YC_HOST || host === 'www.' + YC_HOST;
+  if (!onWorkers && !onYc) return null;
+  if (isApiPath(url.pathname) || isYuchengPath(url.pathname)) return null;
+  const path = withoutHtml(url.pathname);
+  if (path === '/tools' || path === '/tools/') return '/tools/';
+  if (path.startsWith('/tools/')) {
+    let rest = path.slice('/tools'.length);
+    if (rest.length > 1 && rest.endsWith('/')) rest = rest.slice(0, -1);
+    if (rest === '/index') return '/tools/';
+    return '/tools' + rest;
+  }
+  const bare = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+  if ((onWorkers && (bare === '/' || bare === '/index')) || (!onWorkers && bare === '/index')) return '/tools/';
+  if (onWorkers && bare === '/robots.txt') return '/robots.txt';
+  if (onWorkers && (bare === '/sitemap.xml' || bare === '/sitemap-tools.xml')) return '/sitemap-tools.xml';
+  if (TOOL_PAGES.includes(bare) || QUIZ_PAGES.includes(bare)) return '/tools' + bare;
+  return null;
+}
+
+function toolMovedTo(url) {
+  const destPath = preferredToolPath(url);
+  if (!destPath) return null;
+  const dest = new URL('https://' + YC_HOST);
+  dest.pathname = destPath;
+  dest.search = url.search;
+  const here = decodePath(url.pathname);
+  const samePath = here === destPath || (destPath === '/tools/' && (here === '/tools' || here === '/tools/'));
+  if (url.protocol === 'https:' && url.hostname.toLowerCase() === YC_HOST && samePath && here === destPath && url.search === dest.search) {
+    return null;
+  }
+  return dest.toString();
+}
+
+function toolSitemapXml() {
+  const paths = ['/tools/', ...TOOL_PAGES.map((page) => '/tools' + page), ...QUIZ_PAGES.map((page) => '/tools' + page)];
+  const urls = paths.map((p) => {
+    const loc = 'https://' + YC_HOST + p.split('/').map((part, i) => (i === 0 ? '' : encodeURIComponent(part))).join('/');
+    return '  <url><loc>' + loc.replace(/&/g, '&amp;') + '</loc></url>';
+  }).join('\n');
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n';
+}
+
+function sitemapIndexXml() {
+  const body = ['sitemap-yucheng.xml', 'sitemap-tools.xml'].map((name) => {
+    return '  <sitemap><loc>https://' + YC_HOST + '/' + name + '</loc></sitemap>';
+  }).join('\n');
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + '\n</sitemapindex>\n';
+}
 
 function requestScheme(url) {
   return url.protocol === 'http:' ? 'http' : 'https';
@@ -73,13 +158,18 @@ export default {
     const url = new URL(request.url);
     const scheme = requestScheme(url);
     const host = url.hostname.toLowerCase();
-    // tcyucheng.com / www 的 http，以及 www 的 https，一次 301 到 https://tcyucheng.com 的同一路徑。
-    if ((host === YC_HOST || host === 'www.' + YC_HOST) && (scheme === 'http' || host !== YC_HOST)) {
-      const dest = new URL(url.toString());
-      dest.protocol = 'https:';
-      dest.hostname = YC_HOST;
-      dest.port = '';
-      return withHsts(Response.redirect(dest.toString(), 301), scheme);
+    // API 不轉址，舊網址的 POST／取圖還能用。
+    if (!isApiPath(url.pathname)) {
+      const moved = toolMovedTo(url);
+      if (moved) return withHsts(Response.redirect(moved, 301), scheme);
+      // tcyucheng.com / www 的 http，以及 www 的 https，一次 301 到 https://tcyucheng.com 的同一路徑。
+      if ((host === YC_HOST || host === 'www.' + YC_HOST) && (scheme === 'http' || host !== YC_HOST)) {
+        const dest = new URL(url.toString());
+        dest.protocol = 'https:';
+        dest.hostname = YC_HOST;
+        dest.port = '';
+        return withHsts(Response.redirect(dest.toString(), 301), scheme);
+      }
     }
     return withHsts(await route(request, env, url), scheme);
   },
@@ -110,12 +200,19 @@ async function route(request, env, url) {
     }
     if (onYc) {
       if (url.pathname === '/robots.txt') {
-        return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://${YC_HOST}/sitemap-yucheng.xml\n`, {
+        return new Response(`User-agent: *\nAllow: /\n\nSitemap: https://${YC_HOST}/sitemap-yucheng.xml\nSitemap: https://${YC_HOST}/sitemap-tools.xml\n`, {
           headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
         });
       }
       if (url.pathname === '/sitemap.xml') {
-        return Response.redirect(`https://${YC_HOST}/sitemap-yucheng.xml`, 301);
+        return new Response(sitemapIndexXml(), {
+          headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        });
+      }
+      if (url.pathname === '/sitemap-tools.xml') {
+        return new Response(toolSitemapXml(), {
+          headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+        });
       }
       if (url.pathname === '/' || url.pathname === '/yucheng' || url.pathname === '/yucheng.html') {
         if (url.pathname !== '/') return Response.redirect(`https://${YC_HOST}/`, 301);
@@ -123,13 +220,28 @@ async function route(request, env, url) {
       }
     }
 
-    // ── 路由：POST /api/scrape-prop ──
-    if (url.pathname === '/api/scrape-prop' && request.method === 'POST') {
+    const apiPath = (() => {
+      let path = decodePath(url.pathname);
+      if (path.startsWith('/tools/')) path = path.slice('/tools'.length);
+      if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+      return path;
+    })();
+    // ── 路由：POST /api/scrape-prop（/tools/api/... 也收，頁面相對路徑才不會斷）──
+    if (apiPath === '/api/scrape-prop' && request.method === 'POST') {
       return handleScrapeProp(request, env, cors);
     }
 
-    if (url.pathname === '/api/prop-img' && request.method === 'GET') {
+    if (apiPath === '/api/prop-img' && request.method === 'GET') {
       return handlePropImg(url);
+    }
+
+    if ((decodePath(url.pathname) === '/tools' || decodePath(url.pathname).startsWith('/tools/')) && env.ASSETS) {
+      const decoded = decodePath(url.pathname);
+      const assetUrl = new URL(url.toString());
+      assetUrl.pathname = decoded === '/tools' || decoded === '/tools/' ? '/' : decoded.slice('/tools'.length);
+      const res = await env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+      if (res.status === 404) return notFoundResponse(request, env);
+      return res;
     }
 
     if (url.pathname === '/robots.txt') {
