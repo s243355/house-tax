@@ -808,7 +808,7 @@ async function handleSinyiCommunity(request, env, cors) {
     id = m ? m[1].toUpperCase() : '';
     if (!id) return json({ ok: false, error: '請貼上信義房屋社區頁的連結或社區編號' }, 400, cors);
     const origin = new URL(request.url).origin;
-    const key = cacheRequest(origin, '/__cache/sinyi-community/' + id);
+    const key = cacheRequest(origin, '/__cache/sinyi-community-v2/' + id);
     const hit = await cacheMatch(key);
     if (hit) {
       try { const data = await hit.json(); if (data && data.ok) return json(Object.assign({}, data, { source: 'cache' }), 200, cors); } catch (err) { /* 重新讀取 */ }
