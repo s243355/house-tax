@@ -21,15 +21,20 @@ _Q=_load('quarters.json');Q={k:v for k,v in _Q.items() if not str(k).startswith(
 _VF=_load('verified_fields.json');VF={k:v for k,v in _VF.items() if not str(k).startswith('_')}
 _SD=_load('school_districts.json')
 FROZEN_PAGE={457647}
+# 教育局學區查詢。表上的學年度可能比這個頁面舊，所以每頁都註明以最新公告為準。
+SCHOOL_LOOKUP='https://www.tc.edu.tw/page/02b0fa2f-7dda-404f-b411-8286cd97c9c1'
 def official_schools(town,vill):
     out=[]
     for key in ('elementary','junior'):
         level=(_SD.get('levels') or {}).get(key) or {}
         hit=(level.get('areas') or {}).get(f'{town}|{vill}')
         if not hit:continue
-        joint='共同學區，' if hit.get('joint') else ''
-        out.append({'text':f"{level.get('level')}：{'、'.join(hit['schools'])}（{town}{vill}全里，{joint}{level.get('publisher') or '臺中市政府教育局'} {level.get('school_year')} 學年度學區表）",'url':level.get('page') or '','title':level.get('title') or '學區表'})
+        year=level.get('school_year') or ''
+        joint='，共同學區' if hit.get('joint') else ''
+        out.append({'text':f"{level.get('level')}（{year} 學年度）：{'、'.join(hit['schools'])}（{town}{vill}全里{joint}）",'url':level.get('page') or '','title':level.get('title') or '學區表','year':year,'level':level.get('level') or ''})
     return out
+def school_notice():
+    return f'<p class="note" style="margin:6px 0 0">學區以<a href="{SCHOOL_LOOKUP}" target="_blank" rel="noopener">臺中市政府教育局最新公告</a>為準。</p>'
 CATS={'school':'學區','park':'公園','shop':'商場市場','transit':'交通','medical':'醫療'}
 e=html.escape
 def f1(x):return f'{x:.1f}'
@@ -178,9 +183,10 @@ for fn in sorted(glob.glob(os.path.join(DATA,'an','*.json'))):
         school_parts.append(('其他公開資料記載：'+listed) if offs else listed)
     for item in offs:
         school_parts.append(e(item['text'])+(f' <a class="src" href="{e(item["url"])}" target="_blank" rel="noopener">{e(item["title"])}</a>' if item.get('url') else ''))
-    if not school_parts:school_dd='<span class="tbd">待確認</span>'
-    elif len(school_parts)==1 and not offs:school_dd=school_parts[0]
-    else:school_dd=''.join(f'<div>{part}</div>' for part in school_parts)
+    if not school_parts:school_body='<span class="tbd">待確認</span>'
+    elif len(school_parts)==1 and not offs:school_body=school_parts[0]
+    else:school_body=''.join(f'<div>{part}</div>' for part in school_parts)
+    school_dd=school_body+school_notice()
     pr_dd=('約 '+format(A['pr']*100,'.1f')+'%　<span class="note">歷年成交中位數，以權狀為準</span>') if A.get('pr') else (verified_html('public_ratio') or '<span class="tbd">待確認</span>')
     basics=f'''<dl class="kv">
 <dt>完工</dt><dd>{c['year']} 年・{('新成屋（未滿 1 年）' if c['age']<1 else f'屋齡約 {age} 年')}</dd>

@@ -67,7 +67,14 @@ assert.strictEqual(tree, undefined, '樹義里 elementary district is split by n
 assert.ok(treeJr && treeJr.schools.includes('四育國中'));
 const yue = read('yucheng-a-614790.html');
 assert.ok(yue.includes('四育國中'));
+assert.ok(yue.includes('國中（111 學年度）'));
+assert.ok(!yue.includes('國小（112 學年度）'), '樹義里 elementary district is split and must not be labeled 112');
 assert.ok(yue.includes('https://data.gov.tw/dataset/130179'));
+assert.ok(yue.includes('學區以<a href="https://www.tc.edu.tw/page/02b0fa2f-7dda-404f-b411-8286cd97c9c1" target="_blank" rel="noopener">臺中市政府教育局最新公告</a>為準。'));
+const kyoto = read('yucheng-a-457623.html');
+assert.ok(kyoto.includes('國小（112 學年度）'));
+assert.ok(kyoto.includes('國中（111 學年度）'));
+assert.ok(kyoto.includes('學區以<a href="https://www.tc.edu.tw/page/02b0fa2f-7dda-404f-b411-8286cd97c9c1" target="_blank" rel="noopener">臺中市政府教育局最新公告</a>為準。'));
 assert.ok(yue.includes('拆到鄰的里不猜'));
 
 console.log('community enrichment tests passed', checked, 'pages', sourced, 'sourced fields');
