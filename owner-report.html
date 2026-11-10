@@ -9,17 +9,17 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。祐承店長 信義房屋 文心高工店">
+<meta name="description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。祐承店長 信義房屋 文心高工店">
 <link rel="canonical" href="https://tcyucheng.com/tools/owner-report">
 <meta property="og:type" content="website">
 <meta property="og:title" content="屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店">
-<meta property="og:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。">
+<meta property="og:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。">
 <meta property="og:url" content="https://tcyucheng.com/tools/owner-report">
 <meta property="og:image" content="https://tcyucheng.com/tools/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <meta name="twitter:title" content="屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店">
-<meta name="twitter:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF 或 PNG 傳 LINE。">
+<meta name="twitter:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。">
 <style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="pdf-loader.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&display=swap">
@@ -209,6 +209,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
     <span class="confirm" id="newConfirm" hidden>清空目前資料？<button class="sm" id="bNewYes" type="button">清空</button><button class="sm" id="bNewNo" type="button">取消</button></span>
     <button id="bJson" type="button">存檔 .json</button>
     <label class="btn" for="fJson">讀檔</label><input type="file" id="fJson" accept=".json,application/json" hidden>
+    <button id="bPptx" type="button">下載可編輯 PPTX</button>
     <button class="pri" id="bPdf" type="button">下載 PDF</button>
   </div>
 </header>
@@ -916,6 +917,111 @@ ${aiData()}`;
    msgs.forEach(x=>{x.innerHTML='已寫入結論、分析與總結，可直接修改。<button class="sm ghost" type="button" data-aiundo="1">復原</button>'})}
   catch(err){msgs.forEach(x=>x.textContent=aiErr(err))}finally{btns.forEach(x=>x.disabled=false)}});
 document.addEventListener('click',e=>{if(!e.target.dataset||!e.target.dataset.aiundo||!aiUndo)return;S.market.conclusion=aiUndo.c;S.price.analysis=aiUndo.a;S.price.summary=aiUndo.s;aiUndo=null;bindInputs();render();document.querySelectorAll('.aimsg').forEach(x=>x.textContent='已復原')});
+
+/* ---------- 可編輯 PPTX ---------- */
+async function loadPptx(){if(window.PptxGenJS)return window.PptxGenJS;
+  try{await addScript('https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js')}catch(e){await addScript('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js')}
+  if(!window.PptxGenJS)throw new Error('pptx');return window.PptxGenJS}
+function imgToData(src,maxSide=1800){return new Promise(res=>{if(!src)return res(null);const im=new Image();im.crossOrigin='anonymous';
+  im.onload=()=>{const k=Math.min(1,maxSide/Math.max(im.naturalWidth||1,im.naturalHeight||1));const c=document.createElement('canvas');c.width=Math.max(1,Math.round((im.naturalWidth||800)*k));c.height=Math.max(1,Math.round((im.naturalHeight||600)*k));
+   const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);try{res({data:c.toDataURL('image/jpeg',0.9),w:c.width,h:c.height})}catch(e){res(null)}};
+  im.onerror=()=>res(null);im.src=src})}
+function svgToData(svg,w=1020,h=900){const s=svg.replace(/var\(--f-sans\)/g,'Microsoft JhengHei, PingFang TC, sans-serif').replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ').replace('width="100%" height="100%"',`width="${w}" height="${h}"`);
+  return imgToData('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s),2000)}
+const PPT_C={brand:{bg:'FBF8F0',ink:'2B2A25',green:'2D5A30',gold:'A57A2B',gsoft:'E8EFE0',gsoft2:'F4E9D0',line:'DDD2B9',muted:'6D6555',red:'B8322A',redbg:'FBE1DE',grn:'2D7A33',grnbg:'DCEFD4',band:'2D5A30',bandInk:'FFFFFF',pill:'F7ECD4',pillInk:'3B2F16',white:'FFFFFF'},
+  mono:{bg:'FFFFFF',ink:'111111',green:'111111',gold:'444444',gsoft:'EFEFEF',gsoft2:'F4F4F4',line:'B9B9B9',muted:'555555',red:'000000',redbg:'E2E2E2',grn:'000000',grnbg:'F0F0F0',band:'FFFFFF',bandInk:'111111',pill:'FFFFFF',pillInk:'111111',white:'FFFFFF'}};
+async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme==='mono'?'mono':'brand'];const F='Microsoft JhengHei';
+  const I=v=>v/96,pt=v=>Math.round(v*0.75*10)/10;
+  const im={logo:await imgToData(S.logo,600),cover:await Promise.all(S.img.cover.map(u=>imgToData(u))),plan:await imgToData(S.img.plan),map:S.img.map?await imgToData(S.img.map):(S.poi&&S.poi.length?await svgToData(poiMap()):null)};
+  const p=new Pptx();p.defineLayout({name:'A4P',width:8.27,height:11.69});p.layout='A4P';p.title=`${S.basic.community||'社區'} 屋主售屋建議報告書`;p.company='信義房屋 文心高工店';p.author=S.agent.name;
+  const T=(sl,text,x,y,w,h,o={})=>sl.addText(text,{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(o.size||15),color:o.color||C.ink,bold:!!o.bold,align:o.align||'left',valign:o.valign||'middle',margin:o.margin??0,fill:o.fill?{color:o.fill}:undefined,line:o.line?{color:o.line,width:o.lw||1}:undefined,rectRadius:o.radius,shape:o.radius?p.ShapeType.roundRect:undefined,paraSpaceAfter:o.psa,lineSpacingMultiple:o.lsm,fit:o.fit});
+  const R=(sl,x,y,w,h,o={})=>sl.addShape(o.radius?p.ShapeType.roundRect:p.ShapeType.rect,{x:I(x),y:I(y),w:I(w),h:I(h),fill:{color:o.fill||C.white},line:o.line?{color:o.line,width:o.lw||1,dashType:o.dash}:{type:'none'},rectRadius:o.radius});
+  const pic=(sl,d,x,y,w,h,mode='cover')=>{if(!d)return false;sl.addImage({data:d.data,x:I(x),y:I(y),w:I(w),h:I(h),sizing:{type:mode,w:I(w),h:I(h)}});return true};
+  const holder=(sl,txt,x,y,w,h)=>{R(sl,x,y,w,h,{fill:C.gsoft2,line:C.line,dash:'dash',radius:0.06});T(sl,txt,x,y,w,h,{align:'center',color:C.muted,size:15})};
+  const brandRow=sl=>{if(im.logo){const h=40,w=Math.min(200,h*im.logo.w/im.logo.h);pic(sl,im.logo,40,26,w,h,'contain');T(sl,'房屋買賣・值得信賴',40+w+16,26,240,40,{size:14})}
+    else{T(sl,'信義房屋',40,24,120,28,{size:24,bold:true,color:C.green});T(sl,'SINYI REALTY',40,52,120,14,{size:10,bold:true,color:C.green});R(sl,166,30,1,34,{fill:C.ink});T(sl,'房屋買賣・值得信賴',180,30,240,34,{size:14})}};
+  const head=(sl,t)=>{sl.background={color:C.bg};brandRow(sl);T(sl,t,40,78,714,46,{size:34,bold:true,color:C.green,align:'center'});R(sl,217,130,360,2,{fill:C.gold})};
+  const foot=sl=>{R(sl,0,1005,794,118,{fill:C.band});R(sl,0,1005,794,3,{fill:S.theme==='mono'?'111111':C.gold});
+    T(sl,'｜'+S.agent.store,44,1020,500,28,{size:19,color:C.bandInk});T(sl,S.agent.name,44,1050,200,56,{size:42,bold:true,color:C.bandInk});
+    T(sl,'☎ '+S.agent.phone,250,1058,300,44,{size:28,bold:true,color:C.pillInk,fill:C.pill,line:C.gold,lw:1.5,radius:0.3,align:'center'});T(sl,'（同 LINE）',562,1058,140,44,{size:17,color:C.bandInk})};
+  const sh=(sl,t,x,y,w=500,sub)=>{R(sl,x,y+3,10,22,{fill:C.gold});T(sl,t,x+18,y,w,28,{size:21,bold:true,color:C.green});if(sub)T(sl,sub,x+18+t.length*22+8,y+4,200,22,{size:12,color:C.muted})};
+  const cell=(t,o={})=>({text:String(t??''),options:{fontFace:F,fontSize:pt(o.size||15),bold:!!o.bold,color:o.color||C.ink,fill:{color:o.fill||C.white},align:o.align||'center',valign:'middle',margin:0.04}});
+  const tbl=(sl,rows,x,y,colW,rowH)=>sl.addTable(rows,{x:I(x),y:I(y),w:I(colW.reduce((a,b)=>a+b,0)),colW:colW.map(I),rowH:I(rowH),border:{type:'solid',pt:0.75,color:C.line},autoPage:false});
+  const hdr=t=>cell(t,{fill:C.green,color:'FFFFFF',bold:true,size:14});
+  const bullets=(sl,arr,x,y,w,h,size=16,num=false)=>sl.addText(arr.map(t=>({text:t,options:{bullet:num?{type:'number'}:{code:'25CF'},breakLine:true}})),{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(size),color:C.ink,valign:'top',paraSpaceAfter:4,margin:0.06});
+  const no=secNo();
+
+  if(S.show.cover){const sl=p.addSlide();sl.background={color:C.bg};brandRow(sl);const name=S.basic.community||'社區名稱';const fs=name.length<=4?78:name.length<=6?64:48;
+    T(sl,name,40,84,714,fs*1.2,{size:fs,bold:true,color:C.green,align:'center'});const by=84+fs*1.2+18;
+    T(sl,'屋主售屋建議報告書',60,by,674,72,{size:40,bold:true,color:S.theme==='mono'?'FFFFFF':'FFF7E6',fill:S.theme==='mono'?'111111':C.gold,line:S.theme==='mono'?'111111':'D9B56A',lw:2,radius:0.5,align:'center'});
+    T(sl,'社區行情分析・稅費說明・價格建議',40,by+86,714,30,{size:20,bold:true,align:'center'});const py=by+136,ph=1005-24-py;
+    if(im.cover.length>=2){pic(sl,im.cover[0],40,py,380,ph);pic(sl,im.cover[1],432,py,322,ph)}else if(im.cover.length===1)pic(sl,im.cover[0],40,py,714,ph);else holder(sl,'放入社區外觀照',40,py,714,ph);foot(sl)}
+
+  if(S.show.basic){const sl=p.addSlide();head(sl,`${no.basic}、本戶基本資料與社區配置`);const b=S.basic,a=S.area;
+    sh(sl,'本戶基本資料',40,148);const kv=[['社區名稱',b.community,'總樓高',b.floors],['地址',b.address,'本戶樓層',b.floor],['建築完成日',b.built,'格局',b.layout],['用途',b.use,'朝向',b.facing],['房屋類型',b.type,'外牆材質',b.wall],['車位',b.parking,'車位資料',b.parkingNo],['邊間',b.corner,'暗房',b.dark],['警衛管理',b.guard,'','']];
+    tbl(sl,kv.map(r=>[cell(r[0],{fill:C.green,color:'FFFFFF',bold:true,size:13}),cell(r[1]||'—',{align:'left',size:13}),r[2]?cell(r[2],{fill:C.green,color:'FFFFFF',bold:true,size:13}):cell(''),cell(r[2]?(r[3]||'—'):'',{align:'left',size:13})]),40,182,[88,300,88,238],31);
+    sh(sl,'面積登記資料',40,452,300,'單位：坪');const ar=[['建物登記坪數',a.total],['主建物',a.main],['公共設施',a.public],['防空避難室兼車位',a.parking],['陽台',a.balcony],['雨遮',a.canopy],['土地登記坪數',a.land]];
+    tbl(sl,[ar.map(x=>hdr(x[0])),ar.map((x,i)=>cell(x[1]?'約'+x[1]:'—',{bold:true,size:16,color:i===0||i===6?C.green:C.ink}))],40,486,Array(7).fill(102),[42,36]);
+    sh(sl,'社區樓層配置圖',40,580,330);R(sl,40,614,349,376,{line:C.line,radius:0.08});
+    if(!pic(sl,im.plan,48,622,333,360,'contain'))T(sl,'放入樓層配置圖',40,614,349,376,{align:'center',color:C.muted});
+    else if(S.planLabel){const bx=48+333*(num(S.planX)||0)/100,byy=622+360*(num(S.planY)||0)/100;T(sl,[{text:'本戶格局',options:{fontSize:10,breakLine:true}},{text:S.planLabel,options:{fontSize:pt(26)}}],bx-48,byy-30,96,60,{color:C.red,bold:true,align:'center',fill:'FFFFFF',line:C.red,lw:2,radius:0.12})}
+    sh(sl,'周邊環境與生活機能',405,580,330);const ft=lines(S.features);const mh=ft.length?226:376;R(sl,405,614,349,mh,{line:C.line,radius:0.08});
+    if(!pic(sl,im.map,413,622,333,mh-16,'contain'))T(sl,'放入周邊生活機能圖',405,614,349,mh,{align:'center',color:C.muted});
+    if(ft.length){R(sl,405,850,349,140,{line:C.line,radius:0.08});T(sl,'本案特色',419,856,200,24,{size:16,bold:true,color:C.green});bullets(sl,ft.slice(0,5),413,880,333,106,14)}
+    foot(sl)}
+
+  if(S.show.market){const sl=p.addSlide();head(sl,`${no.market}、社區實價登錄行情分析`);const m=mktCalc();const rows=m.rows.slice(0,12);
+    sh(sl,S.basic.community||'社區',40,148);
+    const tiles=[['實價登錄',`${S.market.count||'—'} 筆`,C.white,C.green],['待售物件',`約${S.market.listing||'—'} 筆`,C.white,C.green],['最高成交單價',`${fx(m.max)} 萬／坪`,C.redbg,C.red],['最低成交單價',`${fx(m.min)} 萬／坪`,C.grnbg,C.grn],[`近${m.n}筆平均單價`,`${fx(m.avg)} 萬／坪`,C.white,C.green],S.market.avgAll?['社區平均成交均價',`${S.market.avgAll} 萬／坪`,C.white,C.green]:['','以下成交紀錄皆以拆車位後單價計算。',C.white,C.ink]];
+    tiles.forEach((t,i)=>{const x=40+(i%3)*241,y=182+Math.floor(i/3)*84;R(sl,x,y,231,74,{fill:t[2],line:C.line,radius:0.08});
+      if(t[0]){T(sl,t[0],x+12,y+6,207,22,{size:14,bold:true,color:C.muted});T(sl,t[1],x+12,y+30,207,38,{size:26,bold:true,color:t[3]})}else T(sl,t[1],x+12,y,207,74,{size:15,bold:true})});
+    const body=rows.length?rows.map(r=>{const hi=isFinite(r.unit)&&r.unit===m.max?[C.redbg,C.red]:isFinite(r.unit)&&r.unit===m.min?[C.grnbg,C.grn]:[C.white,C.green];
+      return [cell(r.ym+(r.unreg?'※':'')),cell(r.floor),cell(r.ping+'坪'),cell(r.pping+'坪'),cell(r.pprice+'萬'),cell(r.total+'萬'),cell(fx(r.unit)+'萬/坪',{bold:true,fill:hi[0],color:hi[1]})]}):[[cell('請輸入社區成交紀錄',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell(''),cell('')]];
+    const rh=rows.length>10?26:28;tbl(sl,[['成交年月','樓層','房屋坪數','車位坪數','車位價','總價','拆車單價'].map(hdr),...body],40,352,[96,96,104,104,90,96,128],[30,...body.map(()=>rh)]);
+    let y=352+30+body.length*rh+8;const notes=[];if(S.market.avgAll)notes.push('以上成交紀錄皆以拆車位後單價計算：（總價－車位價）÷ 房屋坪數。');if(rows.some(r=>r.unreg))notes.push('※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。');
+    if(notes.length){T(sl,notes.join('\n'),40,y,714,notes.length*18,{size:12.5,color:C.muted,align:'center'});y+=notes.length*18+8}
+    const cl=lines(S.market.conclusion);if(cl.length){const h=Math.min(990-y,cl.length*30+24);R(sl,40,y,714,h,{line:C.line,radius:0.08});T(sl,'重點結論',52,y,140,h,{size:22,bold:true,color:C.green,align:'center'});bullets(sl,cl,200,y+10,544,h-16,16)}
+    foot(sl)}
+
+  if(S.show.tax){const sl=p.addSlide();const h=holding();const isNew=h&&!h.old;const ex=expenses(isNew);
+    const expBox=(y,hh)=>{R(sl,40,y,714,hh,{line:C.line,radius:0.08});const half=Math.ceil(ex.length/2);[ex.slice(0,half),ex.slice(half)].forEach((col,ci)=>sl.addText(col.map((t,i)=>({text:`${ci*half+i+1}. ${t}`,options:{breakLine:true}})),{x:I(54+ci*350),y:I(y+8),w:I(340),h:I(hh-16),fontFace:F,fontSize:pt(14.5),color:C.ink,valign:'top',paraSpaceAfter:3,margin:0}))};
+    const lvt=(y)=>{const g=num(S.tax.lvtG),s2=num(S.tax.lvtS);if(!isFinite(g)&&!isFinite(s2))return y;T(sl,'土地增值稅試算',40,y,300,24,{size:16,bold:true});
+      T(sl,`一般用地　${money(g)} 元`,40,y+28,350,38,{size:18,bold:true,fill:C.gsoft,line:C.line,radius:0.08,margin:0.12});T(sl,`自用住宅　${money(s2)} 元`,404,y+28,350,38,{size:18,bold:true,fill:C.gsoft2,line:C.line,radius:0.08,margin:0.12});return y+76};
+    if(!h){head(sl,`${no.tax}、稅費說明`);holder(sl,'請在工具輸入所有權登記日',40,160,714,200)}
+    else{const reg=`民國${h.a.getFullYear()-1911}年${h.a.getMonth()+1}月${h.a.getDate()}日`;
+     if(!isNew){head(sl,`${no.tax}、舊制財產交易所得稅與賣方支出說明`);const hv=num(S.tax.houseVal),sr=num(S.tax.stdRate);const std=isFinite(hv)&&isFinite(sr)?hv*sr/100:NaN;
+      R(sl,40,150,714,180,{line:C.line,radius:0.08});T(sl,`登記日期：${reg}`,54,158,680,28,{size:18,bold:true});T(sl,`本案於105年前取得，適用舊制財產交易所得稅；土地另計土地增值稅。（${holdTxt(h)}）`,54,186,680,26,{size:15});
+      const yy=lvt(220);sh(sl,'舊制財產交易所得稅重點',40,345);
+      T(sl,[{text:'核實認定',options:{fontSize:pt(18),bold:true,color:C.red,breakLine:true}},{text:'依實際售價、取得成本及必要費用，計算房屋交易所得；須備齊相關憑證。',options:{fontSize:pt(15)}}],40,380,350,150,{fill:'FFFFFF',line:C.line,lw:1.5,radius:0.08,valign:'top',margin:0.12});
+      T(sl,[{text:'標準認定',options:{fontSize:pt(18),bold:true,color:C.green,breakLine:true}},{text:`無完整成本憑證時，按適用標準估算。本區暫按房屋評定現值 ${S.tax.stdRate}% 評估。`+(isFinite(std)?`\n房屋評定現值 ${money(hv)} 元 × ${S.tax.stdRate}% ≈ 財產交易所得 ${money(std)} 元，併入當年度綜合所得申報。`:''),options:{fontSize:pt(15)}}],404,380,350,150,{fill:'FFFFFF',line:C.line,lw:1.5,radius:0.08,valign:'top',margin:0.12});
+      T(sl,'※ 實際適用方式、稅額須依出售年度規定及稅務機關核定。',40,536,714,20,{size:12.5,color:C.muted});
+      sh(sl,'賣方常見支出項目',40,568);expBox(602,230);T(sl,'提醒　若有其他細節欲了解，歡迎來電聯繫。',40,848,714,44,{size:16,bold:true,line:C.line,radius:0.08,margin:0.14})}
+     else{head(sl,`${no.tax}、房地合一稅與稅後金額試算`);const t=taxCalc();const cs=t.cs;const d=v=>f2(v,1);
+      const base=`試算基礎：取得價 ${S.tax.buy||'—'}萬、提列成本 ${S.tax.cost||0}萬${t.lg?`、土地漲價總數額 ${f2(t.lg)}萬`:''}（暫定，裝潢未計）\n登記日：${reg}，${holdTxt(t.h)}。`+(S.tax.note?`\n備註：${S.tax.note}`:'');
+      const bh=S.tax.note?100:70;T(sl,base,40,148,714,bh,{size:15,fill:'FFFFFF',line:C.line,radius:0.08,margin:0.12,valign:'top'});let y=148+bh+12;
+      const ttab=(label,k,tk)=>{if(!cs.length){holder(sl,'請輸入取得價與試算最高價',40,y,714,100);y+=110;return}const cw=(714-118)/cs.length;
+        tbl(sl,[[cell('成交價（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c.p),{bold:true,fill:C.gsoft2,color:C.green}))],[cell('仲介費（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c.f),{size:14}))],[cell(label,{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c[tk]),{size:14,fill:S.theme==='mono'?'FAFAFA':'FFFBEA'}))],[cell('稅後金額（萬）',{fill:C.green,color:'FFFFFF',bold:true,size:13}),...cs.map(c=>cell(d(c[k]),{bold:true,fill:C.gsoft,color:C.green}))]],40,y,[118,...cs.map(()=>cw)],[30,28,30,30]);y+=140};
+      sh(sl,`A方案｜${t.lbl}，房地合一稅率${t.rate}%`,40,y,700);y+=34;ttab(`稅額 ${t.rate}%（萬）`,'nA','tA');
+      if(t.showB){sh(sl,'B方案｜自住：設籍持有滿6年，400萬免稅，超過部分10%',40,y,700);y+=34;ttab('稅額 優惠（萬）','nB','tB')}else{T(sl,'本戶持有未滿6年，暫不適用自住房地400萬免稅優惠。',40,y,714,22,{size:13,color:C.muted});y+=30}
+      y=lvt(y);sh(sl,'賣方常見支出項目',40,y);y+=32;const eh=Math.max(120,Math.min(170,960-y-50));expBox(y,eh);y+=eh+6;
+      T(sl,'※ 應稅所得＝成交價－取得價－提列成本－仲介費－土地漲價總數額；稅後金額未扣房貸餘額、土地增值稅、代書費及提前清償費用。實際依稅捐機關核定為準。',40,y,714,Math.max(30,1000-y),{size:12,color:C.muted,valign:'top'})}}
+    foot(sl)}
+
+  if(S.show.price){const sl=p.addSlide();head(sl,`${no.price}、待售物件比較與價格建議`);const pr=S.price;
+    [['建議網路開價區間',pr.online,pr.onlineNote],['客戶期望價位區間',pr.expect,'']].forEach((b,i)=>{const x=40+i*364;R(sl,x,150,350,112,{line:C.gold,lw:1.5,radius:0.1});
+      T(sl,b[0],x,156,350,26,{size:17,bold:true,color:C.gold,align:'center'});T(sl,b[1]||'—',x,182,350,52,{size:38,bold:true,color:C.green,align:'center'});if(b[2])T(sl,b[2],x,234,350,20,{size:13,color:C.muted,align:'center'})});
+    sh(sl,'同社區目前待售比較',40,280);const fl=String(S.basic.floor).replace(/\D/g,'');
+    const ls=pr.listings.filter(r=>r.floor||r.price);const body=ls.length?ls.map(r=>{const self=fl&&String(r.floor).replace(/\D/g,'')===fl&&(!S.area.total||num(r.ping)===num(S.area.total));const f=self?C.gsoft:C.white;
+      return [cell(r.floor,{fill:f,bold:self}),cell(r.ping+'坪',{fill:f,bold:self}),cell(r.layout,{fill:f,bold:self}),cell('開價'+r.price+'萬',{fill:f,bold:true,color:C.green})]}):[[cell('目前無同社區待售資料',{color:C.muted}),cell(''),cell(''),cell('')]];
+    tbl(sl,[['樓層','坪數','格局','開價'].map(hdr),...body],40,314,[160,180,200,174],[30,...body.map(()=>30)]);let y=314+30+body.length*30+18;
+    const an=lines(pr.analysis);const sumH=pr.summary?84:0;if(an.length){sh(sl,'分析與建議',40,y);y+=34;const h=Math.min(990-sumH-12-y,an.length*44+16);R(sl,40,y,714,h,{line:C.line,radius:0.08});bullets(sl,an,52,y+6,690,h-12,16,true);y+=h+12}
+    if(pr.summary)T(sl,pr.summary,40,Math.min(y,990-sumH),714,sumH-6,{size:17,bold:true,color:S.theme==='mono'?C.ink:'FFFFFF',fill:S.theme==='mono'?'FFFFFF':C.green,line:S.theme==='mono'?'111111':undefined,lw:2,radius:0.1,margin:0.18});
+    foot(sl)}
+  return p}
+async function exportPptx(){const btn=$('#bPptx');btn.disabled=true;toast('產生可編輯 PPTX 中…',15000);
+  try{const p=await buildPptx();const blob=await p.write({outputType:'blob'});await saveFile(`${baseName()}.pptx`,blob)}
+  catch(e){console.error(e);toast('PPTX 產生失敗，請重新整理後再試')}finally{btn.disabled=false}}
+$('#bPptx').onclick=exportPptx;
 
 window.addEventListener('resize',scale);
 bindInputs();drawToggles();drawMkt();drawLst();drawThumbs();render();
