@@ -1,0 +1,2122 @@
+{
+ "_meta": {
+  "retrieved": "2026-11-10",
+  "analysis_pages": 214,
+  "pages_checked_because_a_field_was_empty": 192,
+  "pages_with_at_least_one_new_field": 108,
+  "filled": {
+   "developer": 103,
+   "mgmt_fee": 2,
+   "households": 4,
+   "buildings": 3,
+   "parking": 9,
+   "public_ratio": 0
+  },
+  "skipped": [
+   "熊貓公園市（457647）整頁凍結，不補資料。",
+   "591 社區詳情把銀行或個人列為起造人時，不當作建設公司。",
+   "同一欄位兩份公開數字不一致就留待確認。",
+   "管理費只採用新建案頁「管理費用」欄，不用單一物件的刊登管理費。",
+   "沒有對上名稱與位置的社區維持待確認。"
+  ]
+ },
+ "457598": {
+  "developer": {
+   "value": "大城建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 大城大英國",
+     "url": "https://market.591.com.tw/23318",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457598,
+   "name": "大城大英國",
+   "town": "南區"
+  }
+ },
+ "457940": {
+  "developer": {
+   "value": "總瑩建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 文心高第",
+     "url": "https://market.591.com.tw/20453",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457940,
+   "name": "文心高第",
+   "town": "南區"
+  }
+ },
+ "460165": {
+  "developer": {
+   "value": "勝美建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 勝美新東區",
+     "url": "https://market.591.com.tw/104865",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460165,
+   "name": "勝美新東區",
+   "town": "東區"
+  }
+ },
+ "557488": {
+  "developer": {
+   "value": "櫻花建設",
+   "sources": [
+    {
+     "title": "591實價登錄 櫻花孩子王",
+     "url": "https://market.591.com.tw/38015",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557488,
+   "name": "櫻花孩子王",
+   "town": "南區"
+  }
+ },
+ "557430": {
+  "developer": {
+   "value": "坤悅開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 坤悅君匯",
+     "url": "https://market.591.com.tw/104813",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557430,
+   "name": "君匯",
+   "town": "南區"
+  }
+ },
+ "457731": {
+  "developer": {
+   "value": "勝興建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 勝興 文心大慶",
+     "url": "https://market.591.com.tw/104002",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457731,
+   "name": "勝興文心大慶",
+   "town": "南區"
+  }
+ },
+ "557502": {
+  "developer": {
+   "value": "同興協記建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 同興協記In House",
+     "url": "https://market.591.com.tw/5868227",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557502,
+   "name": "In House",
+   "town": "南區"
+  }
+ },
+ "558528": {
+  "developer": {
+   "value": "櫻花建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 櫻花興大之櫻",
+     "url": "https://market.591.com.tw/5917270",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558528,
+   "name": "櫻花興大之櫻",
+   "town": "大里區"
+  }
+ },
+ "457583": {
+  "developer": {
+   "value": "總太建設開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 總太居易",
+     "url": "https://market.591.com.tw/20379",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457583,
+   "name": "總太居易",
+   "town": "南區"
+  }
+ },
+ "558389": {
+  "parking": {
+   "value": "271 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 沅林．築青",
+     "url": "https://market.591.com.tw/102928",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558389,
+   "name": "沅林．築青",
+   "town": "大里區"
+  }
+ },
+ "457580": {
+  "developer": {
+   "value": "鄉林建設事業股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 鄉林雅典",
+     "url": "https://market.591.com.tw/23293",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457580,
+   "name": "鄉林雅典",
+   "town": "南區"
+  }
+ },
+ "557501": {
+  "developer": {
+   "value": "大熊建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 熊PRO",
+     "url": "https://market.591.com.tw/5857742",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557501,
+   "name": "熊PRO",
+   "town": "南區"
+  }
+ },
+ "458972": {
+  "developer": {
+   "value": "櫻花建設",
+   "sources": [
+    {
+     "title": "591實價登錄 櫻花LV假期",
+     "url": "https://market.591.com.tw/30399",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458972,
+   "name": "櫻花LV假期",
+   "town": "大里區"
+  }
+ },
+ "557492": {
+  "developer": {
+   "value": "登仰建設有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 登陽青籟",
+     "url": "https://market.591.com.tw/3697639",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557492,
+   "name": "登陽青籟",
+   "town": "南區"
+  }
+ },
+ "460049": {
+  "developer": {
+   "value": "聖俯建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 東京市銀座區",
+     "url": "https://market.591.com.tw/19726",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460049,
+   "name": "東京市銀座區",
+   "town": "東區"
+  }
+ },
+ "599519": {
+  "developer": {
+   "value": "勝美建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 勝美有禮",
+     "url": "https://market.591.com.tw/105016",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 599519,
+   "name": "勝美有禮",
+   "town": "大里區"
+  }
+ },
+ "610850": {
+  "developer": {
+   "value": "允將建設",
+   "sources": [
+    {
+     "title": "591實價登錄 允將康泊",
+     "url": "https://market.591.com.tw/37936",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 610850,
+   "name": "允將康泊",
+   "town": "大里區"
+  }
+ },
+ "613139": {
+  "developer": {
+   "value": "櫻花建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 櫻花孩子王2",
+     "url": "https://market.591.com.tw/101797",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 613139,
+   "name": "櫻花孩子王2",
+   "town": "南區"
+  }
+ },
+ "457826": {
+  "developer": {
+   "value": "豐謙建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 宏都雙子星",
+     "url": "https://market.591.com.tw/20536",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457826,
+   "name": "宏都雙子星",
+   "town": "南區"
+  }
+ },
+ "460236": {
+  "developer": {
+   "value": "佳福建設",
+   "sources": [
+    {
+     "title": "591實價登錄 學學一中",
+     "url": "https://market.591.com.tw/38359",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460236,
+   "name": "學學一中",
+   "town": "東區"
+  }
+ },
+ "557490": {
+  "developer": {
+   "value": "允將建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 允將行旅",
+     "url": "https://market.591.com.tw/34309",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557490,
+   "name": "允將行旅",
+   "town": "南區"
+  }
+ },
+ "457869": {
+  "developer": {
+   "value": "鄉林建設事業股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 布拉格",
+     "url": "https://market.591.com.tw/23378",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457869,
+   "name": "布拉格",
+   "town": "南區"
+  }
+ },
+ "457586": {
+  "developer": {
+   "value": "久樘開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 興大翡儷",
+     "url": "https://market.591.com.tw/23306",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457586,
+   "name": "興大翡儷",
+   "town": "南區"
+  }
+ },
+ "459154": {
+  "developer": {
+   "value": "親家建設",
+   "sources": [
+    {
+     "title": "591實價登錄 親家愛家",
+     "url": "https://market.591.com.tw/40193",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459154,
+   "name": "親家愛家",
+   "town": "大里區"
+  }
+ },
+ "460118": {
+  "developer": {
+   "value": "允將建設",
+   "sources": [
+    {
+     "title": "591實價登錄 允將大心",
+     "url": "https://market.591.com.tw/42096",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460118,
+   "name": "允將大心",
+   "town": "東區"
+  }
+ },
+ "457578": {
+  "developer": {
+   "value": "佳泰建設",
+   "sources": [
+    {
+     "title": "591實價登錄 寶佳藏韻大樓",
+     "url": "https://market.591.com.tw/38123",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "parking": {
+   "value": "84 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 寶佳藏韻大樓",
+     "url": "https://market.591.com.tw/38123",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457578,
+   "name": "寶佳藏韻大樓",
+   "town": "南區"
+  }
+ },
+ "559116": {
+  "developer": {
+   "value": "安美建設開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 安美城心",
+     "url": "https://market.591.com.tw/3697546",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    },
+    {
+     "title": "591新建案 安美城心",
+     "url": "https://newhouse.591.com.tw/127868",
+     "label": "投資建設",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "mgmt_fee": {
+   "value": "120 元/坪/月",
+   "sources": [
+    {
+     "title": "591新建案 安美城心",
+     "url": "https://newhouse.591.com.tw/127868",
+     "label": "管理費用",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "buildings": {
+   "value": "1 棟（1 幢）",
+   "sources": [
+    {
+     "title": "591新建案 安美城心",
+     "url": "https://newhouse.591.com.tw/127868",
+     "label": "棟戶規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 559116,
+   "name": "安美城心",
+   "town": "東區"
+  }
+ },
+ "459020": {
+  "developer": {
+   "value": "茂洋建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 茂美洋(大樓區)",
+     "url": "https://market.591.com.tw/40189",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459020,
+   "name": "茂美洋(大樓區)",
+   "town": "大里區"
+  }
+ },
+ "460048": {
+  "developer": {
+   "value": "鵬程建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 星境界",
+     "url": "https://market.591.com.tw/3667178",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460048,
+   "name": "星境界",
+   "town": "東區"
+  }
+ },
+ "611427": {
+  "developer": {
+   "value": "大漁建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 自遊自宅",
+     "url": "https://market.591.com.tw/162",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 611427,
+   "name": "自遊自宅",
+   "town": "大里區"
+  }
+ },
+ "457767": {
+  "developer": {
+   "value": "親嘉開發",
+   "sources": [
+    {
+     "title": "591實價登錄 親家M3",
+     "url": "https://market.591.com.tw/38072",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457767,
+   "name": "親家M3",
+   "town": "南區"
+  }
+ },
+ "459061": {
+  "developer": {
+   "value": "佳福建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 佳福御璽",
+     "url": "https://market.591.com.tw/248",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459061,
+   "name": "佳福御璽",
+   "town": "大里區"
+  }
+ },
+ "460197": {
+  "developer": {
+   "value": "林維建設",
+   "sources": [
+    {
+     "title": "591實價登錄 湖美",
+     "url": "https://market.591.com.tw/5473936",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460197,
+   "name": "湖美",
+   "town": "東區"
+  }
+ },
+ "457834": {
+  "developer": {
+   "value": "鑫園建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 陽光普照",
+     "url": "https://market.591.com.tw/20574",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457834,
+   "name": "陽光普照",
+   "town": "南區"
+  }
+ },
+ "457847": {
+  "developer": {
+   "value": "保國建設",
+   "sources": [
+    {
+     "title": "591實價登錄 超級大文心社區",
+     "url": "https://market.591.com.tw/38121",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457847,
+   "name": "超級大文心社區",
+   "town": "南區"
+  }
+ },
+ "558494": {
+  "developer": {
+   "value": "昂峰建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 昂峰聚羨岱",
+     "url": "https://market.591.com.tw/5868487",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558494,
+   "name": "昂峰聚羨岱",
+   "town": "大里區"
+  }
+ },
+ "342950": {
+  "developer": {
+   "value": "大有地產開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 允將福砌",
+     "url": "https://market.591.com.tw/38583",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 342950,
+   "name": "允將福砌",
+   "town": "大里區"
+  }
+ },
+ "557495": {
+  "developer": {
+   "value": "恆笙建築開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 大膳哲哲",
+     "url": "https://market.591.com.tw/102772",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557495,
+   "name": "大膳哲哲",
+   "town": "南區"
+  }
+ },
+ "558486": {
+  "developer": {
+   "value": "登陽建設",
+   "sources": [
+    {
+     "title": "591實價登錄 登陽步康橋",
+     "url": "https://market.591.com.tw/37826",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558486,
+   "name": "登陽步康橋",
+   "town": "大里區"
+  }
+ },
+ "460151": {
+  "developer": {
+   "value": "舜元建設",
+   "sources": [
+    {
+     "title": "591實價登錄 陽光城市大樓",
+     "url": "https://market.591.com.tw/23049",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460151,
+   "name": "陽光城市大樓",
+   "town": "東區"
+  }
+ },
+ "460227": {
+  "developer": {
+   "value": "榕園建設",
+   "sources": [
+    {
+     "title": "591實價登錄 自由路三段39號華廈",
+     "url": "https://market.591.com.tw/38348",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "households": {
+   "value": "33 戶",
+   "sources": [
+    {
+     "title": "591實價登錄 自由路三段39號華廈",
+     "url": "https://market.591.com.tw/38348",
+     "label": "總戶數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460227,
+   "name": "自由路三段39號華廈",
+   "town": "東區"
+  }
+ },
+ "614797": {
+  "mgmt_fee": {
+   "value": "60 元/坪/月",
+   "sources": [
+    {
+     "title": "591新建案 富宇科研双星",
+     "url": "https://newhouse.591.com.tw/132940",
+     "label": "管理費用",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 614797,
+   "name": "富宇科研双星",
+   "town": "大里區"
+  }
+ },
+ "459834": {
+  "developer": {
+   "value": "名軒開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 台中新站",
+     "url": "https://market.591.com.tw/5874267",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459834,
+   "name": "名軒台中新站",
+   "town": "東區"
+  }
+ },
+ "559147": {
+  "developer": {
+   "value": "坤悅開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 坤悅領秀",
+     "url": "https://market.591.com.tw/3694793",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 559147,
+   "name": "領秀",
+   "town": "東區"
+  }
+ },
+ "457931": {
+  "developer": {
+   "value": "十興建設開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 靜園A區",
+     "url": "https://market.591.com.tw/20406",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457931,
+   "name": "靜園A區",
+   "town": "南區"
+  }
+ },
+ "558286": {
+  "developer": {
+   "value": "柏宜建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 睦上田",
+     "url": "https://market.591.com.tw/5868251",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558286,
+   "name": "睦上田",
+   "town": "大里區"
+  }
+ },
+ "599508": {
+  "developer": {
+   "value": "親嘉開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 親家恆美",
+     "url": "https://market.591.com.tw/89",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 599508,
+   "name": "親家恆美",
+   "town": "大里區"
+  }
+ },
+ "460152": {
+  "developer": {
+   "value": "允將建設有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 親家大無限",
+     "url": "https://market.591.com.tw/38587",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460152,
+   "name": "親家大無限",
+   "town": "東區"
+  }
+ },
+ "460194": {
+  "developer": {
+   "value": "新業建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 新業築願景",
+     "url": "https://market.591.com.tw/103630",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460194,
+   "name": "新業築願景",
+   "town": "東區"
+  }
+ },
+ "457883": {
+  "developer": {
+   "value": "親家建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 親家新觀",
+     "url": "https://market.591.com.tw/23315",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457883,
+   "name": "親家新觀",
+   "town": "南區"
+  }
+ },
+ "459345": {
+  "developer": {
+   "value": "佳晟建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 興大康橋",
+     "url": "https://market.591.com.tw/5874438",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459345,
+   "name": "興大康橋",
+   "town": "大里區"
+  }
+ },
+ "460187": {
+  "developer": {
+   "value": "豐邑機構-浩瀚開發建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 浩瀚MVP",
+     "url": "https://market.591.com.tw/38556",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460187,
+   "name": "浩瀚MVP",
+   "town": "東區"
+  }
+ },
+ "457917": {
+  "developer": {
+   "value": "仁美開發企業股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 仁美居",
+     "url": "https://market.591.com.tw/20451",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457917,
+   "name": "仁美居",
+   "town": "南區"
+  }
+ },
+ "457979": {
+  "developer": {
+   "value": "元城建設",
+   "sources": [
+    {
+     "title": "591實價登錄 元城千謙苑",
+     "url": "https://market.591.com.tw/33537",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457979,
+   "name": "元城千謙苑",
+   "town": "南區"
+  }
+ },
+ "459047": {
+  "developer": {
+   "value": "皇威開發有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 皇威丰格",
+     "url": "https://market.591.com.tw/102804",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "households": {
+   "value": "53 戶",
+   "sources": [
+    {
+     "title": "591實價登錄 皇威丰格",
+     "url": "https://market.591.com.tw/102804",
+     "label": "總戶數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "parking": {
+   "value": "53 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 皇威丰格",
+     "url": "https://market.591.com.tw/102804",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459047,
+   "name": "皇威丰格",
+   "town": "大里區"
+  }
+ },
+ "557572": {
+  "parking": {
+   "value": "112 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 登陽聽河",
+     "url": "https://market.591.com.tw/3674924",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557572,
+   "name": "登陽聽河",
+   "town": "南區"
+  }
+ },
+ "457576": {
+  "developer": {
+   "value": "富聚開發有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 聚富暖暖",
+     "url": "https://market.591.com.tw/104503",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457576,
+   "name": "聚富暖暖",
+   "town": "南區"
+  }
+ },
+ "458022": {
+  "developer": {
+   "value": "佳福建設",
+   "sources": [
+    {
+     "title": "591實價登錄 佳福森活學",
+     "url": "https://market.591.com.tw/101445",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458022,
+   "name": "佳福森活學",
+   "town": "南區"
+  }
+ },
+ "460201": {
+  "developer": {
+   "value": "林偉開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 樂業京站",
+     "url": "https://market.591.com.tw/19807",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460201,
+   "name": "樂業京站",
+   "town": "東區"
+  }
+ },
+ "457924": {
+  "developer": {
+   "value": "輝全建設",
+   "sources": [
+    {
+     "title": "591實價登錄 園道優閣",
+     "url": "https://market.591.com.tw/20395",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457924,
+   "name": "園道優閣",
+   "town": "南區"
+  }
+ },
+ "459232": {
+  "developer": {
+   "value": "豐邑機構-浩瀚開發",
+   "sources": [
+    {
+     "title": "591實價登錄 景川匯",
+     "url": "https://market.591.com.tw/100479",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459232,
+   "name": "景川匯",
+   "town": "大里區"
+  }
+ },
+ "460177": {
+  "developer": {
+   "value": "名軒開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 美好莊園",
+     "url": "https://market.591.com.tw/100497",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460177,
+   "name": "美好莊園",
+   "town": "東區"
+  }
+ },
+ "557503": {
+  "developer": {
+   "value": "聚富建設有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 聚富滿滿",
+     "url": "https://market.591.com.tw/5855916",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557503,
+   "name": "聚富滿滿",
+   "town": "南區"
+  }
+ },
+ "610893": {
+  "developer": {
+   "value": "麗源建設",
+   "sources": [
+    {
+     "title": "591實價登錄 歐米家II",
+     "url": "https://market.591.com.tw/22189",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 610893,
+   "name": "歐米家II",
+   "town": "大里區"
+  }
+ },
+ "457728": {
+  "developer": {
+   "value": "佳泰建設",
+   "sources": [
+    {
+     "title": "591實價登錄 森悅",
+     "url": "https://market.591.com.tw/23295",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "parking": {
+   "value": "134 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 森悅",
+     "url": "https://market.591.com.tw/23295",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457728,
+   "name": "森悅",
+   "town": "南區"
+  }
+ },
+ "460100": {
+  "developer": {
+   "value": "博星建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 福聯新城乙區",
+     "url": "https://market.591.com.tw/19779",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460100,
+   "name": "福聯新城乙區",
+   "town": "東區"
+  }
+ },
+ "559157": {
+  "developer": {
+   "value": "坤悅開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 坤悅高飛",
+     "url": "https://market.591.com.tw/102187",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 559157,
+   "name": "坤悅高飛",
+   "town": "東區"
+  }
+ },
+ "559202": {
+  "developer": {
+   "value": "永尚建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 東城貳五",
+     "url": "https://market.591.com.tw/3697473",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 559202,
+   "name": "東城貳五",
+   "town": "東區"
+  }
+ },
+ "457985": {
+  "developer": {
+   "value": "高一建設",
+   "sources": [
+    {
+     "title": "591實價登錄 森活大樓",
+     "url": "https://market.591.com.tw/20586",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457985,
+   "name": "森活大樓",
+   "town": "南區"
+  }
+ },
+ "558414": {
+  "developer": {
+   "value": "匯有建設有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 匯有大贏家 No.2",
+     "url": "https://market.591.com.tw/101163",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558414,
+   "name": "匯有大贏家 No.2",
+   "town": "大里區"
+  }
+ },
+ "614790": {
+  "parking": {
+   "value": "691 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 登陽大地悅章",
+     "url": "https://market.591.com.tw/5921445",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    },
+    {
+     "title": "591新建案 登陽大地悅章",
+     "url": "https://newhouse.591.com.tw/133000",
+     "label": "車位規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 614790,
+   "name": "登陽大地悅章",
+   "town": "南區"
+  }
+ },
+ "459347": {
+  "developer": {
+   "value": "大有地產開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 允將康城",
+     "url": "https://market.591.com.tw/3668384",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459347,
+   "name": "允將康城",
+   "town": "大里區"
+  }
+ },
+ "457907": {
+  "developer": {
+   "value": "勝美建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 閱讀城市大廈",
+     "url": "https://market.591.com.tw/38127",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457907,
+   "name": "閱讀城市大廈",
+   "town": "南區"
+  }
+ },
+ "457980": {
+  "parking": {
+   "value": "154 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 大松花漾",
+     "url": "https://market.591.com.tw/38171",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457980,
+   "name": "大松花漾",
+   "town": "南區"
+  }
+ },
+ "457669": {
+  "developer": {
+   "value": "十興建設開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 佛羅里達",
+     "url": "https://market.591.com.tw/20445",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457669,
+   "name": "佛羅里達",
+   "town": "南區"
+  }
+ },
+ "458974": {
+  "developer": {
+   "value": "愛群英開發實業有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 居之安大廈",
+     "url": "https://market.591.com.tw/13645",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458974,
+   "name": "居之安大廈",
+   "town": "大里區"
+  }
+ },
+ "460230": {
+  "developer": {
+   "value": "允將建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 允將澄境",
+     "url": "https://market.591.com.tw/19727",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460230,
+   "name": "允將澄境",
+   "town": "東區"
+  }
+ },
+ "460192": {
+  "developer": {
+   "value": "親家建設",
+   "sources": [
+    {
+     "title": "591實價登錄 親家景一方",
+     "url": "https://market.591.com.tw/38555",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460192,
+   "name": "親家景一方",
+   "town": "東區"
+  }
+ },
+ "460238": {
+  "developer": {
+   "value": "聖俯建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 京綻ONE",
+     "url": "https://market.591.com.tw/3695102",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460238,
+   "name": "京綻ONE",
+   "town": "東區"
+  }
+ },
+ "457796": {
+  "developer": {
+   "value": "惠昇建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 惠宇謙仁",
+     "url": "https://market.591.com.tw/5868882",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457796,
+   "name": "惠宇謙仁",
+   "town": "南區"
+  }
+ },
+ "460044": {
+  "developer": {
+   "value": "勝麗建設",
+   "sources": [
+    {
+     "title": "591實價登錄 新中滙",
+     "url": "https://market.591.com.tw/38588",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460044,
+   "name": "新中滙",
+   "town": "東區"
+  }
+ },
+ "459051": {
+  "developer": {
+   "value": "大樁建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 悅自在",
+     "url": "https://market.591.com.tw/161",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459051,
+   "name": "悅自在",
+   "town": "大里區"
+  }
+ },
+ "460195": {
+  "developer": {
+   "value": "林偉開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 林維湖悅",
+     "url": "https://market.591.com.tw/19802",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460195,
+   "name": "林維湖悅",
+   "town": "東區"
+  }
+ },
+ "459066": {
+  "developer": {
+   "value": "佳福建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 佳福君璽",
+     "url": "https://market.591.com.tw/259",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459066,
+   "name": "佳福君璽",
+   "town": "大里區"
+  }
+ },
+ "459239": {
+  "developer": {
+   "value": "坤悅開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 坤悅JIA",
+     "url": "https://market.591.com.tw/37869",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459239,
+   "name": "坤悅JIA",
+   "town": "大里區"
+  }
+ },
+ "559176": {
+  "developer": {
+   "value": "熊圖建設股份有限公司",
+   "sources": [
+    {
+     "title": "591新建案 熊都 敘建築",
+     "url": "https://newhouse.591.com.tw/122599",
+     "label": "投資建設",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "households": {
+   "value": "65 戶（60 戶住家、5 戶店面）",
+   "sources": [
+    {
+     "title": "591新建案 熊都 敘建築",
+     "url": "https://newhouse.591.com.tw/122599",
+     "label": "棟戶規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "buildings": {
+   "value": "1 棟",
+   "sources": [
+    {
+     "title": "591新建案 熊都 敘建築",
+     "url": "https://newhouse.591.com.tw/122599",
+     "label": "棟戶規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 559176,
+   "name": "熊都敘建築",
+   "town": "東區"
+  }
+ },
+ "459162": {
+  "developer": {
+   "value": "德鑫建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 德鑫傳世",
+     "url": "https://market.591.com.tw/38117",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459162,
+   "name": "德鑫傳世",
+   "town": "大里區"
+  }
+ },
+ "557511": {
+  "developer": {
+   "value": "惠國建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 鳳止高梧",
+     "url": "https://market.591.com.tw/20577",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557511,
+   "name": "鳳止高梧",
+   "town": "南區"
+  }
+ },
+ "457912": {
+  "developer": {
+   "value": "嘉磐建設事業股份有限公司",
+   "sources": [
+    {
+     "title": "591新建案 嘉磐樸樹",
+     "url": "https://newhouse.591.com.tw/120290",
+     "label": "投資建設",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "households": {
+   "value": "154 戶（152 戶住家、2 戶店面）",
+   "sources": [
+    {
+     "title": "591新建案 嘉磐樸樹",
+     "url": "https://newhouse.591.com.tw/120290",
+     "label": "棟戶規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "buildings": {
+   "value": "1 棟",
+   "sources": [
+    {
+     "title": "591新建案 嘉磐樸樹",
+     "url": "https://newhouse.591.com.tw/120290",
+     "label": "棟戶規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "parking": {
+   "value": "平面式 161 個",
+   "sources": [
+    {
+     "title": "591新建案 嘉磐樸樹",
+     "url": "https://newhouse.591.com.tw/120290",
+     "label": "車位規劃",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457912,
+   "name": "嘉磐樸樹",
+   "town": "南區"
+  }
+ },
+ "458023": {
+  "developer": {
+   "value": "總圓建設",
+   "sources": [
+    {
+     "title": "591實價登錄 鑽錢大道",
+     "url": "https://market.591.com.tw/37828",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458023,
+   "name": "鑽錢大道",
+   "town": "南區"
+  }
+ },
+ "458970": {
+  "developer": {
+   "value": "佳福建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 佳福雙璽",
+     "url": "https://market.591.com.tw/21324",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458970,
+   "name": "佳福雙璽",
+   "town": "大里區"
+  }
+ },
+ "459056": {
+  "developer": {
+   "value": "親嘉開發",
+   "sources": [
+    {
+     "title": "591實價登錄 親家 W HOUSE",
+     "url": "https://market.591.com.tw/22217",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "parking": {
+   "value": "124 個（591 社區資料，未區分平面或機械）",
+   "sources": [
+    {
+     "title": "591實價登錄 親家 W HOUSE",
+     "url": "https://market.591.com.tw/22217",
+     "label": "車位數",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459056,
+   "name": "親家 W HOUSE",
+   "town": "大里區"
+  }
+ },
+ "459295": {
+  "developer": {
+   "value": "佑睿建設",
+   "sources": [
+    {
+     "title": "591實價登錄 首睿",
+     "url": "https://market.591.com.tw/215",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459295,
+   "name": "首睿",
+   "town": "大里區"
+  }
+ },
+ "459355": {
+  "developer": {
+   "value": "聚悅建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 聚悅文匯",
+     "url": "https://market.591.com.tw/3667202",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459355,
+   "name": "聚悅文匯",
+   "town": "大里區"
+  }
+ },
+ "557489": {
+  "developer": {
+   "value": "立彩建設",
+   "sources": [
+    {
+     "title": "591實價登錄 立彩時山",
+     "url": "https://market.591.com.tw/5988728",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557489,
+   "name": "立彩時山",
+   "town": "南區"
+  }
+ },
+ "457813": {
+  "developer": {
+   "value": "泰鉅建設",
+   "sources": [
+    {
+     "title": "591實價登錄 泰鉅興大苑",
+     "url": "https://market.591.com.tw/38166",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457813,
+   "name": "泰鉅興大苑",
+   "town": "南區"
+  }
+ },
+ "458014": {
+  "developer": {
+   "value": "內政部營建署",
+   "sources": [
+    {
+     "title": "591實價登錄 大慶中山",
+     "url": "https://market.591.com.tw/20513",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458014,
+   "name": "大慶中山",
+   "town": "南區"
+  }
+ },
+ "458994": {
+  "developer": {
+   "value": "安格建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 安格花園",
+     "url": "https://market.591.com.tw/21326",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 458994,
+   "name": "安格花園",
+   "town": "大里區"
+  }
+ },
+ "459251": {
+  "developer": {
+   "value": "佑睿建設股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 首薈",
+     "url": "https://market.591.com.tw/202",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 459251,
+   "name": "首薈",
+   "town": "大里區"
+  }
+ },
+ "557574": {
+  "developer": {
+   "value": "湘田建設",
+   "sources": [
+    {
+     "title": "591實價登錄 立彩璞境",
+     "url": "https://market.591.com.tw/37906",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 557574,
+   "name": "立彩璞境",
+   "town": "南區"
+  }
+ },
+ "610892": {
+  "developer": {
+   "value": "麗源建設",
+   "sources": [
+    {
+     "title": "591實價登錄 歐米家一期",
+     "url": "https://market.591.com.tw/37871",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 610892,
+   "name": "歐米家一期",
+   "town": "大里區"
+  }
+ },
+ "457646": {
+  "developer": {
+   "value": "麒發建設",
+   "sources": [
+    {
+     "title": "591實價登錄 親親校樹",
+     "url": "https://market.591.com.tw/20527",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457646,
+   "name": "親親校樹",
+   "town": "南區"
+  }
+ },
+ "457925": {
+  "developer": {
+   "value": "高堂建設",
+   "sources": [
+    {
+     "title": "591實價登錄 高福哲園",
+     "url": "https://market.591.com.tw/20396",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457925,
+   "name": "高福哲園",
+   "town": "南區"
+  }
+ },
+ "460051": {
+  "developer": {
+   "value": "大熊建設",
+   "sources": [
+    {
+     "title": "591實價登錄 大熊康橋",
+     "url": "https://market.591.com.tw/19717",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 460051,
+   "name": "大熊康橋",
+   "town": "東區"
+  }
+ },
+ "558479": {
+  "developer": {
+   "value": "瀚喬開發實業有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 述里學",
+     "url": "https://market.591.com.tw/3697629",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 558479,
+   "name": "述里學",
+   "town": "大里區"
+  }
+ },
+ "457824": {
+  "developer": {
+   "value": "登仰建設有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 雙捷湛",
+     "url": "https://market.591.com.tw/20583",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457824,
+   "name": "雙捷湛",
+   "town": "南區"
+  }
+ },
+ "457597": {
+  "developer": {
+   "value": "十興建設開發股份有限公司",
+   "sources": [
+    {
+     "title": "591實價登錄 興大生活家",
+     "url": "https://market.591.com.tw/20386",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 457597,
+   "name": "興大生活家",
+   "town": "南區"
+  }
+ },
+ "611428": {
+  "developer": {
+   "value": "林偉開發",
+   "sources": [
+    {
+     "title": "591實價登錄 塗城京讚",
+     "url": "https://market.591.com.tw/40184",
+     "label": "建設公司",
+     "retrieved": "2026-11-10"
+    }
+   ]
+  },
+  "_match": {
+   "id": 611428,
+   "name": "塗城京讚",
+   "town": "大里區"
+  }
+ }
+}
