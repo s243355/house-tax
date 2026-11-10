@@ -10,7 +10,10 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
+      # 用部署金鑰推送：main 有分支保護（必須通過測試），只放行這把金鑰；推送後也會觸發測試
       - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
