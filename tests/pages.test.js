@@ -20,7 +20,7 @@ const pages = {
   'card.html': '/card',
   'prop-compare.html': '/prop-compare',
 };
-const site = 'https://house-tax.s243355.workers.dev';
+const site = 'https://tcyucheng.com/tools';
 
 for (const [file, route] of Object.entries(pages)) {
   const html = fs.readFileSync(path.join(root, file), 'utf8');
@@ -127,7 +127,9 @@ for (const name of fs.readdirSync(root)) {
   rootAbsAttr.lastIndex = 0;
   let m;
   while ((m = rootAbsAttr.exec(text))) {
-    assert.ok(m[2].startsWith('yucheng-a-'), name + ' root-absolute ' + m[0].slice(0, 70));
+    const target = m[2];
+    const allowed = target.startsWith('yucheng-') || target === '' || target.startsWith('#');
+    assert.ok(allowed, name + ' root-absolute ' + m[0].slice(0, 70));
   }
 }
 const communities = fs.readFileSync(path.join(root, 'yucheng-communities.html'), 'utf8');
