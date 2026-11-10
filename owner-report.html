@@ -224,7 +224,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
 
 <main class="wrap">
   <section class="form" id="form">
-    <p class="web-only ok" id="webNote">網站版：輸入店內密碼就能選社區帶入、存檔建檔；謄本與截圖可用自己的 ChatGPT 或 Gemini 辨識後貼回。有 Claude 帳號的同事請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>，可直接拍照辨識與 AI 撰寫。</p>
+    <p class="web-only ok" id="webNote">網站版：用店長授權的 Google 帳號登入，就能選社區帶入、存檔建檔；謄本與截圖可用自己的 ChatGPT 或 Gemini 辨識後貼回。有 Claude 帳號的同事請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>，可直接拍照辨識與 AI 撰寫。</p>
 
     <details open id="ocrSec">
       <summary><span class="no">◎</span>上傳謄本照片自動填入<span class="st" id="stOcr"></span></summary>
@@ -264,7 +264,11 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         <div class="lib web-only">
           <label class="f">選擇社區（店內資料庫）<select aria-label="選擇社區（店內資料庫）" id="webLibSel"><option value="">— 選擇社區 —</option></select></label>
           <div class="row"><button class="sm pri" id="bWebLibLoad" type="button">帶入社區資料</button></div>
-          <label class="f">店內密碼（向店長索取，輸入一次會記住）<input aria-label="店內密碼" id="webPass" type="password" autocomplete="off"></label>
+          <div class="grid2">
+            <label class="f">Google 帳號電子郵件<input aria-label="Google 帳號電子郵件" id="webEmail" type="email" autocomplete="email"></label>
+            <label class="f">個人存取碼（店長給的）<input aria-label="個人存取碼" id="webCode" type="password" autocomplete="off"></label>
+          </div>
+          <div class="row"><button class="sm" id="bWebLogin" type="button">登入</button></div>
           <p class="hint" id="webLibMsg"></p>
         </div>
         <div class="lib cl-only">
@@ -429,6 +433,27 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         <label class="f">分析與建議（一行一點）<textarea aria-label="分析與建議（一行一點）" id="i-p-analysis" data-k="price.analysis" rows="6"></textarea></label>
         <div class="row"><button class="sm pri cl-only" type="button" data-ai="1">AI 撰寫全部文字</button><button class="sm" id="bGenPrice" type="button">依數據套句型</button><span class="hint aimsg"></span></div>
         <label class="f">總結<textarea aria-label="總結" id="i-p-summary" data-k="price.summary" rows="2"></textarea></label>
+      </div>
+    </details>
+    <details id="myRepSec" class="web-only" hidden>
+      <summary><span class="no">◎</span>我存過的報告</summary>
+      <div class="sec"><div class="row"><button class="sm pri" id="bMyRep" type="button">讀取</button></div><div id="myRepList"></div></div>
+    </details>
+    <details id="authSec" class="web-only">
+      <summary><span class="no">◎</span>授權管理（店長）</summary>
+      <div class="sec">
+        <p class="hint">輸入同仁的 Google 帳號電子郵件，勾選權限後按「新增授權」，系統會產生個人存取碼，複製通知訊息用 LINE 傳給他。讀取＝開啟自己存過的報告；挑選社區＝社區選單帶入；存檔＝完成並存檔。</p>
+        <label class="f">店長管理碼<input aria-label="店長管理碼" id="adminCode" type="password" autocomplete="off"></label>
+        <div class="row"><button class="sm pri" id="bAdminUnlock" type="button">進入授權管理</button></div>
+        <div id="authBody" hidden style="display:flex;flex-direction:column;gap:8px">
+          <div class="grid2">
+            <label class="f">同仁 Google 帳號電子郵件<input aria-label="同仁 Google 帳號電子郵件" id="auEmail" type="email"></label>
+            <label class="f">姓名<input aria-label="姓名" id="auName"></label>
+          </div>
+          <div class="row"><label class="chk"><input type="checkbox" id="auRead" aria-label="讀取" checked>讀取</label><label class="chk"><input type="checkbox" id="auPick" aria-label="挑選社區" checked>挑選社區</label><label class="chk"><input type="checkbox" id="auSave" aria-label="存檔" checked>存檔</label><button class="sm pri" id="bAuthAdd" type="button">新增授權</button></div>
+          <div id="authNew"></div>
+          <div id="authList"></div>
+        </div>
       </div>
     </details>
     <details id="archSec" class="cl-only" hidden>
@@ -1027,30 +1052,54 @@ function showLocr(r){const s=x=>x==null?'':String(x).trim();
 
 
 
-/* ---------- 網站版：店內資料庫與存檔（Google Apps Script） ---------- */
+/* ---------- 網站版：店內資料庫、授權與存檔（Google Apps Script） ---------- */
 const GAS_URL='';
-let WEBLIB=[];
-const getPass=()=>{try{return localStorage.getItem('osr-pass')||''}catch(e){return ''}};
+let WEBLIB=[],WEBUSER=null;
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch(e){return ''}};
+const cred=()=>({email:ls('osr-email'),code:ls('osr-code')});
+async function gas(body){const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});return r.json()}
 function webMsg(t){const el=$('#webLibMsg');if(el)el.textContent=t}
-async function loadWebLib(){if(!document.documentElement.classList.contains('no-claude'))return;
-  if(!GAS_URL)return webMsg('店內資料庫尚未開通，請店長完成設定。');const k=getPass();if(!k)return webMsg('輸入店內密碼後，就能選社區帶入與存檔。');
-  webMsg('讀取社區清單中…');try{const r=await (await fetch(GAS_URL+'?k='+encodeURIComponent(k))).json();if(!r.ok)return webMsg(r.error==='pass'?'店內密碼不對，請向店長確認。':'讀取失敗，請稍後再試。');
+const isWeb=()=>document.documentElement.classList.contains('no-claude');
+const ERRS={auth:'電子郵件或存取碼不對，或授權已停用，請向店長確認。',perm:'你的帳號沒有這項權限，請向店長申請。',admin:'店長管理碼不對。'};
+async function webLogin(){if(!isWeb())return;if(!GAS_URL)return webMsg('店內資料庫尚未開通，請店長完成設定。');const c=cred();if(!c.email||!c.code){WEBUSER=null;return webMsg('輸入店長授權的 Google 帳號電子郵件與存取碼，就能選社區帶入與存檔。')}
+  webMsg('登入中…');try{const r=await gas({action:'whoami',...c});if(!r.ok){WEBUSER=null;return webMsg(ERRS[r.error]||'登入失敗，請稍後再試。')}
+   WEBUSER=r.user;const p=[WEBUSER.pick&&'挑選社區',WEBUSER.save&&'存檔',WEBUSER.read&&'讀取報告'].filter(Boolean).join('、')||'無';
+   webMsg(`已登入：${WEBUSER.name||WEBUSER.email}（權限：${p}）`);$('#myRepSec').hidden=!WEBUSER.read;if(WEBUSER.pick)loadWebLib()}
+  catch(e){webMsg('連不上店內資料庫，請檢查網路後重新整理。')}}
+async function loadWebLib(){try{const r=await gas({action:'list',...cred()});if(!r.ok)return webMsg(ERRS[r.error]||'讀取社區失敗。');
    WEBLIB=(r.communities||[]).map(c=>({...c,id:cid(c.name)}));const g={};WEBLIB.forEach(c=>{const d=distOf(c.basic&&c.basic.address);(g[d]=g[d]||[]).push(c)});
-   $('#webLibSel').innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant')).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</optgroup>`).join('');
-   webMsg(`店內資料庫共 ${WEBLIB.length} 個社區。`)}catch(e){webMsg('連不上店內資料庫，請檢查網路後重新整理。')}}
-$('#webPass').value=getPass();$('#webPass').onchange=()=>{try{localStorage.setItem('osr-pass',$('#webPass').value.trim())}catch(e){}loadWebLib()};
-$('#bWebLibLoad').onclick=()=>{const c=WEBLIB.find(x=>x.id===$('#webLibSel').value);if(!c)return toast('請先選擇社區');applyComm(c);bindInputs();drawMkt();drawLst();drawThumbs();render();toast(`已帶入「${c.name}」，照片請另外上傳`)};
-$('#bWebArchive').onclick=async()=>{const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!GAS_URL)return toast('店內存檔尚未開通，請店長完成設定');const k=getPass();if(!k){toast('請先在「一、本戶基本資料」輸入店內密碼');return}
+   $('#webLibSel').innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant')).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</optgroup>`).join('')}catch(e){}}
+$('#webEmail').value=ls('osr-email');$('#webCode').value=ls('osr-code');
+$('#bWebLogin').onclick=()=>{ls('osr-email',$('#webEmail').value.trim().toLowerCase());ls('osr-code',$('#webCode').value.trim());webLogin()};
+$('#bWebLibLoad').onclick=()=>{if(!WEBUSER||!WEBUSER.pick)return toast('請先登入，且需要「挑選社區」權限');const c=WEBLIB.find(x=>x.id===$('#webLibSel').value);if(!c)return toast('請先選擇社區');applyComm(c);bindInputs();drawMkt();drawLst();drawThumbs();render();toast(`已帶入「${c.name}」，照片請另外上傳`)};
+$('#bWebArchive').onclick=async()=>{const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!GAS_URL)return toast('店內存檔尚未開通，請店長完成設定');
+  if(!WEBUSER)return toast('請先在「一、本戶基本資料」登入店內帳號');if(!WEBUSER.save)return toast('你的帳號沒有存檔權限，請向店長申請');
   const btn=$('#bWebArchive');btn.disabled=true;
   try{const files=[];const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');
    const pdf=await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
    try{toast('產生 PPTX 中…',15000);const pp=await buildPptx();files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(await pp.write({outputType:'blob'}))})}catch(e){}
    const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:[],plan:'',map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
    const {commRow,repRow}=sheetRows(n,'');toast('上傳到店內雲端中…',30000);
-   const r=await (await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({k,name:n,commRow,repRow,doc:liteDoc(n),files})})).json();
-   if(!r.ok)throw new Error(r.error||'fail');toast(`已存檔到店內雲端，「${n}」社區資料已同步建檔`,6000);loadWebLib()}
-  catch(e){toast(String(e&&e.message)==='pass'?'店內密碼不對，請向店長確認':'存檔失敗，請稍後再試；可以先按「存檔 .json」留底',6000)}finally{btn.disabled=false}};
-loadWebLib();
+   const r=await gas({action:'save',...cred(),name:n,commRow,repRow,doc:liteDoc(n),files});
+   if(!r.ok)throw new Error(r.error||'fail');toast(`已存檔到店內雲端，「${n}」社區資料已同步建檔`,6000);if(WEBUSER.pick)loadWebLib();if(WEBUSER.read)loadMyReports()}
+  catch(e){toast(ERRS[e&&e.message]||'存檔失敗，請稍後再試；可以先按「存檔 .json」留底',6000)}finally{btn.disabled=false}};
+async function loadMyReports(){const box=$('#myRepList');box.innerHTML='<p class="hint">讀取中…</p>';try{const r=await gas({action:'my_reports',...cred()});if(!r.ok){box.innerHTML=`<p class="warn">${esc(ERRS[r.error]||'讀取失敗')}</p>`;return}
+  box.innerHTML=r.reports.length?`<div class="tbwrap"><table class="tb"><tr><th>存檔時間</th><th>社區／樓層</th><th>開價區間</th><th></th></tr>${r.reports.map(x=>`<tr><td>${esc(x.at)}</td><td>${esc(x.community)} ${esc(x.floor)}</td><td>${esc(x.online||'—')}</td><td>${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">開啟</a>`:''}</td></tr>`).join('')}</table></div>`:'<p class="hint">還沒有存過報告。</p>'}catch(e){box.innerHTML='<p class="warn">連不上店內資料庫。</p>'}}
+$('#bMyRep').onclick=loadMyReports;
+/* 店長授權管理 */
+let ADMIN='';
+function permBoxes(u,i){return ['read','pick','save'].map((k,j)=>`<td style="text-align:center"><input type="checkbox" id="au-${i}-${k}" aria-label="${['讀取','挑選社區','存檔'][j]}" ${u[k]?'checked':''} style="width:auto;min-width:0"></td>`).join('')}
+async function adminLoad(){const box=$('#authList');box.innerHTML='<p class="hint">讀取中…</p>';try{const r=await gas({action:'admin_list',admin:ADMIN});if(!r.ok){box.innerHTML=`<p class="warn">${esc(ERRS[r.error]||'讀取失敗')}</p>`;return}
+  window._AU=r.users;box.innerHTML=r.users.length?`<div class="tbwrap"><table class="tb"><tr><th>同仁</th><th>讀取</th><th>挑選社區</th><th>存檔</th><th>啟用</th><th>存取碼</th><th></th></tr>${r.users.map((u,i)=>`<tr><td>${esc(u.name||'')}<br><span class="hint">${esc(u.email)}</span></td>${permBoxes(u,i)}<td style="text-align:center"><input type="checkbox" id="au-${i}-en" aria-label="啟用" ${u.enabled?'checked':''} style="width:auto;min-width:0"></td><td><code>${esc(u.code)}</code></td><td style="white-space:nowrap"><button class="sm pri" type="button" data-ausave="${i}">儲存</button> <button class="sm" type="button" data-aureset="${i}">重設碼</button></td></tr>`).join('')}</table></div>`:'<p class="hint">還沒有授權任何同仁。</p>'}catch(e){box.innerHTML='<p class="warn">連不上店內資料庫。</p>'}}
+function inviteText(email,code){return `店內「屋主售屋建議報告書」工具已幫你開通：\n網址：https://tcyucheng.com/tools/owner-report\n電子郵件：${email}\n存取碼：${code}\n在「一、本戶基本資料」輸入後按登入即可。存取碼請勿外流。`}
+async function adminUpsert(user,showCode){try{const r=await gas({action:'admin_upsert',admin:ADMIN,user});if(!r.ok)return toast(r.error==='email'?'電子郵件格式不對':ERRS[r.error]||'儲存失敗');
+  if(showCode){$('#authNew').innerHTML=`<div class="ok"><b>${esc(r.email)}</b> 的存取碼：<code>${esc(r.code)}</code><div class="row" style="margin-top:6px"><button class="sm" type="button" id="bCopyInvite">複製通知訊息（貼到 LINE）</button></div></div>`;$('#bCopyInvite').onclick=e=>copyText(inviteText(r.email,r.code),e.target.closest('.row'))}
+  else toast('已儲存');adminLoad()}catch(e){toast('連不上店內資料庫')}}
+$('#bAdminUnlock').onclick=()=>{ADMIN=$('#adminCode').value.trim();if(!ADMIN)return toast('請輸入店長管理碼');if(!GAS_URL)return toast('店內資料庫尚未開通');$('#authBody').hidden=false;adminLoad()};
+$('#bAuthAdd').onclick=()=>{const email=$('#auEmail').value.trim();if(!email)return toast('請輸入同仁的 Google 帳號電子郵件');adminUpsert({email,name:$('#auName').value.trim(),read:$('#auRead').checked,pick:$('#auPick').checked,save:$('#auSave').checked,enabled:true},true);$('#auEmail').value='';$('#auName').value=''};
+document.addEventListener('click',e=>{const d=e.target.dataset||{};const i=d.ausave??d.aureset;if(i==null)return;const u=window._AU[+i];
+  adminUpsert({email:u.email,name:u.name,read:$(`#au-${i}-read`).checked,pick:$(`#au-${i}-pick`).checked,save:$(`#au-${i}-save`).checked,enabled:$(`#au-${i}-en`).checked,resetCode:d.aureset!=null},d.aureset!=null)});
+webLogin();
 
 /* ---------- 用 ChatGPT／Gemini 辨識：複製指令、貼回結果 ---------- */
 const EXT_TAIL='\n\n請把結果放在一個 ```json 程式碼區塊裡回覆，只回這一段，不要其他說明。';
