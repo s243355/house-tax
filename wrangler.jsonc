@@ -7,6 +7,9 @@
     { "pattern": "tcyucheng.com", "custom_domain": true },
     { "pattern": "www.tcyucheng.com", "custom_domain": true }
   ],
+  "vars": {
+    "GA_MEASUREMENT_ID": "G-GF9EYGTLNG"
+  },
   "assets": {
     "directory": ".",
     "binding": "ASSETS",

@@ -44,6 +44,117 @@ const HSTS = 'max-age=2592000';
 const YC_HOST = 'tcyucheng.com';
 const WORKERS_HOST = 'house-tax.s243355.workers.dev';
 
+// GA4 評估 ID 只讀環境變數 GA_MEASUREMENT_ID（wrangler.jsonc 的 vars）。
+// 留空或格式不對就不載入 gtag、不送事件、也不加頁尾說明。
+function gaMeasurementId(env) {
+  const id = String((env && env.GA_MEASUREMENT_ID) || '').trim();
+  return /^G-[A-Za-z0-9]{4,16}$/.test(id) ? id : '';
+}
+
+function gaSnippet(id) {
+  const safe = JSON.stringify(id);
+  const head = [
+    '<script async src="https://www.googletagmanager.com/gtag/js?id=' + id + '"></script>',
+    '<script>',
+    'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}',
+    "gtag('js', new Date());",
+    "gtag('config', " + safe + ", {anonymize_ip:true, allow_google_signals:false, allow_ad_personalization_signals:false});",
+    '</script>',
+  ].join('');
+  const tracker = `<script>
+(function(){
+  function send(name, params){
+    try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {}
+  }
+  function path(){ var p = location.pathname || '/'; return p.length > 1 ? p.replace(/\\/$/, '') : p; }
+  function text(node){ return ((node && node.textContent) || '').replace(/\\s+/g, ' ').trim().slice(0, 80); }
+  function digits(value){ var m = String(value || '').match(/(\\d{4,})/); return m ? m[1] : ''; }
+  var community = (path().match(/\\/yucheng-a-(\\d+)/) || [])[1] || '';
+  if (community) send('view_community', { community_id: community, page_path: path() });
+  var used = {};
+  document.addEventListener('click', function(ev){
+    var el = ev.target && ev.target.closest ? ev.target.closest('a, button') : null;
+    if (!el) return;
+    var href = el.getAttribute('href') || '';
+    var abs = href;
+    try { abs = new URL(href, location.href).href; } catch (e) {}
+    var label = text(el);
+    if (el.hasAttribute('data-tel') || /^tel:/i.test(href)) {
+      send('click_phone', { page_path: path() });
+      return;
+    }
+    if (el.hasAttribute('data-line') || el.hasAttribute('data-send') || /line\\.me|oaMessage|161cayoi/i.test(abs + ' ' + href)) {
+      var line = { page_path: path() };
+      if (community) line.community_id = community;
+      var sendKind = el.getAttribute('data-send');
+      if (sendKind && /^[a-z0-9_-]{1,20}$/i.test(sendKind)) line.tool = sendKind;
+      if (/問這間/.test(label)) {
+        var card = el.closest('article');
+        var listing = digits(card && card.id);
+        if (listing) line.listing_id = listing;
+        var title = card && card.querySelector('h3');
+        if (title) line.listing_name = text(title);
+      }
+      send('click_line', line);
+      return;
+    }
+    var onclick = el.getAttribute('onclick') || '';
+    var calc = /\\b(calculate|calcMortgage|calcCost|generate)\\s*\\(/.test(onclick) || (/\\bcalc\\s*\\(/.test(onclick) && !/showLineShare|generatePDF|generateImage/.test(onclick));
+    if (calc || (el.classList && (el.classList.contains('btn-calc') || el.classList.contains('calc-btn')) && !/LINE|PDF|圖片/.test(label))) {
+      var tool = path().indexOf('/tools/') === 0 ? path().slice('/tools/'.length) : 'home';
+      send('use_tool', { tool: tool.slice(0, 40), page_path: path() });
+      return;
+    }
+    var article = el.closest('article.card');
+    if (article && /sinyi\\./i.test(abs)) {
+      send('click_listing', { listing_id: digits(article.id), listing_name: text(article.querySelector('h3')), page_path: path() });
+      return;
+    }
+    try {
+      var host = new URL(abs).hostname;
+      if (/(^|\\.)591\\.com\\.tw$/i.test(host)) send('click_591', { host: host, page_path: path() });
+    } catch (e) {}
+  }, true);
+  document.addEventListener('change', function(ev){
+    var pane = ev.target && ev.target.closest ? ev.target.closest('#tools [data-pane]') : null;
+    if (!pane) return;
+    var name = pane.getAttribute('data-pane') || '';
+    if (!/^[a-z0-9_-]{1,20}$/i.test(name) || used[name]) return;
+    used[name] = 1;
+    send('use_tool', { tool: name, page_path: path() });
+  }, true);
+  document.addEventListener('submit', function(ev){
+    if (path().indexOf('/tools/') !== 0) return;
+    send('use_tool', { tool: path().slice('/tools/'.length).slice(0, 40), page_path: path() });
+  }, true);
+})();
+</script>`;
+  return { head: head, script: tracker };
+}
+
+async function withAnalytics(response, id) {
+  if (!id || !response) return response;
+  const type = response.headers.get('content-type') || '';
+  if (!/text\/html/i.test(type)) return response;
+  const html = await response.text();
+  if (!/<\/head>/i.test(html) || /googletagmanager\.com\/gtag\/js/i.test(html)) {
+    return new Response(html, response);
+  }
+  const snippet = gaSnippet(id);
+  const note = '<p class="ga-note">本站使用 Google Analytics 統計瀏覽數據。</p>';
+  let next = html.replace(/<\/head>/i, snippet.head + '</head>');
+  const hasFooter = /<\/footer>/i.test(html);
+  if (hasFooter) next = next.replace(/<\/footer>/i, note + '</footer>');
+  if (/<\/body>/i.test(next)) {
+    next = next.replace(/<\/body>/i, (hasFooter ? '' : note) + snippet.script + '</body>');
+  } else {
+    next += (hasFooter ? '' : note) + snippet.script;
+  }
+  const headers = new Headers(response.headers);
+  headers.delete('content-length');
+  return new Response(next, { status: response.status, statusText: response.statusText, headers });
+}
+
 function decodePath(pathname) {
   try { return decodeURIComponent(pathname); }
   catch (err) { return pathname; }
@@ -171,7 +282,7 @@ export default {
         return withHsts(Response.redirect(dest.toString(), 301), scheme);
       }
     }
-    return withHsts(await route(request, env, url), scheme);
+    return withHsts(await withAnalytics(await route(request, env, url), gaMeasurementId(env)), scheme);
   },
 };
 
