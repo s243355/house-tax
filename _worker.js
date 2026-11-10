@@ -805,6 +805,22 @@ export function parseSinyiCommunity(html, id) {
   };
 }
 
+// 盡力而為的次數限制（Cloudflare 暫存是各機房分開、非原子計數，用來擋連續濫用，不是精確配額）
+export const SINYI_LIVE_LIMIT = { perSource: 60, perColo: 300, windowMs: 10 * 60 * 1000 };
+async function bumpCounter(origin, path, max) {
+  const key = cacheRequest(origin, path);
+  let n = 0;
+  try { const hit = await cacheMatch(key); if (hit) n = Number(await hit.text()) || 0; } catch (err) { n = 0; }
+  if (n >= max) return true;
+  await cachePut(key, new Response(String(n + 1), { headers: { 'Cache-Control': 'max-age=' + Math.ceil(SINYI_LIVE_LIMIT.windowMs / 1000 + 60) } }));
+  return false;
+}
+async function liveFetchLimited(origin, request) {
+  const bucket = Math.floor(Date.now() / SINYI_LIVE_LIMIT.windowMs);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  if (await bumpCounter(origin, '/__rl/sinyi-all/' + bucket, SINYI_LIVE_LIMIT.perColo)) return true;
+  return bumpCounter(origin, '/__rl/sinyi/' + encodeURIComponent(ip) + '/' + bucket, SINYI_LIVE_LIMIT.perSource);
+}
 async function handleSinyiCommunity(request, env, cors) {
   let id = '';
   try {
@@ -826,11 +842,15 @@ async function handleSinyiCommunity(request, env, cors) {
       } catch (err) { /* 沒有預抓檔就即時讀取 */ }
     }
     const key = cacheRequest(origin, '/__cache/sinyi-community-v2/' + id);
-    const hit = body.fresh ? null : await cacheMatch(key);
+    // fresh 只略過夜間預抓檔，6 小時暫存照用，所以不能拿它反覆強制重抓
+    const hit = await cacheMatch(key);
     if (hit) {
       try { const data = await hit.json(); if (data && data.ok) return json(Object.assign({}, data, { source: 'cache' }), 200, cors); } catch (err) { /* 重新讀取 */ }
     }
     if (!env || !env.CF_ACCOUNT_ID || !env.CF_API_TOKEN) return json({ ok: false, error: '尚未設定 Browser Rendering 金鑰' }, 502, cors);
+    // 真的要去讀官網時才計次：同一來源 10 分鐘最多 60 次、同一機房 10 分鐘最多 300 次，保住白天同仁的讀取額度
+    const limited = await liveFetchLimited(origin, request);
+    if (limited) return json({ ok: false, error: '查詢太頻繁，請 10 分鐘後再試' }, 429, cors);
     const endpoint = 'https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/browser-rendering/content';
     const gate = openUpstream(endpoint, {
       method: 'POST',

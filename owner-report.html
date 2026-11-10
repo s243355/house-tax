@@ -645,7 +645,8 @@ function taxCalc(){const h=holding();if(!h||h.bad||h.old)return null;
   const lbl=S.tax.rate==='auto'?label:(manual[rate]||label);
   const top=num(S.tax.top),step=num(S.tax.step)||25,cols=Math.min(10,Math.max(3,parseInt(S.tax.cols)||9));
   const buy=num(S.tax.buy),cost=num(S.tax.cost)||0,lg=num(S.tax.landGain)||0,fee=(num(S.tax.fee)||4)/100;
-  const showB=S.tax.selfUse==='on'||(S.tax.selfUse==='auto'&&h.fullSix&&OwnerReport.hoStatus(OwnerReport.taxChkAuto(S.tax.chk,num(S.area.land),!!h.fullSix),!!h.fullSix)!=='no');
+  // 自住優惠：清單上任何一項選「不符合」就一律不列（強制顯示也一樣）；自動模式另需持有滿 6 年且條件不是「不符合」
+  const showB=!hoUserNo()&&(S.tax.selfUse==='on'||(S.tax.selfUse==='auto'&&h.fullSix&&OwnerReport.hoStatus(OwnerReport.taxChkAuto(S.tax.chk,num(S.area.land),!!h.fullSix),!!h.fullSix)!=='no'));
   const g=num(S.tax.lvtG),s=num(S.tax.lvtS);
   const lvtA=isFinite(g)?g/10000:(isFinite(s)?s/10000:NaN);
   const lvtB=isFinite(s)?s/10000:(isFinite(g)?g/10000:NaN);
@@ -713,6 +714,7 @@ function pMarket(no){const m=mktCalc();const rows=m.rows.slice(0,16);const fs=ro
 function expenses(isNew){const fee=num(S.tax.fee)||4;return ['土地增值稅','工程受益費（簽約前已公告者由賣方繳納）','交屋前之房屋稅、地價稅、水電、瓦斯、管理費','簽約手續費 1,500元','抵押權塗銷代書費約 2,000元／順位','實價登錄手續費 1,500元／件',
   isNew?'個人房地合一稅':'個人財產交易所得稅','房貸提前清償違約金（如有）',`仲介服務費按成交價 ${fee}%`]}
 function taxChk(){const h=holding();return OwnerReport.taxChkAuto(S.tax.chk,num(S.area.land),h&&!h.bad&&!h.old?!!h.fullSix:undefined)}
+function hoUserNo(){const c=S.tax.chk||{};return ['ho1','ho2','ho3'].some(k=>c[k]==='n')}
 function hoSt(){const h=holding();return OwnerReport.hoStatus(taxChk(),h&&!h.bad&&!h.old?!!h.fullSix:undefined)}
 function lvtSelfTxt(){const st=OwnerReport.lvtStatus(taxChk());return st==='ok'?'':st==='no'?'經確認不適用':'（須符合自用條件）'}
 function lvtBox(){const g=num(S.tax.lvtG),s=num(S.tax.lvtS);if(!isFinite(g)&&!isFinite(s))return '';const st=OwnerReport.lvtStatus(taxChk());
@@ -811,7 +813,12 @@ function drawTaxChk(){const el=$('#taxChk');if(!el)return;const h=holding();cons
     <label class="ci"><span>這次要用</span><select data-chk="lvtMode" aria-label="自用住宅稅率適用方式"><option value=""${!raw.lvtMode?' selected':''}>未確認</option><option value="once"${raw.lvtMode==='once'?' selected':''}>一生一次（以前沒用過）</option><option value="house"${raw.lvtMode==='house'?' selected':''}>一生一屋（一生一次已用過）</option></select></label>
     ${raw.lvtMode==='house'?K.lvtHouse.map(row).join(''):''}</div>
    ${isNew?`<div class="cgrp"><b>房地合一・自住優惠（B方案）</b> ${badge(hs)}${K.ho.map(row).join('')}</div>`:''}
+   ${forceBWarn()?`<p class="warn">${esc(forceBWarn())}</p>`:''}
    <p class="hint">依土地稅法第 9、34 條與所得稅法第 14-4 條整理；實際是否適用，以稅捐機關核定為準。</p></details>`}
+// 自住優惠設成「強制顯示」但條件不足時的提醒
+function forceBWarn(){if(S.tax.selfUse!=='on')return '';const h=holding();if(hoUserNo())return '自住優惠清單有選「不符合」，B 方案不會列在報告上（即使設成強制顯示）。';
+  if(h&&!h.bad&&!h.old&&!h.fullSix)return '本戶持有尚未屆滿 6 年，卻把自住優惠設成強制顯示，報告會列出 B 方案，請確認。';
+  if(hoSt()!=='ok')return '自住優惠設成強制顯示，但條件還沒確認完，報告會寫「須符合自住條件」。';return ''}
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.chk;if(!k)return;S.tax.chk=Object.assign({},S.tax.chk||{},{[k]:e.target.value});if(!e.target.value)delete S.tax.chk[k];render()});
 
 const TEAM=[['李祐承','0933-317-625','店長'],['盧家儒','0963-265-697'],['曹維綱','0921-652-092'],['張宏瑜','0980-114-476'],['陳宥玥','0965-569-009']];
@@ -1349,10 +1356,26 @@ $('#bSinyi').onclick=async()=>{const v=$('#sinyiUrl').value.trim();if(!v)return 
   catch(e){$('#sinyiMsg').textContent='讀取失敗：網站版才能使用，或網路暫時不穩，請再試一次'}finally{btn.disabled=false}};
 const bSample=$('#bSample');if(bSample)bSample.onclick=()=>{$('#sinyiUrl').value='https://www.sinyi.com.tw/communitylist/communityinfo/0032737';$('#bSinyi').click()};
 // 用地址找社區：同社區所有門牌的近三年成交；有對照表時順便填社區名稱、建築完成日、總樓高，對得到信義社區編號就自動帶官網資料
+// 換到另一個社區時，清掉舊社區留下的資料（名稱、外觀照、待售、生活機能、特色、未登成交、行情結論、自動帶的車位價）
+function clearCommunity(){Object.assign(S.basic,{community:'',built:'',floors:''});S.img.cover=[];S.price.listings=[];S.market.listing='';S.market.rows=[];S.market.conclusion='';
+  S.poi=[];S.poiCenter=null;S.sinyiId='';S.features='';if(S.price.parkAuto!==false){S.price.parkVal='';S.price.parkAuto=true}}
+const sameName=(a,b)=>OwnerReport.sinyiMatch({name:a},{name:b}).ok;
+const sameDoors=(a,b)=>{const x=(a||[]).map(OwnerReport.doorOf).filter(Boolean),y=(b||[]).map(OwnerReport.doorOf).filter(Boolean);return !x.length||!y.length||x.some(d=>y.includes(d))};
+// 在訊息旁放兩個按鈕讓同仁選，回傳 true＝換成新社區
+function askSwitch(newName,oldName){return new Promise(res=>{const box=document.createElement('div');box.className='row';box.style.marginTop='6px';
+  box.innerHTML=`<span class="warn" style="flex:1 1 100%">這個地址查到「${esc(newName)}」，和目前的社區「${esc(oldName)}」不同。</span><button class="sm pri" type="button">換成「${esc(newName)}」（清掉舊社區的照片、待售、成交）</button><button class="sm" type="button">保留目前資料</button>`;
+  const [y,n]=box.querySelectorAll('button');const done=v=>{box.remove();res(v)};y.onclick=()=>done(true);n.onclick=()=>done(false);
+  const host=$('#lvrMsg').closest('.row')||$('#lvrMsg');host.after(box);box.scrollIntoView({block:'nearest'})})}
 async function findByAddress(quiet){let addr=String(S.basic.address||'').replace(/\d+樓.*$/,'').trim();if(!addr){if(!quiet)toast('請先填地址');return ''}
   if(!/台中市|臺中市/.test(addr))addr='台中市'+addr;if(!/區/.test(addr)||!/\d+號/.test(addr)){if(!quiet)toast('地址要有台中市、行政區和門牌，例如台中市南區復興路2段71巷55號');return ''}
   const say=t=>{$('#lvrMsg').textContent=t};say('查詢近三年實價登錄…');
-  const L=await loadLvr(addr,[],{floors:S.basic.floors});const got=[];const c=L.community||{};
+  const L=await loadLvr(addr,[],{floors:S.basic.floors});const c=L.community||{};
+  // 地址換了社區：名稱不同，或沒有名稱但門牌和上次查到的完全不重疊
+  const old=S.basic.community;const changed=(c.name&&old&&!sameName(c.name,old))||(!c.name&&old&&S.market.doors&&S.market.doors.length&&L.doors&&L.doors.length&&!sameDoors(S.market.doors,L.doors));
+  if(changed){const nn=c.name||'這個地址的社區';
+    if(quiet){const m=`地址查到「${nn}」，和目前的社區「${old}」不同，沒有自動替換；請按地址欄旁的「用地址找社區」確認`;say(m);return m}
+    say('地址和目前的社區不同，請選擇要不要替換');if(!await askSwitch(nn,old)){say('已保留目前的社區資料，沒有變更。');return ''}clearCommunity()}
+  const got=[];
   if(c.name&&!S.basic.community){S.basic.community=c.name;got.push(`社區「${c.name}」`)}
   if(L.built&&!S.basic.built){S.basic.built=L.built;FLAGS.add('basic.built');got.push('建築完成日')}
   if(L.floors&&!S.basic.floors){S.basic.floors=L.floors;got.push('總樓高')}
@@ -1361,7 +1384,13 @@ async function findByAddress(quiet){let addr=String(S.basic.address||'').replace
     if(L.est)FLAGS.add('market.rows')}
   bindInputs();drawMkt();render();
   let msg=[got.length?'已填入'+got.join('、'):'',L.msg||'沒有資料'].filter(Boolean).join('；');
-  if(c.sinyiId&&!S.img.cover.length){say(msg+'；正在帶入信義官網資料…');$('#sinyiUrl').value=c.sinyiId;try{await $('#bSinyi').onclick();const sm=$('#sinyiMsg').textContent;if(/^已帶入/.test(sm))msg=[got.length?'已填入'+got.join('、'):'',sm].filter(Boolean).join('；')}catch(e){}}
+  if(c.sinyiId&&!S.img.cover.length){say(msg+'；正在確認信義官網社區…');let sd=null;
+    try{sd=await (await fetch('api/sinyi-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:c.sinyiId})})).json()}catch(e){}
+    // 社區名稱或門牌要對得上才帶入，避免把別的社區的照片、待售放進報告
+    const chk=sd&&sd.ok?OwnerReport.sinyiMatch({name:c.name,keys:(L.doors&&L.doors.length?L.doors:[addr])},sd):{ok:false};
+    if(sd&&sd.ok&&!chk.ok)msg+=`。信義官網的「${sd.name}」和這個地址對不上，沒有自動帶入外觀照與待售；確認是同一社區後再貼官網連結。`;
+    else if(chk.ok){$('#sinyiUrl').value=c.sinyiId;try{await $('#bSinyi').onclick();const sm=$('#sinyiMsg').textContent;if(/^已帶入/.test(sm))msg=[got.length?'已填入'+got.join('、'):'',sm].filter(Boolean).join('；')}catch(e){}}
+    else msg+='。信義官網暫時讀不到，外觀照、待售可稍後再貼官網連結帶入。'}
   else if(L.rows&&L.rows.length&&!c.sinyiId)msg+='。外觀照、待售可再貼信義官網連結帶入。';
   if(S.market.rows.length&&(!S.price.online||!S.price.expect||S.price.parkAuto)){try{$('#bPriceCalc').onclick()}catch(e){}}
   say(msg);return msg}
@@ -1608,6 +1637,7 @@ function checks(){const b=S.basic,a=S.area,h=holding(),m=mktCalc();const L=[];co
   add('實價登錄 3 筆以上',m.rows.length>=3,'#mktTb',1);add('外觀照',S.img.cover.length,'#f-cover',0);add('樓層配置圖',S.img.plan,'#f-plan',0);add('周邊機能圖',S.img.map||(S.poi&&S.poi.length),'#f-map',0);
   if(isFinite(num(S.tax.lvtS))&&OwnerReport.lvtStatus(taxChk())==='pending')add('土增稅自用條件待確認',false,'#taxChk',0);
   const tc=h&&!h.bad&&!h.old?taxCalc():null;if(tc&&tc.showB&&hoSt()==='pending')add('自住優惠條件待確認',false,'#taxChk',0);
+  if(S.tax.selfUse==='on'&&h&&!h.bad&&!h.old&&!h.fullSix&&!hoUserNo())add('持有尚未屆滿6年卻強制顯示自住優惠',false,'#taxChk',0);
   if(FLAGS.size)add(`黃色欄位已確認（剩 ${FLAGS.size} 個）`,false,[...FLAGS][0],0);return L}
 function drawChecks(){const el=$('#checklist');if(!el)return;const L=checks();const miss=L.filter(x=>!x.ok);
   el.innerHTML=miss.length?`<p class="hint" style="margin-bottom:4px">還缺 ${miss.length} 項（紅色必填），點一下直接去填：</p><div class="chips">${miss.map(x=>`<button type="button" class="chip ${x.must?'must':''}" data-go="${esc(x.path)}">${esc(x.label)}</button>`).join('')}</div>`:'<p class="ok">資料齊全，可以按「完成」。</p>'}

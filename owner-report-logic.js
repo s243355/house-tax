@@ -238,6 +238,37 @@
     return chkStatus(c, ['ho1', 'ho2', 'ho3']);
   }
 
+  // ---------- 信義社區對照檢查：社區名稱或門牌要對得上，才自動帶入官網資料 ----------
+  var CN_NUM = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
+  function normAddr(a) {
+    return half(a).replace(/^(台中市|臺中市)/, '').replace(/^[^\d,，、]{1,3}?區/, '')
+      .replace(/([一二三四五六七八九十])段/g, function (m, c) { return CN_NUM[c] + '段'; })
+      .replace(/[－-]/g, '之').replace(/\s/g, '');
+  }
+  // 門牌比對到「號」為止，忽略「之幾」與樓層（同一棟的不同戶仍算同一個門牌）
+  function doorOf(a) {
+    var m = normAddr(a).match(/^(.*?\d+)(?:之\d+)?號/);
+    return m ? m[1] + '號' : '';
+  }
+  function nameVariants(n) {
+    var s = half(n).replace(/\s/g, '');
+    var out = [s.replace(/[（(][^）)]*[）)]/g, '')];
+    var inner = s.match(/[（(]([^）)]+)[）)]/g) || [];
+    inner.forEach(function (x) { out.push(x.replace(/[（()）]/g, '')); });
+    return out.filter(function (x) { return x.length >= 2; });
+  }
+  // expect：{ name, keys: [本社區門牌] }；sinyi：信義官網社區資料 { name, address }
+  function sinyiMatch(expect, sinyi) {
+    if (!expect || !sinyi) return { ok: false, by: '' };
+    var a = nameVariants(expect.name || ''), b = nameVariants(sinyi.name || '');
+    var byName = a.some(function (x) { return b.some(function (y) { return x.indexOf(y) >= 0 || y.indexOf(x) >= 0; }); });
+    if (byName) return { ok: true, by: 'name' };
+    var mine = (expect.keys || []).map(doorOf).filter(Boolean);
+    var theirs = String(sinyi.address || '').split(/[,，、]/).map(doorOf).filter(Boolean);
+    var byAddr = theirs.some(function (d) { return mine.indexOf(d) >= 0; });
+    return { ok: byAddr, by: byAddr ? 'address' : '' };
+  }
+
   return {
     STD_114: STD_114,
     STD_YEAR: '114',
@@ -263,6 +294,9 @@
     TAX_CHK: TAX_CHK,
     taxChkAuto: taxChkAuto,
     lvtStatus: lvtStatus,
-    hoStatus: hoStatus
+    hoStatus: hoStatus,
+    normAddr: normAddr,
+    doorOf: doorOf,
+    sinyiMatch: sinyiMatch
   };
 });

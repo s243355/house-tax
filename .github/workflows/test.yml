@@ -1,0 +1,27 @@
+name: 測試
+# 每次推送到 main、每個 PR 都跑全部測試；PR 沒通過不能合併（main 的分支保護要求這個檢查）。
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: 跑全部測試
+        run: |
+          fail=0
+          for f in tests/*.test.js; do
+            echo "::group::$f"
+            if node "$f"; then echo "ok $f"; else echo "::error file=$f::測試沒通過：$f"; fail=1; fi
+            echo "::endgroup::"
+          done
+          exit $fail
