@@ -88,7 +88,7 @@ textarea{resize:vertical;line-height:1.5}
 .pv .pnum{position:absolute;right:calc(100% + 6px);top:0;font-size:11px;color:var(--muted)}
 .pv .dl{position:absolute;right:6px;top:6px;z-index:2;opacity:.85}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--card);padding:8px 14px;border-radius:6px;font-size:13px;z-index:40;max-width:calc(100% - 32px)}
-.web-only{display:none}.no-claude .web-only{display:block}.no-claude .cl-only{display:none!important}
+.web-only{display:none!important}.no-claude .web-only{display:revert!important}.no-claude .cl-only{display:none!important}
 .confirm{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--warn)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
@@ -210,6 +210,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
     <button id="bJson" type="button">存檔 .json</button>
     <label class="btn" for="fJson">讀檔</label><input type="file" id="fJson" accept=".json,application/json" hidden>
     <button class="pri cl-only" id="bArchive" type="button">完成並存檔</button>
+    <button class="pri web-only" id="bWebArchive" type="button">完成並存檔</button>
     <button id="bPptx" type="button">下載可編輯 PPTX</button>
     <button class="pri" id="bPdf" type="button">下載 PDF</button>
   </div>
@@ -217,15 +218,22 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
 
 <main class="wrap">
   <section class="form" id="form">
-    <p class="web-only ok" id="webNote">這是網站版：可手動填寫、試算與下載 PDF／PNG。拍照與 PDF 辨識、AI 撰寫、全店社區資料庫、周邊機能請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>。</p>
+    <p class="web-only ok" id="webNote">網站版：輸入店內密碼就能選社區帶入、存檔建檔；謄本與截圖可用自己的 ChatGPT 或 Gemini 辨識後貼回。有 Claude 帳號的同事請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>，可直接拍照辨識與 AI 撰寫。</p>
 
-    <details open id="ocrSec" class="cl-only">
+    <details open id="ocrSec">
       <summary><span class="no">◎</span>上傳謄本照片自動填入<span class="st" id="stOcr"></span></summary>
       <div class="sec">
         <p class="hint">建物謄本（標示部＋所有權部）、土地謄本、土地增值稅試算表、買賣契約（取得價）、房屋稅單（評定現值），拍照或截圖都可以，一次選多張。辨識完會先列出結果，核對後再套用。電腦上可直接選 PDF（電子謄本、掃描檔都可以）。</p>
-        <label class="f">選擇照片或 PDF<input aria-label="選擇照片或 PDF" type="file" id="f-ocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
-        <div class="imgs" id="th-ocr"></div>
-        <div class="row"><button class="pri" id="bOcr" type="button" disabled>開始辨識</button><button id="bOcrStop" type="button" hidden>停止</button><span id="ocrMsg" class="hint"></span></div>
+        <label class="f cl-only">選擇照片或 PDF<input aria-label="選擇照片或 PDF" type="file" id="f-ocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+        <div class="imgs cl-only" id="th-ocr"></div>
+        <div class="row cl-only"><button class="pri" id="bOcr" type="button" disabled>開始辨識</button><button id="bOcrStop" type="button" hidden>停止</button></div>
+        <div class="web-only paste" style="border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <p class="hint" style="margin-bottom:6px">用 ChatGPT 或 Gemini 辨識謄本、增值稅試算表、契約或稅單：① 按「複製辨識指令」 ② 在 ChatGPT／Gemini 上傳照片或 PDF，貼上指令送出 ③ 把它回覆的整段內容貼到下面，按「讀取結果」。</p>
+          <div class="row"><button class="sm" type="button" data-cpp="1">複製辨識指令</button></div>
+          <label class="f" style="margin-top:6px">貼上 AI 回覆<textarea aria-label="貼上 AI 回覆" id="pa1" rows="3"></textarea></label>
+          <div class="row" style="margin-top:6px"><button class="sm pri" type="button" data-rdp="1">讀取結果</button></div>
+        </div>
+        <span id="ocrMsg" class="hint"></span>
         <div id="ocrOut"></div>
       </div>
     </details>
@@ -248,6 +256,12 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
     <details open>
       <summary><span class="no">一</span>本戶基本資料<span class="st" id="st1"></span></summary>
       <div class="sec">
+        <div class="lib web-only">
+          <label class="f">選擇社區（店內資料庫）<select aria-label="選擇社區（店內資料庫）" id="webLibSel"><option value="">— 選擇社區 —</option></select></label>
+          <div class="row"><button class="sm pri" id="bWebLibLoad" type="button">帶入社區資料</button></div>
+          <label class="f">店內密碼（向店長索取，輸入一次會記住）<input aria-label="店內密碼" id="webPass" type="password" autocomplete="off"></label>
+          <p class="hint" id="webLibMsg"></p>
+        </div>
         <div class="lib cl-only">
           <label class="f">選擇社區（全店共用資料庫）<select aria-label="選擇社區（全店共用資料庫）" id="libSel"><option value="">— 選擇社區 —</option></select></label>
           <div class="row"><button class="sm pri" id="bLibLoad" type="button">帶入社區資料</button><button class="sm" id="bLibSave" type="button">只更新社區資料</button></div>
@@ -318,10 +332,17 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
           <label class="f">取近幾筆算均價<input aria-label="取近幾筆算均價" id="i-m-recentN" data-k="market.recentN" inputmode="numeric"></label>
         </div>
         <label class="f">社區平均成交均價（萬／坪，選填）<input aria-label="社區平均成交均價（萬／坪，選填）" id="i-m-avgAll" data-k="market.avgAll" inputmode="decimal"></label>
-        <div class="box-ocr cl-only" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
-          <label class="f">實價登錄截圖或 PDF 辨識<input aria-label="實價登錄截圖或 PDF 辨識" type="file" id="f-mocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
-          <div class="imgs" id="th-mocr"></div>
-          <div class="row"><button class="pri sm" id="bMocr" type="button" disabled>辨識成交紀錄</button><button class="sm" id="bMocrStop" type="button" hidden>停止</button><span id="mocrMsg" class="hint"></span></div>
+        <div class="box-ocr" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <label class="f cl-only">實價登錄截圖或 PDF 辨識<input aria-label="實價登錄截圖或 PDF 辨識" type="file" id="f-mocr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+          <div class="imgs cl-only" id="th-mocr"></div>
+          <div class="row cl-only"><button class="pri sm" id="bMocr" type="button" disabled>辨識成交紀錄</button><button class="sm" id="bMocrStop" type="button" hidden>停止</button></div>
+          <div class="web-only paste" style="border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <p class="hint" style="margin-bottom:6px">用 ChatGPT 或 Gemini 辨識實價登錄截圖：① 按「複製辨識指令」 ② 在 ChatGPT／Gemini 上傳照片或 PDF，貼上指令送出 ③ 把它回覆的整段內容貼到下面，按「讀取結果」。</p>
+          <div class="row"><button class="sm" type="button" data-cpp="2">複製辨識指令</button></div>
+          <label class="f" style="margin-top:6px">貼上 AI 回覆<textarea aria-label="貼上 AI 回覆" id="pa2" rows="3"></textarea></label>
+          <div class="row" style="margin-top:6px"><button class="sm pri" type="button" data-rdp="2">讀取結果</button></div>
+        </div>
+          <span id="mocrMsg" class="hint"></span>
           <div id="mocrOut"></div>
         </div>
         <p class="hint">「房屋坪數」填扣除車位後的坪數。拆車單價＝（總價－車位價）÷ 房屋坪數，會自動算。尚未上實價登錄的行情（店內或同業剛成交）手動新增後勾「未登」，報告會加註 ※。最多 12 筆。</p>
@@ -387,10 +408,17 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         <p class="hint">同社區目前待售（樓層同本戶者自動加底色）</p>
         <div class="tbwrap"><table class="tb" id="lstTb"></table></div>
         <div class="row"><button class="sm" id="bAddLst" type="button">＋新增待售</button></div>
-        <div class="cl-only" style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
-          <label class="f">待售物件截圖辨識（591、樂屋網、公司系統）<input aria-label="待售物件截圖辨識（591、樂屋網、公司系統）" type="file" id="f-locr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
-          <div class="imgs" id="th-locr"></div>
-          <div class="row"><button class="pri sm" id="bLocr" type="button" disabled>辨識待售物件</button><span id="locrMsg" class="hint"></span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <label class="f cl-only">待售物件截圖辨識（591、樂屋網、公司系統）<input aria-label="待售物件截圖辨識（591、樂屋網、公司系統）" type="file" id="f-locr" accept="image/jpeg,image/png,image/webp,application/pdf" multiple></label>
+          <div class="imgs cl-only" id="th-locr"></div>
+          <div class="row cl-only"><button class="pri sm" id="bLocr" type="button" disabled>辨識待售物件</button></div>
+          <div class="web-only paste" style="border:1px dashed var(--line);border-radius:6px;padding:10px">
+          <p class="hint" style="margin-bottom:6px">用 ChatGPT 或 Gemini 辨識待售物件截圖：① 按「複製辨識指令」 ② 在 ChatGPT／Gemini 上傳照片或 PDF，貼上指令送出 ③ 把它回覆的整段內容貼到下面，按「讀取結果」。</p>
+          <div class="row"><button class="sm" type="button" data-cpp="3">複製辨識指令</button></div>
+          <label class="f" style="margin-top:6px">貼上 AI 回覆<textarea aria-label="貼上 AI 回覆" id="pa3" rows="3"></textarea></label>
+          <div class="row" style="margin-top:6px"><button class="sm pri" type="button" data-rdp="3">讀取結果</button></div>
+        </div>
+          <span id="locrMsg" class="hint"></span>
           <div id="locrOut"></div>
         </div>
         <label class="f">分析與建議（一行一點）<textarea aria-label="分析與建議（一行一點）" id="i-p-analysis" data-k="price.analysis" rows="6"></textarea></label>
@@ -687,7 +715,7 @@ async function prepFiles(files){const blobs=[];let text='';let skipped=0;
 /* ---------- 謄本照片辨識 ---------- */
 let SAMPLE=null,OCR_MAX=5,ocrFiles=[],ocrCtl=null,ocrRes=[];
 (async()=>{try{if(window.claude&&claude.use){const s=await claude.use('sample');if(s){const l=await s.limits().catch(()=>null);if(l&&l.images){SAMPLE=s;OCR_MAX=l.images.maxCount||5}}}}catch(e){}
-  if(!SAMPLE){const m='這個檢視無法使用照片辨識，請在 claude.ai 開啟本工具。';$('#ocrMsg').textContent=m;$('#mocrMsg').textContent=m;$('#f-ocr').disabled=true;$('#f-mocr').disabled=true;$('#f-locr').disabled=true;$('#locrMsg').textContent=m}else{ocrReady();mReady();lReady()}})();
+  if(!SAMPLE){const m=window.claude?'這個檢視無法使用照片辨識，請在 claude.ai 開啟本工具。':'';$('#ocrMsg').textContent=m;$('#mocrMsg').textContent=m;$('#f-ocr').disabled=true;$('#f-mocr').disabled=true;$('#f-locr').disabled=true;$('#locrMsg').textContent=m}else{ocrReady();mReady();lReady()}})();
 function ocrReady(){$('#bOcr').disabled=!SAMPLE||!ocrFiles.length;$('#stOcr').textContent=ocrFiles.length?`${ocrFiles.length} 張`:''}
 $('#f-ocr').onchange=e=>{ocrFiles=[...ocrFiles,...e.target.files].slice(0,OCR_MAX);e.target.value='';drawOcrThumbs();if(ocrFiles.length>=OCR_MAX)$('#ocrMsg').textContent=`一次最多 ${OCR_MAX} 張`};
 function drawOcrThumbs(){document.querySelectorAll('#th-ocr .th').forEach(t=>URL.revokeObjectURL(t.dataset.u));
@@ -870,15 +898,23 @@ function driveId(v){const m=String(v||'').match(/folders\/([\w-]{10,})/)||String
 /* 雲端試算表資料庫：社區資料（一社區一列，存檔時更新）＋報告紀錄（每次存檔新增一列） */
 let SHEET_ID='';
 const tw=()=>{const d=new Date();return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
-async function saveToSheet(n,driveUrl){if(!SHEET_ID)return '';if(!MCP)return '；試算表未更新（需在 claude.ai 開啟）';
-  const m=mktCalc(),b=S.basic,a=S.area,h=holding();const sv=v=>v==null?'':String(v);
+function liteDoc(n){const b=S.basic;return{name:n,basic:{address:String(b.address||'').replace(/\d+樓.*$/,''),built:b.built,use:b.use,type:b.type,floors:b.floors,wall:b.wall,guard:b.guard,parking:b.parking},
+  features:S.features,market:{count:S.market.count,listing:S.market.listing,recentN:S.market.recentN,avgAll:S.market.avgAll,rows:S.market.rows.filter(r=>r.ym||r.total),conclusion:S.market.conclusion},
+  listings:S.price.listings,poi:S.poi||[],poiCenter:S.poiCenter||null,updatedAt:Date.now(),updatedByName:S.agent.name}}
+function mergeDoc(o,d){if(!o)return d;const out={...o,...d,basic:{...(o.basic||{})}};for(const k in d.basic)out.basic[k]=nz(d.basic[k],o.basic&&o.basic[k]);
+  out.features=nz(d.features,o.features);if(!(d.market&&d.market.rows&&d.market.rows.length))out.market=o.market;if(!(d.listings&&d.listings.length))out.listings=o.listings;if(!(d.poi&&d.poi.length)){out.poi=o.poi;out.poiCenter=o.poiCenter}return out}
+function sheetRows(n,driveUrl){const m=mktCalc(),b=S.basic,a=S.area,h=holding();const sv=v=>v==null?'':String(v);
   const commRow=[n,distOf(b.address),String(b.address||'').replace(/\d+樓.*$/,''),b.built,b.use,b.type,b.floors,b.wall,b.guard,b.parking,lines(S.features).join('；'),S.market.count,S.market.listing,fx(m.avg),fx(m.max),fx(m.min),String(m.rows.length),'',tw(),S.agent.name].map(sv);
   const repRow=[tw(),S.agent.name,n,b.address,b.floor,b.layout,a.total,a.main,a.public,a.parking,a.land,[b.parking,b.parkingNo].filter(Boolean).join(' '),S.tax.acq,h?(h.old?'舊制':'房地合一'):'',S.price.online,S.price.expect,fx(m.avg),driveUrl||''].map(sv);
-  try{const g=await MCP.callTool('Google Sheets','get_values',{spreadsheetId:SHEET_ID,range:'社區資料!A:R'});const vals=((g&&g.payload&&g.payload.values)||[]);
-   const idx=vals.findIndex((r,i)=>i>0&&String(r[0]||'').trim()===n);
-   if(idx>0){const old=vals[idx];commRow.forEach((v,i)=>{if(v===''||v==='—')commRow[i]=old[i]??''});commRow[17]=String((parseInt(old[17])||0)+1);
-     await MCP.callTool('Google Sheets','update_values',{spreadsheetId:SHEET_ID,range:`社區資料!A${idx+1}:T${idx+1}`,values:[commRow]})}
-   else{commRow[17]='1';await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'社區資料!A1',values:[commRow]})}
+  return{commRow,repRow}}
+async function saveToSheet(n,driveUrl){if(!SHEET_ID)return '';if(!MCP)return '；試算表未更新（需在 claude.ai 開啟）';
+  const {commRow,repRow}=sheetRows(n,driveUrl);
+  try{const g=await MCP.callTool('Google Sheets','get_values',{spreadsheetId:SHEET_ID,range:'社區資料!A:U'});const vals=((g&&g.payload&&g.payload.values)||[]);
+   const idx=vals.findIndex((r,i)=>i>0&&String(r[0]||'').trim()===n);let oldDoc=null;
+   if(idx>0){const old=vals[idx];commRow.forEach((v,i)=>{if(v===''||v==='—')commRow[i]=old[i]??''});commRow[17]=String((parseInt(old[17])||0)+1);try{oldDoc=JSON.parse(old[20]||'null')}catch(e){}}else commRow[17]='1';
+   commRow[20]=JSON.stringify(mergeDoc(oldDoc,liteDoc(n)));
+   if(idx>0)await MCP.callTool('Google Sheets','update_values',{spreadsheetId:SHEET_ID,range:`社區資料!A${idx+1}:U${idx+1}`,values:[commRow]});
+   else await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'社區資料!A1',values:[commRow]});
    await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'報告紀錄!A1',values:[repRow]});return '；試算表已更新'}
   catch(e){const c=e&&e.code;return c==='server_not_connected'?'；試算表未更新：請先在 claude.ai 連接 Google Sheets':c==='not_in_manifest'||c==='approval_required'?'；試算表未更新：需要允許此工具使用 Google Sheets':c==='tool_error'?'；試算表未更新：沒有試算表的編輯權限，請向店長要權限':'；試算表未更新'}}
 function sheetId(v){const m=String(v||'').match(/spreadsheets\/d\/([\w-]{20,})/)||String(v||'').match(/^([\w-]{20,})$/);return m?m[1]:''}
@@ -969,7 +1005,10 @@ const L_PROMPT=`你會看到台灣售屋網站或房仲系統的待售物件截�
 只回傳一個 JSON 物件：{"rows":[{"floor": 樓層，例 "18樓"（若寫 18/24F 請寫 "18樓"）, "ping": 權狀坪數或建坪（數字）, "layout": 格局，例 "4房2廳4衛", "price": 開價（萬元，數字）}], "warnings": [需要人工確認的地方]}
 數字不加單位與逗號。`;
 $('#bLocr').onclick=async()=>{if(!SAMPLE||!lFiles.length)return;$('#bLocr').disabled=true;$('#locrMsg').textContent='辨識中，約需 20～60 秒…';$('#locrOut').innerHTML='';
-  try{const P=await prepFiles(lFiles);const r=await SAMPLE.json(L_PROMPT+P.text,{images:P.blobs,modelTier:'default'});const s=x=>x==null?'':String(x).trim();
+  try{const P=await prepFiles(lFiles);const r=await SAMPLE.json(L_PROMPT+P.text,{images:P.blobs,modelTier:'default'});showLocr(r)}
+  catch(e){$('#locrMsg').textContent=aiErr(e)}finally{lReady()}};
+
+function showLocr(r){const s=x=>x==null?'':String(x).trim();
    lRes=(Array.isArray(r&&r.rows)?r.rows:[]).map(x=>({floor:s(x.floor),ping:isFinite(num(x.ping))?String(num(x.ping)):'',layout:s(x.layout),price:isFinite(num(x.price))?String(num(x.price)):''})).filter(x=>x.floor||x.price);
    const w=Array.isArray(r&&r.warnings)?r.warnings.filter(Boolean).map(String):[];
    if(!lRes.length){$('#locrMsg').textContent='';$('#locrOut').innerHTML='<p class="warn">截圖中沒有讀到待售物件。</p>';return}
@@ -978,7 +1017,44 @@ $('#bLocr').onclick=async()=>{if(!SAMPLE||!lFiles.length)return;$('#bLocr').disa
     <div class="row" style="margin-top:6px"><button class="pri sm" type="button" id="bLoReplace">取代表格</button><button class="sm" type="button" id="bLoAppend">加在後面</button></div>`;
    const ap=mode=>{const pick=lRes.filter((x,i)=>$('#lo-'+i).checked);S.price.listings=mode==='replace'?pick:[...S.price.listings,...pick];drawLst();render();$('#locrOut').innerHTML=`<p class="ok">已套用 ${pick.length} 筆。</p>`;$('#locrMsg').textContent='';lFiles=[];drawLThumbs()};
    $('#bLoReplace').onclick=()=>ap('replace');$('#bLoAppend').onclick=()=>ap('append')}
-  catch(e){$('#locrMsg').textContent=aiErr(e)}finally{lReady()}};
+
+
+
+/* ---------- 網站版：店內資料庫與存檔（Google Apps Script） ---------- */
+const GAS_URL='';
+let WEBLIB=[];
+const getPass=()=>{try{return localStorage.getItem('osr-pass')||''}catch(e){return ''}};
+function webMsg(t){const el=$('#webLibMsg');if(el)el.textContent=t}
+async function loadWebLib(){if(!document.documentElement.classList.contains('no-claude'))return;
+  if(!GAS_URL)return webMsg('店內資料庫尚未開通，請店長完成設定。');const k=getPass();if(!k)return webMsg('輸入店內密碼後，就能選社區帶入與存檔。');
+  webMsg('讀取社區清單中…');try{const r=await (await fetch(GAS_URL+'?k='+encodeURIComponent(k))).json();if(!r.ok)return webMsg(r.error==='pass'?'店內密碼不對，請向店長確認。':'讀取失敗，請稍後再試。');
+   WEBLIB=(r.communities||[]).map(c=>({...c,id:cid(c.name)}));const g={};WEBLIB.forEach(c=>{const d=distOf(c.basic&&c.basic.address);(g[d]=g[d]||[]).push(c)});
+   $('#webLibSel').innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant')).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</optgroup>`).join('');
+   webMsg(`店內資料庫共 ${WEBLIB.length} 個社區。`)}catch(e){webMsg('連不上店內資料庫，請檢查網路後重新整理。')}}
+$('#webPass').value=getPass();$('#webPass').onchange=()=>{try{localStorage.setItem('osr-pass',$('#webPass').value.trim())}catch(e){}loadWebLib()};
+$('#bWebLibLoad').onclick=()=>{const c=WEBLIB.find(x=>x.id===$('#webLibSel').value);if(!c)return toast('請先選擇社區');applyComm(c);bindInputs();drawMkt();drawLst();drawThumbs();render();toast(`已帶入「${c.name}」，照片請另外上傳`)};
+$('#bWebArchive').onclick=async()=>{const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!GAS_URL)return toast('店內存檔尚未開通，請店長完成設定');const k=getPass();if(!k){toast('請先在「一、本戶基本資料」輸入店內密碼');return}
+  const btn=$('#bWebArchive');btn.disabled=true;
+  try{const files=[];const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');
+   const pdf=await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
+   try{toast('產生 PPTX 中…',15000);const pp=await buildPptx();files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(await pp.write({outputType:'blob'}))})}catch(e){}
+   const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:[],plan:'',map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
+   const {commRow,repRow}=sheetRows(n,'');toast('上傳到店內雲端中…',30000);
+   const r=await (await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({k,name:n,commRow,repRow,doc:liteDoc(n),files})})).json();
+   if(!r.ok)throw new Error(r.error||'fail');toast(`已存檔到店內雲端，「${n}」社區資料已同步建檔`,6000);loadWebLib()}
+  catch(e){toast(String(e&&e.message)==='pass'?'店內密碼不對，請向店長確認':'存檔失敗，請稍後再試；可以先按「存檔 .json」留底',6000)}finally{btn.disabled=false}};
+loadWebLib();
+
+/* ---------- 用 ChatGPT／Gemini 辨識：複製指令、貼回結果 ---------- */
+const EXT_TAIL='\n\n請把結果放在一個 ```json 程式碼區塊裡回覆，只回這一段，不要其他說明。';
+function parseLoose(t){t=String(t||'').trim();const tries=[t];const m=t.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)tries.push(m[1]);const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a>=0&&b>a)tries.push(t.slice(a,b+1));
+  for(const x of tries){try{const v=JSON.parse(x);if(v&&typeof v==='object')return v}catch(e){}}return null}
+async function copyText(t,el){try{await navigator.clipboard.writeText(t);toast('已複製辨識指令，貼到 ChatGPT 或 Gemini')}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('aria-label','辨識指令');ta.rows=4;ta.style.width='100%';el.after(ta);ta.select();toast('請長按或 Ctrl+C 複製下方指令')}}
+const extPrompt=n=>(n==='1'?OCR_PROMPT:n==='2'?M_PROMPT:L_PROMPT).replace(/^你會看到/,'我會給你')+EXT_TAIL;
+document.addEventListener('click',e=>{const d=e.target.dataset||{};
+  if(d.cpp)copyText(extPrompt(d.cpp),e.target.closest('.row'));
+  if(d.rdp){const t=$('#pa'+d.rdp).value;const r=parseLoose(t);if(!r)return toast('讀不到資料：請把 AI 回覆的整段（含 ``` 那段）完整貼上，或請它「只用 JSON 回覆」再試');
+    if(d.rdp==='1'){showOcr(r);$('#ocrMsg').textContent='請核對後套用'}else if(d.rdp==='2')showMocr(r);else showLocr(r);$('#pa'+d.rdp).value=''}});
 
 /* ---------- AI 撰寫文字 ---------- */
 let aiUndo=null;
