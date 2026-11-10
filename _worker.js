@@ -821,6 +821,21 @@ async function liveFetchLimited(origin, request) {
   if (await bumpCounter(origin, '/__rl/sinyi-all/' + bucket, SINYI_LIVE_LIMIT.perColo)) return true;
   return bumpCounter(origin, '/__rl/sinyi/' + encodeURIComponent(ip) + '/' + bucket, SINYI_LIVE_LIMIT.perSource);
 }
+// 官網地址沒有門牌時，用社區對照表（data/lvr-idx/comm.json）找回這個信義社區的門牌，給近三年實價查詢用
+async function withLvrAddress(env, base, data) {
+  if (!data || !data.ok || data.lvrAddress || /\d+(之\d+)?號/.test(String(data.address || ''))) return data;
+  try {
+    const cr = await env.ASSETS.fetch(new Request(new URL('/data/lvr-idx/comm.json', base).toString()));
+    if (!cr.ok) return data;
+    const cm = await cr.json();
+    for (const town of Object.keys(cm)) {
+      for (const key of Object.keys(cm[town])) {
+        if (cm[town][key][2] === data.id) return Object.assign({}, data, { lvrAddress: '台中市' + town + key });
+      }
+    }
+  } catch (err) { /* 沒有對照表就維持原樣 */ }
+  return data;
+}
 async function handleSinyiCommunity(request, env, cors) {
   let id = '';
   try {
@@ -837,7 +852,7 @@ async function handleSinyiCommunity(request, env, cors) {
         if (pre.ok) {
           const data = await pre.json();
           const at = Number(data && data.fetchedTs) || Date.parse((data && data.fetchedAt) || '') || 0;
-          if (data && data.ok && Date.now() - at < 4 * 864e5) return json(Object.assign({}, data, { source: 'nightly' }), 200, cors);
+          if (data && data.ok && Date.now() - at < 4 * 864e5) return json(await withLvrAddress(env, request.url, Object.assign({}, data, { source: 'nightly' })), 200, cors);
         }
       } catch (err) { /* 沒有預抓檔就即時讀取 */ }
     }
@@ -845,7 +860,7 @@ async function handleSinyiCommunity(request, env, cors) {
     // fresh 只略過夜間預抓檔，6 小時暫存照用，所以不能拿它反覆強制重抓
     const hit = await cacheMatch(key);
     if (hit) {
-      try { const data = await hit.json(); if (data && data.ok) return json(Object.assign({}, data, { source: 'cache' }), 200, cors); } catch (err) { /* 重新讀取 */ }
+      try { const data = await hit.json(); if (data && data.ok) return json(await withLvrAddress(env, request.url, Object.assign({}, data, { source: 'cache' })), 200, cors); } catch (err) { /* 重新讀取 */ }
     }
     if (!env || !env.CF_ACCOUNT_ID || !env.CF_API_TOKEN) return json({ ok: false, error: '尚未設定 Browser Rendering 金鑰' }, 502, cors);
     // 真的要去讀官網時才計次：同一來源 10 分鐘最多 60 次、同一機房 10 分鐘最多 300 次，保住白天同仁的讀取額度
@@ -872,7 +887,7 @@ async function handleSinyiCommunity(request, env, cors) {
     data.fetchedAt = new Date().toISOString().slice(0, 10);
     data.fetchedTs = Date.now();
     await cachePut(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=21600' } }));
-    return json(data, 200, cors);
+    return json(await withLvrAddress(env, request.url, data), 200, cors);
   } catch (err) {
     console.error('handleSinyiCommunity error:', id, err && (err.name || err.message));
     return json({ ok: false, error: /abort/i.test(String(err && (err.name || err.message))) ? '讀取逾時，請再試一次' : '讀取失敗，請稍後再試' }, 502, cors);

@@ -78,6 +78,25 @@ const L = require(path.join(root, 'owner-report-logic.js'));
     delete globalThis.caches;
   }
 
+  // ---------- 官網地址只有路名時，用對照表的門牌查近三年實價 ----------
+  {
+    const realFetch2 = globalThis.fetch;
+    const env2 = { ASSETS: { fetch: async (req) => {
+      const f = path.join(root, decodeURIComponent(new URL(req.url).pathname));
+      return fs.existsSync(f) ? new Response(fs.readFileSync(f), { status: 200 }) : new Response('nf', { status: 404 });
+    } } };
+    const pre = path.join(root, 'data/sinyi-cache/0004985.json');
+    if (fs.existsSync(pre)) {
+      const r = await (await worker.default.fetch(new Request('https://tcyucheng.com/api/sinyi-community', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: '0004985' }),
+      }), env2)).json();
+      assert.strictEqual(r.name, '城市之星');
+      assert.ok(!/\d+號/.test(r.address), '官網地址只有路名');
+      assert.strictEqual(r.lvrAddress, '台中市大里區德芳南路306巷10號', '要補上對照表的門牌');
+    }
+    globalThis.fetch = realFetch2;
+  }
+
   // ---------- 頁面接線：B 方案條件、換社區、信義對照 ----------
   const html = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
   assert.ok(html.includes('const showB=!hoUserNo()&&('), '自住清單選「不符合」時，強制顯示也不列 B 方案');
@@ -86,6 +105,9 @@ const L = require(path.join(root, 'owner-report-logic.js'));
   assert.ok(html.includes('沒有自動替換'), '謄本辨識後自動查詢不可直接換掉社區');
   assert.ok(html.includes('OwnerReport.sinyiMatch({name:c.name'), '自動帶信義官網前要先比對社區');
   assert.ok(!html.includes('未滿6年'));
+  assert.ok(html.includes('S.price.listings=(d.listings||[]).map('), '官網待售 0 筆時要清空，不可留上一個社區的');
+  assert.ok(html.includes('if(S.basic.community&&d.name&&!sameName(S.basic.community,d.name))clearCommunity();'), '帶入不同社區要先清掉舊社區資料');
+  assert.ok(html.includes('loadLvr(r.lvrAddress||r.address'), '官網地址沒門牌時改用對照表門牌');
 
   console.log('owner-report guard tests ok', bad.length ? `（對照待確認 ${bad.length} 筆）` : '');
 })().catch((e) => { console.error(e); process.exit(1); });

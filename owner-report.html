@@ -1328,7 +1328,10 @@ async function loadLvr(address,sinyiRows,hint){try{const r=await (await fetch('a
   catch(e){return{msg:'查詢失敗，請再試一次',rows:[]}}}
 
 const sinyiRows=d=>(d.trades||[]).filter(t=>!/親友|特殊關係|共有人|員工/.test(t.special||'')).map(t=>({ym:t.ym,floor:t.floor,rooms:String(OwnerReport.roomsOf(t.layout)||''),ping:t.ping,pping:t.pping,pprice:t.pprice,total:t.total}));
-function applySinyi(d){const b=S.basic;S.basic.community=d.name;S.sinyiId=d.id||S.sinyiId||'';if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;syncStd(false);
+function applySinyi(d){
+  // 換到不同社區：先清掉上一個社區的照片、待售、成交、生活機能、特色，避免舊資料留在報告裡
+  if(S.basic.community&&d.name&&!sameName(S.basic.community,d.name))clearCommunity();
+  const b=S.basic;S.basic.community=d.name;S.sinyiId=d.id||S.sinyiId||'';if(!/\d+樓/.test(b.address||''))S.basic.address=d.address;syncStd(false);
   if(d.floors)S.basic.floors=d.floors;if(d.wall)S.basic.wall=d.wall;if(d.guard)S.basic.guard=d.guard;if(d.typeCode==='L'&&!b.type)S.basic.type='大樓';
   const am=String(d.amenities||'').split(/[,、，]/).map(x=>x.trim()).filter(Boolean).slice(0,6);const L=[];
   if(am.length)L.push(`社區公設：${am.join('、')}`);if(d.developer||d.houseCount)L.push([d.developer&&`${d.developer}興建`,d.houseCount&&`共 ${d.houseCount} 戶`].filter(Boolean).join('，'));
@@ -1338,7 +1341,8 @@ function applySinyi(d){const b=S.basic;S.basic.community=d.name;S.sinyiId=d.id||
   if(d.images&&d.images.length)S.img.cover=d.images.slice(0,2).map(u=>'api/prop-img?u='+encodeURIComponent(u));
   const rows=sinyiRows(d);
   if(rows.length){S.market.rows=[...S.market.rows.filter(x=>x.unreg),...rows].sort((a,b)=>ymKey(b.ym)-ymKey(a.ym)).slice(0,60);S.market.count=String(d.tradeCount||rows.length)}
-  if(d.listings&&d.listings.length){S.price.listings=d.listings.map(({title,...x})=>x);S.market.listing=String(d.listings.length)}
+  // 待售一律以官網為準：官網 0 筆就清空，不留上一個社區的
+  S.price.listings=(d.listings||[]).map(({title,...x})=>x);S.market.listing=String((d.listings||[]).length);
   if(d.fetchedAt)S.market.asOf=`信義官網讀取 ${d.fetchedAt}`;
   if(d.life&&d.life.length&&isFinite(d.lat)){S.poi=d.life;S.poiCenter={lat:d.lat,lng:d.lng}}
   if(S.market.rows.length&&(!S.price.online||!S.price.expect)){try{$('#bPriceCalc').onclick()}catch(e){}}
@@ -1347,7 +1351,8 @@ function applySinyi(d){const b=S.basic;S.basic.community=d.name;S.sinyiId=d.id||
 $('#bSinyi').onclick=async()=>{const v=$('#sinyiUrl').value.trim();if(!v)return toast('請貼上信義官網社區頁的連結');const btn=$('#bSinyi');btn.disabled=true;$('#sinyiMsg').textContent='讀取信義官網中，約 10～20 秒…';
   try{const r=await (await fetch('api/sinyi-community',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:v})})).json();
    if(!r.ok){$('#sinyiMsg').textContent=r.error||'讀取失敗，請稍後再試';return}const hadPrice=!!(S.price.online&&S.price.expect);let m=applySinyi(r);$('#sinyiMsg').textContent=m+' 正在查近三年實價登錄…';
-   const L=await loadLvr(r.address,sinyiRows(r),{floors:r.floors,age:r.age});
+   // 官網地址常只有路名（例如「德芳南路,大里路」），改用社區對照表的門牌查近三年實價
+   const L=await loadLvr(r.lvrAddress||r.address,sinyiRows(r),{floors:r.floors,age:r.age});
    if(L.rows&&L.rows.length){S.market.rows=sortRows([...S.market.rows.filter(x=>x.unreg),...L.rows]).slice(0,60);S.market.matchBy=L.matchBy||'';S.market.doors=L.doors||[];S.market.offAddrs={};S.market.count=String(Math.max(num(r.tradeCount)||0,L.rows.length));
      const bits=[];if(r.fetchedAt)bits.push(`信義官網讀取 ${r.fetchedAt}`);if(fmtLatest(L.latest))bits.push(`實價登錄索引至 ${fmtLatest(L.latest)}`);if(bits.length)S.market.asOf=bits.join('；');
      if(L.est)FLAGS.add('market.rows');
