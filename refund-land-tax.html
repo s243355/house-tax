@@ -9,12 +9,12 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root{
-  --pri:#1a4a7a;--pri-d:#0f2f4f;--pri-l:#eef4fb;--pri-m:#c8ddf0;
-  --red:#C00000;--bg:#faf8f5;--card:#fff;--surface:#edeae6;
-  --border:#e0dad3;--border-d:#c8bfb5;
-  --text:#1a1410;--dim:#5a4e44;--muted:#9a8e84;
+  --pri:#0a8a43;--pri-d:#076b34;--pri-l:#eef5f0;--pri-m:#b7e0c8;
+  --red:#b3261e;--bg:#fbfcfa;--card:#fff;--surface:#eef5f0;
+  --border:#d8e2db;--border-d:#c3d2c8;
+  --text:#14211a;--dim:#3d4b43;--muted:#56655c;
   --green:#2a6e46;--green-l:#f0f8f4;--green-m:#b8dfc4;
-  --gold:#b8860b;--gold-l:#fffbeb;--gold-m:#fcd34d;
+  --gold:#b8892f;--gold-l:#fffbeb;--gold-m:#fcd34d;
   --orange:#c2410c;--orange-l:#fff7ed;--orange-m:#fed7aa;
   --sh1:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.09);
 }
@@ -183,25 +183,29 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <script src="pdf-loader.js"></script>
 <script src="tax-rules.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:712px}
+.contact-strip,.detail-card,.info-box,.input-card,.lm-open,.not-qualify,.qualify-card,.rate-explain,.rate-note,.success-box,.warn-box{border-radius:10px}
+.iw,.iw .unit,.iw input,.iw select,.iw-within{border-radius:8px}
+.act-btn,.cs-btn,.lm-btn{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home">← 首頁</a>
-  <div class="hdr-mid">
-    <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="sep"></div>
-    <span class="htool">土地增值稅重購退稅</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name" id="hdr-brand">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hbtns">
-    <a class="hbtn hbtn-r" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="hbtn hbtn-g" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
-  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
+  <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
   <h1>土地增值稅<br>重購退稅試算</h1>
   <p>出售自用住宅用地後 2 年內重購，且同一人名義<br>新購地公告現值 &gt; 原售地公告現值 − 已繳土增稅，可申請退稅</p>
   <div class="hero-law">土地稅法 §35</div>
@@ -533,11 +537,11 @@ async function generatePDF(){
   const today=new Date().toLocaleDateString('zh-TW');
   const {oldVal,taxPaid,newVal,balanceA,refundAmt,resultType,rateType}=lastResult;
   const rateMap={general:'一般稅率',once:'一生一次（10%）',life:'一生一屋（10%）'};
-  const heroColor=resultType==='full'?'#2a6e46':resultType==='partial'?'#b8860b':'#6b7280';
+  const heroColor=resultType==='full'?'#2a6e46':resultType==='partial'?'#b8892f':'#6b7280';
   const resultLabel=resultType==='full'?'全額退還已繳土增稅':resultType==='partial'?'部分退還（餘額 A）':'不符合退稅條件';
 
-  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;">
-    <div style="background:#1a4a7a;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#14211a;background:white;">
+    <div style="background:#0a8a43;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
       <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">土地增值稅重購退稅試算報告</span></div>
       <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
     </div>
@@ -547,14 +551,14 @@ async function generatePDF(){
       <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:4px;">${resultLabel}・土地稅法 §35</div>
     </div>
     <div style="padding:0 28px 20px;">
-      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">試算資料與計算過程</div>
+      <div style="font-size:9px;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #d8e2db;">試算資料與計算過程</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">舊售地申報移轉現值</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(oldVal)} 萬</div></div>
-        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">已繳土地增值稅（${rateMap[rateType]}）</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(taxPaid)} 萬</div></div>
-        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">新購地申報移轉現值</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(newVal)} 萬</div></div>
-        <div style="border:1px solid #e0dad3;padding:12px 14px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">餘額 A = 新購 − (舊售 − 土增稅)</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(balanceA)} 萬</div></div>
+        <div style="border:1px solid #d8e2db;padding:12px 14px;"><div style="font-size:9px;color:#56655c;margin-bottom:4px;">舊售地申報移轉現值</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(oldVal)} 萬</div></div>
+        <div style="border:1px solid #d8e2db;padding:12px 14px;"><div style="font-size:9px;color:#56655c;margin-bottom:4px;">已繳土地增值稅（${rateMap[rateType]}）</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(taxPaid)} 萬</div></div>
+        <div style="border:1px solid #d8e2db;padding:12px 14px;"><div style="font-size:9px;color:#56655c;margin-bottom:4px;">新購地申報移轉現值</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(newVal)} 萬</div></div>
+        <div style="border:1px solid #d8e2db;padding:12px 14px;"><div style="font-size:9px;color:#56655c;margin-bottom:4px;">餘額 A = 新購 − (舊售 − 土增稅)</div><div style="font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;">${fmt1(balanceA)} 萬</div></div>
       </div>
-      <div style="background:#eef4fb;border:1px solid #c8ddf0;border-left:3px solid #1a4a7a;padding:12px 14px;font-size:10px;color:#1a2a3a;line-height:1.7;margin-bottom:14px;">
+      <div style="background:#eef5f0;border:1px solid #b7e0c8;border-left:3px solid #0a8a43;padding:12px 14px;font-size:10px;color:#1a2a3a;line-height:1.7;margin-bottom:14px;">
         <strong>計算公式（土地稅法 §35）</strong><br>
         餘額A = 新購地申報現值 − (舊售地申報現值 − 已繳土增稅)<br>
         已繳土增稅 ≤ 餘額A → 全額退還 ／ 已繳土增稅 > 餘額A → 退還餘額A ／ 餘額A ≤ 0 → 不退
@@ -562,15 +566,15 @@ async function generatePDF(){
       ${resultType!=='none'?`<div style="background:#f0f8f4;border:1px solid #b8dfc4;border-left:3px solid #2a6e46;padding:12px 14px;font-size:10px;color:#1a3a20;line-height:1.7;">
         申請方式：向出售土地主管稽徵機關申請，自重購完成移轉登記之日起 30 日內提出。<br>
         需準備文件：土地登記謄本（新舊）、土增稅繳款書、戶籍謄本
-      </div>`:`<div style="background:#fff8f8;border:1px solid #fca5a5;border-left:3px solid #C00000;padding:12px 14px;font-size:10px;color:#5a1a1a;line-height:1.7;">
+      </div>`:`<div style="background:#fff8f8;border:1px solid #fca5a5;border-left:3px solid #b3261e;padding:12px 14px;font-size:10px;color:#5a1a1a;line-height:1.7;">
         不符合退稅條件：餘額 A = ${fmt1(balanceA)} 萬（≤ 0）。建議向地政士（代書）諮詢其他節稅方式。
       </div>`}
     </div>
-    <div style="background:#1a4a7a;padding:14px 28px;">
+    <div style="background:#0a8a43;padding:14px 28px;">
       <div style="font-family:'Noto Serif TC',serif;font-size:13px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.8);">${phone}　｜　LINE：${lineUrl}</div>
     </div>
-    <div style="padding:10px 28px;font-size:9px;color:#9a8e84;line-height:1.65;">⚠ 本試算報告僅供參考，實際退稅金額依地方稅務局審核為準。建議洽詢地政士（代書）或各縣市稅捐稽徵處確認申請資格。</div>
+    <div style="padding:10px 28px;font-size:9px;color:#56655c;line-height:1.65;">⚠ 本試算報告僅供參考，實際退稅金額依地方稅務局審核為準。建議洽詢地政士（代書）或各縣市稅捐稽徵處確認申請資格。</div>
   </div>`;
 
   const btn=document.querySelector('.act-btn[onclick="generatePDF()"]');

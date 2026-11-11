@@ -134,24 +134,54 @@ function gaSnippet(id) {
   return { head: head, script: tracker };
 }
 
+// 頁面的 <script> 裡常有整份列印用的 HTML 字串（內含 </head>、</body>）。
+// 只能在 <script> 區塊以外的結束標籤前插入，否則追蹤碼的 </script> 會把頁面自己的程式截斷，
+// 整頁的試算函式都不會定義（2026-11 新青安等 8 頁「按了沒反應」就是這個原因）。
+function scriptRanges(html) {
+  const ranges = [];
+  const re = /<script\b[^>]*>[\s\S]*?<\/script\s*>/gi;
+  let m;
+  while ((m = re.exec(html))) ranges.push([m.index, m.index + m[0].length]);
+  return ranges;
+}
+
+function closingTagIndex(html, tag, ranges, pick) {
+  const re = new RegExp('<\\/' + tag + '\\s*>', 'gi');
+  const found = [];
+  let m;
+  while ((m = re.exec(html))) {
+    const at = m.index;
+    if (!ranges.some((r) => at >= r[0] && at < r[1])) found.push(at);
+  }
+  if (!found.length) return -1;
+  return pick === 'first' ? found[0] : found[found.length - 1];
+}
+
+function insertAt(html, index, text) {
+  return html.slice(0, index) + text + html.slice(index);
+}
+
 async function withAnalytics(response, id) {
   if (!id || !response) return response;
   const type = response.headers.get('content-type') || '';
   if (!/text\/html/i.test(type)) return response;
   const html = await response.text();
-  if (!/<\/head>/i.test(html) || /googletagmanager\.com\/gtag\/js/i.test(html)) {
+  const headAt = closingTagIndex(html, 'head', scriptRanges(html), 'first');
+  if (headAt < 0 || /googletagmanager\.com\/gtag\/js/i.test(html)) {
     return new Response(html, response);
   }
   const snippet = gaSnippet(id);
   const note = '<p class="ga-note">本站使用 Google Analytics 統計瀏覽數據。</p>';
-  let next = html.replace(/<\/head>/i, snippet.head + '</head>');
-  const hasFooter = /<\/footer>/i.test(html);
-  if (hasFooter) next = next.replace(/<\/footer>/i, note + '</footer>');
-  if (/<\/body>/i.test(next)) {
-    next = next.replace(/<\/body>/i, (hasFooter ? '' : note) + snippet.script + '</body>');
-  } else {
-    next += (hasFooter ? '' : note) + snippet.script;
-  }
+  // 由後往前插，前面的位置才不會被後面的插入推走。
+  let next = html;
+  const ranges = scriptRanges(html);
+  const bodyAt = closingTagIndex(html, 'body', ranges, 'last');
+  const footerAt = closingTagIndex(html, 'footer', ranges, 'last');
+  const hasFooter = footerAt >= 0;
+  if (bodyAt >= 0) next = insertAt(next, bodyAt, (hasFooter ? '' : note) + snippet.script);
+  else next += (hasFooter ? '' : note) + snippet.script;
+  if (hasFooter) next = insertAt(next, footerAt, note);
+  next = insertAt(next, headAt, snippet.head);
   const headers = new Headers(response.headers);
   headers.delete('content-length');
   return new Response(next, { status: response.status, statusText: response.statusText, headers });

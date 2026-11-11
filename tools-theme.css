@@ -1,0 +1,97 @@
+/* 工具站共用外觀：對齊個人網站「房產找祐承」（yucheng.html）的紙白底、信義綠、圓角與膠囊按鈕。
+   每個工具頁在自己的 <style> 之後載入這支，所以同權重的規則以這裡為準。
+   工具頁仍維持淺色（頁面裡有大量寫死的白底報表與 PDF 樣板），不跟系統深色模式。 */
+:root{
+  color-scheme:light;
+  --yc-bg:#fbfcfa; --yc-surface:#ffffff; --yc-tint:#eef5f0; --yc-fg:#14211a; --yc-muted:#56655c; --yc-line:#d8e2db;
+  --yc-green:#0a8a43; --yc-green-ink:#076b34; --yc-green-deep:#0b3d24; --yc-gold:#b8892f; --yc-danger:#b3261e;
+  --yc-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --yc-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --yc-r:10px;
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--yc-bg);color:var(--yc-fg);font-family:var(--yc-body)}
+:focus-visible{outline:3px solid var(--yc-gold);outline-offset:2px}
+
+/* ── 頁首：和個人網站同一組品牌列＋選單列 ── */
+header.yc-top{position:sticky;top:0;z-index:100;display:block;height:auto;padding:0;margin:0;
+  background:var(--yc-surface);border:0;border-bottom:1px solid var(--yc-line);box-shadow:none}
+.yc-top .yc-row{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:10px;height:56px;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.yc-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-decoration:none;color:var(--yc-fg)}
+.yc-mark{width:34px;height:34px;border-radius:50%;background:var(--yc-green);color:#fff;display:grid;place-items:center;
+  font-family:var(--yc-display);font-weight:900;font-size:1rem;flex:none;line-height:1}
+.yc-name{font-family:var(--yc-display);font-weight:900;font-size:1.15rem;white-space:nowrap;color:var(--yc-fg);letter-spacing:0}
+.yc-name b{color:var(--yc-green);font-weight:900}
+.yc-branch{font-size:.78rem;color:var(--yc-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.yc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:999px;
+  font-family:var(--yc-body);font-weight:700;font-size:.85rem;line-height:1.4;text-decoration:none;white-space:nowrap;
+  border:1.5px solid var(--yc-green);cursor:pointer;transition:background .15s,color .15s}
+.yc-btn.solid{background:var(--yc-green);color:#fff}
+.yc-btn.solid:hover{background:var(--yc-green-ink);border-color:var(--yc-green-ink)}
+.yc-btn.ghost{background:transparent;color:var(--yc-green-ink);font-variant-numeric:tabular-nums}
+.yc-btn.ghost:hover{background:var(--yc-tint)}
+.yc-menu{border-top:1px solid var(--yc-line)}
+.yc-menu .yc-row{height:auto;gap:2px;overflow-x:auto;scrollbar-width:none;padding-top:4px;padding-bottom:4px}
+.yc-menu .yc-row::-webkit-scrollbar{display:none}
+.yc-menu a{text-decoration:none;color:var(--yc-muted);font-size:.92rem;padding:8px 12px;white-space:nowrap;
+  border-bottom:2px solid transparent}
+.yc-menu a:hover,.yc-menu a.on{color:var(--yc-green-ink);border-bottom-color:var(--yc-green)}
+@media (max-width:620px){
+  .yc-branch{display:none}
+  .yc-top .yc-tel-label{display:none}
+  .yc-btn.ghost.yc-tel{padding:7px 11px}
+}
+@media print{header.yc-top{display:none}}
+
+/* ── 頁面主標：紙白底、綠色小標、襯線大標（原本是整塊色帶）── */
+.hero,.hero-banner,.page-hero{background:var(--yc-bg);border-bottom:1px solid var(--yc-line);text-align:left;
+  padding:36px max(24px,calc((100% - var(--yc-hero-w,772px)) / 2)) 30px}
+.hero::before,.hero::after,.hero-banner::before,.hero-banner::after,.page-hero::before,.page-hero::after{display:none}
+.hero>*,.hero-banner>*,.page-hero>*{max-width:none;margin-left:0;margin-right:0}
+.hero-tag,.hero .hero-tag,.hero-banner .hero-tag,.page-eyebrow{display:block;font-size:.8rem;letter-spacing:.14em;font-weight:700;
+  color:var(--yc-green-ink);text-transform:none;margin-bottom:10px}
+.hero h1,.hero-banner h1,.page-hero h1{font-family:var(--yc-display);font-weight:900;color:var(--yc-fg);
+  font-size:clamp(1.7rem,5.4vw,2.5rem);line-height:1.3;letter-spacing:.01em;margin-bottom:10px;text-wrap:balance}
+.hero p,.hero-banner p,.page-hero p{color:var(--yc-muted);font-size:.98rem;line-height:1.75;max-width:62ch;margin-left:0;margin-right:0}
+.hero p strong,.hero-banner p strong{color:var(--yc-fg)}
+.hero .hero-badge,.hero-badge,.hero .law-badge,.hero-law{display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  background:var(--yc-surface);border:1px solid var(--yc-gold);color:var(--yc-gold);border-radius:999px;padding:3px 12px;
+  font-size:.82rem;font-weight:700;letter-spacing:0;max-width:max-content}
+@media (max-width:620px){.hero,.hero-banner,.page-hero{padding:26px 16px 22px}}
+
+/* ── 內文共用 ── */
+h2,h3,.card-title{font-family:var(--yc-display)}
+.back-link,.back-btn{color:var(--yc-green-ink);font-weight:700}
+main a{color:var(--yc-green-ink)}
+input,select,textarea,button{font-family:var(--yc-body)}
+input[type=number],input[type=text],input[type=date],select{font-variant-numeric:tabular-nums}
+
+/* ── 頁尾：個人網站唯一的深綠色帶 ── */
+footer{background:var(--yc-green-deep);border-top:0;color:#eaf4ee}
+footer .fb{color:#fff}
+footer .fi{color:#b9d2c3}
+footer .sinyi-emblem,footer .sinyi-mark{background:var(--yc-green);border-radius:50%}
+footer a[href^="tel:"]{color:#eaf4ee}
+footer a[href*="line.me"]{border-radius:999px;background:var(--yc-green);font-weight:700}
+.ga-note{margin:10px 0 0;font-size:.72rem;color:#8fb7a0;width:100%}
+body>.ga-note{color:var(--yc-muted);text-align:center;padding:0 16px 16px}
+
+/* ── 分步驟頁（房地合一、舊制）的說明橫幅在 main 裡面，改成不帶底色的標題區 ── */
+main .hero-banner,.step-panel .hero-banner{display:block;background:transparent;border:0;border-bottom:1px solid var(--yc-line);
+  padding:4px 0 22px;margin:0 0 24px;border-radius:0;box-shadow:none}
+.hero-banner-icon{display:none}
+.hero-banner-text{max-width:none}
+.page-title{font-family:var(--yc-display);font-weight:900;color:var(--yc-fg);font-size:clamp(1.7rem,5.4vw,2.5rem);line-height:1.3;text-wrap:balance}
+.page-sub{color:var(--yc-muted)}
+.step-tag{color:var(--yc-green-ink);font-weight:700;letter-spacing:.14em}
+
+/* ── 結果摘要與聯絡色帶：深綠底，和個人網站的試算工具色帶同色 ── */
+.result-hero,.contact-strip,.result-contact-strip{background:var(--yc-green-deep);box-shadow:none}
+.result-hero::before,.result-hero::after{display:none}
+.cs-btn-phone,.rcs-btn-phone,.cs-phone{background:#fff;color:var(--yc-green-ink)}
+.cs-btn,.rcs-btn,.contact-strip a,.result-contact-strip a{border-radius:999px}
+@media (max-width:620px){.result-hero .rh-item{text-align:left}}
+@media (max-width:620px){.tl-date-val{font-size:.78rem;white-space:nowrap;letter-spacing:-.02em}}
+

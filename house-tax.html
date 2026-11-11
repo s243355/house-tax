@@ -10,11 +10,11 @@
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 
   :root {
-    --red:#C00000; --red-dark:#9a0000; --red-light:#fdf0f0; --red-mid:#f5d5d5;
-    --gold:#b8860b;
-    --bg:#f5f3f0; --white:#ffffff; --surface2:#edeae6;
-    --border:#e0dad3; --border-dark:#c8bfb5;
-    --text:#1a1410; --text-dim:#5a4e44; --text-muted:#9a8e84;
+    --red:#0a8a43; --red-dark:#076b34; --red-light:#eef5f0; --red-mid:#b7e0c8;
+    --gold:#b8892f;
+    --bg:#fbfcfa; --white:#ffffff; --surface2:#eef5f0;
+    --border:#d8e2db; --border-dark:#c3d2c8;
+    --text:#14211a; --text-dim:#3d4b43; --text-muted:#56655c;
     --green:#2e7d52;
     --shadow-sm:0 1px 4px rgba(0,0,0,0.06);
     --shadow-md:0 4px 16px rgba(0,0,0,0.09);
@@ -261,26 +261,24 @@
 <script src="pdf-loader.js"></script>
 <script src="holding-period.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:692px}
+.btn-back,.disclaimer,.estimate-info,.hero-banner,.info-box,.lm-btn-open,.loan-section,.result-card,.result-contact-strip,.result-hero,.reverse-result,.warn-box{border-radius:10px}
+.input-wrap,.input-wrap input,.input-wrap-within,.input-wrap.error,input[type="date"]{border-radius:8px}
+.accordion-header,.btn,.btn-action,.contact-btn,.lm-btn,.mode-btn,.rcs-btn,.type-card{border-radius:8px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="header-left">
-    <div class="sinyi-emblem">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg>
-    </div>
-    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="tool-title">房地合一稅試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name" id="hdr-brand">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="header-contact">
-    <a class="contact-btn btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="contact-btn btn-line" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="progress-wrap" id="progress-bar"></div>
@@ -670,8 +668,8 @@
       <button onclick="closeHistory()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;">✕</button>
     </div>
     <div id="history-list" style="overflow-y:auto;flex:1;"></div>
-    <div style="padding:12px 16px;border-top:1px solid #e0dad3;display:flex;gap:8px;flex-shrink:0;">
-      <button onclick="clearAllHistory()" style="padding:8px 16px;font-size:.78rem;font-family:inherit;border:1.5px solid #e0dad3;background:white;color:#9a8e84;cursor:pointer;border-radius:2px;">清除全部記錄</button>
+    <div style="padding:12px 16px;border-top:1px solid #d8e2db;display:flex;gap:8px;flex-shrink:0;">
+      <button onclick="clearAllHistory()" style="padding:8px 16px;font-size:.78rem;font-family:inherit;border:1.5px solid #d8e2db;background:white;color:#56655c;cursor:pointer;border-radius:2px;">清除全部記錄</button>
     </div>
   </div>
 </div>
@@ -685,7 +683,7 @@
     </div>
     <div>
       <div class="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="footer-info" id="footer-update">法規依據：所得稅法第14條之4、第4條之5（自住須設籍並居住滿6年）・資料更新日期：2026-05-05</div>
+      <div class="footer-info" id="footer-update">法規依據：所得稅法第14條之4、第4條之5（自住須設籍並居住滿6年）・資料更新日期：2026-11-11</div>
     </div>
   </div>
   <div class="footer-contact">
@@ -711,7 +709,7 @@ function saveHistory(tool,title,summary,params){
 function getConfig(){
   const s=localStorage.getItem('rlandy_config');
   if(s){try{return JSON.parse(s);}catch(e){}}
-  return{brand:'信義房屋 文心高工店',updatedDate:'2026-05-05',selfuseExemptLimit:400,selfuseTaxRate:10,transferEstimateRate:3,transferEstimateCap:30,
+  return{brand:'信義房屋 文心高工店',updatedDate:'2026-11-11',selfuseExemptLimit:400,selfuseTaxRate:10,transferEstimateRate:3,transferEstimateCap:30,
     disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異（要看你的單據、CPI、特殊扣抵），法規改了或國稅局核定結果也會不同。本試算沒含土地增值稅，要另外算。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。',
     taxRates:[{maxYears:2,rate:45,label:'2年以內'},{maxYears:5,rate:35,label:'超過2年未逾5年'},{maxYears:10,rate:20,label:'超過5年未逾10年'},{maxYears:999,rate:15,label:'超過10年'}],
     cpiTable:{'2016':1,'2017':1.008,'2018':1.015,'2019':1.021,'2020':1.017,'2021':1.022,'2022':1.057,'2023':1.092,'2024':1.112,'2025':1.125,'2026':1.13}
@@ -976,20 +974,20 @@ function showHistory(){
     'home-buying':'換屋規劃','price-calculator':'議價試算'};
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#eef5f0;color:#0a8a43;border:1px solid #b7e0c8;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
-          ${r.tool==='house-tax'?`<button onclick="loadHistory(${r.id})" style="padding:5px 12px;font-size:.74rem;font-family:inherit;background:#C00000;border:none;color:white;cursor:pointer;border-radius:2px;">載入</button>`:''}
-          <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;">刪除</button>
+          ${r.tool==='house-tax'?`<button onclick="loadHistory(${r.id})" style="padding:5px 12px;font-size:.74rem;font-family:inherit;background:#0a8a43;border:none;color:white;cursor:pointer;border-radius:2px;">載入</button>`:''}
+          <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;">刪除</button>
         </div>
       </div>`).join('');
   }
@@ -1161,7 +1159,7 @@ function submitLead(tool){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -1213,35 +1211,35 @@ async function generatePDF(){
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans TC',sans-serif;font-weight:400;color:#1a1410;background:white;padding:0;}
+    body{font-family:'Noto Sans TC',sans-serif;font-weight:400;color:#14211a;background:white;padding:0;}
     .page{max-width:680px;margin:0 auto;padding:40px;}
-    .header{background:#C00000;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;}
+    .header{background:#0a8a43;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;letter-spacing:.1em;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-title{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
     .report-title strong{display:block;font-size:1rem;color:white;}
-    .hero-section{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero-section{background:#14211a;padding:24px 32px;margin-bottom:24px;}
     .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
     .hero-tax{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;margin-bottom:4px;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);}
     .section{padding:0 32px 24px;}
-    .section-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .section-title{font-size:.75rem;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
-    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
-    .highlight-card{border:1.5px solid #C00000;background:#fdf0f0;padding:16px 18px;margin-bottom:20px;}
-    .highlight-card .data-label{color:#C00000;}
-    .highlight-card .data-val{color:#C00000;font-size:1.5rem;}
+    .data-card{border:1px solid #d8e2db;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#56655c;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#14211a;font-weight:600;}
+    .highlight-card{border:1.5px solid #0a8a43;background:#eef5f0;padding:16px 18px;margin-bottom:20px;}
+    .highlight-card .data-label{color:#0a8a43;}
+    .highlight-card .data-val{color:#0a8a43;font-size:1.5rem;}
     table{width:100%;border-collapse:collapse;font-size:.82rem;}
-    th{background:#C00000;color:white;padding:9px 12px;text-align:left;font-weight:500;}
-    td{padding:9px 12px;border-bottom:1px solid #e0dad3;color:#5a4e44;}
-    td:first-child{color:#1a1410;font-weight:500;}
+    th{background:#0a8a43;color:white;padding:9px 12px;text-align:left;font-weight:500;}
+    td{padding:9px 12px;border-bottom:1px solid #d8e2db;color:#3d4b43;}
+    td:first-child{color:#14211a;font-weight:500;}
     .contact-section{background:#1a4a7a;padding:20px 32px;margin-top:0;}
     .contact-brand{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .contact-info{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disclaimer{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;margin-top:0;}
-    .date-note{font-size:.72rem;color:#9a8e84;text-align:right;padding:0 32px 16px;}
+    .disclaimer{padding:16px 32px;font-size:.72rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;margin-top:0;}
+    .date-note{font-size:.72rem;color:#56655c;text-align:right;padding:0 32px 16px;}
   </style></head><body>
   <div class="page">
     <div class="header">
@@ -1265,7 +1263,7 @@ async function generatePDF(){
       </div>
       <div class="highlight-card"><div class="data-label">稅後實拿</div><div class="data-val">${net}</div></div>
       <div class="section-title">計算明細</div>
-      ${document.getElementById('calc-detail').innerHTML.replace(/class="calc-row/g,'style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0dad3;font-size:.82rem;" class="x')}
+      ${document.getElementById('calc-detail').innerHTML.replace(/class="calc-row/g,'style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #d8e2db;font-size:.82rem;" class="x')}
     </div>
     <div class="contact-section">
       <div class="contact-brand">${brand}</div>

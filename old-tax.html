@@ -8,7 +8,7 @@
 <title>財產交易所得稅試算（舊制）｜祐承店長 信義房屋 文心高工店</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-  :root{--pri:#7a3000;--pri-dark:#5a2000;--pri-light:#fff8f3;--pri-mid:#f5d5c0;--red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;--border:#e0dad3;--border-dark:#c8bfb5;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;--green:#2e7d52;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);}
+  :root{--pri:#0a8a43;--pri-dark:#076b34;--pri-light:#eef5f0;--pri-mid:#b7e0c8;--red:#b3261e;--bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;--border:#d8e2db;--border-dark:#c3d2c8;--text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;--green:#2e7d52;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;line-height:1.7;}
 
@@ -229,24 +229,24 @@
 <script src="pdf-loader.js"></script>
 <script src="tax-rules.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:692px}
+.btn-back,.disclaimer,.hero-banner,.income-note,.info-box,.lm-btn-open,.result-card,.result-contact-strip,.result-hero,.warn-box{border-radius:10px}
+.input-select,.input-wrap,.input-wrap input,.input-wrap-within,.input-wrap.error{border-radius:8px}
+.accordion-header,.btn,.btn-action,.cb,.lm-btn,.method-card,.rcs-btn{border-radius:8px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">財產交易所得稅試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="progress-wrap" id="progress-bar"></div>
@@ -270,7 +270,7 @@
   <div class="method-grid">
     <div class="method-card" data-method="actual" onclick="selectMethod(this)">
       <div class="method-card-title" id="ot-m-actual-title">📄 核實認定（有買賣成本）</div>
-      <div class="method-card-desc" id="ot-m-actual-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：（賣價 - 買價 - 必要費用）× 區域財產交易稅率，所得併入綜所稅。</div>
+      <div class="method-card-desc" id="ot-m-actual-desc">政府查得到你的原始取得成本（如實價登錄、買賣契約等）。計算：房屋賣價 − 房屋買價 − 必要費用；合約沒分列房屋價款時，按出售時房屋評定現值占房地現值的比例拆算，所得併入綜所稅。</div>
     </div>
     <div class="method-card" data-method="standard" onclick="selectMethod(this)">
       <div class="method-card-title" id="ot-m-standard-title">📊 標準認定（無法舉證成本）</div>
@@ -536,17 +536,18 @@
     <label class="field-label" for="inc-other">本年度其他所得（薪資、利息、租金等）</label>
     <div class="input-wrap"><input type="number" id="inc-other" placeholder="例：80" oninput="updateIncomeInfo()"><span class="input-unit">萬</span></div>
     <div class="field-tip">不含本次財產交易所得，填估計值即可</div>
+    <div class="field-tip" id="inc-info" style="display:none;color:var(--pri);font-weight:500;"></div>
   </div>
 
   <div class="field-group">
     <label class="field-label" for="inc-exempt">免稅額合計（個人 + 扶養人口）</label>
-    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：10.1" value="10.1"><span class="input-unit">萬</span></div>
+    <div class="input-wrap"><input type="number" id="inc-exempt" placeholder="例：10.1" value="10.1" oninput="updateIncomeInfo()"><span class="input-unit">萬</span></div>
     <div class="field-tip">115 年度每人 10.1 萬（116年5月申報適用，財政部114年11月27日公告）。年滿70歲為 15.15 萬。扶養親屬每人再加一份。</div>
   </div>
 
   <div class="field-group">
     <label class="field-label" for="inc-deduction">扣除額合計（標準 or 列舉 + 特別扣除額）</label>
-    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：36.3" value="36.3"><span class="input-unit">萬</span></div>
+    <div class="input-wrap"><input type="number" id="inc-deduction" placeholder="例：36.3" value="36.3" oninput="updateIncomeInfo()"><span class="input-unit">萬</span></div>
     <div class="field-tip">115 年度：標準扣除額 13.6 萬（已婚 27.2 萬）＋ 薪資特別扣除額 22.7 萬。預設 36.3 萬為單身有薪資者；已婚有薪資改填 49.9 萬。</div>
   </div>
 
@@ -595,7 +596,7 @@
       <div class="result-card-val" id="r-net-income">—</div>
     </div>
     <div class="result-card">
-      <div class="result-card-label">區域財產交易稅率</div>
+      <div class="result-card-label" id="r-ratio-label">房屋所得標準比率</div>
       <div class="result-card-val" id="r-ratio">—</div>
     </div>
   </div>
@@ -663,7 +664,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi" id="footer-update">法規依據：所得稅法第14條第1項第7類・資料更新日期：2026-05-05</div>
+      <div class="fi" id="footer-update">法規依據：所得稅法第14條第1項第7類・資料更新日期：2026-11-11</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -690,7 +691,7 @@ function saveHistory(tool,title,summary,params){
     localStorage.setItem('rlandy_history',JSON.stringify(h));
   }catch(e){}
 }
-function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{brand:'信義房屋 文心高工店',brandSubtitle:'文心高工店',phone:'0933317625',phoneLabel:'0933-317-625',lineUrl:'https://line.me/ti/p/EfDsNa26Xw',updatedDate:'2026-05-05',disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異，法規改了或國稅局核定結果也會不同。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。'};}
+function getConfig(){const s=localStorage.getItem('rlandy_config');if(s){try{return JSON.parse(s);}catch(e){}}return{brand:'信義房屋 文心高工店',brandSubtitle:'文心高工店',phone:'0933317625',phoneLabel:'0933-317-625',lineUrl:'https://line.me/ti/p/EfDsNa26Xw',updatedDate:'2026-11-11',disclaimer:'本試算只是初步估算參考用。實際要繳多少因人而異，法規改了或國稅局核定結果也會不同。正式報稅請洽：會計師、各地國稅局（0800-000-321）、財政部稅務入口網。'};}
 
 let currentMethod=null,stepIdx=0;
 const STEPS={actual:['step-1','step-actual','step-income','step-review'],standard:['step-1','step-standard','step-income','step-review']};
@@ -801,6 +802,19 @@ function selectMethod(el){
 function n(id){return parseFloat(document.getElementById(id).value)||0;}
 function s(id){return document.getElementById(id).value||'';}
 
+// 其他所得、免稅額、扣除額一改就提示目前落在哪一級距（還沒加本次財交所得）。
+function updateIncomeInfo(){
+  var box=document.getElementById('inc-info');if(!box)return;
+  var other=parseFloat(document.getElementById('inc-other').value);
+  if(!(other>0)){box.style.display='none';return;}
+  var ex=parseFloat(document.getElementById('inc-exempt').value)||0;
+  var de=parseFloat(document.getElementById('inc-deduction').value)||0;
+  var net=Math.max(other-ex-de,0);
+  box.style.display='block';
+  box.textContent=net>0
+    ? '加入本次所得前：綜合所得淨額約 '+(Math.round(net*10)/10)+' 萬，適用稅率 '+getRateLabel(net)
+    : '加入本次所得前：扣除免稅額與扣除額後淨額為 0，本次財交所得從 5% 級距起算';
+}
 function updateActSum(){
   const total=n('act-buy-broker')+n('act-sell-broker')+n('act-agent-fee')+n('act-deed-tax')+n('act-stamp-tax')+n('act-reno')+n('act-other');
   document.getElementById('act-fee-sum').textContent=total.toLocaleString()+' 元';
@@ -957,8 +971,9 @@ function calculate(){
   document.getElementById('r-prop-income').textContent=fmt(propIncome);
   document.getElementById('r-method').textContent=currentMethod==='actual'?'核實認定':'標準認定';
   document.getElementById('r-net-income').textContent=fmt(netIncome);
+  document.getElementById('r-ratio-label').textContent=currentMethod==='actual'?'房屋占房地比例':'房屋所得標準比率';
   document.getElementById('r-ratio').textContent=currentMethod==='actual'
-    ?(ratio*100).toFixed(2)+'%'
+    ?(ratio>0?(ratio*100).toFixed(2)+'%':'合約已分列房屋價款')
     :(window._stdLuxury?'房屋收入×20%（高價住宅）':(parseFloat(s('std-region'))||0)+'%（設算）');
   // r-net 已移除（稅後實拿欄位已移除）
 
@@ -1028,8 +1043,8 @@ function calculate(){
     <div class="calc-row"><span>財產交易所得計算</span><span>所得稅法 §14 第七類</span></div>
     <div class="calc-row"><span>核實認定公式</span><span>（賣價 − 買價 − 必要費用）× 房地比</span></div>
     <div class="calc-row sub"><span>　房地比</span><span>= 房屋評定現值 ÷（房屋評定現值 ＋ 土地公告現值）</span></div>
-    <div class="calc-row"><span>標準認定公式</span><span>房屋評定現值 × 區域財產交易稅率</span></div>
-    <div class="calc-row sub"><span>　區域財產交易稅率</span><span>財政部每年公告，依各縣市區域不同</span></div>
+    <div class="calc-row"><span>標準認定公式</span><span>房屋評定現值 × 房屋所得標準比率</span></div>
+    <div class="calc-row sub"><span>　房屋所得標準比率</span><span>財政部每年公告，依各縣市區域不同</span></div>
     <div class="calc-row"><span>土地部分免稅</span><span>平均地權條例</span></div>
     <div class="calc-row"><span>累進稅率 5%～40%</span><span>所得稅法 §5</span></div>
     <div style="margin-top:12px;"><a href="https://www.etax.nat.gov.tw/etwmain/etw158w/2506" target="_blank" style="color:var(--pri);">財政部稅務入口網 →</a></div>`;
@@ -1059,18 +1074,18 @@ function showHistory(){
   const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#fdf0f0;color:#b3261e;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
-        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
       </div>`).join('');
   }
   document.getElementById('history-overlay').style.display='flex';
@@ -1115,7 +1130,7 @@ function buildLineSummary(){
   const msg=`📋 財產交易所得稅試算結果（舊制）
 ${'═'.repeat(22)}
 📝 申報方式：${methodLabel}
-📊 區域財產交易稅率：${ratio}
+📊 ${document.getElementById('r-ratio-label').textContent}：${ratio}
 💰 財產交易所得：${propIncome}
 
 💸 增加稅額（估算）：${taxInc}
@@ -1163,7 +1178,7 @@ function openLineApp(){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -1212,31 +1227,31 @@ async function generatePDF(){
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;background:white;}
+    body{font-family:'Noto Sans TC',sans-serif;color:#14211a;background:white;}
     .page{max-width:680px;margin:0 auto;padding:40px;}
-    .header{background:#7a3000;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .header{background:#0a8a43;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;letter-spacing:.1em;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-title{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
     .report-title strong{display:block;font-size:1rem;color:white;}
-    .hero-section{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero-section{background:#14211a;padding:24px 32px;margin-bottom:24px;}
     .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
     .hero-tax{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;margin-bottom:4px;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);}
     .section{padding:0 32px 24px;}
-    .section-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .section-title{font-size:.75rem;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
-    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
-    .highlight-card{border:1.5px solid #7a3000;background:#fff8f3;padding:16px 18px;margin-bottom:20px;}
-    .highlight-card .data-label{color:#7a3000;}
-    .highlight-card .data-val{color:#7a3000;font-size:1.5rem;}
+    .data-card{border:1px solid #d8e2db;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#56655c;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#14211a;font-weight:600;}
+    .highlight-card{border:1.5px solid #0a8a43;background:#eef5f0;padding:16px 18px;margin-bottom:20px;}
+    .highlight-card .data-label{color:#0a8a43;}
+    .highlight-card .data-val{color:#0a8a43;font-size:1.5rem;}
     .contact-section{background:#1a4a7a;padding:20px 32px;}
     .contact-brand{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .contact-info{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disclaimer{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
-    .note{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #b45309;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#5a4e44;}
+    .disclaimer{padding:16px 32px;font-size:.72rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;}
+    .note{background:#fffbeb;border:1px solid #fcd34d;border-left:3px solid #b45309;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#3d4b43;}
   </style></head><body>
   <div class="page">
     <div class="header">
@@ -1252,7 +1267,7 @@ async function generatePDF(){
       <div class="section-title">試算概覽</div>
       <div class="data-grid">
         <div class="data-card"><div class="data-label">申報方式</div><div class="data-val">${methodLabel}</div></div>
-        <div class="data-card"><div class="data-label">區域財產交易稅率</div><div class="data-val">${ratio}</div></div>
+        <div class="data-card"><div class="data-label">${document.getElementById('r-ratio-label').textContent}</div><div class="data-val">${ratio}</div></div>
         <div class="data-card"><div class="data-label">財產交易所得</div><div class="data-val">${propIncome}</div></div>
         <div class="data-card"><div class="data-label">綜合所得淨額</div><div class="data-val">${netIncome}</div></div>
         <div class="data-card"><div class="data-label">增加稅額</div><div class="data-val">${taxInc}</div></div>
@@ -1263,7 +1278,7 @@ async function generatePDF(){
         💡 財產交易所得稅（舊制）須於隔年 5 月申報個人綜合所得稅時一併申報。土地部分免稅，僅房屋部分所得計入綜所稅。
       </div>
       <div class="section-title">計算明細</div>
-      ${document.getElementById('calc-detail').innerHTML.replace(/class="calc-row/g,'style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0dad3;font-size:.82rem;" class="x')}
+      ${document.getElementById('calc-detail').innerHTML.replace(/class="calc-row/g,'style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #d8e2db;font-size:.82rem;" class="x')}
     </div>
     <div class="contact-section">
       <div class="contact-brand">${brand}</div>

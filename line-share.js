@@ -28,12 +28,12 @@
     s.textContent = ''
       + '#youcheng-line-slot{margin:14px 0 4px;}'
       + '.youcheng-line-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;'
-      + 'min-height:48px;padding:12px 16px;border:none;border-radius:2px;cursor:pointer;'
+      + 'min-height:48px;padding:12px 16px;border:none;border-radius:999px;cursor:pointer;'
       + 'background:#0a8a43;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;letter-spacing:.04em;}'
       + '.youcheng-line-btn:active{background:#087238;}'
-      + '.youcheng-line-note{margin:8px 0 0;font-size:.75rem;line-height:1.55;color:#5a4e44;}'
+      + '.youcheng-line-note{margin:8px 0 0;font-size:.75rem;line-height:1.55;color:#56655c;}'
       + '#youcheng-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);'
-      + 'background:#1a1410;color:#fff;padding:10px 16px;border-radius:2px;font-size:.9rem;'
+      + 'background:#14211a;color:#fff;padding:10px 16px;border-radius:999px;font-size:.9rem;'
       + 'z-index:10000;box-shadow:0 6px 20px rgba(0,0,0,.2);}';
     document.head.appendChild(s);
   }

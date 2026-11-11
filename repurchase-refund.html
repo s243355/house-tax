@@ -9,11 +9,11 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --pri:#8b4513;--pri-dark:#6b3410;--pri-light:#fdf5ef;--pri-mid:#e8c4a0;
-    --red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
-    --border:#e0dad3;--border-dark:#c8bfb5;
-    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
-    --gold:#b8860b;--green:#2e7d52;
+    --pri:#0a8a43;--pri-dark:#076b34;--pri-light:#eef5f0;--pri-mid:#b7e0c8;
+    --red:#b3261e;--bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;
+    --border:#d8e2db;--border-dark:#c3d2c8;
+    --text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;
+    --gold:#b8892f;--green:#2e7d52;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -117,7 +117,7 @@
   .rc-label{font-size:.72rem;color:var(--text-muted);margin-bottom:6px;}
   .rc-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:var(--text);font-weight:600;}
   .rc-val.green{color:var(--green);}
-  .rc-val.red{color:#C00000;}
+  .rc-val.red{color:#b3261e;}
 
   /* Calc detail */
   .detail-card{background:var(--white);border:1.5px solid var(--border);padding:24px;margin-bottom:14px;box-shadow:var(--shadow-sm);}
@@ -128,7 +128,7 @@
 
   /* Not eligible */
   .not-eligible{background:var(--white);border:1.5px solid var(--border);padding:32px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-sm);}
-  .not-eligible h3{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#C00000;margin-bottom:12px;}
+  .not-eligible h3{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#b3261e;margin-bottom:12px;}
   .not-eligible p{font-size:.85rem;color:var(--text-dim);line-height:1.7;}
 
   /* LINE Modal */
@@ -243,24 +243,24 @@
 <script src="pdf-loader.js"></script>
 <script src="holding-period.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:712px}
+.btn-back,.contact-strip,.detail-card,.info-box,.input-card,.lm-btn-open,.not-eligible,.result-card,.result-hero,.steps-indicator,.success-box,.warn-box{border-radius:10px}
+.input-wrap,.input-wrap input,.input-wrap-within,input[type=date]{border-radius:8px}
+.btn,.btn-action,.cb,.cs-btn,.lm-btn,.step-ind{border-radius:8px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">房地合一重購退稅</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
@@ -665,7 +665,7 @@ function openLineApp(){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -706,9 +706,9 @@ async function generatePDF(){
   const{oldSell,oldTaxPaid,newBuy,refundRatio,refundAmt,daysDiff}=lastResult;
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;}
+    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#14211a;}
     .page{max-width:680px;margin:0 auto;padding:40px;}
-    .header{background:#8b4513;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .header{background:#0a8a43;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-date{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
@@ -718,16 +718,16 @@ async function generatePDF(){
     .hero-val{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
     .section{padding:0 32px 24px;}
-    .sec-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .sec-title{font-size:.75rem;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
-    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
+    .data-card{border:1px solid #d8e2db;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#56655c;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#14211a;font-weight:600;}
     .note{background:#f0f8f2;border:1px solid #b8dfc4;border-left:3px solid #2e7d52;padding:12px 16px;font-size:.8rem;color:#1a3a20;margin-bottom:16px;line-height:1.7;}
     .contact{background:#1a4a7a;padding:20px 32px;}
     .cb{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disc{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+    .disc{padding:16px 32px;font-size:.72rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;}
   </style></head><body><div class="page">
     <div class="header"><div class="brand">${brand}<small>房地合一重購退稅報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
     <div class="hero"><div class="hero-label">估算可申請退稅金額</div><div class="hero-val">${refundAmt.toFixed(2)} 萬元</div><div class="hero-sub">${refundRatio>=1?'全額退稅':'按比例退稅 '+((refundRatio*100).toFixed(1))+'%'}</div></div>
@@ -776,18 +776,18 @@ function showHistory(){
   const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#fdf0f0;color:#b3261e;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
-        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
       </div>`).join('');
   }
   document.getElementById('history-overlay').style.display='flex';

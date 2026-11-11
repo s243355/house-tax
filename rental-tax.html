@@ -9,12 +9,12 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root{
-  --pri:#1a6e46;--pri-d:#0f4a2f;--pri-l:#f0f8f4;--pri-m:#b8dfc4;
-  --red:#C00000;--bg:#faf8f5;--card:#fff;--surface:#edeae6;
-  --border:#e0dad3;--border-d:#c8bfb5;
-  --text:#1a1410;--dim:#5a4e44;--muted:#9a8e84;
-  --green:#2a6e46;--green-l:#f0f8f4;--green-m:#b8dfc4;
-  --gold:#b8860b;--gold-l:#fffbeb;--gold-m:#fcd34d;
+  --pri:#0a8a43;--pri-d:#076b34;--pri-l:#eef5f0;--pri-m:#b7e0c8;
+  --red:#b3261e;--bg:#fbfcfa;--card:#fff;--surface:#eef5f0;
+  --border:#d8e2db;--border-d:#c3d2c8;
+  --text:#14211a;--dim:#3d4b43;--muted:#56655c;
+  --green:#2a6e46;--green-l:#eef5f0;--green-m:#b7e0c8;
+  --gold:#b8892f;--gold-l:#fffbeb;--gold-m:#fcd34d;
   --blue:#1a3f6e;--blue-l:#eef4fb;--blue-m:#c8ddf0;
   --orange:#c2410c;--orange-l:#fff7ed;--orange-m:#fed7aa;
   --sh1:0 1px 4px rgba(0,0,0,.06);--sh2:0 4px 16px rgba(0,0,0,.09);
@@ -88,7 +88,7 @@ main{max-width:780px;margin:0 auto;padding:36px 20px 100px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* 主要金額 bar */
-.money-bar{background:#1a1410;padding:20px 24px;display:flex;flex-wrap:wrap;gap:0;margin-bottom:14px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
+.money-bar{background:#14211a;padding:20px 24px;display:flex;flex-wrap:wrap;gap:0;margin-bottom:14px;box-shadow:var(--sh2);position:relative;overflow:hidden;}
 .money-bar::before{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border:20px solid rgba(255,255,255,.04);border-radius:50%;}
 .mb-item{flex:1;min-width:140px;padding:8px 16px;border-right:1px solid rgba(255,255,255,.08);position:relative;z-index:1;}
 .mb-item:last-child{border-right:none;}
@@ -175,25 +175,29 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <script src="pdf-loader.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:732px}
+.contact-strip,.detail-card,.identity-section,.info-box,.input-card,.lm-open,.no-need-box,.warn-box{border-radius:10px}
+.iw,.iw .unit,.iw input,.iw-within{border-radius:8px}
+.act-btn,.cs-btn,.id-btn,.lm-btn{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home">← 首頁</a>
-  <div class="hdr-mid">
-    <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sname" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="sep"></div>
-    <span class="htool">租賃稅務試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name" id="hdr-brand">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hbtns">
-    <a class="hbtn hbtn-r" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="hbtn hbtn-g" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">LINE</a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
-  <div class="hero-tag">SINYI REALTY · 文心高工店</div>
+  <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
   <h1>租賃稅務試算</h1>
   <p>依出租方、承租方身份與租金金額，自動計算<br>扣繳稅款、二代健保補充保費與房東實際收到租金</p>
   <div class="hero-law">所得稅法 §88 · §89 · 健保法 §2</div>
@@ -378,7 +382,7 @@ footer{background:var(--text);border-top:3px solid var(--red);padding:20px 40px;
 <footer>
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="mark" style="width:26px;height:26px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">租賃稅務試算 · 僅供參考</div><div class="fi">法規依據：所得稅法第88條扣繳、全民健康保險補充保費・最後更新日：2026-05-05</div></div>
+    <div><div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div><div class="fi">租賃稅務試算 · 僅供參考</div><div class="fi">法規依據：所得稅法第88條扣繳、全民健康保險補充保費（費率 2.11%、單次給付達 2 萬元起扣；年度結算新制尚未修法，仍依現制）・最後更新日：2026-11-11</div></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;">📞 祐承店長 0933-317-625</a>
@@ -648,12 +652,12 @@ async function generatePDF(){
   const {lessor,lessee,taxMode,rent,totalRent,withhold,nhi,landlordNet,notaryFee,needWithhold}=lastResult;
   const lessorLabel=lessor==='person'?'自然人（個人）':'法人（公司）';
   const lesseeLabel=lessee==='biz'?'公司／法人（營業用）':'自然人（住宅用）';
-  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;">
-    <div style="background:#1a6e46;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#14211a;background:white;">
+    <div style="background:#0a8a43;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
       <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">租賃稅務試算報告</span></div>
       <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
     </div>
-    <div style="background:#1a1410;padding:16px 28px;display:flex;flex-wrap:wrap;gap:0;">
+    <div style="background:#14211a;padding:16px 28px;display:flex;flex-wrap:wrap;gap:0;">
       ${[
         ['給付總額（含稅）',fmtN(totalRent)+' 元','white'],
         ['預扣所得稅（10%）',needWithhold&&withhold>0?fmtN(withhold)+' 元':'—','#fca5a5'],
@@ -662,23 +666,23 @@ async function generatePDF(){
       ].map(([l,v,col])=>'<div style="flex:1;min-width:120px;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);"><div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:15px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
     </div>
     <div style="padding:20px 28px;">
-      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">試算條件</div>
+      <div style="font-size:9px;color:#56655c;letter-spacing:.15em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #d8e2db;">試算條件</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">出租方身份</div><div style="font-size:13px;font-weight:600;">${lessorLabel}</div></div>
-        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">承租方身份</div><div style="font-size:13px;font-weight:600;">${lesseeLabel}</div></div>
-        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">租金類型</div><div style="font-size:13px;font-weight:600;">${taxMode==='inc'?'含稅':'未稅（倒算）'}</div></div>
-        <div style="border:1px solid #e0dad3;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:3px;">輸入金額</div><div style="font-size:13px;font-weight:600;">${fmtN(rent)} 元</div></div>
+        <div style="border:1px solid #d8e2db;padding:10px 12px;"><div style="font-size:9px;color:#56655c;margin-bottom:3px;">出租方身份</div><div style="font-size:13px;font-weight:600;">${lessorLabel}</div></div>
+        <div style="border:1px solid #d8e2db;padding:10px 12px;"><div style="font-size:9px;color:#56655c;margin-bottom:3px;">承租方身份</div><div style="font-size:13px;font-weight:600;">${lesseeLabel}</div></div>
+        <div style="border:1px solid #d8e2db;padding:10px 12px;"><div style="font-size:9px;color:#56655c;margin-bottom:3px;">租金類型</div><div style="font-size:13px;font-weight:600;">${taxMode==='inc'?'含稅':'未稅（倒算）'}</div></div>
+        <div style="border:1px solid #d8e2db;padding:10px 12px;"><div style="font-size:9px;color:#56655c;margin-bottom:3px;">輸入金額</div><div style="font-size:13px;font-weight:600;">${fmtN(rent)} 元</div></div>
       </div>
-      ${needWithhold?`<div style="background:#f0f8f4;border:1px solid #b8dfc4;border-left:3px solid #1a6e46;padding:12px 14px;font-size:10px;color:#1a3a20;line-height:1.7;">
+      ${needWithhold?`<div style="background:#eef5f0;border:1px solid #b7e0c8;border-left:3px solid #0a8a43;padding:12px 14px;font-size:10px;color:#1a3a20;line-height:1.7;">
         扣繳義務人（承租方）應於給付日次月 10 日前繳納扣繳稅款，次月底前繳納二代健保補充保費，並於次年 1 月底前申報扣繳憑單。
       </div>`:''}
-      ${notaryFee>0?`<div style="margin-top:12px;padding:10px 14px;border:1px solid #e0dad3;font-size:11px;color:#5a4e44;">公證費用（另列）：${fmtN(notaryFee)} 元</div>`:''}
+      ${notaryFee>0?`<div style="margin-top:12px;padding:10px 14px;border:1px solid #d8e2db;font-size:11px;color:#3d4b43;">公證費用（另列）：${fmtN(notaryFee)} 元</div>`:''}
     </div>
     <div style="background:#1a4a7a;padding:14px 28px;">
       <div style="font-family:'Noto Serif TC',serif;font-size:13px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.8);">${phone}　｜　LINE：${lineUrl}</div>
     </div>
-    <div style="padding:10px 28px;font-size:9px;color:#9a8e84;line-height:1.65;">⚠ 本試算報告僅供參考，實際扣繳金額依國稅局及健保署規定為準。</div>
+    <div style="padding:10px 28px;font-size:9px;color:#56655c;line-height:1.65;">⚠ 本試算報告僅供參考，實際扣繳金額依國稅局及健保署規定為準。</div>
   </div>`;
   const btn=document.querySelector('.act-btn[onclick="generatePDF()"]');
   if(btn){btn.textContent='⏳ 產生中...';btn.disabled=true;}

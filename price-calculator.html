@@ -10,10 +10,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --red:#C00000; --red-d:#8a0000; --red-l:#fdf0f0; --red-m:#f5d5d5;
-  --ink:#1a1410; --paper:#faf8f5; --card:#ffffff;
-  --rule:#e8e2da; --rule-d:#d0c8be; --muted:#9a8e84; --dim:#5a4e44;
-  --gold:#b8860b; --gold-l:#fffbeb; --green:#2a6e46; --green-l:#f0f8f4;
+  --red:#0a8a43; --red-d:#076b34; --red-l:#eef5f0; --red-m:#b7e0c8;
+  --ink:#14211a; --paper:#fbfcfa; --card:#ffffff;
+  --rule:#d8e2db; --rule-d:#c3d2c8; --muted:#56655c; --dim:#3d4b43;
+  --gold:#b8892f; --gold-l:#fffbeb; --green:#2a6e46; --green-l:#f0f8f4;
   --blue:#1a3f6e; --blue-l:#eef4fb;
   --sh1:0 1px 3px rgba(0,0,0,.06); --sh2:0 4px 16px rgba(0,0,0,.08); --sh3:0 8px 32px rgba(0,0,0,.11);
 }
@@ -448,30 +448,28 @@ header{
 <script src="pdf-loader.js"></script>
 <script src="tax-rules.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+.config-iw,.info-box,.input-card{border-radius:10px}
+.config-iw input,.iw,.iw .unit,.iw input,.iw-within{border-radius:8px}
+.act-btn,.mode-btn,.tool-badge{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="brand">
-    <div class="brand-mark">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="3" width="8" height="8" fill="white"/>
-        <rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/>
-        <rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/>
-        <rect x="13" y="13" width="8" height="8" fill="white"/>
-      </svg>
-    </div>
-    <div class="brand-name" id="brand-name">
-      信義房屋
-      <small id="brand-sub">祐承店長・文心高工店</small>
-    </div>
-    <div class="hd"></div>
-    <span class="tool-badge">議價試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name" id="brand-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="brand-sub">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="container">
+  <div class="page-eyebrow">業務工具・信義房屋 文心高工店</div>
   <h1 class="page-title">議價試算工具</h1>
   <div class="page-sub">輸入單價與各項條件，自動產生多個級距的總價、服務費與實拿金額對照表</div>
   <p class="page-sub">法規依據：議價與服務費試算，實際服務費以契約約定為準・最後更新日：2026-05-05</p>
@@ -537,7 +535,7 @@ header{
           <span class="unit">%</span>
         </div>
         <div class="input-hint">向買賣雙方收取的合計不得超過成交價 6%（內政部不動產仲介經紀業報酬計收標準）。賣方 4%、買方 2% 是市場常見分法，不是法定拆帳。預設 4% 為賣方常見費率。</div>
-        <p id="fee-cap-warn" hidden style="margin-top:6px;font-size:.78rem;color:#C00000;">這筆費率已超過法定合計上限 6%，請再確認。</p>
+        <p id="fee-cap-warn" hidden style="margin-top:6px;font-size:.78rem;color:#0a8a43;">這筆費率已超過法定合計上限 6%，請再確認。</p>
       </div>
       <div class="input-group">
         <label class="input-label" for="other-cost">其他費用 <span class="optional">選填</span></label>
@@ -597,7 +595,7 @@ header{
   <!-- RESULT -->
   <div id="result-section">
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-      <button onclick="document.querySelector('.input-card').scrollIntoView({behavior:'smooth',block:'start'})" style="font-size:.78rem;color:var(--text-muted);background:var(--white);border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:inherit;border-radius:2px;transition:all .15s;" onmouseover="this.style.color='#1a1410';this.style.borderColor='#1a1410'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--rule-d)'">✏ 修改條件</button>
+      <button onclick="document.querySelector('.input-card').scrollIntoView({behavior:'smooth',block:'start'})" style="font-size:.78rem;color:var(--text-muted);background:var(--white);border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:inherit;border-radius:2px;transition:all .15s;" onmouseover="this.style.color='#14211a';this.style.borderColor='#14211a'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--rule-d)'">✏ 修改條件</button>
     </div>
 
     <!-- 條件摘要bar -->
@@ -926,7 +924,7 @@ function openLine(){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -970,9 +968,9 @@ async function generatePDF(){
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;font-size:12px;}
+    body{font-family:'Noto Sans TC',sans-serif;color:#14211a;font-size:12px;}
     .page{max-width:900px;margin:0 auto;padding:30px;}
-    .header{background:#1a1410;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+    .header{background:#14211a;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:700;color:white;}
     .brand small{display:block;font-size:.65rem;color:rgba(255,255,255,.65);font-weight:400;margin-top:2px;}
     .report-date{font-size:.7rem;color:rgba(255,255,255,.6);text-align:right;}
@@ -980,25 +978,25 @@ async function generatePDF(){
     .cond-bar{background:#333;color:#eee;padding:10px 16px;font-size:.75rem;margin-bottom:14px;line-height:1.6;}
     .table-wrap{overflow:visible;}
     .price-table{width:100%;border-collapse:collapse;font-size:.78rem;}
-    .price-table thead tr{background:#C00000;}
+    .price-table thead tr{background:#0a8a43;}
     .price-table thead th{padding:8px 10px;text-align:right;font-size:.68rem;color:white;font-weight:500;white-space:nowrap;}
     .price-table thead th:first-child{text-align:left;}
-    .price-table tbody tr{border-bottom:1px solid #e0dad3;}
-    .price-table tbody tr.base-row{background:#fdf0f0;font-weight:600;}
-    .price-table td{padding:7px 10px;text-align:right;font-family:monospace;white-space:nowrap;color:#5a4e44;}
-    .price-table td:first-child{text-align:left;font-family:sans-serif;color:#1a1410;}
-    .price-table td.total-price{color:#1a1410;font-weight:700;}
-    .price-table td.commission{color:#b8860b;}
+    .price-table tbody tr{border-bottom:1px solid #d8e2db;}
+    .price-table tbody tr.base-row{background:#eef5f0;font-weight:600;}
+    .price-table td{padding:7px 10px;text-align:right;font-family:monospace;white-space:nowrap;color:#3d4b43;}
+    .price-table td:first-child{text-align:left;font-family:sans-serif;color:#14211a;}
+    .price-table td.total-price{color:#14211a;font-weight:700;}
+    .price-table td.commission{color:#b8892f;}
     .price-table td.net{color:#2a6e46;font-weight:700;}
     .price-table td.tax{color:#1a3f6e;}
     .badge{display:inline-block;padding:1px 6px;font-size:.62rem;border-radius:2px;}
-    .badge-base{background:#f5d5d5;color:#C00000;}
-    .badge-down{background:#f0ede8;color:#9a8e84;border:1px solid #e0dad3;}
+    .badge-base{background:#b7e0c8;color:#0a8a43;}
+    .badge-down{background:#f0ede8;color:#56655c;border:1px solid #d8e2db;}
     .col-highlight{background:rgba(0,0,0,.015);}
     .contact{background:#1a4a7a;padding:16px 24px;margin-top:14px;}
     .cb{font-family:'Noto Serif TC',serif;font-size:.95rem;color:white;font-weight:700;margin-bottom:4px;}
     .ci{font-size:.78rem;color:rgba(255,255,255,.8);}
-    .disc{padding:12px 0;font-size:.68rem;color:#9a8e84;line-height:1.7;}
+    .disc{padding:12px 0;font-size:.68rem;color:#56655c;line-height:1.7;}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
   </style></head><body><div class="page">
     <div class="header"><div class="brand">${brand}<small>議價試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
