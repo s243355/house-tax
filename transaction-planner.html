@@ -10,10 +10,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --red:#C00000; --red-d:#8a0000; --red-l:#fdf0f0; --red-m:#f5d5d5;
-  --ink:#1a1410; --paper:#faf8f5; --card:#ffffff;
-  --rule:#e8e2da; --rule-d:#d0c8be; --muted:#9a8e84; --dim:#5a4e44;
-  --gold:#b8860b; --gold-l:#fffbeb; --gold-m:#fcd34d;
+  --red:#0a8a43; --red-d:#076b34; --red-l:#eef5f0; --red-m:#b7e0c8;
+  --ink:#14211a; --paper:#fbfcfa; --card:#ffffff;
+  --rule:#d8e2db; --rule-d:#c3d2c8; --muted:#56655c; --dim:#3d4b43;
+  --gold:#b8892f; --gold-l:#fffbeb; --gold-m:#fcd34d;
   --green:#2a6e46; --green-l:#f0f8f4; --green-m:#b8dfc4;
   --blue:#1a3f6e; --blue-l:#eef4fb; --blue-m:#c8ddf0;
   --purple:#4a1a7a; --purple-l:#f5eeff;
@@ -416,36 +416,29 @@ footer{
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <script src="pdf-loader.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+.contact-strip,.equity-card,.input-card,.lm-open,.memo-card,.notice-box,.payment-card{border-radius:10px}
+.iw,.iw .unit,.iw input,.iw select,.iw-within{border-radius:8px}
+.act-btn,.cs-btn,.edit-btn,.lm-btn,.memo-tab{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home">← 首頁</a>
-  <div class="hdr-mid">
-    <div class="sinyi-mark">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="3" width="8" height="8" fill="white"/>
-        <rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/>
-        <rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/>
-        <rect x="13" y="13" width="8" height="8" fill="white"/>
-      </svg>
-    </div>
-    <div class="sinyi-name" id="hdr-brand">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hdr-sep"></div>
-    <span class="hdr-tool">買賣流程規劃</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name" id="hdr-brand">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hdr-right">
-    <a class="hdr-btn hdr-btn-phone" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="hdr-btn hdr-btn-line" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      LINE
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="wrap">
 
-  <div class="page-eyebrow">TRANSACTION PLANNER</div>
+  <div class="page-eyebrow">祐承店長・信義房屋 文心高工店</div>
   <h1 class="page-title">買賣流程時程規劃</h1>
   <div class="page-sub">輸入簽約日期、總價與貸款成數，自動產出完整時程表與款項規劃</div>
 
@@ -1162,12 +1155,12 @@ async function generatePDF(){
   const pdfBtn = document.querySelector('.act-btn[onclick="generatePDF()"]');
   if(pdfBtn){pdfBtn.textContent='⏳ 產生中...';pdfBtn.disabled=true;}
 
-  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#1a1410;background:white;padding:0;">
-    <div style="background:#C00000;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
+  const html=`<div style="font-family:'Noto Sans TC',sans-serif;font-size:12px;color:#14211a;background:white;padding:0;">
+    <div style="background:#0a8a43;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;">
       <div style="font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:white;">${brand}<br><span style="font-size:10px;font-weight:400;color:rgba(255,255,255,.7);">買賣流程時程規劃報告</span></div>
       <div style="text-align:right;font-size:10px;color:rgba(255,255,255,.65);">試算日期<br><strong style="font-size:13px;color:white;">${today}</strong></div>
     </div>
-    <div style="background:#1a1410;padding:16px 28px;display:flex;gap:0;">
+    <div style="background:#14211a;padding:16px 28px;display:flex;gap:0;">
       ${[
         ['成交總價',fmt1(r.total)+' 萬','white'],
         ['簽約款',fmt1(r.signAmt)+' 萬','#fcd34d'],
@@ -1176,13 +1169,13 @@ async function generatePDF(){
       ].map(([l,v,col])=>'<div style="flex:1;padding:8px 12px;border-right:1px solid rgba(255,255,255,.08);"><div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.1em;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
     </div>
     <div style="padding:20px 28px;">
-      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買賣交易時程</div>
+      <div style="font-size:9px;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #d8e2db;">買賣交易時程</div>
       ${[
-        {s:'簽約',d:fmtDate(r.signDate),t:'簽訂買賣契約書',m:`簽約款 ${fmt1(r.signAmt)} 萬`,mc:'#b8860b'},
-        ...(r.sealAmt>0?[{s:'用印',d:fmtDate(r.sealDate),t:'用印・申辦貸款',m:`用印款 ${fmt1(r.sealAmt)} 萬`,mc:'#b8860b'}]:[]),
+        {s:'簽約',d:fmtDate(r.signDate),t:'簽訂買賣契約書',m:`簽約款 ${fmt1(r.signAmt)} 萬`,mc:'#b8892f'},
+        ...(r.sealAmt>0?[{s:'用印',d:fmtDate(r.sealDate),t:'用印・申辦貸款',m:`用印款 ${fmt1(r.sealAmt)} 萬`,mc:'#b8892f'}]:[]),
         {s:'申貸',d:fmtDate(r.loanApplyDate),t:'向銀行申辦房貸',m:'',mc:''},
         {s:'對保',d:fmtDate(r.loanApproveDate),t:'銀行核准・對保（完稅前一天）',m:'',mc:''},
-        {s:'完稅',d:fmtDate(r.taxDate),t:'繳稅・完稅',m:'完稅款 '+fmt1(r.taxPayAmt)+' 萬'+(r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''),mc:'#b8860b'},
+        {s:'完稅',d:fmtDate(r.taxDate),t:'繳稅・完稅',m:'完稅款 '+fmt1(r.taxPayAmt)+' 萬'+(r.landTax>0?' ＋ 土增稅 '+fmt1(r.landTax)+' 萬':''),mc:'#b8892f'},
         {s:'過戶',d:fmtDate(r.transferDate),t:'產權移轉登記完成',m:'',mc:''},
         {s:'撥款代償',d:fmtDate(r.checkDate),t:'看屋確認・銀行撥款代償原貸款',m:'銀行撥款代償 '+fmt1(r.loanAmt)+' 萬',mc:'#1a6e46'},
         {s:'塗銷',d:fmtDate(r.cancelDate),t:'抵押塗銷完成（交屋前一天）',m:'',mc:''},
@@ -1191,19 +1184,19 @@ async function generatePDF(){
         const bg=[0,4,8].includes(i)?'background:#fdf5f0;':'';
         const moneyHtml=item.m?'<div style="font-size:10px;font-weight:600;color:'+item.mc+';">💰 '+item.m+'</div>':'';
         return '<div style="display:flex;border-bottom:1px solid #f0ede8;'+bg+'">'
-          +'<div style="width:52px;padding:10px 8px;font-size:9px;font-weight:700;color:#C00000;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.s+'</div>'
-          +'<div style="width:80px;padding:10px 8px;font-size:10px;font-family:monospace;color:#5a4e44;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.d+'</div>'
-          +'<div style="padding:10px 12px;flex:1;"><div style="font-size:11px;font-weight:600;color:#1a1410;margin-bottom:2px;">'+item.t+'</div>'+moneyHtml+'</div>'
+          +'<div style="width:52px;padding:10px 8px;font-size:9px;font-weight:700;color:#0a8a43;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.s+'</div>'
+          +'<div style="width:80px;padding:10px 8px;font-size:10px;font-family:monospace;color:#3d4b43;border-right:1px solid #f0ede8;flex-shrink:0;">'+item.d+'</div>'
+          +'<div style="padding:10px 12px;flex:1;"><div style="font-size:11px;font-weight:600;color:#14211a;margin-bottom:2px;">'+item.t+'</div>'+moneyHtml+'</div>'
           +'</div>';
       }).join('')}
       <div style="height:20px;"></div>
-      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">款項分配明細</div>
+      <div style="font-size:9px;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #d8e2db;">款項分配明細</div>
       <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <thead><tr>
-          <th style="background:#C00000;color:white;padding:8px 10px;text-align:left;font-size:9px;font-weight:500;">付款階段</th>
-          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">日期</th>
-          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">金額（萬）</th>
-          <th style="background:#C00000;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">佔比</th>
+          <th style="background:#0a8a43;color:white;padding:8px 10px;text-align:left;font-size:9px;font-weight:500;">付款階段</th>
+          <th style="background:#0a8a43;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">日期</th>
+          <th style="background:#0a8a43;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">金額（萬）</th>
+          <th style="background:#0a8a43;color:white;padding:8px 10px;text-align:right;font-size:9px;font-weight:500;">佔比</th>
         </tr></thead>
         <tbody>
           <tr><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;">簽約款</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;">${fmtDate(r.signDate)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;font-family:monospace;font-weight:600;">${fmt1(r.signAmt)}</td><td style="padding:8px 10px;border-bottom:1px solid #f0ede8;text-align:right;">${(r.signAmt/r.total*100).toFixed(1)}%</td></tr>
@@ -1214,21 +1207,21 @@ async function generatePDF(){
         </tbody>
       </table>
       <div style="height:16px;"></div>
-      <div style="font-size:9px;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e0dad3;">買方資金規劃</div>
+      <div style="font-size:9px;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #d8e2db;">買方資金規劃</div>
       <div style="display:flex;gap:10px;margin-bottom:16px;">
         ${[
           ['貸款金額', fmt1(r.loanAmt)+' 萬', '#1a3f6e'],
-          ['買方自備款', fmt1(r.total-r.loanAmt)+' 萬', '#C00000'],
-          ['簽約時需備妥', fmt1(r.signAmt+(r.sealAmt||0))+' 萬', '#b8860b'],
-          ['完稅時需備妥', fmt1(r.taxPayAmt)+' 萬', '#b8860b'],
-        ].map(([l,v,col])=>'<div style="flex:1;background:#faf8f5;border:1px solid #e8e2da;padding:10px 12px;"><div style="font-size:9px;color:#9a8e84;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:14px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
+          ['買方自備款', fmt1(r.total-r.loanAmt)+' 萬', '#0a8a43'],
+          ['簽約時需備妥', fmt1(r.signAmt+(r.sealAmt||0))+' 萬', '#b8892f'],
+          ['完稅時需備妥', fmt1(r.taxPayAmt)+' 萬', '#b8892f'],
+        ].map(([l,v,col])=>'<div style="flex:1;background:#fbfcfa;border:1px solid #d8e2db;padding:10px 12px;"><div style="font-size:9px;color:#56655c;margin-bottom:4px;">'+l+'</div><div style="font-family:\'Noto Serif TC\',serif;font-size:14px;font-weight:700;color:'+col+';">'+v+'</div></div>').join('')}
       </div>
     </div>
     <div style="background:#1a4a7a;padding:16px 28px;">
       <div style="font-family:'Noto Serif TC',serif;font-size:14px;color:white;font-weight:700;margin-bottom:4px;">${brand}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.8);">祐承店長 ${phone}　｜　LINE：${lineUrl}</div>
     </div>
-    <div style="padding:12px 28px;font-size:9px;color:#9a8e84;line-height:1.7;">
+    <div style="padding:12px 28px;font-size:9px;color:#56655c;line-height:1.7;">
       ⚠ 本規劃表僅供洽談參考，實際日期及金額依正式契約及代書作業為準。土地增值稅等稅費實際金額以地政士計算為準。
     </div>
   </div>`;
@@ -1306,18 +1299,18 @@ function showHistory(){
   const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#eef5f0;color:#0a8a43;border:1px solid #b7e0c8;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
-        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
       </div>`).join('');
   }
   document.getElementById('history-overlay').style.display='flex';

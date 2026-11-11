@@ -9,9 +9,9 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --red:#C00000;--red-dark:#9a0000;--red-light:#fdf0f0;
-    --bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
-    --border:#e0dad3;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
+    --red:#0a8a43;--red-dark:#076b34;--red-light:#eef5f0;
+    --bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;
+    --border:#d8e2db;--text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 20px rgba(0,0,0,.1);--shadow-lg:0 8px 40px rgba(0,0,0,.14);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -126,6 +126,11 @@
 <meta name="twitter:title" content="聯絡我們｜祐承店長 信義房屋 文心高工店">
 <meta name="twitter:description" content="祐承店長的聯絡名片：信義房屋文心高工店，電話 0933-317-625，LINE 加好友，以及房地稅務試算工具入口。">
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+.qr-wrap,.tool-chip{border-radius:10px}
+.action-btn{border-radius:8px}
+</style>
 </head>
 <body>
 
@@ -140,10 +145,10 @@
     <div class="card-logo">
       <div class="logo-emblem">
         <svg viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="8" height="8" fill="#C00000"/>
-          <rect x="13" y="3" width="8" height="8" fill="#C00000" opacity="0.6"/>
-          <rect x="3" y="13" width="8" height="8" fill="#C00000" opacity="0.6"/>
-          <rect x="13" y="13" width="8" height="8" fill="#C00000"/>
+          <rect x="3" y="3" width="8" height="8" fill="#0a8a43"/>
+          <rect x="13" y="3" width="8" height="8" fill="#0a8a43" opacity="0.6"/>
+          <rect x="3" y="13" width="8" height="8" fill="#0a8a43" opacity="0.6"/>
+          <rect x="13" y="13" width="8" height="8" fill="#0a8a43"/>
         </svg>
       </div>
       <div class="logo-text">
@@ -190,7 +195,7 @@
       <div class="contact-icon web">🔗</div>
       <div class="contact-info">
         <div class="contact-info-label">稅務試算工具</div>
-        <div class="contact-info-val"><a id="card-web-link" href="https://s243355.github.io/house-tax/" target="_blank" id="card-web-val">s243355.github.io/house-tax</a></div>
+        <div class="contact-info-val"><a id="card-web-link" href="https://tcyucheng.com/tools/" target="_blank" rel="noopener">tcyucheng.com/tools</a></div>
       </div>
     </div>
   </div>
@@ -298,7 +303,7 @@ function initCard(){
     new QRCode(document.getElementById('qrcode'),{
       text:lineUrl,
       width:160,height:160,
-      colorDark:'#C00000',
+      colorDark:'#0a8a43',
       colorLight:'#ffffff',
       correctLevel:QRCode.CorrectLevel.M
     });

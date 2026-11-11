@@ -159,6 +159,33 @@ assert.ok(communities.includes('<h4 class="nm">登陽大地悅章 <a class="abad
   assert.strictEqual(outbound.params.host, 'market.591.com.tw');
   assert.ok(!JSON.stringify(outbound.params).includes('secret'));
   assert.strictEqual(events.find((event) => event.name === 'use_tool' && event.params.tool === 'loan').params.tool, 'loan');
+  // 2026-11：頁面 script 裡的列印樣板含 </head>、</body> 時，追蹤碼不可插進 script 字串，
+  // 否則它的 </script> 會截斷頁面程式（新青安等 8 頁因此整頁不能試算）。
+  const tricky = '<!DOCTYPE html><html><head><title>t</title></head><body><main>x</main><footer><p>f</p></footer>'
+    + '<script>function calc(){return 1;}\nconst tpl=`<html><head><style>a{}</style></head><body><footer>pdf</footer></body></html>`;\n</script>'
+    + '</body></html>';
+  const fixed = await (await hit('https://tcyucheng.com/tools/new-qingan', {
+    ASSETS: assetsFor(tricky, 'text/html; charset=utf-8'),
+    GA_MEASUREMENT_ID: GA_ID,
+  })).text();
+  const blocks = fixed.match(/<script\b[^>]*>[\s\S]*?<\/script>/g) || [];
+  const own = blocks.find((b) => b.includes('function calc()'));
+  assert.ok(own, 'page script survives');
+  assert.ok(own.includes('<body><footer>pdf</footer></body></html>`;'), 'template string inside the page script is untouched');
+  assert.ok(!own.includes('googletagmanager') && !own.includes('ga-note') && !own.includes('click_line'), 'nothing injected inside the page script');
+  assert.doesNotThrow(() => new Function(own.replace(/^<script[^>]*>/, '').replace(/<\/script>$/, '')), 'page script still parses');
+  assert.ok(fixed.indexOf('googletagmanager.com/gtag/js') < fixed.indexOf('<body>'), 'gtag goes in the real head');
+  assert.ok(fixed.lastIndexOf('click_line') > fixed.indexOf('const tpl='), 'tracker goes before the real </body>');
+  assert.strictEqual((fixed.match(/本站使用 Google Analytics/g) || []).length, 1, 'one footer note');
+  assert.ok(fixed.indexOf('本站使用 Google Analytics') < fixed.indexOf('function calc()'), 'note sits in the real footer');
+  for (const file of fs.readdirSync(root).filter((f) => /\.html$/.test(f) && !/^yucheng-a-/.test(f))) {
+    const src = fs.readFileSync(path.join(root, file), 'utf8');
+    const out = await (await hit('https://tcyucheng.com/tools/x', { ASSETS: assetsFor(src, 'text/html; charset=utf-8'), GA_MEASUREMENT_ID: GA_ID })).text();
+    const before = (src.match(/<script\b[^>]*>[\s\S]*?<\/script>/g) || []);
+    const after = (out.match(/<script\b[^>]*>[\s\S]*?<\/script>/g) || []);
+    for (const b of before) assert.ok(after.includes(b), file + ': analytics injection must not alter an existing script block');
+  }
+
   console.log('ga tests passed');
 })().catch((err) => {
   console.error(err);

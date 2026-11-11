@@ -10,13 +10,13 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --pri:#0a8a43;--pri-dark:#076e35;--pri-light:#e9f6ee;--pri-mid:#b7e0c8;
+    --pri:#0a8a43;--pri-dark:#076b34;--pri-light:#eef5f0;--pri-mid:#b7e0c8;
     --blue:#1f6fb2;--blue-dark:#155a97;--blue-light:#eaf2fa;--blue-mid:#c3ddf0;
     --orange:#e07b1a;--orange-dark:#c26410;--orange-light:#fdf3e8;
-    --red:#C00000;--red-light:#fdf0f0;--bg:#f4f7f5;--white:#fff;--surface2:#edeae6;
-    --border:#dbe6e0;--border-dark:#c2d4ca;
-    --text:#16241c;--text-dim:#4a5a51;--text-muted:#8a988f;
-    --green:#0a8a43;--gold:#b8860b;
+    --red:#b3261e;--red-light:#fdf0f0;--bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;
+    --border:#d8e2db;--border-dark:#c3d2c8;
+    --text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;
+    --green:#0a8a43;--gold:#b8892f;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -85,7 +85,7 @@
   .verdict-body{flex:1;}
   .verdict-title{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;margin-bottom:6px;}
   .verdict-pass .verdict-title{color:#2a6e46;}
-  .verdict-warn .verdict-title{color:#b8860b;}
+  .verdict-warn .verdict-title{color:#b8892f;}
   .verdict-fail .verdict-title{color:var(--red);}
   .verdict-items{list-style:none;margin-top:8px;}
   .verdict-items li{font-size:.82rem;color:var(--text-dim);padding:3px 0 3px 20px;position:relative;line-height:1.55;}
@@ -303,31 +303,32 @@
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <script src="pdf-loader.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:752px}
+.block-card,.cfg-card,.cfg-info,.contact-strip,.info-box,.input-card,.lm-btn-open,.result-card,.result-hero,.schedule-card{border-radius:10px}
+.input-select,.input-wrap,.input-wrap input,.input-wrap-within{border-radius:8px}
+.cb,.cfg-chip,.cs-btn,.hero-badge,.lm-btn,.show-more-btn,.tag-mini{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">新青安3.0試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
   <div class="hero-tag">祐承店長・信義房屋 文心高工店</div>
   <h1>新青安3.0 貸款試算</h1>
   <p>先快篩資格，再算額度、3+3階梯利率與每月還款怎麼跳</p>
-  <div class="hero-badge">🗓 2026/08/01 上路・辦理至 2029/07/31・前3年 1.775%</div>
+  <div class="hero-badge">2026/8/1 上路・受理至 2029/7/31・前 3 年 1.775%</div>
 </div>
 
 <main>
@@ -358,18 +359,18 @@
         <div class="select-wrap">
           <select class="input-select" id="own" onchange="calc()">
             <option value="none" selected>都沒有住宅</option>
-            <option value="share">只有共有持分</option>
+            <option value="share">只有共有持分（換算未滿 40㎡ 可申辦）</option>
             <option value="has">有住宅</option>
             <option value="unsure">不確定</option>
           </select>
         </div>
       </div>
       <div class="field-group">
-        <label class="field-label" for="prior">是否曾核貸青安（一生一次）</label>
+        <label class="field-label" for="prior">112/8/1 以後是否核貸過新青安</label>
         <div class="select-wrap">
           <select class="input-select" id="prior" onchange="calc()">
             <option value="none" selected>沒有用過</option>
-            <option value="used">曾核貸青安／新青安</option>
+            <option value="used">核貸過新青安或農安貸款</option>
             <option value="unsure">不確定</option>
           </select>
         </div>
@@ -404,7 +405,7 @@
       <div class="field-group">
         <label class="field-label" for="price">成交總價</label>
         <div class="input-wrap"><input type="number" id="price" placeholder="例：1200" oninput="syncAppraise();calc()"><span class="input-unit">萬</span></div>
-        <div class="field-tip">成交價與鑑價都須 ≤ 區域上限</div>
+        <div class="field-tip">成交價與鑑價取較高者，須 ≤ 區域上限</div>
       </div>
       <div class="field-group">
         <label class="field-label" for="appraise">銀行鑑價（可留空＝同成交價）</label>
@@ -414,7 +415,7 @@
       <div class="field-group">
         <label class="field-label" for="down">自備款（可留空＝用最低自備款）</label>
         <div class="input-wrap"><input type="number" id="down" placeholder="留空自動估" oninput="calc()"><span class="input-unit">萬</span></div>
-        <div class="field-tip">填越多，未涵蓋金額越少</div>
+        <div class="field-tip">超過最低自備款的部分，先減一般房貸，再減新青安本金</div>
       </div>
       <div class="field-group">
         <label class="field-label" for="years">貸款年限</label>
@@ -563,7 +564,7 @@
       <button class="calc-btn" style="background:var(--blue);border:none;padding:12px;font-size:.85rem;flex:1;min-width:140px;margin-top:0;" onclick="generatePDF()">📄 下載 PDF</button>
     </div>
     <div class="info-box">
-      ⚠ 本工具只做資格初篩與還款情境估算，<strong>不是資格核定、核貸承諾或銀行報價</strong>。1.775% 非 40 年固定利率；郵儲指標利率調整時各階段會一起變動。實際額度、利率、鑑價與撥款仍由承辦公股銀行核定。
+      ⚠ 申請期間 115/8/1～118/7/31，最遲 118/10/31 撥款；房屋須在申請日前 6 個月內（或核准後 6 個月內）完成登記，並簽自住切結。基準利率為郵儲 2 年期定儲機動利率 1.72% 加 0.555%（原利率 2.275%），前 3 年減 0.5%、第 4～6 年每年少減 0.125%、第 7 年起回原利率。本工具只做資格初篩與還款情境估算，<strong>不是資格核定、核貸承諾或銀行報價</strong>。1.775% 非 40 年固定利率；郵儲指標利率調整時各階段會一起變動。實際額度、利率、鑑價與撥款仍由承辦公股銀行核定。
     </div>
   </div>
 
@@ -594,7 +595,7 @@
         <button class="lm-close" onclick="closeImgModal()">✕</button>
       </div>
       <div class="lm-body">
-        <div style="text-align:center;max-height:60vh;overflow-y:auto;border:1px solid var(--border);border-radius:4px;background:#f5f3f0;padding:8px;margin-bottom:14px;">
+        <div style="text-align:center;max-height:60vh;overflow-y:auto;border:1px solid var(--border);border-radius:4px;background:#fbfcfa;padding:8px;margin-bottom:14px;">
           <img id="img-preview" src="" alt="新青安試算報告" style="width:100%;height:auto;display:block;border-radius:2px;">
         </div>
         <div class="lm-actions">
@@ -612,7 +613,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">新青安3.0試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：青年安心成家購屋優惠貸款方案，額度與利率以承貸金融機構核定為準・最後更新日：2026-05-05</div>
+      <div class="fi">新青安3.0試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：財政部「公股銀行辦理青年安心成家購屋優惠貸款原則」（115/8/1 起，青安 3.0），額度與利率以承貸銀行核定為準・最後更新日：2026-11-11</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -711,10 +712,13 @@ function calc(){
   // ── 額度組成 ──
   const base=Math.min(price,appraise);          // 成交/鑑價孰低
   const max80=base*0.8;                          // 最高成數金額
-  const principalWan=Math.min(max80,quota);      // 新青安本金（萬）
   const minDown=Math.max(price-max80,0);         // 最低自備款
-  const down=downRaw>0?downRaw:minDown;          // 實際自備款
-  const gap=Math.max(price-down-principalWan,0); // 未涵蓋金額
+  // 自備款低於最低自備款時仍以最低自備款計（銀行最高只貸 8 成）；高於總價則視為全額自備。
+  const down=Math.min(Math.max(downRaw>0?downRaw:minDown,minDown),price);
+  const needLoan=Math.max(price-down,0);         // 實際需要貸的金額（≤ 8 成）
+  const principalWan=Math.min(needLoan,quota);   // 新青安本金（萬）：先用新青安額度
+  const gap=Math.max(needLoan-principalWan,0);   // 超過額度的部分走一般房貸
+  const capBase=Math.max(price,appraise);        // 房價上限看成交價、鑑價較高者
 
   // ── 資格判定 ──
   const items=[];let fail=false,warn=false;
@@ -731,15 +735,15 @@ function calc(){
   // 名下住宅
   if(own==='none')items.push({s:'ok',t:'名下無自有住宅，符合'});
   else if(own==='has'){items.push({s:'no',t:'名下已有住宅，不符合首購精神（需再確認）'});fail=true;}
-  else if(own==='share'){items.push({s:'wr',t:'僅共有持分，需向銀行確認是否影響'});warn=true;}
+  else if(own==='share'){items.push({s:'wr',t:'僅共有持分：持分換算面積合計未滿 40 平方公尺可申辦，請備謄本給銀行確認'});warn=true;}
   else{items.push({s:'wr',t:'名下住宅狀況尚未確認'});warn=true;}
   // 一生一次
-  if(prior==='none')items.push({s:'ok',t:'未曾使用青安，符合一生一次'});
-  else if(prior==='used'){items.push({s:'no',t:'曾核貸青安，受一生一次限制'});fail=true;}
-  else{items.push({s:'wr',t:'是否用過青安尚未確認'});warn=true;}
+  if(prior==='none')items.push({s:'ok',t:'112/8/1 以後未核貸過新青安或農安貸款，符合'});
+  else if(prior==='used'){items.push({s:'no',t:'112/8/1 以後曾核貸新青安或農安貸款，不得再申辦'});fail=true;}
+  else{items.push({s:'wr',t:'是否核貸過新青安尚未確認'});warn=true;}
   // 區域房價上限
-  if(base>cap){items.push({s:'no',t:`成交/鑑價 ${base} 萬 > 區域上限 ${cap} 萬，不適用新青安`});fail=true;}
-  else items.push({s:'ok',t:`成交/鑑價 ${base} 萬 ≤ 區域上限 ${cap} 萬，符合`});
+  if(capBase>cap){items.push({s:'no',t:`成交價、鑑價較高者 ${capBase} 萬 > 區域上限 ${cap} 萬，不適用新青安`});fail=true;}
+  else items.push({s:'ok',t:`成交價、鑑價較高者 ${capBase} 萬 ≤ 區域上限 ${cap} 萬，符合`});
 
   let vClass='verdict-pass',vIcon='✓',vTitle='符合估算條件',vDesc='目前初步未發現衝突，可用下方試算金額與家人討論；仍須由銀行正式核定。';
   if(fail){vClass='verdict-fail';vIcon='✕';vTitle='有項目不符合';vDesc='下列以 ✕ 標示者會影響新青安資格，請先釐清再進一步試算。';}
@@ -901,7 +905,7 @@ function openLineApp(){window.open('https://line.me/R/msg/text/?'+encodeURICompo
 async function renderToPDF(htmlContent,filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
   const container=document.createElement('div');
   container.style.cssText='position:fixed;left:-9999px;top:0;width:794px;background:white;z-index:-1;';
@@ -927,31 +931,31 @@ async function generatePDF(){
   });
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;}
+    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#14211a;}
     .page{max-width:714px;margin:0 auto;}
     .header{background:#1a4a7a;padding:26px 32px;display:flex;justify-content:space-between;align-items:center;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-date{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
     .report-date strong{display:block;font-size:1rem;color:white;}
-    .hero{background:#1a1410;padding:22px 32px;}
+    .hero{background:#14211a;padding:22px 32px;}
     .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:6px;}
     .hero-val{font-family:'Noto Serif TC',serif;font-size:2.4rem;font-weight:700;color:white;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
     .section{padding:22px 32px 0;}
-    .sec-title{font-size:.75rem;color:#9a8e84;letter-spacing:.12em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .sec-title{font-size:.75rem;color:#56655c;letter-spacing:.12em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px;}
-    .data-card{border:1px solid #e0dad3;padding:12px 14px;}
-    .data-label{font-size:.68rem;color:#9a8e84;margin-bottom:4px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.1rem;color:#1a1410;font-weight:600;}
+    .data-card{border:1px solid #d8e2db;padding:12px 14px;}
+    .data-label{font-size:.68rem;color:#56655c;margin-bottom:4px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.1rem;color:#14211a;font-weight:600;}
     table{width:100%;border-collapse:collapse;margin-top:4px;}
     th{background:#1a4a7a;color:white;padding:8px 12px;font-size:.72rem;font-weight:500;text-align:left;}
-    td{padding:7px 12px;font-size:.78rem;border-bottom:1px solid #eee;color:#5a4e44;}
-    td:first-child{color:#1a1410;font-weight:500;}
+    td{padding:7px 12px;font-size:.78rem;border-bottom:1px solid #eee;color:#3d4b43;}
+    td:first-child{color:#14211a;font-weight:500;}
     .contact{background:#1a4a7a;padding:18px 32px;margin-top:22px;}
     .cb{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disc{padding:14px 32px;font-size:.7rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+    .disc{padding:14px 32px;font-size:.7rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;}
   </style></head><body><div class="page">
     <div class="header"><div class="brand">${brand}<small>新青安3.0 貸款試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
     <div class="hero"><div class="hero-label">新青安預估本金</div><div class="hero-val">${R.principalWan.toFixed(0)} 萬元</div><div class="hero-sub">前3年月付 ${yen(R.qFirstPay)} 元・${R.years} 年・寬限 ${R.graceYears} 年・資格初判：${R.verdict}</div></div>
@@ -1124,7 +1128,7 @@ async function generateImage(){
 
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">🖼</div><div style="font-size:.9rem;color:#5a4e44;">報告圖片產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">🖼</div><div style="font-size:.9rem;color:#3d4b43;">報告圖片產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
   const container=document.createElement('div');
   container.style.cssText='position:fixed;left:0;top:0;width:880px;background:#fff;z-index:-1;opacity:0;pointer-events:none;';

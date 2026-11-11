@@ -9,11 +9,11 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --pri:#1a4a7a;--pri-dark:#0f3260;--pri-light:#eef4fb;--pri-mid:#c8ddf0;
-    --red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
-    --border:#e0dad3;--border-dark:#c8bfb5;
-    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
-    --green:#2e7d52;--gold:#b8860b;
+    --pri:#0a8a43;--pri-dark:#076b34;--pri-light:#eef5f0;--pri-mid:#b7e0c8;
+    --red:#b3261e;--bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;
+    --border:#d8e2db;--border-dark:#c3d2c8;
+    --text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;
+    --green:#2e7d52;--gold:#b8892f;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -248,24 +248,25 @@
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <script src="pdf-loader.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:752px}
+.chart-card,.compare-card,.contact-strip,.info-box,.input-card,.lm-btn-open,.result-card,.result-hero,.schedule-card{border-radius:10px}
+.input-select,.input-wrap,.input-wrap input,.input-wrap-within{border-radius:8px}
+.cb,.cs-btn,.lm-btn,.show-more-btn{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">房貸試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
@@ -322,7 +323,7 @@
           <input type="range" id="rate-slider" min="1.0" max="5.0" step="0.05" value="2.5" oninput="updateRateDisplay();calcMortgage()">
           <div class="slider-labels"><span>1.0%</span><span>2.5%</span><span>3.0%</span><span>4.0%</span><span>5.0%</span></div>
         </div>
-        <div class="field-tip">目前房貸利率參考：段式利率約 1.8%～2.5%，依銀行及信用條件不同</div>
+        <div class="field-tip">利率參考：2026 年五大銀行新承做購屋貸款平均約 2.3%，常見 2.2%～2.8%；新青安前 3 年 1.775%。依銀行與信用條件不同</div>
       </div>
     </div>
 
@@ -408,13 +409,13 @@
         <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">有效償還債務的部分</div>
       </div>
       <div class="result-card" style="border-color:#fcd34d;background:#fffbeb;">
-        <div class="rc-label" style="color:#b8860b;">首月還款・利息部分</div>
-        <div class="rc-val" id="r-first-interest" style="color:#b8860b;">—</div>
+        <div class="rc-label" style="color:#b8892f;">首月還款・利息部分</div>
+        <div class="rc-val" id="r-first-interest" style="color:#b8892f;">—</div>
         <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">付給銀行的成本，不計入本金</div>
       </div>
-      <div class="result-card" style="border-color:#c8ddf0;background:#eef4fb;">
-        <div class="rc-label" style="color:#1a4a7a;">利息佔月付比例（首月）</div>
-        <div class="rc-val" id="r-interest-ratio" style="color:#1a4a7a;">—</div>
+      <div class="result-card" style="border-color:#b7e0c8;background:#eef5f0;">
+        <div class="rc-label" style="color:#0a8a43;">利息佔月付比例（首月）</div>
+        <div class="rc-val" id="r-interest-ratio" style="color:#0a8a43;">—</div>
         <div style="font-size:.72rem;color:#6b7280;margin-top:4px;">比例越高，初期「付利息」越多</div>
       </div>
     </div>
@@ -469,7 +470,7 @@
     </div>
 
     <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <div style="display:flex;gap:10px;"><button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="showLineShare()">📤 LINE 分享試算結果</button><button class="calc-btn" style="background:#1a4a7a;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="generatePDF()">📄 下載 PDF 報告</button></div>
+      <div style="display:flex;gap:10px;"><button class="calc-btn" style="background:#06C755;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="showLineShare()">📤 LINE 分享試算結果</button><button class="calc-btn" style="background:#0a8a43;border:none;padding:12px;font-size:.85rem;flex:1;" onclick="generatePDF()">📄 下載 PDF 報告</button></div>
     </div>
     <div class="info-box">
       ⚠ 本試算為估算參考，實際貸款金額、利率及條件依各銀行審核為準。建議洽詢專業人員取得正式報價。
@@ -503,7 +504,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">房貸試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：本息攤還試算，實際利率與費用以銀行核定為準・最後更新日：2026-05-05</div>
+      <div class="fi">房貸試算工具 · 僅供參考，實際條件依銀行審核</div><div class="fi">法規依據：本息攤還試算，實際利率與費用以銀行核定為準・最後更新日：2026-11-11</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -749,7 +750,7 @@ function toggleSchedule(){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -796,27 +797,27 @@ async function generatePDF(){
   const repayType=document.getElementById('repay-type').value==='equal-payment'?'等額本息':'等額本金';
   const html=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;}
+    *{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Noto Sans TC',sans-serif;color:#14211a;}
     .page{max-width:680px;margin:0 auto;padding:40px;}
-    .header{background:#1a4a7a;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .header{background:#0a8a43;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-date{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
     .report-date strong{display:block;font-size:1rem;color:white;}
-    .hero{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero{background:#14211a;padding:24px 32px;margin-bottom:24px;}
     .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
     .hero-val{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);margin-top:4px;}
     .section{padding:0 32px 24px;}
-    .sec-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .sec-title{font-size:.75rem;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
-    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
-    .contact{background:#1a4a7a;padding:20px 32px;}
+    .data-card{border:1px solid #d8e2db;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#56655c;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#14211a;font-weight:600;}
+    .contact{background:#0a8a43;padding:20px 32px;}
     .cb{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .ci{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disc{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+    .disc{padding:16px 32px;font-size:.72rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;}
   </style></head><body><div class="page">
     <div class="header"><div class="brand">${brand}<small>房貸試算報告</small></div><div class="report-date">試算日期<strong>${today}</strong></div></div>
     <div class="hero"><div class="hero-label">每月還款（本息）</div><div class="hero-val">${monthly} 元</div><div class="hero-sub">貸款 ${loanAmt} 萬・${years} 年・年利 ${rate}・${repayType}</div></div>
@@ -923,18 +924,18 @@ function showHistory(){
   const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#fdf0f0;color:#b3261e;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
-        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
       </div>`).join('');
   }
   document.getElementById('history-overlay').style.display='flex';

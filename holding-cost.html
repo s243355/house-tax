@@ -9,11 +9,11 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
   :root{
-    --pri:#2e6b3e;--pri-dark:#1e4f2d;--pri-light:#f0f8f2;--pri-mid:#b8dfc4;
-    --red:#C00000;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;
-    --border:#e0dad3;--border-dark:#c8bfb5;
-    --text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;
-    --gold:#b8860b;--orange:#c45c00;
+    --pri:#0a8a43;--pri-dark:#076b34;--pri-light:#eef5f0;--pri-mid:#b7e0c8;
+    --red:#b3261e;--bg:#fbfcfa;--white:#fff;--surface2:#eef5f0;
+    --border:#d8e2db;--border-dark:#c3d2c8;
+    --text:#14211a;--text-dim:#3d4b43;--text-muted:#56655c;
+    --gold:#b8892f;--orange:#c45c00;
     --shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -103,7 +103,7 @@
   .result-card{background:var(--white);border:1.5px solid var(--border);padding:18px;box-shadow:var(--shadow-sm);}
   .rc-label{font-size:.72rem;color:var(--text-muted);letter-spacing:.06em;margin-bottom:6px;}
   .rc-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:var(--text);font-weight:600;}
-  .rc-val.red{color:#C00000;}
+  .rc-val.red{color:#b3261e;}
   .rc-val.green{color:var(--pri);}
   .rc-val.gold{color:var(--gold);}
 
@@ -139,7 +139,7 @@
   .dc-label{font-size:.72rem;color:var(--text-muted);letter-spacing:.1em;margin-bottom:8px;}
   .dc-val{font-family:'Noto Serif TC',serif;font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:4px;}
   .dc-val.green{color:var(--pri);}
-  .dc-val.red{color:#C00000;}
+  .dc-val.red{color:#b3261e;}
   .dc-desc{font-size:.75rem;color:var(--text-muted);line-height:1.5;}
   .dc-vs{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:var(--text-muted);align-self:center;text-align:center;}
 
@@ -260,24 +260,29 @@
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <script src="pdf-loader.js"></script>
 <script src="line-share.js"></script>
+<link rel="stylesheet" href="tools-theme.css">
+<style id="yc-shape">
+:root{--yc-hero-w:712px}
+.input-select{width:100%;background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:11px 36px 11px 14px;font-size:.9rem;font-family:inherit;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;border-radius:8px}
+.input-select:focus{border-color:var(--pri);box-shadow:0 0 0 3px var(--pri-light)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none}
+.breakdown-card,.contact-strip,.decision-card,.info-box,.input-card,.lm-btn-open,.result-card,.result-hero,.warn-box{border-radius:10px}
+.input-wrap,.input-wrap input,.input-wrap-within{border-radius:8px}
+.btn-action,.cb,.cs-btn,.lm-btn{border-radius:8px}
+.calc-btn{border-radius:999px}
+</style>
 </head>
 <body>
 
-<header>
-  <a href="./" class="hdr-home-btn">← 首頁</a>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">持有成本試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
 
 <div class="hero">
@@ -325,9 +330,21 @@
 
     <div class="field-grid">
       <div class="field-group">
+        <label class="field-label" for="house-use">房屋使用情形（決定房屋稅率）</label>
+        <div class="select-wrap">
+          <select class="input-select" id="house-use" onchange="calcCost()">
+            <option value="0.012" selected>自住（本人／配偶／直系親屬設籍）1.2%</option>
+            <option value="0.01">全國單一自住、現值在一定金額以下 1%</option>
+            <option value="0.015">出租且申報租賃所得達租金標準 1.5% 起</option>
+            <option value="0.02">其他非自住住家用 2% 起</option>
+          </select>
+        </div>
+        <div class="field-tip">房屋稅 2.0（113/7/1 起）：出租申報 1.5%～2.4%、非自住 2%～4.8%，依縣市與全國持有戶數累進，此處以下限估算</div>
+      </div>
+      <div class="field-group">
         <label class="field-label" for="house-tax">房屋稅（年）</label>
         <div class="input-wrap"><input type="number" id="house-tax" placeholder="自動估算" oninput="calcCost()"><span class="input-unit">元</span></div>
-        <div class="field-tip">住家用：評定現值 × 1.2%</div>
+        <div class="field-tip">評定現值 × 上方稅率；有稅單金額就直接填</div>
       </div>
       <div class="field-group">
         <label class="field-label" for="land-tax">地價稅（年）</label>
@@ -500,7 +517,7 @@
     <div class="contact-strip">
       <div class="cs-text">
         <strong id="cs-title">猶豫要不要賣？讓信義房屋 文心高工店 幫你分析</strong>
-        <span id="cs-desc">免費評估房屋現值，搭配稅務規劃給你最完整的建議</span>
+        <span id="cs-desc">房價諮詢搭配稅務規劃，給你最完整的建議</span>
       </div>
       <div class="cs-btns">
         <a class="cs-btn cs-btn-phone" id="res-phone" href="tel:0933317625">📞 立即通話</a>
@@ -541,7 +558,7 @@
     <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
-      <div class="fi">持有成本試算工具 · 僅供參考，實際費用依個案而定</div><div class="fi">法規依據：房屋稅、地價稅及貸款利息等持有費用估算（非核定稅額）・最後更新日：2026-05-05</div>
+      <div class="fi">持有成本試算工具 · 僅供參考，實際費用依個案而定</div><div class="fi">法規依據：房屋稅條例第5條（房屋稅 2.0）、土地稅法第16、17條；持有費用為估算，非核定稅額・最後更新日：2026-11-11</div>
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
@@ -599,7 +616,8 @@ function autoCalcTax(){
 function getHouseTax(){
   const direct=n('house-tax');
   if(direct>0)return direct;
-  return n('house-assessed')*10000*0.012;
+  var rate=parseFloat((document.getElementById('house-use')||{}).value)||0.012;
+  return n('house-assessed')*10000*rate;
 }
 function getLandTax(){
   const direct=n('land-tax');
@@ -749,7 +767,7 @@ function openLineApp(){
 async function renderToPDF(htmlContent, filename){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:flex;align-items:center;justify-content:center;';
-  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#5a4e44;">PDF 產生中，請稍候...</div></div>';
+  overlay.innerHTML='<div style="background:white;padding:28px 36px;text-align:center;border-radius:2px;box-shadow:0 8px 32px rgba(0,0,0,.2);"><div style="font-size:1.2rem;margin-bottom:8px;">📄</div><div style="font-size:.9rem;color:#3d4b43;">PDF 產生中，請稍候...</div></div>';
   document.body.appendChild(overlay);
 
   const container=document.createElement('div');
@@ -793,34 +811,34 @@ async function generatePDF(){
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Noto Sans TC',sans-serif;color:#1a1410;background:white;}
+    body{font-family:'Noto Sans TC',sans-serif;color:#14211a;background:white;}
     .page{max-width:680px;margin:0 auto;padding:40px;}
-    .header{background:#2e6b3e;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
+    .header{background:#0a8a43;padding:28px 32px;display:flex;justify-content:space-between;align-items:center;}
     .brand{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:700;color:white;letter-spacing:.1em;}
     .brand small{display:block;font-size:.7rem;color:rgba(255,255,255,.7);font-weight:400;margin-top:2px;}
     .report-title{font-size:.75rem;color:rgba(255,255,255,.7);text-align:right;}
     .report-title strong{display:block;font-size:1rem;color:white;}
-    .hero-section{background:#1a1410;padding:24px 32px;margin-bottom:24px;}
+    .hero-section{background:#14211a;padding:24px 32px;margin-bottom:24px;}
     .hero-label{font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.2em;margin-bottom:8px;}
     .hero-val{font-family:'Noto Serif TC',serif;font-size:2.8rem;font-weight:700;color:white;margin-bottom:4px;}
     .hero-sub{font-size:.78rem;color:rgba(255,255,255,.65);}
     .section{padding:0 32px 24px;}
-    .section-title{font-size:.75rem;color:#9a8e84;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0dad3;}
+    .section-title{font-size:.75rem;color:#56655c;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #d8e2db;}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-    .data-card{border:1px solid #e0dad3;padding:14px 16px;}
-    .data-label{font-size:.7rem;color:#9a8e84;margin-bottom:5px;}
-    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#1a1410;font-weight:600;}
-    .highlight-card{border:1.5px solid #2e6b3e;background:#f0f8f2;padding:16px 18px;margin-bottom:20px;}
-    .highlight-card .data-label{color:#2e6b3e;}
-    .highlight-card .data-val{color:#2e6b3e;font-size:1.5rem;}
+    .data-card{border:1px solid #d8e2db;padding:14px 16px;}
+    .data-label{font-size:.7rem;color:#56655c;margin-bottom:5px;}
+    .data-val{font-family:'Noto Serif TC',serif;font-size:1.2rem;color:#14211a;font-weight:600;}
+    .highlight-card{border:1.5px solid #0a8a43;background:#eef5f0;padding:16px 18px;margin-bottom:20px;}
+    .highlight-card .data-label{color:#0a8a43;}
+    .highlight-card .data-val{color:#0a8a43;font-size:1.5rem;}
     table{width:100%;border-collapse:collapse;font-size:.82rem;}
-    th{background:#2e6b3e;color:white;padding:9px 12px;text-align:left;font-weight:500;}
-    td{padding:9px 12px;border-bottom:1px solid #e0dad3;color:#5a4e44;}
-    td:last-child{text-align:right;font-family:'Noto Serif TC',serif;font-weight:600;color:#1a1410;}
+    th{background:#0a8a43;color:white;padding:9px 12px;text-align:left;font-weight:500;}
+    td{padding:9px 12px;border-bottom:1px solid #d8e2db;color:#3d4b43;}
+    td:last-child{text-align:right;font-family:'Noto Serif TC',serif;font-weight:600;color:#14211a;}
     .contact-section{background:#1a4a7a;padding:20px 32px;}
     .contact-brand{font-family:'Noto Serif TC',serif;font-size:1rem;color:white;font-weight:700;margin-bottom:6px;}
     .contact-info{font-size:.82rem;color:rgba(255,255,255,.8);}
-    .disclaimer{padding:16px 32px;font-size:.72rem;color:#9a8e84;line-height:1.7;border-top:1px solid #e0dad3;}
+    .disclaimer{padding:16px 32px;font-size:.72rem;color:#56655c;line-height:1.7;border-top:1px solid #d8e2db;}
   </style></head><body>
   <div class="page">
     <div class="header">
@@ -888,18 +906,18 @@ function showHistory(){
   const h=JSON.parse(localStorage.getItem('rlandy_history')||'[]');
   const el=document.getElementById('history-list');
   if(!h.length){
-    el.innerHTML='<div style="padding:32px;text-align:center;color:#9a8e84;font-size:.85rem;">尚無試算記錄</div>';
+    el.innerHTML='<div style="padding:32px;text-align:center;color:#56655c;font-size:.85rem;">尚無試算記錄</div>';
   } else {
     el.innerHTML=h.map((r,i)=>`
       <div style="padding:14px 18px;border-bottom:1px solid #f0ede8;display:flex;align-items:center;gap:12px;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:.65rem;background:#fdf0f0;color:#C00000;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
-            <span style="font-size:.72rem;color:#9a8e84;">${r.date} ${r.time}</span>
+            <span style="font-size:.65rem;background:#fdf0f0;color:#b3261e;border:1px solid #f5d5d5;padding:1px 7px;border-radius:2px;white-space:nowrap;">${toolNames[r.tool]||r.tool}</span>
+            <span style="font-size:.72rem;color:#56655c;">${r.date} ${r.time}</span>
           </div>
-          <div style="font-size:.84rem;color:#1a1410;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
+          <div style="font-size:.84rem;color:#14211a;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</div>
         </div>
-        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #e0dad3;color:#9a8e84;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
+        <button onclick="deleteHistory(${r.id})" style="padding:5px 10px;font-size:.74rem;font-family:inherit;background:white;border:1.5px solid #d8e2db;color:#56655c;cursor:pointer;border-radius:2px;flex-shrink:0;">刪除</button>
       </div>`).join('');
   }
   document.getElementById('history-overlay').style.display='flex';

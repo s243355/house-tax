@@ -2,94 +2,62 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>房產稅務・交易規劃工具｜祐承店長 信義房屋 文心高工店</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-  :root{--red:#C00000;--red-dark:#9a0000;--red-light:#fdf0f0;--red-mid:#f5d5d5;--brown:#7a3000;--brown-light:#fff8f3;--bg:#f5f3f0;--white:#fff;--surface2:#edeae6;--border:#e0dad3;--border-dark:#c8bfb5;--text:#1a1410;--text-dim:#5a4e44;--text-muted:#9a8e84;--shadow-sm:0 1px 4px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.09);--shadow-lg:0 8px 32px rgba(0,0,0,.13);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
-  header{background:var(--white);border-bottom:3px solid var(--red);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);}
-  .sinyi-emblem{width:36px;height:36px;background:var(--red);display:flex;align-items:center;justify-content:center;}
-  .sinyi-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--red);letter-spacing:.1em;line-height:1.15;}
-  .sinyi-name small{display:block;font-size:.62rem;color:var(--text-muted);font-weight:400;font-family:'Noto Sans TC',sans-serif;}
-  .hl{display:flex;align-items:center;gap:13px;}
-  .hd{width:1px;height:26px;background:var(--border);}
-  .ht{font-size:.88rem;color:var(--text-dim);}
-  .hc{display:flex;gap:8px;}
-  .cb{display:flex;align-items:center;gap:7px;padding:7px 14px;font-size:.78rem;font-family:inherit;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;border-radius:2px;}
-  .bp{background:var(--red);color:white;border:1.5px solid var(--red);}
-  .bp:hover{background:var(--red-dark);transform:translateY(-1px);}
-  .bl{background:#06C755;color:white;border:1.5px solid #06C755;}
-  .bl:hover{background:#05a847;transform:translateY(-1px);}
-
-  .hero{background:var(--red);padding:64px 40px 60px;text-align:center;position:relative;overflow:hidden;}
-  .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;border:40px solid rgba(255,255,255,.05);border-radius:50%;}
-  .hero::after{content:'';position:absolute;bottom:-40px;left:-40px;width:180px;height:180px;border:30px solid rgba(255,255,255,.04);border-radius:50%;}
-  .hero-tag{font-size:.68rem;color:rgba(255,255,255,.6);letter-spacing:.25em;text-transform:uppercase;margin-bottom:16px;position:relative;z-index:1;}
-  .hero h1{font-family:'Noto Serif TC',serif;font-size:2.3rem;font-weight:700;color:white;line-height:1.25;margin-bottom:14px;position:relative;z-index:1;}
-  .hero p{font-size:.92rem;color:rgba(255,255,255,.78);max-width:500px;margin:0 auto;line-height:1.75;position:relative;z-index:1;}
-
-  main{flex:1;max-width:820px;margin:0 auto;width:100%;padding:54px 24px 80px;}
-
-  .select-label{font-size:.7rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:22px;font-weight:500;}
-
-  .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:44px;}
-  .tool-card-wide{grid-column:1/-1;display:grid;grid-template-columns:240px 1fr 130px;flex-direction:unset;}
-  .tool-card-wide .tc-top{border-radius:0;}
-  .tool-card-wide .tc-foot{align-self:stretch;display:flex;align-items:center;justify-content:center;min-width:unset;}
-  @media(max-width:620px){.tool-card-wide{grid-column:unset;display:flex;flex-direction:column;}}
-
-  .tool-card{background:var(--white);border:1.5px solid var(--border);cursor:pointer;transition:all .25s;text-decoration:none;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);overflow:hidden;}
-  .tool-card:hover{border-color:var(--red);box-shadow:var(--shadow-lg);transform:translateY(-4px);}
-  .tool-card.brown:hover{border-color:var(--brown);}
-
-  .tc-top{padding:30px 28px 26px;position:relative;overflow:hidden;}
-  .tc-top::after{content:'';position:absolute;right:-20px;top:-20px;width:110px;height:110px;border:20px solid rgba(255,255,255,.07);border-radius:50%;}
-  .tc-icon{font-size:2.6rem;display:block;margin-bottom:12px;position:relative;z-index:1;}
-  .tc-name{font-family:'Noto Serif TC',serif;font-size:1.15rem;font-weight:700;color:white;position:relative;z-index:1;line-height:1.3;}
-  .tc-law{font-size:.72rem;color:rgba(255,255,255,.62);margin-top:5px;position:relative;z-index:1;}
-
-  .tc-body{padding:22px 26px;flex:1;}
-  .tc-desc{font-size:.82rem;color:var(--text-dim);line-height:1.75;margin-bottom:16px;}
-  .tc-tags{display:flex;flex-wrap:wrap;gap:7px;}
-  .tc-tag{font-size:.68rem;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);padding:3px 9px;}
-
-  .tc-foot{padding:14px 26px;background:var(--surface2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-  .tc-foot span{font-size:.82rem;font-weight:500;}
-
-  .info-card{background:var(--white);border:1.5px solid var(--border);padding:24px 28px;box-shadow:var(--shadow-sm);}
-  .info-card h3{font-family:'Noto Serif TC',serif;font-size:1rem;color:var(--text);margin-bottom:10px;font-weight:700;}
-  .info-card p{font-size:.82rem;color:var(--text-dim);line-height:1.7;}
-
-  table{width:100%;border-collapse:collapse;margin-top:16px;}
-  th{background:var(--red);color:white;padding:10px 14px;font-size:.78rem;font-weight:500;text-align:left;}
-  td{padding:10px 14px;font-size:.82rem;border-bottom:1px solid var(--border);color:var(--text-dim);}
-  tr:last-child td{border-bottom:none;}
-  td:first-child{font-weight:500;color:var(--text);background:var(--surface2);}
-  .tn{background:var(--red-light);color:var(--red);border:1px solid var(--red-mid);padding:2px 8px;font-size:.68rem;}
-  .to{background:#fffbeb;color:#b45309;border:1px solid #fcd34d;padding:2px 8px;font-size:.68rem;}
-
-  footer{background:var(--text);border-top:3px solid var(--red);padding:22px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-  .fb{font-family:'Noto Serif TC',serif;font-size:.85rem;color:white;font-weight:600;}
-  .fi{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:2px;}
-
-  @media(max-width:620px){
-    header{padding:0 12px;height:52px;}
-    .ht,.hd{display:none;}
-    .sinyi-name{font-size:.9rem;}
-    .sinyi-name small{font-size:.58rem;}
-    .sinyi-emblem{width:30px;height:30px;}
-    .hc{gap:5px;}
-    .cb{padding:6px 10px;font-size:.72rem;gap:5px;}
-    .cb svg{width:11px;height:11px;}
-    .hero{padding:44px 20px 40px;}.hero h1{font-size:1.7rem;}
-    main{padding:36px 16px 60px;}
-    .tool-grid{grid-template-columns:1fr;}
-    footer{padding:18px 16px;flex-direction:column;align-items:flex-start;}
-  }
+/* 工具首頁：版面語言對齊個人網站 yucheng.html（紙白底、綠色小標、襯線標題、圓角卡片） */
+*{box-sizing:border-box}
+body{margin:0;font-size:16px;line-height:1.75}
+img{max-width:100%}
+h1,h2,h3{font-family:var(--yc-display);text-wrap:balance;line-height:1.3;margin:0}
+h2{font-size:clamp(1.5rem,4vw,2.1rem)}
+h3{font-size:1.15rem}
+p{margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.stack{display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--yc-green-ink);font-weight:700}
+.lead{color:var(--yc-muted);max-width:62ch}
+.lead strong{color:var(--yc-fg)}
+section{padding-block:52px;border-top:1px solid var(--yc-line);scroll-margin-top:118px}
+.intro{border-top:0;padding-block:44px 48px}
+.intro h1{font-size:clamp(2.1rem,7vw,3.6rem);font-weight:900;letter-spacing:.02em}
+.intro h1 em{font-style:normal;color:var(--yc-green)}
+.intro .tag{font-family:var(--yc-display);font-size:clamp(1.05rem,3vw,1.3rem);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--yc-line);border-radius:999px;padding:3px 12px;font-size:.85rem;color:var(--yc-muted);background:var(--yc-surface);text-decoration:none}
+a.chip:hover{border-color:var(--yc-green);color:var(--yc-green-ink)}
+.cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.cta .yc-btn{padding:10px 18px;font-size:.95rem}
+.phone{font-variant-numeric:tabular-nums;font-weight:700;color:var(--yc-fg);text-decoration:none}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:26px}
+.tool{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:var(--yc-r);background:var(--yc-surface);border:1px solid var(--yc-line);
+  text-decoration:none;color:var(--yc-fg);min-width:0;transition:border-color .15s,box-shadow .15s}
+.tool:hover{border-color:var(--yc-green);box-shadow:0 4px 16px rgba(11,61,36,.08)}
+.tool .k{font-size:.8rem;color:var(--yc-gold);font-weight:700;letter-spacing:.04em;line-height:1.5}
+.tool p{color:var(--yc-muted);font-size:.95rem}
+.tool .chips{gap:6px;margin-top:2px}
+.tool .chip{font-size:.78rem;padding:1px 10px;background:var(--yc-bg)}
+.go{color:var(--yc-green-ink);font-weight:700;margin-top:auto;padding-top:6px}
+.which{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+.since{display:flex;flex-direction:column;gap:6px;padding:24px;border-radius:var(--yc-r);background:var(--yc-tint);border-left:4px solid var(--yc-green);
+  text-decoration:none;color:var(--yc-fg)}
+.since:hover{box-shadow:0 4px 16px rgba(11,61,36,.08)}
+.since-k{font-size:.85rem;color:var(--yc-muted);font-variant-numeric:tabular-nums}
+.since b{font-family:var(--yc-display);font-size:1.5rem;font-weight:900;color:var(--yc-green-ink);line-height:1.3}
+.since-sub{color:var(--yc-muted);font-size:.92rem}
+@media (max-width:760px){.which{grid-template-columns:1fr}}
+footer{padding:26px 0;margin-top:8px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+footer .fb{font-family:var(--yc-display);font-size:1rem;font-weight:900}
+footer .fi{font-size:.8rem;margin-top:2px}
+footer .fr{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+footer .fr a{text-decoration:none;font-size:.88rem}
+footer #footer-phone{font-variant-numeric:tabular-nums}
+footer #footer-line{padding:7px 16px;color:#fff}
+footer>.ga-note{max-width:1040px;margin:10px auto 0;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 </style>
   <meta property="og:title" content="房產稅務・交易規劃工具｜祐承店長 信義房屋 文心高工店">
   <meta property="og:description" content="稅務試算、房貸規劃、換屋資金、買賣時程、議價試算，一站式工具。祐承店長 信義房屋 文心高工店 0933-317-625">
@@ -123,291 +91,208 @@
   "worksFor": { "@type": "Organization", "name": "信義房屋文心高工店" }
 }
 </script>
+<link rel="stylesheet" href="tools-theme.css">
 </head>
 <body>
 
-<header>
-  <div class="hl">
-    <div class="sinyi-emblem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
-    <div class="sinyi-name">信義房屋<small id="hdr-branch">祐承店長・文心高工店</small></div>
-    <div class="hd"></div>
-    <span class="ht">房產稅務試算</span>
+<header class="yc-top">
+  <div class="yc-row">
+    <a class="yc-brand" href="https://tcyucheng.com/" aria-label="房產找祐承 首頁"><span class="yc-mark" aria-hidden="true">承</span><span class="yc-name">房產找<b>祐承</b></span></a>
+    <span class="yc-branch" id="hdr-branch">信義房屋 文心高工店</span>
+    <a class="yc-btn ghost yc-tel" id="hdr-phone" href="tel:0933317625" aria-label="打電話給祐承店長"><span aria-hidden="true">📞</span><span class="yc-tel-label" id="hdr-phone-label">祐承 0933-317-625</span></a>
+    <a class="yc-btn solid" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">加 LINE</a>
   </div>
-  <div class="hc">
-    <a class="cb bp" id="hdr-phone" href="tel:0933317625">📞 <span id="hdr-phone-label">祐承 0933-317-625</span></a>
-    <a class="cb bl" id="hdr-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-      加 LINE 好友
-    </a>
-  </div>
+  <nav class="yc-menu" aria-label="主選單"><div class="yc-row"><a href="https://tcyucheng.com/">祐承首頁</a><a href="./" class="on" aria-current="page">試算工具</a><a href="https://tcyucheng.com/yucheng-listings">最新好案</a><a href="https://tcyucheng.com/yucheng-communities">祐承的商圈</a><a href="https://tcyucheng.com/yucheng-location">地段地圖</a><a href="https://tcyucheng.com/#contact">聯絡</a></div></nav>
 </header>
-
-<div class="hero">
-  <div class="hero-tag" id="hero-tag">祐承店長・信義房屋 文心高工店</div>
-  <h1 id="hero-title">房產稅務・交易規劃工具</h1>
-  <p id="hero-desc">稅務試算、房貸規劃、換屋資金、買賣時程、議價試算<br>一站式工具，幫你在每個關鍵決策掌握最準確的數字</p>
-</div>
 
 <!-- 公告欄 -->
 <div id="announcement-bar" style="display:none;"></div>
 
-<main>
-  <!-- ── 稅務試算 ── -->
-  <div class="select-label">稅務試算工具</div>
-  <div class="tool-grid" style="margin-bottom:32px;">
-    <a class="tool-card" href="house-tax">
-      <div class="tc-top" style="background:var(--red);">
-        <span class="tc-icon">🏠</span>
-        <div class="tc-name" id="card-new-title">房地合一稅試算</div>
-        <div class="tc-law" id="card-new-law">新制・所得稅法 §4-4・2021/7/1 房地合一 2.0</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-new-desc">適用民國 105 年 1 月 1 日以後完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</div>
-        <div class="tc-tags"><span class="tc-tag">105年後取得</span><span class="tc-tag">分離課稅</span><span class="tc-tag">稅率15%～45%</span><span class="tc-tag">自住優惠</span><span class="tc-tag">繼承・配偶贈與</span></div>
-      </div>
-      <div class="tc-foot"><span id="card-new-btn" style="color:var(--red);">開始試算 →</span></div>
+<main class="wrap">
+
+<section class="intro">
+  <div class="stack">
+    <p class="eyebrow" id="hero-tag">祐承店長・信義房屋 文心高工店</p>
+    <h1 id="hero-title">房產稅務・交易規劃工具</h1>
+    <p class="tag">先把數字算清楚，再決定要不要買、要不要賣。</p>
+    <p class="lead" id="hero-desc">稅務試算、房貸規劃、換屋資金、買賣時程、議價試算，一站式工具，幫你在每個關鍵決策掌握最準確的數字。</p>
+    <div class="chips"><a class="chip" href="#tax">稅務試算</a><a class="chip" href="#which">新制或舊制</a><a class="chip" href="#plan">購屋・貸款・換屋</a><a class="chip" href="#work">業務工具</a></div>
+    <div class="cta">
+      <a class="yc-btn solid" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">算完有疑問，LINE 問祐承</a>
+      <a class="phone" href="tel:0933317625">0933-317-625</a>
+    </div>
+  </div>
+</section>
+
+<section id="tax">
+  <div class="stack">
+    <p class="eyebrow">稅務試算</p>
+    <h2>賣房要繳多少稅，先算清楚</h2>
+    <p class="lead">依取得時間分新制、舊制；換屋還能試算三種重購退稅。</p>
+  </div>
+  <div class="tools">
+    <a class="tool" href="house-tax">
+      <span class="k" id="card-new-law">新制・所得稅法 §4-4・2021/7/1 房地合一 2.0</span>
+      <h3 id="card-new-title">房地合一稅試算</h3>
+      <p id="card-new-desc">適用民國 105 年 1 月 1 日以後完成過戶的房地。依持有期間採分離課稅，稅率 15%～45%。</p>
+      <div class="chips"><span class="chip">105年後取得</span><span class="chip">分離課稅</span><span class="chip">稅率15%～45%</span><span class="chip">自住優惠</span><span class="chip">繼承・配偶贈與</span></div>
+      <span class="go" id="card-new-btn">開始試算 →</span>
     </a>
-    <a class="tool-card brown" href="old-tax">
-      <div class="tc-top" style="background:var(--brown);">
-        <span class="tc-icon">📋</span>
-        <div class="tc-name" id="card-old-title">財產交易所得稅試算</div>
-        <div class="tc-law" id="card-old-law">舊制・所得稅法 §14 第七類・綜合所得稅</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-old-desc">適用民國 104 年 12 月 31 日以前完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</div>
-        <div class="tc-tags"><span class="tc-tag">104年前取得</span><span class="tc-tag">併入綜所稅</span><span class="tc-tag">土地免稅</span><span class="tc-tag">核實認定</span><span class="tc-tag">標準認定</span></div>
-      </div>
-      <div class="tc-foot" style="background:var(--brown-light);border-top-color:#f0d0b0;">
-        <span id="card-old-btn" style="color:var(--brown);">開始試算 →</span>
-      </div>
+    <a class="tool" href="old-tax">
+      <span class="k" id="card-old-law">舊制・所得稅法 §14 第七類・綜合所得稅</span>
+      <h3 id="card-old-title">財產交易所得稅試算</h3>
+      <p id="card-old-desc">適用民國 104 年 12 月 31 日以前完成過戶的房地。土地免稅，房屋所得併入個人綜合所得稅。</p>
+      <div class="chips"><span class="chip">104年前取得</span><span class="chip">併入綜所稅</span><span class="chip">土地免稅</span><span class="chip">核實認定</span><span class="chip">標準認定</span></div>
+      <span class="go" id="card-old-btn">開始試算 →</span>
     </a>
-    <a class="tool-card" href="repurchase-refund">
-      <div class="tc-top" style="background:#8b4513;">
-        <span class="tc-icon">🔄</span>
-        <div class="tc-name" id="card-rr-title">房地合一重購退稅</div>
-        <div class="tc-law" id="card-rr-law">所得稅法 §4-5 第一項第三款</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-rr-desc">換屋自住可以申請退回房地合一稅！大換小按比例退、大換大全額退。</div>
-        <div class="tc-tags"><span class="tc-tag">換屋退稅</span><span class="tc-tag">大換小按比例</span><span class="tc-tag">大換大全額</span><span class="tc-tag">2年內申請</span></div>
-      </div>
-      <div class="tc-foot" style="background:#fdf5ef;border-top-color:#e8c4a0;">
-        <span id="card-rr-btn" style="color:#8b4513;">開始試算 →</span>
-      </div>
+    <a class="tool" href="repurchase-refund">
+      <span class="k" id="card-rr-law">所得稅法 §4-5 第一項第三款</span>
+      <h3 id="card-rr-title">房地合一重購退稅</h3>
+      <p id="card-rr-desc">換屋自住可以申請退回房地合一稅！大換小按比例退、大換大全額退。</p>
+      <div class="chips"><span class="chip">換屋退稅</span><span class="chip">大換小按比例</span><span class="chip">大換大全額</span><span class="chip">2年內申請</span></div>
+      <span class="go" id="card-rr-btn">開始試算 →</span>
     </a>
-    <a class="tool-card" href="refund-old-tax">
-      <div class="tc-top" style="background:#7a3000;">
-        <span class="tc-icon">📋</span>
-        <div class="tc-name">財交稅重購退稅</div>
-        <div class="tc-law">所得稅法 §17-2・舊制專屬</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc">出售舊制自用住宅後 2 年內重購，且新屋總價 ≥ 舊屋售價，可退還因財產交易所得增加的綜合所得稅額。</div>
-        <div class="tc-tags"><span class="tc-tag">舊制適用</span><span class="tc-tag">104年前取得</span><span class="tc-tag">新屋≥舊屋全退</span><span class="tc-tag">2年內申請</span></div>
-      </div>
-      <div class="tc-foot" style="background:#fdf5ef;border-top-color:#e8b88a;">
-        <span style="color:#7a3000;">開始試算 →</span>
-      </div>
+    <a class="tool" href="refund-old-tax">
+      <span class="k">所得稅法 §17-2・舊制專屬</span>
+      <h3>財交稅重購退稅</h3>
+      <p>出售舊制自用住宅後 2 年內重購，且新屋總價 ≥ 舊屋售價，可退還因財產交易所得增加的綜合所得稅額。</p>
+      <div class="chips"><span class="chip">舊制適用</span><span class="chip">104年前取得</span><span class="chip">新屋≥舊屋全退</span><span class="chip">2年內申請</span></div>
+      <span class="go">開始試算 →</span>
     </a>
-    <a class="tool-card" href="refund-land-tax">
-      <div class="tc-top" style="background:#1a4a7a;">
-        <span class="tc-icon">🏗</span>
-        <div class="tc-name">土增稅重購退稅</div>
-        <div class="tc-law">土地稅法 §35・一生一次/一生一屋</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc">出售自用住宅用地後 2 年內同名義重購，新購地公告現值 > 舊售地扣稅後餘額，可申請退還土地增值稅。</div>
-        <div class="tc-tags"><span class="tc-tag">同一人名義</span><span class="tc-tag">公告現值計算</span><span class="tc-tag">一生一次</span><span class="tc-tag">一生一屋</span></div>
-      </div>
-      <div class="tc-foot" style="background:#eef4fb;border-top-color:#c8ddf0;">
-        <span style="color:#1a4a7a;">開始試算 →</span>
-      </div>
+    <a class="tool" href="refund-land-tax">
+      <span class="k">土地稅法 §35・一生一次/一生一屋</span>
+      <h3>土增稅重購退稅</h3>
+      <p>出售自用住宅用地後 2 年內同名義重購，新購地公告現值 > 舊售地扣稅後餘額，可申請退還土地增值稅。</p>
+      <div class="chips"><span class="chip">同一人名義</span><span class="chip">公告現值計算</span><span class="chip">一生一次</span><span class="chip">一生一屋</span></div>
+      <span class="go">開始試算 →</span>
     </a>
-    <a class="tool-card" href="holding-cost">
-      <div class="tc-top" style="background:#2e6b3e;">
-        <span class="tc-icon">🌿</span>
-        <div class="tc-name" id="card-hc-title">持有成本試算</div>
-        <div class="tc-law" id="card-hc-law">房屋稅・地價稅・貸款利息・管理費・租金收益</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-hc-desc">幫你算清楚「繼續持有這間房每年要花多少錢」，看清隱性成本後再決定要不要賣。</div>
-        <div class="tc-tags"><span class="tc-tag">房屋稅地價稅</span><span class="tc-tag">貸款利息</span><span class="tc-tag">管理費</span><span class="tc-tag">租金收益</span><span class="tc-tag">逐年累積</span></div>
-      </div>
-      <div class="tc-foot" style="background:#f0f8f2;border-top-color:#b8dfc4;">
-        <span id="card-hc-btn" style="color:#2e6b3e;">開始試算 →</span>
-      </div>
+    <a class="tool" href="holding-cost">
+      <span class="k" id="card-hc-law">房屋稅・地價稅・貸款利息・管理費・租金收益</span>
+      <h3 id="card-hc-title">持有成本試算</h3>
+      <p id="card-hc-desc">幫你算清楚「繼續持有這間房每年要花多少錢」，看清隱性成本後再決定要不要賣。</p>
+      <div class="chips"><span class="chip">房屋稅地價稅</span><span class="chip">貸款利息</span><span class="chip">管理費</span><span class="chip">租金收益</span><span class="chip">逐年累積</span></div>
+      <span class="go" id="card-hc-btn">開始試算 →</span>
     </a>
-    <a class="tool-card" href="rental-tax">
-      <div class="tc-top" style="background:#1a6e46;">
-        <span class="tc-icon">🏘</span>
-        <div class="tc-name">租賃稅務試算</div>
-        <div class="tc-law">所得稅法 §88・二代健保 2.11%・扣繳 10%</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc">依出租方、承租方身份與租金金額，自動計算預扣所得稅、二代健保補充保費，試算房東實際匯款金額。含稅／未稅兩種模式。</div>
-        <div class="tc-tags"><span class="tc-tag">自然人/法人</span><span class="tc-tag">扣繳10%</span><span class="tc-tag">二代健保2.11%</span><span class="tc-tag">含稅/未稅</span></div>
-      </div>
-      <div class="tc-foot" style="background:var(--green-light);border-top-color:var(--green-mid);">
-        <span style="color:#1a6e46;">開始試算 →</span>
-      </div>
+    <a class="tool" href="rental-tax">
+      <span class="k">所得稅法 §88・二代健保 2.11%・扣繳 10%</span>
+      <h3>租賃稅務試算</h3>
+      <p>依出租方、承租方身份與租金金額，自動計算預扣所得稅、二代健保補充保費，試算房東實際匯款金額。含稅／未稅兩種模式。</p>
+      <div class="chips"><span class="chip">自然人/法人</span><span class="chip">扣繳10%</span><span class="chip">二代健保2.11%</span><span class="chip">含稅/未稅</span></div>
+      <span class="go">開始試算 →</span>
     </a>
   </div>
+</section>
 
-  <!-- ── 購屋・貸款・換屋 ── -->
-  <div class="select-label">購屋・貸款・換屋規劃</div>
-  <div class="tool-grid" style="margin-bottom:32px;">
-    <a class="tool-card" href="new-qingan">
-      <div class="tc-top" style="background:#2e7d52;">
-        <span class="tc-icon">🏠</span>
-        <div class="tc-name" id="card-nq-title">新青安3.0試算</div>
-        <div class="tc-law" id="card-nq-law">資格快篩・額度・3+3階梯利率・月付變化</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-nq-desc">6 個關鍵欄位快篩資格，估算新青安本金、最低自備款與未涵蓋金額，並算出前3年至補貼退場後每月還款怎麼跳。</div>
-        <div class="tc-tags"><span class="tc-tag">資格初判</span><span class="tc-tag">額度估算</span><span class="tc-tag">3+3利率</span><span class="tc-tag">LINE分享</span></div>
-      </div>
-      <div class="tc-foot" style="background:#eef7f1;border-top-color:#bfe0cd;">
-        <span id="card-nq-btn" style="color:#2e7d52;">開始試算 →</span>
-      </div>
+<section id="which">
+  <div class="stack">
+    <p class="eyebrow">新制還是舊制</p>
+    <h2 id="table-title">不確定適用哪個制度？</h2>
+    <p class="lead" id="table-desc">判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
+  </div>
+  <div class="which">
+    <a class="since" href="house-tax">
+      <span class="since-k">民國 105 年 1 月 1 日以後取得</span>
+      <b>新制・房地合一稅</b>
+      <span class="since-sub">分離課稅，依持有期間 15%～45%；自住滿 6 年超過 400 萬部分 10%</span>
+      <span class="go">用新制試算 →</span>
     </a>
-    <a class="tool-card" href="mortgage">
-      <div class="tc-top" style="background:#1a4a7a;">
-        <span class="tc-icon">🏦</span>
-        <div class="tc-name" id="card-mortgage-title">房貸試算工具</div>
-        <div class="tc-law" id="card-mortgage-law">月付金・總利息・還款明細・寬限期</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-mortgage-desc">輸入房屋總價、自備款比例、利率，立即算出每月還款金額、總利息、年度還款明細，並比較不同貸款年限的差異。</div>
-        <div class="tc-tags"><span class="tc-tag">等額本息</span><span class="tc-tag">等額本金</span><span class="tc-tag">寬限期</span><span class="tc-tag">年限比較</span></div>
-      </div>
-      <div class="tc-foot" style="background:#eef4fb;border-top-color:#c8ddf0;">
-        <span id="card-mortgage-btn" style="color:#1a4a7a;">開始試算 →</span>
-      </div>
-    </a>
-    <a class="tool-card" href="home-buying">
-      <div class="tc-top" style="background:#4a1a7a;">
-        <span class="tc-icon">🔑</span>
-        <div class="tc-name" id="card-hb-title">換屋資金規劃</div>
-        <div class="tc-law" id="card-hb-law">賣舊房 → 扣稅費 → 算缺口 → 新房貸款</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-hb-desc">整合「賣掉舊房稅後實拿→扣剩餘貸款→可用資金→買新房自備款→新房貸款試算」，一條龍完整換屋計畫。</div>
-        <div class="tc-tags"><span class="tc-tag">資金缺口</span><span class="tc-tag">換屋時機</span><span class="tc-tag">新房月付</span><span class="tc-tag">LINE分享</span></div>
-      </div>
-      <div class="tc-foot" style="background:#f5eeff;border-top-color:#d4b8f0;">
-        <span id="card-hb-btn" style="color:#4a1a7a;">開始規劃 →</span>
-      </div>
+    <a class="since" href="old-tax">
+      <span class="since-k">民國 104 年 12 月 31 日以前取得</span>
+      <b>舊制・財產交易所得稅</b>
+      <span class="since-sub">土地免稅，房屋所得併入綜合所得稅 5%～40%</span>
+      <span class="go">用舊制試算 →</span>
     </a>
   </div>
+</section>
 
-  <!-- ── 業務工具 ── -->
-  <div class="select-label">業務工具</div>
-  <div class="tool-grid" style="margin-bottom:32px;">
-    <a class="tool-card" href="prop-compare">
-      <div class="tc-top" style="background:#0a6e3f;">
-        <span class="tc-icon">⚖️</span>
-        <div class="tc-name">物件比較分析</div>
-        <div class="tc-law">貼上信義物件訊息・路段・總價・含車/扣車單價</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc">貼上業務傳送的物件訊息，整理路段、總價、含車單價與扣車單價。可補上車位坪數與車位價、排序，並產出分享連結或 PDF。</div>
-        <div class="tc-tags"><span class="tc-tag">多物件比較</span><span class="tc-tag">含車/扣車單價</span><span class="tc-tag">分享連結</span><span class="tc-tag">PDF報告</span></div>
-      </div>
-      <div class="tc-foot" style="background:#f0f8f4;border-top-color:#b8dfc4;">
-        <span style="color:#0a6e3f;">開始比較 →</span>
-      </div>
+<section id="plan">
+  <div class="stack">
+    <p class="eyebrow">購屋・貸款・換屋</p>
+    <h2>買得起嗎？每月要付多少？</h2>
+    <p class="lead">新青安資格與月付、一般房貸、換屋資金缺口，一次算完。</p>
+  </div>
+  <div class="tools">
+    <a class="tool" href="new-qingan">
+      <span class="k" id="card-nq-law">資格快篩・額度・3+3階梯利率・月付變化</span>
+      <h3 id="card-nq-title">新青安3.0試算</h3>
+      <p id="card-nq-desc">6 個關鍵欄位快篩資格，估算新青安本金、最低自備款與未涵蓋金額，並算出前3年至補貼退場後每月還款怎麼跳。</p>
+      <div class="chips"><span class="chip">資格初判</span><span class="chip">額度估算</span><span class="chip">3+3利率</span><span class="chip">LINE分享</span></div>
+      <span class="go" id="card-nq-btn">開始試算 →</span>
     </a>
-    <a class="tool-card" href="owner-report">
-      <div class="tc-top" style="background:#2d5a30;">
-        <span class="tc-icon">📑</span>
-        <div class="tc-name">屋主售屋建議報告書</div>
-        <div class="tc-law">基本資料・實價行情・稅費試算・價格建議</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc">開發後給屋主的建議報告書。填入物件資料、實價登錄與待售行情，自動算拆車單價、房地合一或舊制稅費與建議開價區間，排成 A4 報告，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。</div>
-        <div class="tc-tags"><span class="tc-tag">拆車單價</span><span class="tc-tag">房地合一試算</span><span class="tc-tag">開價區間</span><span class="tc-tag">PDF／PPTX／PNG</span></div>
-      </div>
-      <div class="tc-foot" style="background:#f0f8f4;border-top-color:#b8dfc4;">
-        <span style="color:#2d5a30;">製作報告 →</span>
-      </div>
+    <a class="tool" href="mortgage">
+      <span class="k" id="card-mortgage-law">月付金・總利息・還款明細・寬限期</span>
+      <h3 id="card-mortgage-title">房貸試算工具</h3>
+      <p id="card-mortgage-desc">輸入房屋總價、自備款比例、利率，立即算出每月還款金額、總利息、年度還款明細，並比較不同貸款年限的差異。</p>
+      <div class="chips"><span class="chip">等額本息</span><span class="chip">等額本金</span><span class="chip">寬限期</span><span class="chip">年限比較</span></div>
+      <span class="go" id="card-mortgage-btn">開始試算 →</span>
     </a>
-    <a class="tool-card" href="price-calculator">
-      <div class="tc-top" style="background:#1a1410;">
-        <span class="tc-icon">📊</span>
-        <div class="tc-name" id="card-pc-title">議價試算工具</div>
-        <div class="tc-law" id="card-pc-law">含車/扣車單價・總價・服務費・實拿・多級距對照</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-pc-desc">輸入單價與坪數，自動產生多個議價級距的含車總價、拆車單價、仲介服務費、屋主實拿對照表，並一鍵輸出 LINE 摘要。</div>
-        <div class="tc-tags"><span class="tc-tag">含車/扣車單價</span><span class="tc-tag">拆車計算</span><span class="tc-tag">0.5萬遞減</span><span class="tc-tag">LINE摘要</span></div>
-      </div>
-      <div class="tc-foot" style="background:#f5f3f0;border-top-color:#c8bfb5;">
-        <span id="card-pc-btn" style="color:#1a1410;">開始試算 →</span>
-      </div>
-    </a>
-    <a class="tool-card" href="transaction-planner">
-      <div class="tc-top" style="background:#2c3e50;">
-        <span class="tc-icon">📅</span>
-        <div class="tc-name" id="card-tp-title">買賣流程規劃</div>
-        <div class="tc-law" id="card-tp-law">簽約・完稅・交屋・款項分配・時程自動試算</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-tp-desc">輸入簽約日期、總價與貸款成數，自動產出完整時程表、各階段款項分配、買方自備款試算與備忘清單。</div>
-        <div class="tc-tags"><span class="tc-tag">時程自動計算</span><span class="tc-tag">款項分配</span><span class="tc-tag">假日提示</span><span class="tc-tag">PDF報告</span></div>
-      </div>
-      <div class="tc-foot" style="background:#edf2f7;border-top-color:#cbd5e0;">
-        <span id="card-tp-btn" style="color:#2c3e50;">開始規劃 →</span>
-      </div>
-    </a>
-
-    <a class="tool-card" href="card">
-      <div class="tc-top" style="background:var(--red);">
-        <span class="tc-icon">📇</span>
-        <div class="tc-name" id="card-vc-title">數位名片</div>
-        <div class="tc-law" id="card-vc-law">LINE QR Code・電話・工具總覽</div>
-      </div>
-      <div class="tc-body">
-        <div class="tc-desc" id="card-vc-desc">顯示你的 LINE QR Code 與聯絡方式，客戶掃碼即可加好友，可截圖傳送或印出來放桌上。</div>
-        <div class="tc-tags"><span class="tc-tag">LINE QR Code</span><span class="tc-tag">一鍵致電</span><span class="tc-tag">工具捷徑</span></div>
-      </div>
-      <div class="tc-foot" style="background:var(--red-light);border-top-color:var(--red-mid);">
-        <span id="card-vc-btn" style="color:var(--red);">查看名片 →</span>
-      </div>
+    <a class="tool" href="home-buying">
+      <span class="k" id="card-hb-law">賣舊房 → 扣稅費 → 算缺口 → 新房貸款</span>
+      <h3 id="card-hb-title">換屋資金規劃</h3>
+      <p id="card-hb-desc">整合「賣掉舊房稅後實拿→扣剩餘貸款→可用資金→買新房自備款→新房貸款試算」，一條龍完整換屋計畫。</p>
+      <div class="chips"><span class="chip">資金缺口</span><span class="chip">換屋時機</span><span class="chip">新房月付</span><span class="chip">LINE分享</span></div>
+      <span class="go" id="card-hb-btn">開始規劃 →</span>
     </a>
   </div>
+</section>
 
-  <div class="info-card">  <div class="info-card">
-    <h3 id="table-title">🤔 不確定適用哪個制度？</h3>
-    <p id="table-desc">判斷依據是<strong>完成所有權移轉登記日</strong>（過戶登記日），不是簽約日或交屋日。</p>
-    <table>
-      <thead><tr><th>取得過戶登記日</th><th>適用制度</th><th>計稅方式</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>民國 105 年 1 月 1 日 以後</td>
-          <td><span class="tn">新制・房地合一稅</span></td>
-          <td>分離課稅，15%～45%（依持有期間）</td>
-        </tr>
-        <tr>
-          <td>民國 104 年 12 月 31 日 以前</td>
-          <td><span class="to">舊制・財產交易所得稅</span></td>
-          <td>土地免稅，房屋所得併入綜所稅 5%～40%</td>
-        </tr>
-      </tbody>
-    </table>
+<section id="work">
+  <div class="stack">
+    <p class="eyebrow">業務工具</p>
+    <h2>從帶看、議價到簽約的工作台</h2>
+    <p class="lead">物件比較、屋主報告書、議價級距、買賣時程與數位名片。</p>
   </div>
+  <div class="tools">
+    <a class="tool" href="prop-compare">
+      <span class="k">貼上信義物件訊息・路段・總價・含車/扣車單價</span>
+      <h3>物件比較分析</h3>
+      <p>貼上業務傳送的物件訊息，整理路段、總價、含車單價與扣車單價。可補上車位坪數與車位價、排序，並產出分享連結或 PDF。</p>
+      <div class="chips"><span class="chip">多物件比較</span><span class="chip">含車/扣車單價</span><span class="chip">分享連結</span><span class="chip">PDF報告</span></div>
+      <span class="go">開始比較 →</span>
+    </a>
+    <a class="tool" href="owner-report">
+      <span class="k">基本資料・實價行情・稅費試算・價格建議</span>
+      <h3>屋主售屋建議報告書</h3>
+      <p>開發後給屋主的建議報告書。填入物件資料、實價登錄與待售行情，自動算拆車單價、房地合一或舊制稅費與建議開價區間，排成 A4 報告，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。</p>
+      <div class="chips"><span class="chip">拆車單價</span><span class="chip">房地合一試算</span><span class="chip">開價區間</span><span class="chip">PDF／PPTX／PNG</span></div>
+      <span class="go">製作報告 →</span>
+    </a>
+    <a class="tool" href="price-calculator">
+      <span class="k" id="card-pc-law">含車/扣車單價・總價・服務費・實拿・多級距對照</span>
+      <h3 id="card-pc-title">議價試算工具</h3>
+      <p id="card-pc-desc">輸入單價與坪數，自動產生多個議價級距的含車總價、拆車單價、仲介服務費、屋主實拿對照表，並一鍵輸出 LINE 摘要。</p>
+      <div class="chips"><span class="chip">含車/扣車單價</span><span class="chip">拆車計算</span><span class="chip">0.5萬遞減</span><span class="chip">LINE摘要</span></div>
+      <span class="go" id="card-pc-btn">開始試算 →</span>
+    </a>
+    <a class="tool" href="transaction-planner">
+      <span class="k" id="card-tp-law">簽約・完稅・交屋・款項分配・時程自動試算</span>
+      <h3 id="card-tp-title">買賣流程規劃</h3>
+      <p id="card-tp-desc">輸入簽約日期、總價與貸款成數，自動產出完整時程表、各階段款項分配、買方自備款試算與備忘清單。</p>
+      <div class="chips"><span class="chip">時程自動計算</span><span class="chip">款項分配</span><span class="chip">假日提示</span><span class="chip">PDF報告</span></div>
+      <span class="go" id="card-tp-btn">開始規劃 →</span>
+    </a>
+    <a class="tool" href="card">
+      <span class="k" id="card-vc-law">LINE QR Code・電話・工具總覽</span>
+      <h3 id="card-vc-title">數位名片</h3>
+      <p id="card-vc-desc">顯示你的 LINE QR Code 與聯絡方式，客戶掃碼即可加好友，可截圖傳送或印出來放桌上。</p>
+      <div class="chips"><span class="chip">LINE QR Code</span><span class="chip">一鍵致電</span><span class="chip">工具捷徑</span></div>
+      <span class="go" id="card-vc-btn">查看名片 →</span>
+    </a>
+  </div>
+</section>
+
 </main>
 
 <footer>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div class="sinyi-emblem" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" fill="white"/><rect x="13" y="3" width="8" height="8" fill="white" opacity="0.6"/><rect x="3" y="13" width="8" height="8" fill="white" opacity="0.6"/><rect x="13" y="13" width="8" height="8" fill="white"/></svg></div>
+  <div class="wrap">
     <div>
       <div class="fb" id="footer-brand">祐承店長 信義房屋 文心高工店</div>
       <div class="fi">房產稅務試算工具 · 試算僅供參考，實際以稅捐機關核定為準。</div>
     </div>
-  </div>
-  <div style="display:flex;gap:10px;align-items:center;">
-    <a id="footer-phone" href="tel:0933317625" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.8rem;">📞 祐承店長 0933-317-625</a>
-    <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" style="background:#06C755;color:white;padding:6px 14px;text-decoration:none;font-size:.78rem;font-weight:500;">LINE 加好友</a>
+    <div class="fr">
+      <a id="footer-phone" href="tel:0933317625">📞 祐承店長 0933-317-625</a>
+      <a id="footer-line" href="https://line.me/ti/p/EfDsNa26Xw" target="_blank" rel="noopener">LINE 加好友</a>
+    </div>
   </div>
 </footer>
 
@@ -465,11 +350,11 @@ if(ann.enabled&&ann.title){
   const now=new Date();
   const expired=ann.expire&&new Date(ann.expire)<now;
   if(!expired){
-    const styles={info:{bg:'#fffbeb',border:'#b8860b',color:'#1a1410',icon:'📢'},promo:{bg:'#f0f8f2',border:'#2e7d52',color:'#1a3a20',icon:'🎁'},warn:{bg:'#fff8f8',border:'#C00000',color:'#3a1010',icon:'⚠'}};
+    const styles={info:{bg:'#fffbeb',border:'#b8860b',color:'#1a1410',icon:'📢'},promo:{bg:'#eef5f0',border:'#0a8a43',color:'#14211a',icon:'🎁'},warn:{bg:'#fff8f8',border:'#b3261e',color:'#3a1010',icon:'⚠'}};
     const st=styles[ann.type||'info'];
     const bar=document.getElementById('announcement-bar');
     bar.style.display='block';
-    bar.innerHTML=`<div style="background:${st.bg};border-bottom:3px solid ${st.border};padding:12px 40px;font-size:.85rem;color:${st.color};display:flex;align-items:center;gap:10px;">${st.icon} <strong>${ann.title}</strong>${ann.desc?' &nbsp;—&nbsp; '+ann.desc:''}</div>`;
+    bar.innerHTML=`<div style="background:${st.bg};border-bottom:3px solid ${st.border};padding:12px 16px;font-size:.85rem;color:${st.color};display:flex;align-items:center;gap:10px;">${st.icon} <strong>${ann.title}</strong>${ann.desc?' &nbsp;—&nbsp; '+ann.desc:''}</div>`;
   }
 }
 </script>
