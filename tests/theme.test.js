@@ -59,3 +59,12 @@ for (const name of themed.concat(['admin', 'yucheng'])) {
   assert.ok(!text.includes('免費估價'), name + ' 含禁用語「免費估價」');
 }
 console.log('theme tests passed');
+
+// LINE 一律用官方帳號 @161cayoi，不再出現個人 LINE 連結。
+for (const file of fs.readdirSync(root).filter((f) => (/\.(html|js)$/.test(f)) && !/^yucheng-a-/.test(f))) {
+  assert.ok(!read(file).includes('EfDsNa26Xw'), file + ' still links to the personal LINE');
+}
+for (const name of withHeader.concat(['card'])) {
+  assert.ok(read(name + '.html').includes('https://line.me/R/ti/p/@161cayoi'), name + ' LINE must be the official account');
+}
+console.log('line tests passed');
