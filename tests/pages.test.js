@@ -83,7 +83,7 @@ const card = fs.readFileSync(path.join(root, 'card.html'), 'utf8');
 assert.ok(card.includes('台中市南區文心南路888之2號'));
 assert.ok(!card.includes('>台中市（請在後台設定地址）<'), 'card placeholder should be replaced');
 assert.ok(!index.includes('請在後台設定地址'));
-assert.ok(index.includes('https://line.me/ti/p/EfDsNa26Xw'));
+assert.ok(index.includes('https://line.me/R/ti/p/@161cayoi'));
 assert.ok(index.includes('0933-317-625'));
 
 const worker = fs.readFileSync(path.join(root, '_worker.js'), 'utf8');

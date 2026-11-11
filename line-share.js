@@ -1,11 +1,11 @@
-// 站上的 LINE 是 line.me/ti/p/… 個人物帳，不能預填指定對象。
+// 站上的 LINE 已統一為官方帳號 @161cayoi（line.me/R/ti/p/@161cayoi），「傳給祐承」會走 oaMessage 預填試算文字。
 // 官方帳號（網址含 /ti/p/@）才改走 oaMessage。
 (function (root) {
   var STYLE_ID = 'youcheng-line-style';
   function friendHref() {
     var a = document.getElementById('hdr-line') || document.getElementById('footer-line');
     var href = a && a.getAttribute('href');
-    return href || 'https://line.me/ti/p/EfDsNa26Xw';
+    return href || 'https://line.me/R/ti/p/@161cayoi';
   }
   function officialId(href) {
     var m = String(href || '').match(/line\.me\/(?:R\/)?(?:ti\/p|oaMessage)\/(@[^/?#]+)/i);
