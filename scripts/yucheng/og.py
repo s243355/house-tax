@@ -9,27 +9,136 @@
 import json, os, glob, hashlib, io
 from PIL import Image, ImageDraw, ImageFont
 from paths import ROOT, DATA
+import og_font
 
 W, H = 1200, 630
 GREEN, INK, FG, MUTED, BG, GOLD = (10, 138, 67), (7, 107, 52), (20, 33, 26), (86, 101, 92), (251, 252, 250), (184, 137, 47)
 OUT = os.path.join(ROOT, "og")
 os.makedirs(OUT, exist_ok=True)
 
-FONT_DIRS = ["/usr/share/fonts/opentype/noto", "/usr/share/fonts/noto-cjk", "/usr/share/fonts/truetype/noto"]
+_plans = {}
+_font_cache = {}
+_logged = set()
+
+
+def _reject_face(face):
+    name = face.getname()[0] or ""
+    if "Mono" in name:
+        return True
+    return any(tag in name for tag in ("CJK JP", "CJK KR", "CJK SC", "CJK HK"))
+
+
+def _scan_tc(path, size):
+    """在靜態 TTC 或可變字型裡找出繁體那個 face。"""
+    index = og_font.tc_index_from_file(path)
+    if index is not None:
+        try:
+            face = ImageFont.truetype(path, size, index=index)
+        except OSError:
+            face = None
+        if face is not None and not _reject_face(face):
+            return face
+    for i in range(32):
+        try:
+            face = ImageFont.truetype(path, size, index=i)
+        except OSError:
+            break
+        name = face.getname()[0] or ""
+        if "TC" in name and "Mono" not in name:
+            return face
+    return None
+
+
+def _apply_variable(face, weight):
+    """靜態字重檔沒有變化軸；可變字型才把字重調到要求的那一檔。"""
+    try:
+        names = face.get_variation_names()
+    except OSError:
+        return
+    if not names:
+        return
+    for name in names:
+        text = name.decode("utf-8", "replace") if isinstance(name, bytes) else str(name)
+        if text.lower() == weight.lower():
+            face.set_variation_by_name(name)
+            return
+    wght = og_font.WGHT.get(weight)
+    if wght is None:
+        return
+    try:
+        axes = face.get_variation_axes()
+    except OSError:
+        return
+    if len(axes) == 1:
+        face.set_variation_by_axes([float(wght)])
+
+
+def _plan(weight):
+    if weight not in _plans:
+        spec, tried = og_font.resolve_font(weight)
+        files, seen = [], set()
+        for path in list(og_font.candidate_paths(weight)) + og_font.fc_list_files():
+            if path in seen or not os.path.isfile(path) or not og_font.is_sans_cjk_file(path):
+                continue
+            seen.add(path)
+            files.append(path)
+        _plans[weight] = (spec, tried, files)
+    return _plans[weight]
+
+
+def _files_for_weight(files, weight):
+    """檔名裡看得到字重的先用。Black 會先碰到 Bold，不會先用 Regular。"""
+    order = [style.lower() for style in og_font.styles_for(weight)]
+
+    def rank(path):
+        tokens = os.path.splitext(os.path.basename(path).lower())[0].replace("_", "-").split("-")
+        for i, style in enumerate(order):
+            if style in tokens:
+                return i
+        return len(order)
+
+    return sorted(files, key=rank)
+
+
+def _open_planned(spec, files, weight, size):
+    if spec is not None and os.path.isfile(spec.path):
+        face = None
+        try:
+            opened = ImageFont.truetype(spec.path, size, index=spec.index)
+        except OSError:
+            opened = None
+        if opened is not None and not _reject_face(opened):
+            name = opened.getname()[0] or ""
+            if "TC" in name or og_font.face_kind(spec.family, spec.style, spec.postscript, spec.path) == "tc":
+                face = opened
+        if face is None:
+            face = _scan_tc(spec.path, size)
+        if face is not None:
+            _apply_variable(face, weight)
+            return face
+    for path in _files_for_weight(files, weight):
+        face = _scan_tc(path, size)
+        if face is None:
+            continue
+        _apply_variable(face, weight)
+        return face
+    return None
 
 
 def font(weight, size):
-    for d in FONT_DIRS:
-        p = os.path.join(d, f"NotoSansCJK-{weight}.ttc")
-        if os.path.exists(p):
-            for i in range(10):
-                try:
-                    f = ImageFont.truetype(p, size, index=i)
-                except OSError:
-                    break
-                if "TC" in f.getname()[0] and "Mono" not in f.getname()[0]:
-                    return f
-    raise SystemExit("找不到 Noto Sans CJK TC 字型（Ubuntu：apt-get install fonts-noto-cjk）")
+    key = (weight, size)
+    if key in _font_cache:
+        return _font_cache[key]
+    spec, tried, files = _plan(weight)
+    face = _open_planned(spec, files, weight, size)
+    if face is None:
+        raise SystemExit(og_font.format_miss(weight, tried, files))
+    if weight not in _logged:
+        name, style = face.getname()
+        print(f"og 字型 {weight}：{name} {style}", flush=True)
+        _logged.add(weight)
+    _font_cache[key] = face
+    return face
 
 
 PHOTO = Image.open(os.path.join(ROOT, "images", "yucheng.jpg")).convert("RGB")
