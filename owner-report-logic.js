@@ -422,7 +422,31 @@
     return { state: S, changes: ch };
   }
 
+  // 社區資料兩個版本：同一天（台灣時間）再存只更新最新版；跨日存檔時，舊的最新版變成「前一版」
+  function twDay(t) { return Math.floor(((+t || 0) + 8 * 3600e3) / 86400e3); }
+  function commPrev(old, oldPrev, now) {
+    if (!old) return oldPrev || null;
+    if (old.updatedAt && twDay(old.updatedAt) === twDay(now)) return oldPrev || old.prev || null;
+    var p = {}; for (var k in old) if (k !== 'prev' && k !== 'id') p[k] = old[k];
+    return p;
+  }
+  // 選單用：一個社區的可選版本（最新、前一版），日期相同的不重複列
+  function commVersions(c) {
+    if (!c) return [];
+    var cur = {}; for (var k in c) if (k !== 'prev') cur[k] = c[k];
+    var out = [{ key: 'cur', label: '最新', doc: cur }];
+    var p = c.prev;
+    if (p && (p.market || p.listings || p.features) && !(p.updatedAt && c.updatedAt && twDay(p.updatedAt) === twDay(c.updatedAt))) {
+      var pd = {}; for (var j in p) pd[j] = p[j]; pd.name = c.name; if (c.id) pd.id = c.id;
+      out.push({ key: 'prev', label: '前一次', doc: pd });
+    }
+    return out;
+  }
+
   return {
+    commPrev: commPrev,
+    commVersions: commVersions,
+    twDay: twDay,
     STD_114: STD_114,
     STD_YEAR: '114',
     STD_DECREE: '台財稅字第11400690240號令',

@@ -17,6 +17,7 @@ const AUTH_HEAD = ['電子郵件', '姓名', '存取碼', '讀取', '挑選社�
 const COL_COUNT = 18;  // 社區資料 R 欄：報告數
 const COL_JSON = 21;   // 社區資料 U 欄：完整資料(JSON)
 const REP_EMAIL = 19;  // 報告紀錄 S 欄：存檔帳號
+const COL_PREV = 22;   // 社區資料 V 欄：前一次（不同日期）存檔的社區資料(JSON)，帶入社區時可挑
 
 function out_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
@@ -130,10 +131,12 @@ function list_() {
   const last = sh.getLastRow();
   const communities = [];
   if (last >= 2) {
-    sh.getRange(2, 1, last - 1, COL_JSON).getValues().forEach(function (r) {
+    const w = Math.min(COL_PREV, sh.getMaxColumns());
+    sh.getRange(2, 1, last - 1, w).getValues().forEach(function (r) {
       if (!r[0]) return;
       let doc = null;
       try { doc = JSON.parse(r[COL_JSON - 1] || 'null'); } catch (err) {}
+      if (doc && w >= COL_PREV) { try { const p = JSON.parse(r[COL_PREV - 1] || 'null'); if (p) doc.prev = p; } catch (err) {} }
       if (!doc) doc = { basic: { address: r[2], built: r[3], use: r[4], type: r[5], floors: r[6], wall: r[7], guard: r[8], parking: r[9] }, features: String(r[10] || '').split('；').join('\n') };
       doc.name = String(r[0]);
       communities.push(doc);
@@ -201,6 +204,14 @@ function mergeDoc_(o, d) {
   if (!(d.poi && d.poi.length)) { outDoc.poi = o.poi; outDoc.poiCenter = o.poiCenter; }
   return outDoc;
 }
+// 同一天（台灣時間）再存只更新最新版；跨日存檔時，舊的最新版搬到 V 欄當「前一次」
+function twDay_(t) { return Math.floor(((Number(t) || 0) + 8 * 3600e3) / 86400e3); }
+function prevDoc_(oldDoc, oldPrevStr, now) {
+  if (!oldDoc) return oldPrevStr || '';
+  if (oldDoc.updatedAt && twDay_(oldDoc.updatedAt) === twDay_(now)) return oldPrevStr || '';
+  const p = Object.assign({}, oldDoc); delete p.prev; delete p.id;
+  return JSON.stringify(p);
+}
 function save_(body, u) {
   const name = String(body.name || '').trim();
   if (!name) return out_({ ok: false, error: 'name' });
@@ -226,13 +237,16 @@ function save_(body, u) {
     const idx = names.indexOf(name);
     if (idx >= 0) {
       const rowNo = idx + 2;
-      const old = sh.getRange(rowNo, 1, 1, COL_JSON).getValues()[0];
+      if (sh.getMaxColumns() < COL_PREV) sh.insertColumnsAfter(sh.getMaxColumns(), COL_PREV - sh.getMaxColumns());
+      if (!sh.getRange(1, COL_PREV).getValue()) sh.getRange(1, COL_PREV).setValue('前一次資料(JSON)');
+      const old = sh.getRange(rowNo, 1, 1, COL_PREV).getValues()[0];
       for (let i = 0; i < COL_JSON; i++) row[i] = nz_(row[i], old[i]);
       row[COL_COUNT - 1] = (parseInt(old[COL_COUNT - 1], 10) || 0) + 1;
       let oldDoc = null;
       try { oldDoc = JSON.parse(old[COL_JSON - 1] || 'null'); } catch (err) {}
       row[COL_JSON - 1] = JSON.stringify(mergeDoc_(oldDoc, body.doc || { name: name }));
-      sh.getRange(rowNo, 1, 1, COL_JSON).setValues([row]);
+      row[COL_PREV - 1] = prevDoc_(oldDoc, String(old[COL_PREV - 1] || ''), Date.now());
+      sh.getRange(rowNo, 1, 1, COL_PREV).setValues([row]);
     } else {
       row[COL_COUNT - 1] = 1;
       row[COL_JSON - 1] = JSON.stringify(body.doc || { name: name });

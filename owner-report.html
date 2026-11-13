@@ -20,7 +20,8 @@
 <meta name="twitter:image" content="https://tcyucheng.com/tools/og-image.png">
 <meta name="twitter:title" content="屋主售屋建議報告書｜祐承店長 信義房屋 文心高工店">
 <meta name="twitter:description" content="業務用工具：填入物件資料、實價登錄、稅費與待售行情，自動排版成屋主售屋建議報告書，下載 PDF、可編輯 PPTX 或 PNG 傳 LINE。">
-<style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}.vers{display:flex;flex-direction:column;gap:4px;margin:6px 0}.vers:empty{display:none}.vers label{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:13px;cursor:pointer}.vers label:has(input:checked){border-color:var(--pri,#0a7a3d);background:rgba(10,122,61,.06)}.vers input{margin-top:3px}.vers small{color:#666;display:block}
+</style>
 <script src="pdf-loader.js"></script>
 <script src="holding-period.js"></script>
 <script src="owner-report-logic.js"></script>
@@ -268,6 +269,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
     <span class="confirm" id="newConfirm" hidden>清空目前資料？<button class="sm" id="bNewYes" type="button">清空</button><button class="sm" id="bNewNo" type="button">取消</button></span>
     <label class="btn" for="fOpen" title="選 .pptx：讀回在 PowerPoint 改過的報告；選 .json：讀入整份報告備份">開啟檔案（PPT／備份）</label><input type="file" id="fOpen" accept=".pptx,.json,application/json,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden aria-label="開啟檔案（PPT 或備份 .json）">
     <input type="file" id="fJson" accept=".json,application/json" hidden aria-label="讀入報告備份 .json"><input type="file" id="fPptBack" accept=".pptx" hidden aria-label="讀回編輯後的 PPT">
+    <button id="bSave" type="button" title="把目前的報告與檔案存回分店資料庫（雲端硬碟＋社區資料）">存檔</button>
     <button id="bPptx" type="button">下載可編輯 PPTX</button>
     <details class="more"><summary class="btn">更多</summary><div class="menu"><button id="bJson" type="button">下載備份 .json</button></div></details>
     <button class="pri" id="bPdf" type="button">下載 PDF</button>
@@ -283,6 +285,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
       <div class="wz-step" id="wz1"><div class="wz-h"><b>1</b>選社區<span class="hint">（新社區直接到第 2 步）</span></div>
         <div class="lib web-only">
           <label class="f">選擇社區（店內資料庫）<select aria-label="選擇社區（店內資料庫）" id="webLibSel"><option value="">— 選擇社區 —</option></select></label>
+          <div class="vers" id="webLibVer"></div>
           <div class="row"><button class="sm pri" id="bWebLibLoad" type="button">帶入社區資料</button></div>
           <div class="grid2">
             <label class="f">Google 帳號電子郵件<input aria-label="Google 帳號電子郵件" id="webEmail" type="email" autocomplete="email"></label>
@@ -293,6 +296,7 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
         </div>
         <div class="lib cl-only">
           <label class="f">選擇社區（全店共用資料庫）<select aria-label="選擇社區（全店共用資料庫）" id="libSel"><option value="">— 選擇社區 —</option></select></label>
+          <div class="vers" id="libVer"></div>
           <div class="row"><button class="sm pri" id="bLibLoad" type="button">帶入社區資料</button><button class="sm" id="bLibSave" type="button">只更新社區資料</button></div>
           <p class="hint" id="libMsg">連線中…</p>
         </div>
@@ -967,7 +971,18 @@ async function capture(i,scale=2){if(window.loadPdfLibs)await loadPdfLibs();awai
   try{return await html2canvas(c,{scale,useCORS:true,backgroundColor:null,logging:false,width:794,height:1123})}finally{host.remove()}}
 async function exportPng(i){if(window.loadPdfLibs){try{await loadPdfLibs()}catch(e){}}if(!window.html2canvas)return toast('匯出元件載入失敗，請重新整理');toast('產生圖片中…',8000);const cv=await capture(i);const b=await new Promise(r=>cv.toBlob(r,'image/png'));
   const k=pageList()[i][0];await saveFile(`${baseName()}_${String(i+1).padStart(2,'0')}_${PAGES.find(p=>p[0]===k)[1]}.png`,b)}
-$('#bPdf').onclick=async()=>{try{const b=await makePdfBlob(2);await saveFile(`${baseName()}.pdf`,b)}catch(e){toast('匯出元件載入失敗，請重新整理')}};
+/* 存檔與下載：按「存檔」或下載 PDF／PPTX，都把檔案留在雲端並更新分店資料庫；資料沒變就不重複存 */
+let SAVED_SIG='',SAVING=null;
+function saveSig(){try{return JSON.stringify(S)+'|'+(EDITED_PPT?EDITED_PPT.blob.size:'')}catch(e){return ''}}
+async function saveBack(pre={}){if(SAVING)await SAVING.catch(()=>{});
+  if(SAVED_SIG&&SAVED_SIG===saveSig()){toast(`${pre.dl?pre.dl+'，':''}資料沒有變動，分店資料庫已是最新`,4000);return true}
+  if(!String(S.basic.community||'').trim()){toast(`${pre.dl?pre.dl+'；':''}未存回分店資料庫：請先填社區名稱`,5000);return false}
+  if(isWeb()&&(!GAS_URL||!WEBUSER||!WEBUSER.save)){toast(`${pre.dl?pre.dl+'；':''}未存回分店資料庫：請先在第 1 步登入有存檔權限的店內帳號`,6000);return false}
+  if(!isWeb()&&!DB){toast(`${pre.dl?pre.dl+'；':''}未存回分店資料庫：需在 claude.ai 開啟本工具`,6000);return false}
+  SAVING=(isWeb()?doArchiveWeb(pre):doArchiveClaude(pre)).finally(()=>{SAVING=null});return SAVING}
+$('#bSave').onclick=async()=>{const b=$('#bSave');b.disabled=true;try{await saveBack()}finally{b.disabled=false}};
+$('#bPdf').onclick=async()=>{const btn=$('#bPdf');btn.disabled=true;try{let b;try{b=await makePdfBlob(2);await saveFile(`${baseName()}.pdf`,b)}catch(e){return toast('匯出元件載入失敗，請重新整理')}
+  await saveBack({pdf:b,dl:'PDF 已下載'})}finally{btn.disabled=false}};
 $('#bJson').onclick=()=>saveFile(`${baseName()}_資料.json`,new Blob([JSON.stringify(S)],{type:'application/json'}));
 
 /* ---------- PDF 支援（pdf.js，第一次用到才載入） ---------- */
@@ -1115,7 +1130,7 @@ const distOf=a=>(String(a||'').match(/(?:市|縣)(\S{1,3}?[區鄉鎮市])/)||[])
   $('#archSec').hidden=false;$('#driveBox').hidden=!IS_ADMIN;$('#archTitle').textContent=IS_ADMIN?'店長後台：全店報告存檔與社區資料':'我的報告存檔';$('#bCsvComm').hidden=!IS_ADMIN;$('#bCsvRep').hidden=!IS_ADMIN;
   const timer=setTimeout(()=>{$('#libMsg').textContent='資料庫暫時連不上，稍後會自動更新。'},10000);
   DB.collection('communities').onSnapshot(snap=>{if(!snap.metadata.fromCache)clearTimeout(timer);
-    LIB=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant'));drawLibSel();libStatus()},
+    LIB=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant'));drawLibSel();libStatus();drawVers(LIB.find(x=>x.id===$('#libSel').value),'#libVer')},
    e=>{clearTimeout(timer);$('#libMsg').textContent='無法讀取共用資料庫，請稍後重新整理。'})})();
 function drawLibSel(){const sel=$('#libSel');const cur=sel.value;const g={};LIB.forEach(c=>{const d=distOf(c.basic&&c.basic.address);(g[d]=g[d]||[]).push(c)});
   sel.innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].map(c=>`<option value="${c.id}">${esc(c.name)}${c.reportCount?`（${c.reportCount}份報告）`:''}</option>`).join('')}</optgroup>`).join('');
@@ -1129,9 +1144,16 @@ function applyComm(c){if(c.sinyiId)S.sinyiId=c.sinyiId;const b=c.basic||{};S.bas
   if(c.market&&c.market.rows&&c.market.rows.length){S.market=deepMerge(blank().market,c.market);S.market.rows=sortRows(S.market.rows)}if(c.listings&&c.listings.length)S.price.listings=c.listings;if(c.poi&&c.poi.length){S.poi=c.poi;S.poiCenter=c.poiCenter||null}
   if(c.priceParams){['band','mark','parkVal'].forEach(k=>{if(c.priceParams[k])S.price[k]=c.priceParams[k]})}
   const lu=c.lastUnit;$('#wzLast').textContent=lu?`上一份：${lu.floor||''}（${lu.agent||''}，${new Date(lu.at).toLocaleDateString('zh-TW')}），開價 ${lu.online||'—'}；行情、待售、照片、特色已沿用，文字會依本戶重新撰寫。`:`已沿用此社區的行情、待售、照片與特色。`;S.price.analysis='';S.price.summary='';S.price.online='';S.price.expect=''}
-$('#bLibLoad').onclick=()=>{const c=LIB.find(x=>x.id===$('#libSel').value);if(!c)return toast('請先選擇社區');
-  applyComm(c);bindInputs();drawMkt();drawLst();drawNb();drawThumbs();render();toast(`已帶入「${c.name}」，接著填本戶樓層、格局、面積與稅費`)};
-$('#libSel').onchange=()=>{const c=LIB.find(x=>x.id===$('#libSel').value);$('#libMsg').textContent=c?`${c.name}・${(c.market&&c.market.rows||[]).length} 筆成交・${(c.img&&c.img.cover||[]).length} 張外觀照，按「帶入社區資料」套用。`:''};
+/* 帶入社區：列出最近兩次（不同日期）存檔的社區資料，讓同仁挑 */
+const rocD=t=>{const d=new Date(+t);return isNaN(d)?'':`${d.getFullYear()-1911}/${d.getMonth()+1}/${d.getDate()}`};
+function drawVers(c,box){const el=$(box);if(!el)return;if(!c){el.innerHTML='';return}const vs=OwnerReport.commVersions(c);
+  const line=v=>{const d=v.doc,lu=d.lastUnit||{};const bits=[d.updatedAt?rocD(d.updatedAt):'日期不詳',d.updatedByName||lu.agent||'',`成交 ${((d.market&&d.market.rows)||[]).length} 筆`,`待售 ${(d.listings||[]).length} 筆`].filter(Boolean);
+    return `<b>${v.label}</b>・${esc(bits.join('・'))}${lu.floor?`<small>那次報告：${esc(lu.floor)}，開價 ${esc(lu.online||'—')}</small>`:''}`};
+  el.innerHTML=vs.length>1?vs.map((v,i)=>`<label><input type="radio" name="${box.slice(1)}R" value="${v.key}"${i?'':' checked'}><span>${line(v)}</span></label>`).join(''):`<p class="hint" style="margin:0">${line(vs[0])}（目前只有這一版）</p>`}
+function pickVer(c,box){const vs=OwnerReport.commVersions(c);const k=(document.querySelector(`input[name="${box.slice(1)}R"]:checked`)||{}).value||'cur';return (vs.find(v=>v.key===k)||vs[0])}
+$('#bLibLoad').onclick=()=>{const c0=LIB.find(x=>x.id===$('#libSel').value);if(!c0)return toast('請先選擇社區');const v=pickVer(c0,'#libVer'),c=v.doc;
+  applyComm(c);bindInputs();drawMkt();drawLst();drawNb();drawThumbs();render();toast(`已帶入「${c.name}」${v.key==='prev'?`前一次（${rocD(c.updatedAt)}）`:''}的資料，接著填本戶樓層、格局、面積與稅費`)};
+$('#libSel').onchange=()=>{const c=LIB.find(x=>x.id===$('#libSel').value);drawVers(c,'#libVer');$('#libMsg').textContent=c?`${c.name}・${(c.market&&c.market.rows||[]).length} 筆成交・${(c.img&&c.img.cover||[]).length} 張外觀照，按「帶入社區資料」套用。`:''};
 function dataUrlBlob(u){const [h,b]=u.split(',');const mt=(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mt})}
 async function upImg(u){if(!u||!u.startsWith('data:'))return u;if(!ASSETS)return u;const r=await ASSETS.upload(dataUrlBlob(u));return '/_blob/'+r.id}
 async function uploadImages(){let note='';try{S.img.cover=await Promise.all(S.img.cover.map(upImg));S.img.plan=await upImg(S.img.plan);S.img.map=await upImg(S.img.map)}catch(e){note='（部分照片沒有上傳成功）'}
@@ -1146,6 +1168,7 @@ async function saveCommunity(fromReport){const n=String(S.basic.community||'').t
    market:rows.length?{count:S.market.count,listing:S.market.listing,recentN:S.market.recentN,avgAll:S.market.avgAll,rows:S.market.rows,conclusion:S.market.conclusion}:(old.market||{}),
    listings:S.price.listings.length?S.price.listings:(old.listings||[]),poi:(S.poi&&S.poi.length)?S.poi:(old.poi||[]),poiCenter:S.poiCenter||old.poiCenter||null,
    priceParams:{band:S.price.band,mark:S.price.mark,parkVal:S.price.parkVal},lastUnit:fromReport?{floor:S.basic.floor,agent:S.agent.name,online:S.price.online,at:Date.now()}:(old.lastUnit||null),reportCount:(old.reportCount||0)+(fromReport?1:0),lastReportAt:fromReport?Date.now():(old.lastReportAt||null),updatedAt:Date.now(),updatedByName:S.agent.name};
+  const pv=OwnerReport.commPrev(old.name?old:null,old.prev,Date.now());if(pv)doc.prev=pv;
   await DB.collection('communities').doc(id).set(doc)}
 $('#bLibSave').onclick=async()=>{if(!String(S.basic.community||'').trim())return toast('請先填社區名稱');const btn=$('#bLibSave');btn.disabled=true;
   try{const note=await uploadImages();await saveCommunity(false);drawThumbs();render();toast(`已更新「${S.basic.community}」社區資料${note}`,4000)}
@@ -1155,30 +1178,30 @@ async function makePdfBlob(scale=2){if(window.loadPdfLibs){try{await loadPdfLibs
   const n=pageList().length;const pdf=new jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
   for(let i=0;i<n;i++){toast(`產生 PDF：第 ${i+1}/${n} 頁`,20000);const cv=await capture(i,scale);if(i)pdf.addPage();pdf.addImage(cv.toDataURL('image/jpeg',0.88),'JPEG',0,0,210,297)}
   return pdf.output('blob')}
-async function doArchiveClaude(){const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!DB)return toast('存檔需在 claude.ai 開啟本工具');
+async function doArchiveClaude(pre={}){const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!DB)return toast('存檔需在 claude.ai 開啟本工具');
   if(!UID)return toast('無法辨識你的帳號，請重新整理後再試');const btn=$('#bArchive');btn.disabled=true;
   try{toast('上傳照片中…',20000);const note=await uploadImages();drawThumbs();render();await new Promise(r=>setTimeout(r,300));
-   let pdf='',pdfBlob=null;try{pdfBlob=await makePdfBlob(1.5);if(ASSETS){toast('上傳報告 PDF 中…',20000);const r=await ASSETS.upload(pdfBlob);pdf='/_blob/'+r.id}}catch(e){}
+   let pdf='',pdfBlob=null;try{pdfBlob=pre.pdf||await makePdfBlob(1.5);if(ASSETS){toast('上傳報告 PDF 中…',20000);const r=await ASSETS.upload(pdfBlob);pdf='/_blob/'+r.id}}catch(e){}
    const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:st.img.cover.map(keepUrl).filter(Boolean),plan:keepUrl(st.img.plan),map:keepUrl(st.img.map)};
-   const dr=await saveToDrive(n,pdfBlob,st);const sm=await saveToSheet(n,dr.url);
+   const dr=await saveToDrive(n,pdfBlob,st,pre.pptx);const sm=await saveToSheet(n,dr.url);
    const rep={community:n,communityId:cid(n),agent:S.agent.name,createdAt:Date.now(),floor:S.basic.floor,address:S.basic.address,layout:S.basic.layout,area:S.area.total,online:S.price.online,expect:S.price.expect,pdf,drive:dr.url||'',state:st};
    await DB.doc('reports/'+UID).set({agentName:S.agent.name,lastAt:Date.now()});
    await DB.collection('reports/'+UID+'/items').add(rep);await saveCommunity(true);
-   toast(`已存檔，「${n}」社區資料已同步建檔${note}${pdf?'':'（報告 PDF 未上傳，資料已存）'}${dr.msg}${sm}`,7000);loadArchive();return true}
+   SAVED_SIG=saveSig();toast(`${pre.dl?pre.dl+'，':''}已存回分店資料庫，「${n}」社區資料已同步建檔${note}${pdf?'':'（報告 PDF 未上傳，資料已存）'}${dr.msg}${sm}`,7000);loadArchive();return true}
   catch(e){toast(e&&(e.code==='permission_denied'||e.code==='not_granted')?'你的權限只能查看，請店長把你設成可使用或可編輯':'存檔失敗，請稍後再試');return false}finally{btn.disabled=false}}
-$('#bArchive').onclick=doArchiveClaude;
+$('#bArchive').onclick=()=>doArchiveClaude();
 
 
 /* 雲端硬碟存檔：每次「完成並存檔」把 PDF、可編輯 PPTX、資料檔放進店長指定的資料夾 */
 let DRIVE_FOLDER='';
 function blobB64(b){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=rej;fr.readAsDataURL(b)})}
-async function saveToDrive(n,pdfBlob,st){if(!DRIVE_FOLDER)return{msg:''};if(!MCP)return{msg:'；雲端硬碟未存（需在 claude.ai 開啟）'};
+async function saveToDrive(n,pdfBlob,st,pptBlob){if(!DRIVE_FOLDER)return{msg:''};if(!MCP)return{msg:'；雲端硬碟未存（需在 claude.ai 開啟）'};
   const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');let url='',ok=0;
   const up=async(title,args)=>{const r=await MCP.callTool('Google Drive','create_file',{title,parentId:DRIVE_FOLDER,disableConversionToGoogleType:true,...args});const pl=(r&&r.payload)||{};if(!url&&pl.viewUrl)url=pl.viewUrl;ok++};
   try{toast('存到雲端硬碟中…',30000);
    if(pdfBlob)await up(base+'.pdf',{base64Content:await blobB64(pdfBlob),contentMimeType:'application/pdf'});
-   try{const pp=await buildPptx();const pb=await pp.write({outputType:'blob'});await up(base+'.pptx',{base64Content:await blobB64(pb),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}
+   try{const pb=pptBlob||await (await buildPptx()).write({outputType:'blob'});await up(base+'.pptx',{base64Content:await blobB64(pb),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}
    if(EDITED_PPT){try{await up(base+'（業務編輯版）.pptx',{base64Content:await blobB64(EDITED_PPT.blob),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}}
    await up(base+'_資料.json',{textContent:JSON.stringify(st),contentMimeType:'application/json'});
    return{url,msg:`；雲端硬碟已存 ${ok} 個檔案`}}
@@ -1199,11 +1222,11 @@ function sheetRows(n,driveUrl){const m=mktCalc(),b=S.basic,a=S.area,h=holding();
   return{commRow,repRow}}
 async function saveToSheet(n,driveUrl){if(!SHEET_ID)return '';if(!MCP)return '；試算表未更新（需在 claude.ai 開啟）';
   const {commRow,repRow}=sheetRows(n,driveUrl);
-  try{const g=await MCP.callTool('Google Sheets','get_values',{spreadsheetId:SHEET_ID,range:'社區資料!A:U'});const vals=((g&&g.payload&&g.payload.values)||[]);
+  try{const g=await MCP.callTool('Google Sheets','get_values',{spreadsheetId:SHEET_ID,range:'社區資料!A:V'});const vals=((g&&g.payload&&g.payload.values)||[]);
    const idx=vals.findIndex((r,i)=>i>0&&String(r[0]||'').trim()===n);let oldDoc=null;
    if(idx>0){const old=vals[idx];commRow.forEach((v,i)=>{if(v===''||v==='—')commRow[i]=old[i]??''});commRow[17]=String((parseInt(old[17])||0)+1);try{oldDoc=JSON.parse(old[20]||'null')}catch(e){}}else commRow[17]='1';
-   commRow[20]=JSON.stringify(mergeDoc(oldDoc,liteDoc(n)));
-   if(idx>0)await MCP.callTool('Google Sheets','update_values',{spreadsheetId:SHEET_ID,range:`社區資料!A${idx+1}:U${idx+1}`,values:[commRow]});
+   commRow[20]=JSON.stringify(mergeDoc(oldDoc,liteDoc(n)));{let op=null;try{op=JSON.parse((idx>0&&vals[idx][21])||'null')}catch(e){}const pv=OwnerReport.commPrev(oldDoc,op,Date.now());commRow[21]=pv?JSON.stringify(pv):''}
+   if(idx>0)await MCP.callTool('Google Sheets','update_values',{spreadsheetId:SHEET_ID,range:`社區資料!A${idx+1}:V${idx+1}`,values:[commRow]});
    else await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'社區資料!A1',values:[commRow]});
    await MCP.callTool('Google Sheets','append_values',{spreadsheetId:SHEET_ID,range:'報告紀錄!A1',values:[repRow]});return '；試算表已更新'}
   catch(e){const c=e&&e.code;return c==='server_not_connected'?'；試算表未更新：請先在 claude.ai 連接 Google Sheets':c==='not_in_manifest'||c==='approval_required'?'；試算表未更新：需要允許此工具使用 Google Sheets':c==='tool_error'?'；試算表未更新：沒有試算表的編輯權限，請向店長要權限':'；試算表未更新'}}
@@ -1326,23 +1349,24 @@ async function webLogin(){if(!isWeb())return;if(!GAS_URL)return webMsg('店內�
   catch(e){webMsg('連不上店內資料庫，請檢查網路後重新整理。')}}
 async function loadWebLib(){try{const r=await gas({action:'list',...cred()});if(!r.ok)return webMsg(ERRS[r.error]||'讀取社區失敗。');
    WEBLIB=(r.communities||[]).map(c=>({...c,id:cid(c.name)}));const g={};WEBLIB.forEach(c=>{const d=distOf(c.basic&&c.basic.address);(g[d]=g[d]||[]).push(c)});
-   $('#webLibSel').innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant')).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</optgroup>`).join('')}catch(e){}}
+   $('#webLibSel').innerHTML='<option value="">— 選擇社區 —</option>'+Object.keys(g).sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(d=>`<optgroup label="${esc(d)}">${g[d].sort((a,b)=>String(a.name).localeCompare(String(b.name),'zh-Hant')).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</optgroup>`).join('');$('#webLibVer').innerHTML=''}catch(e){}}
 $('#webEmail').value=ls('osr-email');$('#webCode').value=ls('osr-code');
 $('#bWebLogin').onclick=()=>{ls('osr-email',$('#webEmail').value.trim().toLowerCase());ls('osr-code',$('#webCode').value.trim());webLogin()};
-$('#bWebLibLoad').onclick=()=>{if(!WEBUSER||!WEBUSER.pick)return toast('請先登入，且需要「挑選社區」權限');const c=WEBLIB.find(x=>x.id===$('#webLibSel').value);if(!c)return toast('請先選擇社區');applyComm(c);bindInputs();drawMkt();drawLst();drawNb();drawThumbs();render();toast(`已帶入「${c.name}」，照片請另外上傳`)};
-async function doArchiveWeb(){const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!GAS_URL)return toast('店內存檔尚未開通，請店長完成設定');
+$('#bWebLibLoad').onclick=()=>{if(!WEBUSER||!WEBUSER.pick)return toast('請先登入，且需要「挑選社區」權限');const c0=WEBLIB.find(x=>x.id===$('#webLibSel').value);if(!c0)return toast('請先選擇社區');const v=pickVer(c0,'#webLibVer'),c=v.doc;applyComm(c);bindInputs();drawMkt();drawLst();drawNb();drawThumbs();render();toast(`已帶入「${c.name}」${v.key==='prev'?`前一次（${rocD(c.updatedAt)}）`:''}的資料，照片請另外上傳`)};
+$('#webLibSel').onchange=()=>drawVers(WEBLIB.find(x=>x.id===$('#webLibSel').value),'#webLibVer');
+async function doArchiveWeb(pre={}){const n=String(S.basic.community||'').trim();if(!n)return toast('請先填社區名稱');if(!GAS_URL)return toast('店內存檔尚未開通，請店長完成設定');
   if(!WEBUSER)return toast('請先在「一、本戶基本資料」登入店內帳號');if(!WEBUSER.save)return toast('你的帳號沒有存檔權限，請向店長申請');
   const btn=$('#bWebArchive');btn.disabled=true;
   try{const files=[];const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');
-   const pdf=await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
-   try{toast('產生 PPTX 中…',15000);const pp=await buildPptx();files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(await pp.write({outputType:'blob'}))})}catch(e){}
+   const pdf=pre.pdf||await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
+   try{let pb=pre.pptx;if(!pb){toast('產生 PPTX 中…',15000);pb=await (await buildPptx()).write({outputType:'blob'})}files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(pb)})}catch(e){}
    if(EDITED_PPT)files.push({name:base+'（業務編輯版）.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(EDITED_PPT.blob)});
    const st=JSON.parse(JSON.stringify(S));st.logo='';const isUrl=u=>typeof u==='string'&&!/^data:|^blob:/.test(u)&&u.length<2000;st.img={cover:(S.img.cover||[]).filter(isUrl),plan:isUrl(S.img.plan)?S.img.plan:'',map:isUrl(S.img.map)?S.img.map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
    const {commRow,repRow}=sheetRows(n,'');toast('上傳到店內雲端中…',30000);
    const r=await gas({action:'save',...cred(),name:n,commRow,repRow,doc:liteDoc(n),files});
-   if(!r.ok)throw new Error(r.error||'fail');toast(`已存檔到店內雲端，「${n}」社區資料已同步建檔`,6000);if(WEBUSER.pick)loadWebLib();if(WEBUSER.read)loadMyReports();return true}
+   if(!r.ok)throw new Error(r.error||'fail');SAVED_SIG=saveSig();toast(`${pre.dl?pre.dl+'，':''}已存回分店資料庫（雲端已留 PDF、PPTX），「${n}」社區資料已更新`,6000);if(WEBUSER.pick)loadWebLib();if(WEBUSER.read)loadMyReports();return true}
   catch(e){toast(ERRS[e&&e.message]||'存檔失敗，請稍後再試；可以先按「存檔 .json」留底',6000);return false}finally{btn.disabled=false}}
-$('#bWebArchive').onclick=doArchiveWeb;
+$('#bWebArchive').onclick=()=>doArchiveWeb();
 async function loadMyReports(){const box=$('#myRepList');box.innerHTML='<p class="hint">讀取中…</p>';try{const r=await gas({action:'my_reports',...cred()});if(!r.ok){box.innerHTML=`<p class="warn">${esc(ERRS[r.error]||'讀取失敗')}</p>`;return}
   box.innerHTML=r.reports.length?`<div class="tbwrap"><table class="tb"><tr><th>存檔時間</th><th>社區／樓層</th><th>開價區間</th><th></th></tr>${r.reports.map(x=>`<tr><td>${esc(x.at)}</td><td>${esc(x.community)} ${esc(x.floor)}</td><td>${esc(x.online||'—')}</td><td>${x.row?`<button class="sm pri" type="button" data-openrep="${esc(x.row)}">打開到工具</button> `:''}${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">看 PDF</a>`:''}</td></tr>`).join('')}</table></div>`:'<p class="hint">還沒有存過報告。</p>'}catch(e){box.innerHTML='<p class="warn">連不上店內資料庫。</p>'}}
 $('#bMyRep').onclick=loadMyReports;
@@ -1627,8 +1651,8 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
   if(lastSl&&qrImg){lastSl.addImage({data:qrImg,x:I(700),y:I(1012),w:I(78),h:I(78)});lastSl.addText('LINE 房價諮詢',{x:I(684),y:I(1092),w:I(110),h:I(18),fontFace:F,fontSize:pt(11.5),bold:true,color:C.bandInk,align:'center',margin:0})}
   return p}
 async function exportPptx(){const btn=$('#bPptx');btn.disabled=true;toast('產生可編輯 PPTX 中…',15000);
-  try{const p=await buildPptx();const blob=await p.write({outputType:'blob'});await saveFile(`${baseName()}.pptx`,blob)}
-  catch(e){console.error(e);toast('PPTX 產生失敗，請重新整理後再試')}finally{btn.disabled=false}}
+  try{let blob;try{const p=await buildPptx();blob=await p.write({outputType:'blob'});await saveFile(`${baseName()}.pptx`,blob)}catch(e){console.error(e);return toast('PPTX 產生失敗，請重新整理後再試')}
+   await saveBack({pptx:blob,dl:'PPTX 已下載'})}finally{btn.disabled=false}}
 $('#bPptx').onclick=exportPptx;
 
 /* ==================== 讀回編輯後的 PPT ==================== */
@@ -1768,9 +1792,9 @@ $('#bDone').onclick=async()=>{const must=checks().filter(x=>x.must&&!x.ok);if(mu
   const btn=$('#bDone');btn.disabled=true;const done=[];
   try{if(!S.price.online||!S.price.expect){$('#bPriceCalc').onclick();done.push('開價區間已試算')}
    if(!S.market.conclusion||!S.price.analysis||!S.price.summary){toast('撰寫文字中…',60000);let ok=false;if(SAMPLE)ok=await aiWrite();if(!ok){if(!S.market.conclusion)$('#bGenMkt').onclick();if(!S.price.analysis)$('#bGenPrice').onclick()}done.push('文字已補齊')}
-   let saved=false;if(!isWeb())saved=await doArchiveClaude();else if(WEBUSER&&WEBUSER.save)saved=await doArchiveWeb();
-   done.push(saved?'已存檔建檔':'未存檔（網站版請先登入且需存檔權限）');
-   toast('產生 PDF 中…',30000);const pdf=await makePdfBlob(2);await saveFile(`${baseName()}.pdf`,pdf);done.push('PDF 已下載');
+   toast('產生 PDF 中…',30000);const pdf=await makePdfBlob(2);
+   const saved=await saveBack({pdf});done.push(saved?'已存回分店資料庫':'未存檔（網站版請先登入且需存檔權限）');
+   await saveFile(`${baseName()}.pdf`,pdf);done.push('PDF 已下載');
    const n=pageList().length;$('#doneOut').innerHTML=`<div class="ok" style="display:flex;flex-direction:column;gap:6px"><b>完成：${done.join('、')}</b><span>傳 LINE 用的圖片：</span><div class="row">${Array.from({length:n},(_,i)=>`<button class="sm" type="button" data-png="${i}">第 ${i+1} 頁 PNG</button>`).join('')}<button class="sm" type="button" id="bDonePptx">可編輯 PPTX</button></div></div>`;
    $('#bDonePptx').onclick=exportPptx}
   catch(e){toast('完成時發生問題，請再按一次，或改用上方各別按鈕')}finally{btn.disabled=false}};

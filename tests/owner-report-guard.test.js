@@ -162,5 +162,38 @@ const L = require(path.join(root, 'owner-report-logic.js'));
   assert.ok(html.includes('if(S.basic.community&&d.name&&!sameName(S.basic.community,d.name))clearCommunity();'), '帶入不同社區要先清掉舊社區資料');
   assert.ok(html.includes('loadLvr(r.lvrAddress||r.address'), '官網地址沒門牌時改用對照表門牌');
 
+  // ---------- 存檔、下載都存回分店資料庫；帶入社區可挑最近兩次 ----------
+  {
+    const day = Date.UTC(2026, 10, 13, 2); // 台灣 11/13 上午
+    const old = { name: 'A', updatedAt: day - 86400e3, market: { rows: [1] }, prev: { name: 'A', updatedAt: day - 9 * 86400e3 }, id: 'x' };
+    const p1 = L.commPrev(old, old.prev, day);
+    assert.strictEqual(p1.updatedAt, day - 86400e3, '跨日存檔：舊的最新版變成前一次');
+    assert.ok(!('prev' in p1) && !('id' in p1), '前一次不再往下巢狀');
+    const same = { name: 'A', updatedAt: day - 3600e3 };
+    assert.strictEqual(L.commPrev(same, { updatedAt: 5 }, day).updatedAt, 5, '同一天再存只更新最新版，前一次不變');
+    assert.strictEqual(L.commPrev(null, null, day), null);
+    // 台灣時間跨午夜（UTC 15:59 → 16:01）算不同天
+    const nearMid = Date.UTC(2026, 10, 12, 15, 59);
+    assert.ok(L.commPrev({ updatedAt: nearMid, market: {} }, null, nearMid + 2 * 60e3));
+    const vs = L.commVersions({ name: 'A', id: 'a', updatedAt: day, market: {}, prev: { updatedAt: day - 86400e3, market: { rows: [] }, listings: [] } });
+    assert.deepStrictEqual(vs.map((v) => v.key), ['cur', 'prev']);
+    assert.strictEqual(vs[1].doc.name, 'A');
+    assert.ok(!('prev' in vs[0].doc));
+    assert.strictEqual(L.commVersions({ name: 'A', updatedAt: day, prev: { updatedAt: day - 60e3, market: {} } }).length, 1, '同一天的不重複列');
+    assert.strictEqual(L.commVersions({ name: 'A' }).length, 1);
+  }
+  {
+    const h = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
+    assert.ok(h.includes('id="bSave"'), '上方要有「存檔」按鈕');
+    assert.ok(/\$\('#bPdf'\)\.onclick=[\s\S]{0,300}saveBack\(\{pdf:b/.test(h), '下載 PDF 要存回資料庫，並沿用同一份 PDF');
+    assert.ok(/async function exportPptx[\s\S]{0,500}saveBack\(\{pptx:blob/.test(h), '下載 PPTX 要存回資料庫，並沿用同一份 PPTX');
+    assert.ok(h.includes('const pdf=pre.pdf||await makePdfBlob') && h.includes('pdfBlob=pre.pdf||await makePdfBlob'), '存檔沿用剛下載的 PDF，不重做');
+    assert.ok(h.includes("SAVED_SIG===saveSig()"), '資料沒變不重複存');
+    assert.ok(h.includes('id="webLibVer"') && h.includes('id="libVer"'), '帶入社區要能挑版本');
+    assert.ok(h.includes("pickVer(c0,'#webLibVer')") && h.includes("pickVer(c0,'#libVer')"));
+    const gs = fs.readFileSync(path.join(root, 'scripts/owner-report/Code.gs'), 'utf8');
+    assert.ok(gs.includes('COL_PREV') && gs.includes('doc.prev = p') && gs.includes('prevDoc_(oldDoc'), 'Apps Script 存前一次並在清單回傳');
+  }
+
   console.log('owner-report guard tests ok', bad.length ? `（對照待確認 ${bad.length} 筆）` : '');
 })().catch((e) => { console.error(e); process.exit(1); });
