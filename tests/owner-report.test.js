@@ -28,12 +28,16 @@ function iso(d) {
   const q2 = selectLvrRows(idx.data, '台中市南區復興路二段71巷55號', {});
   assert.deepStrictEqual(q1.addrs, q2.addrs);
   assert.strictEqual(q1.rows.length, q2.rows.length);
-  // 筆數會隨每月實價登錄更正（撤銷、改列特殊交易）小幅變動，只要求整棟的成交都帶得出來
-  assert.ok(q1.rows.length >= 20, 'In House should return the indexed door set, got ' + q1.rows.length);
-  // 索引重建後鍵會正規化成「2段」，舊索引是「二段」，兩種都接受
-  const exact = (idx.data['復興路2段71巷55號'] || idx.data['復興路二段71巷55號'] || []).length;
-  assert.ok(exact >= 20, 'In House door rows ' + exact);
-  assert.ok(q1.rows.length >= exact);
+  // 索引鍵重建後是「2段」，舊檔是「二段」，兩種都接受。
+  // 門牌索引只留近三年（最新成交日往回 3 年）。每月實價更新會讓舊案掉出窗外，筆數不能寫死。
+  const doorKey = idx.data['復興路2段71巷55號'] ? '復興路2段71巷55號' : '復興路二段71巷55號';
+  const doorRows = idx.data[doorKey] || [];
+  assert.ok(doorRows.length > 0, 'In House door missing from index');
+  const gotDoor = new Set(q1.rows.map((r) => JSON.stringify(r)));
+  for (const row of doorRows) {
+    assert.ok(gotDoor.has(JSON.stringify(row)), 'indexed In House row missing from query ' + row[0] + ' floor ' + row[1]);
+  }
+  assert.ok(q1.rows.length >= doorRows.length, 'In House should return the indexed door set, got ' + q1.rows.length + ' indexed ' + doorRows.length);
 
   const miss = selectLvrRows(idx.data, '台中市南區沒有這條路1號', {});
   assert.strictEqual(miss.rows.length, 0);
@@ -117,7 +121,8 @@ function iso(d) {
   const apiCn = await query('台中市南區復興路二段71巷55號');
   assert.strictEqual(api2.ok, true);
   assert.strictEqual(api2.rows.length, apiCn.rows.length);
-  { const ix = JSON.parse(fs.readFileSync(path.join(root, 'data/lvr-idx/南區.json'), 'utf8')); assert.strictEqual(api2.rows.length, (ix.data['復興路2段71巷55號'] || ix.data['復興路二段71巷55號']).length); }
+  assert.strictEqual(api2.rows.length, q1.rows.length);
+  assert.strictEqual(api2.rows.length, doorRows.length);
   assert.deepStrictEqual(api2.rows.map((r) => r.total + '|' + r.floor + '|' + r.ping), apiCn.rows.map((r) => r.total + '|' + r.floor + '|' + r.ping));
   const row14 = api2.rows.find((r) => r.ym === '115/05' && r.floor === '14樓' && r.total === '1400');
   assert.ok(row14);
@@ -142,8 +147,10 @@ function iso(d) {
   assert.strictEqual(api2.matchBy, 'exact');
   const lv = await query('台中市南區工學路155巷16號');
   assert.strictEqual(lv.ok, true);
-  assert.strictEqual(lv.rows.length, 4, '綠豐華 16號含同棟 18號應為 4 筆');
   assert.strictEqual(lv.matchBy, 'building');
+  assert.ok(lv.addrs.includes('工學路155巷16號') && lv.addrs.includes('工學路155巷18號'), '綠豐華 16、18 號要一起查');
+  const indexedBuilding = lv.addrs.reduce((n, a) => n + ((idx.data[a] || []).length), 0);
+  assert.strictEqual(lv.rows.length, indexedBuilding, '綠豐華應帶回索引裡同棟門牌的全部成交，got ' + lv.rows.length + ' indexed ' + indexedBuilding);
   const shaped = lv.rows.map((r) => ({
     ym: r.ym, floor: r.floor, ping: r.ping, pping: r.pping, total: r.total, note: r.note, ptype: r.ptype, addr: r.addr,
     est: !r.priced && !!r.pest,
@@ -157,10 +164,12 @@ function iso(d) {
   assert.ok(Math.abs(odd.unit - 46.29) < 0.02, 'unit ' + odd.unit);
   assert.strictEqual(odd.outlier, true);
   assert.strictEqual(odd.est, true);
-  assert.strictEqual(st.latest, '114/04');
-  assert.strictEqual(st.months, 19);
-  assert.strictEqual(st.count, 4);
-  assert.ok(st.count < 5 && st.months > 12);
+  // 114/04 到 2026-11 是 19 個月：這是日曆計算，不綁當月實價筆數。
+  assert.strictEqual(logic.monthsSinceYm('114/04', new Date(2026, 10, 10)), 19);
+  const newest = shaped.slice().sort((a, b) => logic.ymKey(b) - logic.ymKey(a))[0];
+  assert.strictEqual(st.count, shaped.filter((r) => r.ym).length);
+  assert.strictEqual(st.latest, newest.ym);
+  assert.strictEqual(st.months, logic.monthsSinceYm(newest.ym, new Date(2026, 10, 10)));
 
   const added = logic.tradeStats([
     { ym: '113/02', total: '100', ping: '10', pprice: '0', pping: '0' },
