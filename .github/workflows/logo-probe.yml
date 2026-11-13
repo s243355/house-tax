@@ -1,0 +1,26 @@
+name: logo probe
+on:
+  push:
+    branches: [logo-probe]
+    paths: [".github/workflows/logo-probe.yml"]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p probe
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+          curl -sSL -A "$UA" -o probe/home.html https://www.sinyi.com.tw/
+          grep -oiE '(https?:)?//[^"'"'"' )]*(logo|favicon|icon)[^"'"'"' )]*\.(svg|png|ico|webp)|/[^"'"'"' )]*(logo|favicon|apple-touch)[^"'"'"' )]*\.(svg|png|ico|webp)' probe/home.html | sort -u > probe/urls.txt || true
+          cat probe/urls.txt
+          i=0
+          while read u; do i=$((i+1)); case "$u" in //*) u="https:$u";; /*) u="https://www.sinyi.com.tw$u";; esac
+            f=$(basename "${u%%\?*}"); curl -sSL -A "$UA" -o "probe/$i-$f" "$u" -w "$u %{http_code} %{size_download}\n"; done < probe/urls.txt
+          ls -la probe
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add probe && git commit -m "probe sinyi logo" && git push
