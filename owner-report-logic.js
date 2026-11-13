@@ -311,6 +311,117 @@
     return m ? m[1] : s;
   }
 
+  // ---------- 讀回編輯過的 PPTX：依物件名稱（f:欄位、t:表格、ormeta:對照）把文字對回欄位 ----------
+  function xmlText(s) {
+    return String(s || '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+      .replace(/&#x([0-9a-f]+);/gi, function (m, h) { return String.fromCharCode(parseInt(h, 16)); })
+      .replace(/&#(\d+);/g, function (m, n) { return String.fromCharCode(+n); }).replace(/&amp;/g, '&');
+  }
+  // 一個文字框或儲存格：段落之間換行，<a:br/> 也換行
+  function paraText(xml) {
+    var ps = String(xml || '').match(/<a:p(?:\s[^>]*)?>[\s\S]*?<\/a:p>|<a:p\s*\/>/g) || [];
+    return ps.map(function (p) {
+      return (p.match(/<a:t(?:\s[^>]*)?>[^<]*<\/a:t>|<a:br\b[^>]*\/>/g) || []).map(function (t) {
+        return /^<a:br/.test(t) ? '\n' : xmlText(t.replace(/<[^>]+>/g, ''));
+      }).join('');
+    }).join('\n').replace(/\n+$/, '');
+  }
+  function shapeName(xml) { var m = String(xml).match(/<p:cNvPr\b[^>]*\bname="([^"]*)"/); return m ? xmlText(m[1]) : ''; }
+  function pptxRead(slideXmls) {
+    var out = { fields: {}, tables: {}, meta: null };
+    (slideXmls || []).forEach(function (xml) {
+      (String(xml).match(/<p:sp\b[\s\S]*?<\/p:sp>/g) || []).forEach(function (sp) {
+        var n = shapeName(sp);
+        if (/^ormeta:/.test(n)) { try { out.meta = JSON.parse(n.slice(7)); } catch (e) { /* 對照資料壞掉就略過 */ } }
+        else if (/^f:/.test(n) && !(n.slice(2) in out.fields)) out.fields[n.slice(2)] = paraText(sp);
+      });
+      (String(xml).match(/<p:graphicFrame\b[\s\S]*?<\/p:graphicFrame>/g) || []).forEach(function (gf) {
+        var n = shapeName(gf);
+        if (!/^t:/.test(n)) return;
+        out.tables[n.slice(2)] = (gf.match(/<a:tr\b[\s\S]*?<\/a:tr>/g) || []).map(function (tr) {
+          return (tr.match(/<a:tc\b[\s\S]*?<\/a:tc>/g) || []).map(paraText);
+        });
+      });
+    });
+    return out;
+  }
+  var PPT_BASIC = { '社區名稱': 'community', '總樓高': 'floors', '地址': 'address', '本戶樓層': 'floor', '建築完成日': 'built', '格局': 'layout', '用途': 'use', '朝向': 'facing', '房屋類型': 'type', '外牆材質': 'wall', '車位': 'parking', '車位資料': 'parkingNo', '邊間': 'corner', '暗房': 'dark', '警衛管理': 'guard' };
+  var PPT_AREA = { '建物登記坪數': 'total', '主建物': 'main', '公共設施': 'public', '防空避難室兼車位': 'parking', '陽台': 'balcony', '雨遮': 'canopy', '土地登記坪數': 'land' };
+  var PPT_LABEL = { 'market.conclusion': '社區重點結論', 'features': '本案特色', 'price.online': '建議網路開價', 'price.expect': '客戶期望價位', 'price.analysis': '分析與建議', 'price.summary': '總結' };
+  function cleanCell(v) { var s = String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); return s === '—' ? '' : s; }
+  function numCell(v) { var m = half(v).replace(/,/g, '').match(/-?\d+(?:\.\d+)?/); return m ? m[0] : ''; }
+  // 依 PPT 讀回的內容更新報告；回傳新狀態與改了哪些（給同仁確認）
+  function pptxApply(state, read) {
+    var S = JSON.parse(JSON.stringify(state || {}));
+    var ch = [];
+    var set = function (obj, key, val, label) {
+      var old = String(obj[key] == null ? '' : obj[key]);
+      if (old.trim() !== String(val).trim()) { ch.push({ label: label, from: old, to: String(val) }); obj[key] = val; }
+    };
+    S.basic = S.basic || {}; S.area = S.area || {}; S.market = S.market || {}; S.price = S.price || {};
+    var tb = read.tables || {};
+    (tb.basic || []).forEach(function (r) {
+      [[r[0], r[1]], [r[2], r[3]]].forEach(function (kv) {
+        var k = PPT_BASIC[cleanCell(kv[0])];
+        if (k) set(S.basic, k, cleanCell(kv[1]), cleanCell(kv[0]));
+      });
+    });
+    if (tb.area && tb.area.length >= 2) tb.area[0].forEach(function (lab, i) {
+      var k = PPT_AREA[cleanCell(lab)];
+      if (k) set(S.area, k, numCell(tb.area[1][i]), cleanCell(lab) + '（坪）');
+    });
+    var f = read.fields || {};
+    if ('basic.community' in f && !tb.basic) set(S.basic, 'community', cleanCell(f['basic.community']), '社區名稱');
+    if ('features' in f) {
+      var old = String(S.features || '').split('\n').filter(function (x) { return x.trim(); });
+      var neu = f.features.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+      set(S, 'features', neu.concat(old.slice(5)).join('\n'), '本案特色');
+    }
+    ['market.conclusion', 'price.online', 'price.expect', 'price.analysis', 'price.summary'].forEach(function (k) {
+      if (!(k in f)) return;
+      var parts = k.split('.');
+      var v = /online|expect/.test(k) ? cleanCell(f[k]) : f[k].split('\n').map(function (x) { return x.trim(); }).filter(Boolean).join('\n');
+      set(S[parts[0]], parts[1], v, PPT_LABEL[k]);
+    });
+    // 成交表：第 i 列對應 meta.keys[i] 那一筆；PPT 刪掉的列從報告刪掉，多出來的列新增
+    if (tb.market) {
+      var rows = tb.market.slice(1).filter(function (r) { return cleanCell(r[0]) || numCell(r[5]); })
+        .filter(function (r) { return !/請輸入社區成交紀錄/.test(r[0]); });
+      var keys = (read.meta && read.meta.keys) || [];
+      var list = (S.market.rows || []).slice();
+      var used = {};
+      rows.forEach(function (r, i) {
+        var nr = { ym: cleanCell(r[0]).replace(/[※（(].*$/, ''), floor: cleanCell(r[1]), ping: numCell(r[2]), pping: numCell(r[3]), pprice: numCell(r[4]) || '0', total: numCell(r[5]) };
+        var idx = keys[i] ? list.findIndex(function (x) { return rowKey(x) === keys[i]; }) : -1;
+        if (idx < 0) { list.push(nr); used[list.length - 1] = 1; ch.push({ label: '成交新增', from: '', to: [nr.ym, nr.floor, nr.total + '萬'].join(' ') }); return; }
+        used[idx] = 1;
+        var o = list[idx], diff = [];
+        ['ym', 'floor', 'ping', 'pping', 'pprice', 'total'].forEach(function (k) { if (String(o[k] || '').trim() !== nr[k] && !(k === 'pprice' && !o[k] && nr[k] === '0')) diff.push(k); });
+        if (diff.length) {
+          ch.push({ label: '成交修改 ' + keys[i].split('|').slice(0, 2).join(' '), from: diff.map(function (k) { return o[k]; }).join('／'), to: diff.map(function (k) { return nr[k]; }).join('／') });
+          var upd = Object.assign({}, o, nr);
+          if (diff.indexOf('pprice') >= 0) delete upd.est;
+          list[idx] = upd;
+        }
+      });
+      keys.slice(rows.length).forEach(function (k) {
+        var idx = list.findIndex(function (x) { return rowKey(x) === k; });
+        if (idx >= 0 && !used[idx]) { ch.push({ label: '成交刪除', from: k.split('|').join(' '), to: '' }); list.splice(idx, 1); }
+      });
+      S.market.rows = list;
+    }
+    if (tb.listing) {
+      var ls = tb.listing.slice(1).filter(function (r) { return !/目前無同社區待售/.test(r[0]) && (cleanCell(r[0]) || numCell(r[4])); }).map(function (r, i) {
+        var o = (S.price.listings || [])[i] || {};
+        return Object.assign({}, o, { floor: cleanCell(r[0]).replace(/（樓層特殊）$/, ''), ping: numCell(r[1]), pping: numCell(r[2]), layout: cleanCell(r[3]), price: numCell(r[4]) });
+      });
+      var a = JSON.stringify((S.price.listings || []).map(function (x) { return [x.floor, x.ping, x.layout, x.price]; }));
+      var b = JSON.stringify(ls.map(function (x) { return [x.floor, x.ping, x.layout, x.price]; }));
+      if (a !== b) { ch.push({ label: '待售物件', from: (S.price.listings || []).length + ' 筆', to: ls.length + ' 筆（有修改）' }); S.price.listings = ls; S.market.listing = String(ls.length); }
+    }
+    return { state: S, changes: ch };
+  }
+
   return {
     STD_114: STD_114,
     STD_YEAR: '114',
@@ -344,6 +455,8 @@
     nearbyAutoPick: nearbyAutoPick,
     nearbyUnit: nearbyUnit,
     nearbyStats: nearbyStats,
-    nearbyAddr: nearbyAddr
+    nearbyAddr: nearbyAddr,
+    pptxRead: pptxRead,
+    pptxApply: pptxApply
   };
 });

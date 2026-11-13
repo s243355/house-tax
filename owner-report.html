@@ -182,6 +182,9 @@ table.dt td.hi-g{background:var(--p-grnbg)!important;color:var(--p-grn);font-wei
 table.dt td.em{font-weight:700;color:var(--p-green)}
 table.dt tr.self td{background:var(--p-gsoft)!important;font-weight:700}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pptback{background:var(--card);border:2px solid var(--g);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.pptback table{border-collapse:collapse;width:100%;font-size:13px}.pptback td,.pptback th{border-bottom:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top;white-space:pre-wrap;word-break:break-all}
+.pptback .from{color:var(--muted);text-decoration:line-through}
 .dt.nbt td,.dt.nbt th{padding:5px 3px;line-height:1.3}
 .tile{border:1px solid var(--p-line);border-radius:10px;padding:10px 14px;background:#fff;display:flex;flex-direction:column;gap:2px}
 .tile .l{font-size:14px;color:var(--p-muted);font-weight:700}
@@ -264,12 +267,14 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
     <button id="bJson" type="button">存檔 .json</button>
     <label class="btn" for="fJson">讀檔</label><input type="file" id="fJson" accept=".json,application/json" hidden>
     <button id="bPptx" type="button">下載可編輯 PPTX</button>
+    <label class="btn" for="fPptBack" title="在 PowerPoint 改過的報告讀回工具，改的內容會在存檔時更新店內資料庫">讀回編輯後的 PPT</label><input type="file" id="fPptBack" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
     <button class="pri" id="bPdf" type="button">下載 PDF</button>
   </div>
 </header>
 
 <main class="wrap">
   <section class="form" id="form">
+    <div id="pptBack" class="pptback" hidden></div>
     <p class="web-only ok" id="webNote">網站版：用店長授權的 Google 帳號登入，就能選社區帶入、存檔建檔；謄本與截圖可用自己的 ChatGPT 或 Gemini 辨識後貼回。有 Claude 帳號的同事請用 <a href="https://claude.ai/artifact/N4ruCS68QfU5mP2SU8LQ2R" target="_blank" rel="noopener">Claude 完整版</a>，可直接拍照辨識與 AI 撰寫。</p>
 
     <section class="wz" id="wz" aria-label="快速流程">
@@ -946,7 +951,7 @@ function save(){try{localStorage.setItem('osr-v1',JSON.stringify(S))}catch(e){tr
 function loadState(o){S=deepMerge(blank(),o);bindInputs();drawToggles();drawMkt();drawLst();drawNb();drawThumbs();render()}
 $('#bNew').onclick=()=>{$('#newConfirm').hidden=false;$('#bNew').hidden=true};
 $('#bNewNo').onclick=()=>{$('#newConfirm').hidden=true;$('#bNew').hidden=false};
-$('#bNewYes').onclick=()=>{FLAGS.clear();$('#wzLast').textContent='';$('#allOut').innerHTML='';$('#doneOut').innerHTML='';const a=S.agent,th=S.theme,lg=S.logo;const n=blank();n.agent=a;n.theme=th;n.logo=lg;loadState(n);$('#newConfirm').hidden=true;$('#bNew').hidden=false;toast('已清空，可以開始新案件')};
+$('#bNewYes').onclick=()=>{EDITED_PPT=null;FLAGS.clear();$('#wzLast').textContent='';$('#allOut').innerHTML='';$('#doneOut').innerHTML='';const a=S.agent,th=S.theme,lg=S.logo;const n=blank();n.agent=a;n.theme=th;n.logo=lg;loadState(n);$('#newConfirm').hidden=true;$('#bNew').hidden=false;toast('已清空，可以開始新案件')};
 $('#fJson').onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{try{loadState(JSON.parse(fr.result));toast('已讀入案件')}catch(err){toast('檔案格式不對，請選擇本工具存出的 .json')}};fr.readAsText(f);e.target.value=''};
 
 /* ---------- 匯出 ---------- */
@@ -1172,6 +1177,7 @@ async function saveToDrive(n,pdfBlob,st){if(!DRIVE_FOLDER)return{msg:''};if(!MCP
   try{toast('存到雲端硬碟中…',30000);
    if(pdfBlob)await up(base+'.pdf',{base64Content:await blobB64(pdfBlob),contentMimeType:'application/pdf'});
    try{const pp=await buildPptx();const pb=await pp.write({outputType:'blob'});await up(base+'.pptx',{base64Content:await blobB64(pb),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}
+   if(EDITED_PPT){try{await up(base+'（業務編輯版）.pptx',{base64Content:await blobB64(EDITED_PPT.blob),contentMimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}catch(e){if(e&&e.code)throw e}}
    await up(base+'_資料.json',{textContent:JSON.stringify(st),contentMimeType:'application/json'});
    return{url,msg:`；雲端硬碟已存 ${ok} 個檔案`}}
   catch(e){const c=e&&e.code;return{url,msg:c==='server_not_connected'?'；雲端硬碟未存：請先在 claude.ai 設定 → 連接器加入 Google Drive':c==='not_in_manifest'||c==='approval_required'?'；雲端硬碟未存：需要允許此工具使用 Google Drive':c==='needs_reauth'?'；雲端硬碟未存：Google Drive 連線過期，請重新連接':c==='tool_error'?'；雲端硬碟未存：沒有存檔資料夾的編輯權限，請向店長要權限':`；雲端硬碟未存（已存 ${ok} 個）`}}}
@@ -1328,6 +1334,7 @@ async function doArchiveWeb(){const n=String(S.basic.community||'').trim();if(!n
   try{const files=[];const d=new Date();const ymd=`${d.getFullYear()-1911}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;const base=`${ymd}_${n}_${S.basic.floor||''}_${S.agent.name}`.replace(/[\\/:*?"<>|]/g,'');
    const pdf=await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
    try{toast('產生 PPTX 中…',15000);const pp=await buildPptx();files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(await pp.write({outputType:'blob'}))})}catch(e){}
+   if(EDITED_PPT)files.push({name:base+'（業務編輯版）.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(EDITED_PPT.blob)});
    const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:[],plan:'',map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
    const {commRow,repRow}=sheetRows(n,'');toast('上傳到店內雲端中…',30000);
    const r=await gas({action:'save',...cred(),name:n,commRow,repRow,doc:liteDoc(n),files});
@@ -1504,7 +1511,7 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
   const I=v=>v/96,pt=v=>Math.round(v*0.75*10)/10;
   const im={logo:await imgToData(logoSrc(),600),cover:await Promise.all(S.img.cover.map(u=>imgToData(u))),plan:await imgToData(S.img.plan),map:S.img.map?await imgToData(S.img.map):(S.poi&&S.poi.length?await svgToData(poiMap()):null)};
   const p=new Pptx();p.defineLayout({name:'A4P',width:8.27,height:11.69});p.layout='A4P';p.title=`${S.basic.community||'社區'} 屋主售屋建議報告書`;p.company='信義房屋 文心高工店';p.author=S.agent.name;
-  const T=(sl,text,x,y,w,h,o={})=>sl.addText(text,{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(o.size||15),color:o.color||C.ink,bold:!!o.bold,align:o.align||'left',valign:o.valign||'middle',margin:o.margin??0,fill:o.fill?{color:o.fill}:undefined,line:o.line?{color:o.line,width:o.lw||1}:undefined,rectRadius:o.radius,shape:o.radius?p.ShapeType.roundRect:undefined,paraSpaceAfter:o.psa,lineSpacingMultiple:o.lsm,fit:o.fit});
+  const T=(sl,text,x,y,w,h,o={})=>sl.addText(text,{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(o.size||15),color:o.color||C.ink,bold:!!o.bold,align:o.align||'left',valign:o.valign||'middle',margin:o.margin??0,fill:o.fill?{color:o.fill}:undefined,line:o.line?{color:o.line,width:o.lw||1}:undefined,rectRadius:o.radius,shape:o.radius?p.ShapeType.roundRect:undefined,paraSpaceAfter:o.psa,lineSpacingMultiple:o.lsm,fit:o.fit,objectName:o.name});
   const R=(sl,x,y,w,h,o={})=>sl.addShape(o.radius?p.ShapeType.roundRect:p.ShapeType.rect,{x:I(x),y:I(y),w:I(w),h:I(h),fill:{color:o.fill||C.white},line:o.line?{color:o.line,width:o.lw||1,dashType:o.dash}:{type:'none'},rectRadius:o.radius});
   const pic=(sl,d,x,y,w,h,mode='cover')=>{if(!d)return false;sl.addImage({data:d.data,x:I(x),y:I(y),w:I(w),h:I(h),sizing:{type:mode,w:I(w),h:I(h)}});return true};
   const holder=(sl,txt,x,y,w,h)=>{R(sl,x,y,w,h,{fill:C.gsoft2,line:C.line,dash:'dash',radius:0.06});T(sl,txt,x,y,w,h,{align:'center',color:C.muted,size:15})};
@@ -1517,28 +1524,30 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
   let lastSl=null;const qrImg=S.show.qr?await makeQR().catch(()=>''):'';
   const sh=(sl,t,x,y,w=500,sub)=>{R(sl,x,y+3,10,22,{fill:C.gold});T(sl,t,x+18,y,w,28,{size:21,bold:true,color:C.green});if(sub)T(sl,sub,x+18+t.length*22+8,y+4,200,22,{size:12,color:C.muted})};
   const cell=(t,o={})=>({text:String(t??''),options:{fontFace:F,fontSize:pt(o.size||15),bold:!!o.bold,color:o.color||C.ink,fill:{color:o.fill||C.white},align:o.align||'center',valign:'middle',margin:0.04}});
-  const tbl=(sl,rows,x,y,colW,rowH)=>sl.addTable(rows,{x:I(x),y:I(y),w:I(colW.reduce((a,b)=>a+b,0)),colW:colW.map(I),rowH:I(rowH),border:{type:'solid',pt:0.75,color:C.line},autoPage:false});
+  const tbl=(sl,rows,x,y,colW,rowH,name)=>sl.addTable(rows,{x:I(x),y:I(y),w:I(colW.reduce((a,b)=>a+b,0)),colW:colW.map(I),rowH:I(rowH),border:{type:'solid',pt:0.75,color:C.line},autoPage:false,objectName:name});
   const hdr=t=>cell(t,{fill:C.green,color:'FFFFFF',bold:true,size:14});
-  const bullets=(sl,arr,x,y,w,h,size=16,num=false)=>sl.addText(arr.map(t=>({text:t,options:{bullet:num?{type:'number'}:{code:'25CF'},breakLine:true}})),{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(size),color:C.ink,valign:'top',paraSpaceAfter:4,margin:0.06});
+  const bullets=(sl,arr,x,y,w,h,size=16,num=false,name)=>sl.addText(arr.map(t=>({text:t,options:{bullet:num?{type:'number'}:{code:'25CF'},breakLine:true}})),{x:I(x),y:I(y),w:I(w),h:I(h),fontFace:F,fontSize:pt(size),color:C.ink,valign:'top',paraSpaceAfter:4,margin:0.06,objectName:name});
   const no=secNo();
+  // 讀回編輯後的 PPT 用：記住第一張投影片，最後放一個看不見的對照標記（社區、地址、成交表每列對應哪一筆）
+  let firstSl=null,mktKeys=[];const _add=p.addSlide.bind(p);p.addSlide=(...a)=>{const x=_add(...a);if(!firstSl)firstSl=x;return x};
 
   if(S.show.cover){const sl=p.addSlide();sl.background={color:C.bg};brandRow(sl);const name=S.basic.community||'社區名稱';const fs=name.length<=4?78:name.length<=6?64:48;
-    T(sl,name,40,84,714,fs*1.2,{size:fs,bold:true,color:C.green,align:'center'});const by=84+fs*1.2+18;
+    T(sl,name,40,84,714,fs*1.2,{size:fs,bold:true,color:C.green,align:'center',name:S.basic.community?'f:basic.community':undefined});const by=84+fs*1.2+18;
     T(sl,'屋主售屋建議報告書',60,by,674,72,{size:40,bold:true,color:S.theme==='mono'?'FFFFFF':'FFF7E6',fill:S.theme==='mono'?'111111':C.gold,line:S.theme==='mono'?'111111':'D9B56A',lw:2,radius:0.5,align:'center'});
     T(sl,'社區行情分析・稅費說明・價格建議',40,by+86,714,30,{size:20,bold:true,align:'center'});const py=by+136,ph=1005-24-py;
     if(im.cover.length>=2){pic(sl,im.cover[0],40,py,380,ph);pic(sl,im.cover[1],432,py,322,ph)}else if(im.cover.length===1)pic(sl,im.cover[0],40,py,714,ph);else holder(sl,'放入社區外觀照',40,py,714,ph);foot(sl)}
 
   if(S.show.basic){const sl=p.addSlide();head(sl,`${no.basic}、本戶基本資料與社區配置`);const b=S.basic,a=S.area;
     sh(sl,'本戶基本資料',40,148);const kv=[['社區名稱',b.community,'總樓高',b.floors],['地址',b.address,'本戶樓層',b.floor],['建築完成日',b.built,'格局',b.layout],['用途',b.use,'朝向',b.facing],['房屋類型',b.type,'外牆材質',b.wall],['車位',b.parking,'車位資料',b.parkingNo],['邊間',b.corner,'暗房',b.dark],['警衛管理',b.guard,'','']];
-    tbl(sl,kv.map(r=>[cell(r[0],{fill:C.green,color:'FFFFFF',bold:true,size:13}),cell(r[1]||'—',{align:'left',size:13}),r[2]?cell(r[2],{fill:C.green,color:'FFFFFF',bold:true,size:13}):cell(''),cell(r[2]?(r[3]||'—'):'',{align:'left',size:13})]),40,182,[88,300,88,238],31);
+    tbl(sl,kv.map(r=>[cell(r[0],{fill:C.green,color:'FFFFFF',bold:true,size:13}),cell(r[1]||'—',{align:'left',size:13}),r[2]?cell(r[2],{fill:C.green,color:'FFFFFF',bold:true,size:13}):cell(''),cell(r[2]?(r[3]||'—'):'',{align:'left',size:13})]),40,182,[88,300,88,238],31,'t:basic');
     sh(sl,'面積登記資料',40,452,300,'單位：坪');const ar=[['建物登記坪數',a.total],['主建物',a.main],['公共設施',a.public],['防空避難室兼車位',a.parking],['陽台',a.balcony],['雨遮',a.canopy],['土地登記坪數',a.land]];
-    tbl(sl,[ar.map(x=>hdr(x[0])),ar.map((x,i)=>cell(x[1]?'約'+x[1]:'—',{bold:true,size:16,color:i===0||i===6?C.green:C.ink}))],40,486,Array(7).fill(102),[42,36]);
+    tbl(sl,[ar.map(x=>hdr(x[0])),ar.map((x,i)=>cell(x[1]?'約'+x[1]:'—',{bold:true,size:16,color:i===0||i===6?C.green:C.ink}))],40,486,Array(7).fill(102),[42,36],'t:area');
     sh(sl,'社區樓層配置圖',40,580,330);R(sl,40,614,349,376,{line:C.line,radius:0.08});
     if(!pic(sl,im.plan,48,622,333,360,'contain'))T(sl,'放入樓層配置圖',40,614,349,376,{align:'center',color:C.muted});
     else if(S.planLabel){const bx=48+333*(num(S.planX)||0)/100,byy=622+360*(num(S.planY)||0)/100;T(sl,[{text:'本戶格局',options:{fontSize:10,breakLine:true}},{text:S.planLabel,options:{fontSize:pt(26)}}],bx-48,byy-30,96,60,{color:C.red,bold:true,align:'center',fill:'FFFFFF',line:C.red,lw:2,radius:0.12})}
     sh(sl,'周邊環境與生活機能',405,580,330);const ft=lines(S.features);const mh=ft.length?226:376;R(sl,405,614,349,mh,{line:C.line,radius:0.08});
     if(!pic(sl,im.map,413,622,333,mh-16,'contain'))T(sl,'放入周邊生活機能圖',405,614,349,mh,{align:'center',color:C.muted});
-    if(ft.length){R(sl,405,850,349,140,{line:C.line,radius:0.08});T(sl,'本案特色',419,856,200,24,{size:16,bold:true,color:C.green});bullets(sl,ft.slice(0,5),413,880,333,106,14)}
+    if(ft.length){R(sl,405,850,349,140,{line:C.line,radius:0.08});T(sl,'本案特色',419,856,200,24,{size:16,bold:true,color:C.green});bullets(sl,ft.slice(0,5),413,880,333,106,14,false,'f:features')}
     foot(sl)}
 
   if(S.show.market){const sl=p.addSlide();head(sl,`${no.market}、社區實價登錄行情分析`);const m=mktCalc();const rows=m.rows.slice(0,16);
@@ -1550,10 +1559,10 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
       const parkFill=r.est?(S.theme==='mono'?'F4F4F4':'FFF3CD'):C.white;
       const unitFill=r.noPark?'FDE2E0':hi[0];
       return [cell(r.ym+(r.unreg?'※':'')+(r.skip?'（不列入）':'')),cell(r.floor),cell(r.ping+'坪'),cell(r.pping?r.pping+'坪':'—'),cell((r.pprice||'')+'萬'+(r.est?' 推估·'+estShort(r.estSrc):'')+(r.multiPark?' 可能2車位':''),{fill:parkFill}),cell(r.total+'萬'),cell((isComp(m,r)?'★':'')+fx(r.unit),{bold:true,fill:unitFill,color:r.noPark?'9F1D1D':hi[1]}),cell(fx(r.gross))]}):[[cell('請輸入社區成交紀錄',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell(''),cell(''),cell('')]];
-    const rh=rows.length>12?20:rows.length>10?24:26;tbl(sl,[['成交年月','樓層','房屋坪','車位坪','車位價','總價','拆車單價','含車單價'].map(hdr),...body],40,352,[78,62,86,78,74,78,129,129],[28,...body.map(()=>rh)]);
+    mktKeys=rows.map(OwnerReport.rowKey);const rh=rows.length>12?20:rows.length>10?24:26;tbl(sl,[['成交年月','樓層','房屋坪','車位坪','車位價','總價','拆車單價','含車單價'].map(hdr),...body],40,352,[78,62,86,78,74,78,129,129],[28,...body.map(()=>rh)],'t:market');
     let y=352+28+body.length*rh+8;const notes=[];if(m.skipped)notes.push(`近${m.n}筆均價已排除預售屋／分件登記 ${m.skipped} 筆。`);if(m.noPark)notes.push(`※ ${m.noPark} 筆車位未分開計價，單價未扣車位，請補車位價`);if(m.comp)notes.push(`★ 為與本戶${m.comp.rule}的可比成交，共 ${m.comp.n} 筆，均價 ${fx(m.comp.avg)} 萬／坪。`);const en=estNote(rows);if(en)notes.push(en);if(S.market.asOf)notes.push('資料時間：'+S.market.asOf);if(rows.some(r=>r.unreg))notes.push('※ 為尚未揭露於實價登錄之近期成交行情，僅供參考。');
     if(notes.length){T(sl,notes.join('\n'),40,y,714,notes.length*18,{size:12.5,color:C.muted,align:'center'});y+=notes.length*18+8}
-    const cl=lines(S.market.conclusion);if(cl.length){const h=Math.min(990-y,cl.length*30+24);R(sl,40,y,714,h,{line:C.line,radius:0.08});T(sl,'重點結論',52,y,140,h,{size:22,bold:true,color:C.green,align:'center'});bullets(sl,cl,200,y+10,544,h-16,16)}
+    const cl=lines(S.market.conclusion);if(cl.length){const h=Math.min(990-y,cl.length*30+24);R(sl,40,y,714,h,{line:C.line,radius:0.08});T(sl,'重點結論',52,y,140,h,{size:22,bold:true,color:C.green,align:'center'});bullets(sl,cl,200,y+10,544,h-16,16,false,'f:market.conclusion')}
     foot(sl)}
 
   if(hasNearby()){const sl=p.addSlide();head(sl,`${no.nearby}、周邊同類型行情（近${nbStats().n}筆）`);const m=nbStats();const nb=S.nearby||{};
@@ -1596,20 +1605,47 @@ async function buildPptx(){const Pptx=await loadPptx();const C=PPT_C[S.theme]||P
 
   if(S.show.price){const sl=p.addSlide();head(sl,`${no.price}、待售物件比較與價格建議`);const pr=S.price;
     [['建議網路開價區間',pr.online,pr.onlineNote],['客戶期望價位區間',pr.expect,'']].forEach((b,i)=>{const x=40+i*364;R(sl,x,150,350,112,{line:C.gold,lw:1.5,radius:0.1});
-      T(sl,b[0],x,156,350,26,{size:17,bold:true,color:C.gold,align:'center'});T(sl,b[1]||'—',x,182,350,52,{size:38,bold:true,color:C.green,align:'center'});if(b[2])T(sl,b[2],x,234,350,20,{size:13,color:C.muted,align:'center'})});
+      T(sl,b[0],x,156,350,26,{size:17,bold:true,color:C.gold,align:'center'});T(sl,b[1]||'—',x,182,350,52,{size:38,bold:true,color:C.green,align:'center',name:i?'f:price.expect':'f:price.online'});if(b[2])T(sl,b[2],x,234,350,20,{size:13,color:C.muted,align:'center'})});
     sh(sl,'同社區目前待售比較',40,280);
     const ls=pr.listings.filter(r=>r.floor||r.price);const body=ls.length?ls.map(r=>{const self=sameHouse(r);const u=listUnit(r);const f=self?C.gsoft:C.white;const uf=u.est?(S.theme==='mono'?'F4F4F4':'FFF3CD'):f;
       return [cell(r.floor+(oddFloor(r)?'（樓層特殊）':''),{fill:f,bold:self}),cell((r.ping||'')+'坪',{fill:f,bold:self}),cell(r.pping?r.pping+'坪':'—',{fill:f}),cell(r.layout,{fill:f}),cell('開價'+r.price+'萬',{fill:f,bold:true,color:C.green}),cell(fx(u.unit)+(u.est?'＊':''),{fill:uf,bold:true})]}):[[cell('目前無同社區待售資料',{color:C.muted}),cell(''),cell(''),cell(''),cell(''),cell('')]];
-    tbl(sl,[['樓層','房屋坪','車位坪','格局','開價','開價扣車單價'].map(hdr),...body],40,314,[90,90,80,150,154,150],[28,...body.map(()=>26)]);let y=314+28+body.length*26+14;
-    const an=lines(pr.analysis);const sumH=pr.summary?84:0;if(an.length){sh(sl,'分析與建議',40,y);y+=34;const h=Math.min(990-sumH-12-y,an.length*44+16);R(sl,40,y,714,h,{line:C.line,radius:0.08});bullets(sl,an,52,y+6,690,h-12,16,true);y+=h+12}
-    if(pr.summary)T(sl,pr.summary,40,Math.min(y,990-sumH),714,sumH-6,{size:17,bold:true,color:S.theme==='mono'?C.ink:'FFFFFF',fill:S.theme==='mono'?'FFFFFF':C.green,line:S.theme==='mono'?'111111':undefined,lw:2,radius:0.1,margin:0.18});
+    tbl(sl,[['樓層','房屋坪','車位坪','格局','開價','開價扣車單價'].map(hdr),...body],40,314,[90,90,80,150,154,150],[28,...body.map(()=>26)],'t:listing');let y=314+28+body.length*26+14;
+    const an=lines(pr.analysis);const sumH=pr.summary?84:0;if(an.length){sh(sl,'分析與建議',40,y);y+=34;const h=Math.min(990-sumH-12-y,an.length*44+16);R(sl,40,y,714,h,{line:C.line,radius:0.08});bullets(sl,an,52,y+6,690,h-12,16,true,'f:price.analysis');y+=h+12}
+    if(pr.summary)T(sl,pr.summary,40,Math.min(y,990-sumH),714,sumH-6,{size:17,bold:true,color:S.theme==='mono'?C.ink:'FFFFFF',fill:S.theme==='mono'?'FFFFFF':C.green,line:S.theme==='mono'?'111111':undefined,lw:2,radius:0.1,margin:0.18,name:'f:price.summary'});
     foot(sl)}
+  if(firstSl)firstSl.addShape(p.ShapeType.rect,{x:0,y:0,w:0.01,h:0.01,fill:{color:'FFFFFF',transparency:100},line:{type:'none'},objectName:'ormeta:'+JSON.stringify({v:1,community:S.basic.community||'',address:S.basic.address||'',at:new Date().toISOString().slice(0,10),keys:mktKeys})});
   if(lastSl&&qrImg){lastSl.addImage({data:qrImg,x:I(700),y:I(1012),w:I(78),h:I(78)});lastSl.addText('LINE 房價諮詢',{x:I(684),y:I(1092),w:I(110),h:I(18),fontFace:F,fontSize:pt(11.5),bold:true,color:C.bandInk,align:'center',margin:0})}
   return p}
 async function exportPptx(){const btn=$('#bPptx');btn.disabled=true;toast('產生可編輯 PPTX 中…',15000);
   try{const p=await buildPptx();const blob=await p.write({outputType:'blob'});await saveFile(`${baseName()}.pptx`,blob)}
   catch(e){console.error(e);toast('PPTX 產生失敗，請重新整理後再試')}finally{btn.disabled=false}}
 $('#bPptx').onclick=exportPptx;
+
+/* ==================== 讀回編輯後的 PPT ==================== */
+// 業務在 PowerPoint 改過的報告：依物件名稱把文字對回欄位，列出改了哪些給同仁確認，套用後按「完成並存檔」就會更新店內資料庫；編輯版 PPT 本身也一起存進雲端
+let EDITED_PPT=null;
+async function loadZip(){if(window.JSZip)return window.JSZip;await addScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');return window.JSZip}
+async function readPptx(file){const Z=await loadZip();const zip=await Z.loadAsync(await file.arrayBuffer());
+  const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>+a.match(/\d+/)[0]-+b.match(/\d+/)[0]);
+  const xmls=[];for(const n of names)xmls.push(await zip.file(n).async('string'));return OwnerReport.pptxRead(xmls)}
+const PB_FIELD={basic:'#i-b-address',area:'#i-a-total',features:'#i-features','market':'#mktTb','price':'#i-p-online'};
+$('#fPptBack').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const box=$('#pptBack');box.hidden=false;box.innerHTML='<p class="hint">讀取 PPT 中…</p>';
+  try{const r=await readPptx(f);const meta=r.meta;
+    if(!meta&&!Object.keys(r.fields).length&&!Object.keys(r.tables).length){box.innerHTML='<p class="warn">這份 PPT 不是用本工具「下載可編輯 PPTX」產生的，讀不到欄位。</p><div class="row"><button class="sm" type="button" id="bPbClose">關閉</button></div>';$('#bPbClose').onclick=()=>{box.hidden=true};return}
+    const cur=String(S.basic.community||'').trim(),their=String((meta&&meta.community)||'').trim();
+    const mismatch=cur&&their&&!sameName(cur,their);
+    if(mismatch){box.innerHTML=`<p class="warn">這份 PPT 是「${esc(their)}」${meta.address?`（${esc(meta.address)}）`:''}的報告，工具目前開的是「${esc(cur)}」。請先打開那份報告（「讀檔」或「我存過的報告」），再讀回 PPT。</p><div class="row"><button class="sm" type="button" id="bPbClose">關閉</button></div>`;$('#bPbClose').onclick=()=>{box.hidden=true};return}
+    const res=OwnerReport.pptxApply(S,r);
+    if(!res.changes.length){EDITED_PPT={name:f.name,blob:f};box.innerHTML=`<p class="ok">PPT 的內容和工具裡一樣，沒有需要更新的欄位。編輯版 PPT 會在「完成並存檔」時一起存進雲端。</p><div class="row"><button class="sm" type="button" id="bPbClose">關閉</button></div>`;$('#bPbClose').onclick=()=>{box.hidden=true};return}
+    box.innerHTML=`<b>從「${esc(f.name)}」讀回 ${res.changes.length} 項修改${their?`（${esc(their)}${meta.at?`，${esc(meta.at)} 下載`:''}）`:''}</b>
+      <div class="tbwrap"><table><tr><th>欄位</th><th>原本</th><th>PPT 改成</th></tr>${res.changes.map(c=>`<tr><td>${esc(c.label)}</td><td class="from">${esc(c.from)||'（空白）'}</td><td>${esc(c.to)||'（刪除）'}</td></tr>`).join('')}</table></div>
+      <p class="hint">稅費、單價、均價這些是工具算的，不會從 PPT 讀回；照片沿用工具目前的。套用後按第 3 步「完成並存檔」，店內資料庫和雲端資料夾就會更新，編輯版 PPT 也會一起存。</p>
+      <div class="row"><button class="sm pri" type="button" id="bPbApply">套用這些修改</button><button class="sm" type="button" id="bPbClose">取消</button></div>`;
+    $('#bPbClose').onclick=()=>{box.hidden=true};
+    $('#bPbApply').onclick=()=>{const keepImg=S.img,keepLogo=S.logo;S=res.state;S.img=keepImg;S.logo=keepLogo;EDITED_PPT={name:f.name,blob:f};
+      bindInputs();drawMkt();drawLst();drawNb();drawThumbs();render();box.innerHTML=`<p class="ok">已套用 ${res.changes.length} 項修改。按第 3 步「完成並存檔」更新店內資料庫，編輯版 PPT 會一起存進雲端。</p><div class="row"><button class="sm pri" type="button" id="bPbGo">前往完成並存檔</button><button class="sm" type="button" id="bPbClose">關閉</button></div>`;
+      $('#bPbClose').onclick=()=>{box.hidden=true};$('#bPbGo').onclick=()=>{box.hidden=true;$('#wz3').scrollIntoView({behavior:'smooth',block:'start'})}}}
+  catch(err){console.error(err);box.innerHTML='<p class="warn">讀不到這份 PPT，請確認是 .pptx 檔（不是 .ppt 或 PDF）。</p><div class="row"><button class="sm" type="button" id="bPbClose">關閉</button></div>';$('#bPbClose').onclick=()=>{box.hidden=true}}};
 
 /* ==================== 三步驟快速流程 ==================== */
 // 行情資訊表只需要前 3 頁（同社區＋周邊同類型），後面是成交物件附件

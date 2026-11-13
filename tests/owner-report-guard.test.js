@@ -123,6 +123,33 @@ const L = require(path.join(root, 'owner-report-logic.js'));
     assert.ok(html2.includes('「周邊同類型」區塊（序號 C 開頭）只放 nearby.rows'), '辨識時周邊成交不可混進社區實價登錄');
   }
 
+  // ---------- 讀回編輯後的 PPT（工具下載 → 改 5 處 → LibreOffice 另存）----------
+  {
+    const fx = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/ppt-edited-libreoffice.json'), 'utf8'));
+    const read = L.pptxRead(fx.slides);
+    assert.ok(read.meta && read.meta.community === '泰鉅綠豐華', '要讀到看不見的對照標記');
+    assert.deepStrictEqual(read.meta.keys, ['114/04|7樓|1400', '113/06|4樓|1850', '113/06|3樓|1336']);
+    const base = { basic: { community: '泰鉅綠豐華', address: '台中市南區工學路155巷16號9樓', floor: '9樓', layout: '2房2廳1衛', floors: '12樓', use: '住宅', type: '大樓', dark: '無', guard: '全天候' },
+      area: { total: '37.17', parking: '4.9', land: '5.74' }, features: '近工學市場\n近樹義國小\n社區管理佳',
+      market: { rows: [{ ym: '114/04', floor: '7樓', ping: '32.27', pping: '4.9', pprice: '80', total: '1400', est: 1 }, { ym: '113/06', floor: '4樓', ping: '43.3', pping: '9.8', pprice: '190', total: '1850' }, { ym: '113/06', floor: '3樓', ping: '31.83', pping: '4.9', pprice: '80', total: '1336' }], conclusion: '近三年 3 筆\n單價約 39～41 萬' },
+      price: { online: '1500～1550萬', expect: '1380～1420萬', analysis: '樓層居中\n採光佳', summary: '建議先以 1520 萬開價', listings: [{ floor: '1樓', ping: '40.03', pping: '4.9', layout: '3房2廳2衛', price: '1850' }] } };
+    const res = L.pptxApply(base, read);
+    assert.deepStrictEqual(res.changes.map((c) => c.label), ['地址', '社區重點結論', '建議網路開價', '總結', '成交修改 114/04 7樓'], '只抓到真的改過的 5 處，沒改的不可誤判');
+    assert.strictEqual(res.state.basic.address, '台中市南區工學路155巷16號9樓之2');
+    assert.strictEqual(res.state.market.rows[0].total, '1410');
+    assert.strictEqual(res.state.market.rows[0].est, 1, '只改總價，車位推估標記保留');
+    assert.strictEqual(res.state.price.summary, '建議先以 1560 萬開價，兩週後檢討');
+    assert.strictEqual(res.state.features, base.features, '特色沒改就不動');
+    // 在 PPT 刪掉一列成交 → 報告也刪掉
+    const cut = JSON.parse(JSON.stringify(read)); cut.tables.market.splice(3, 1);
+    const r2 = L.pptxApply(base, cut);
+    assert.ok(r2.changes.some((c) => c.label === '成交刪除'));
+    assert.strictEqual(r2.state.market.rows.length, 2);
+    const html3 = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
+    assert.ok(html3.includes("objectName:'ormeta:'"), '下載的 PPT 要帶對照標記');
+    assert.ok(html3.includes("（業務編輯版）.pptx"), '存檔時編輯版 PPT 要一起存');
+  }
+
   // ---------- 頁面接線：B 方案條件、換社區、信義對照 ----------
   const html = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
   assert.ok(html.includes('const showB=!hoUserNo()&&('), '自住清單選「不符合」時，強制顯示也不列 B 方案');
