@@ -1,0 +1,4 @@
+https://res.sinyi.com.tw/res/images/go-to-icon.svg
+https://res.sinyi.com.tw/res/images/ic-searchButtonLogo.png
+https://res.sinyi.com.tw/res/images/ic-sinyi-favicon.ico
+https://res.sinyi.com.tw/res/images/img-sinyi-logo-green.png
