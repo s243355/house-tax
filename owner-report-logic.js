@@ -269,6 +269,48 @@
     return { ok: byAddr, by: byAddr ? 'address' : '' };
   }
 
+  // ---------- 周邊同類型行情（信義市場行情系統「不動產行情資訊表」）----------
+  var NEAR_SPECIAL = /親友|員工|共有人|特殊關係|二親等|關係人|債權債務|法拍|政府機關/;
+  function nnum(v) { var n = parseFloat(half(v).replace(/[,，萬元坪\s◆]/g, '')); return isFinite(n) ? n : NaN; }
+  function nearbySpecial(r) { return NEAR_SPECIAL.test(String((r && r.note) || '')); }
+  // 依行情表原本順序（距離近到遠、近期優先）挑前 n 筆，略過親友、特殊關係等交易
+  function nearbyAutoPick(rows, n) {
+    var k = 0, lim = n || 10;
+    return (rows || []).map(function (r) {
+      var pick = !nearbySpecial(r) && k < lim && isFinite(nnum(r.total)) && nnum(r.ping) > 0;
+      if (pick) k += 1;
+      return Object.assign({}, r, { pick: pick });
+    });
+  }
+  // 拆車單價＝（總價－車位價）÷（建坪－車位坪）；沒有車位＝總價÷建坪；有車位坪卻沒有車位價＝無法拆車
+  function nearbyUnit(r) {
+    var t = nnum(r.total), pg = nnum(r.ping), pp = nnum(r.pping), pr = nnum(r.pprice);
+    var gross = isFinite(t) && pg > 0 ? t / pg : NaN;
+    if (!(pp > 0)) return { split: gross, gross: gross, noPark: false, est: false };
+    if (pr > 0 && pg - pp > 0) return { split: (t - pr) / (pg - pp), gross: gross, noPark: false, est: !!r.pest && r.pest !== 'false' };
+    return { split: NaN, gross: gross, noPark: true, est: false };
+  }
+  function nearbyStats(rows) {
+    var all = rows || [];
+    var picked = all.filter(function (r) { return r.pick; }).map(function (r) { return Object.assign({}, r, nearbyUnit(r)); });
+    var us = picked.map(function (r) { return r.split; }).filter(isFinite);
+    return {
+      rows: picked, n: picked.length, total: all.length,
+      special: all.filter(nearbySpecial).length,
+      avg: us.length ? us.reduce(function (a, b) { return a + b; }, 0) / us.length : NaN,
+      max: us.length ? Math.max.apply(null, us) : NaN,
+      min: us.length ? Math.min.apply(null, us) : NaN,
+      est: picked.filter(function (r) { return r.est; }).length,
+      noPark: picked.filter(function (r) { return r.noPark; }).length
+    };
+  }
+  // 報告上的地址：去掉縣市與樓層（樓層另一欄），例「台中市南區德富路30號十四樓之5」→「南區德富路30號」
+  function nearbyAddr(a) {
+    var s = half(a).replace(/\s/g, '').replace(/^(台中市|臺中市)/, '');
+    var m = s.match(/^(.*?\d+(?:之\d+)?號)/);
+    return m ? m[1] : s;
+  }
+
   return {
     STD_114: STD_114,
     STD_YEAR: '114',
@@ -297,6 +339,11 @@
     hoStatus: hoStatus,
     normAddr: normAddr,
     doorOf: doorOf,
-    sinyiMatch: sinyiMatch
+    sinyiMatch: sinyiMatch,
+    nearbySpecial: nearbySpecial,
+    nearbyAutoPick: nearbyAutoPick,
+    nearbyUnit: nearbyUnit,
+    nearbyStats: nearbyStats,
+    nearbyAddr: nearbyAddr
   };
 });

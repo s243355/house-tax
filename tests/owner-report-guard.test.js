@@ -97,6 +97,32 @@ const L = require(path.join(root, 'owner-report-logic.js'));
     globalThis.fetch = realFetch2;
   }
 
+  // ---------- 周邊同類型行情（信義不動產行情資訊表，德富路60號實例）----------
+  {
+    const nb = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/nearby-defu60.json'), 'utf8'));
+    const picked = L.nearbyAutoPick(nb.rows, 10);
+    assert.deepStrictEqual(picked.filter((r) => r.pick).map((r) => r.seq), ['C01', 'C02', 'C03', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11'], '依表上順序取 10 筆、略過親友交易 C04');
+    const st = L.nearbyStats(picked);
+    assert.strictEqual(st.n, 10);
+    assert.strictEqual(st.special, 1);
+    const u = (seq) => st.rows.find((r) => r.seq === seq);
+    // 和行情表上 ◆ 拆車單價一致
+    assert.strictEqual(u('C01').split.toFixed(2), '50.52');
+    assert.strictEqual(u('C03').split.toFixed(2), '39.91');
+    assert.strictEqual(u('C09').split.toFixed(2), '17.56');
+    assert.strictEqual(u('C10').split.toFixed(2), '30.92');
+    assert.strictEqual(u('C02').split.toFixed(2), '30.79', '沒有車位＝總價÷建坪');
+    assert.ok(u('C01').est && !u('C02').est);
+    assert.ok(u('C06').noPark && u('C11').noPark, '有車位坪沒車位價＝無法拆車');
+    assert.strictEqual(st.noPark, 2);
+    assert.strictEqual(L.nearbyAddr('台中市南區德富路30號十四樓之5'), '南區德富路30號');
+    assert.strictEqual(L.nearbyAddr('台中市南區德祥街15巷9號5樓之1'), '南區德祥街15巷9號');
+    const html2 = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
+    assert.ok(html2.includes('周邊同類型行情（近${m.n}筆）'), '要有自己的標題');
+    assert.ok(html2.includes("if(hasNearby())out.push(['nearby',pNearby(no.nearby)])"), '有資料才加這一頁，放在社區實價登錄後面');
+    assert.ok(html2.includes('「周邊同類型」區塊（序號 C 開頭）只放 nearby.rows'), '辨識時周邊成交不可混進社區實價登錄');
+  }
+
   // ---------- 頁面接線：B 方案條件、換社區、信義對照 ----------
   const html = fs.readFileSync(path.join(root, 'owner-report.html'), 'utf8');
   assert.ok(html.includes('const showB=!hoUserNo()&&('), '自住清單選「不符合」時，強制顯示也不列 B 方案');

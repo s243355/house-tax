@@ -1,0 +1,13 @@
+{"subject":"台中市南區德富路60號 2樓之2","radius":"500公尺","asOf":"列表時間 115/11/10","rows":[
+{"seq":"C01","dist":"100m以內","ym":"115/08","addr":"台中市南區德富路30號十四樓之5","floor":"14/15","total":"2498","ping":"60.89","pping":"16.12","pprice":"236","pest":true,"layout":"3/2/2","age":"9.92","note":null},
+{"seq":"C02","dist":"200~300m","ym":"115/08","addr":"台中市南區文心南路550號9樓之1","floor":"9/14","total":"900","ping":"29.23","pping":"0","pprice":null,"pest":false,"layout":"2/2/2","age":"27.83","note":null},
+{"seq":"C03","dist":"300~500m","ym":"115/08","addr":"台中市南區建國南路一段228號十樓之3","floor":"10/15","total":"2220","ping":"60.03","pping":"7.28","pprice":"115","pest":true,"layout":"4/2/2","age":"13.17","note":null},
+{"seq":"C04","dist":"300~500m","ym":"115/09","addr":"台中市南區東興路一段20號二十樓之六","floor":"20/32","total":"400","ping":"15.78","pping":"0","pprice":null,"pest":false,"layout":"3/2/2","age":"20.25","note":"親友、員工、共有人或其他特殊關係間之交易"},
+{"seq":"C05","dist":"300~500m","ym":"115/08","addr":"台中市南區東興路一段20號二十四樓之五","floor":"24/32","total":"865","ping":"38.44","pping":"0","pprice":null,"pest":false,"layout":"3/2/2","age":"20.17","note":"陽台外推"},
+{"seq":"C06","dist":"300~500m","ym":"115/08","addr":"台中市南區東興路一段20號三樓之六","floor":"3/32","total":"1060","ping":"44.52","pping":"1.32","pprice":null,"pest":false,"layout":"3/2/2","age":"20.17","note":null},
+{"seq":"C07","dist":"100m以內","ym":"114/11","addr":"台中市南區德富路26號十五樓之2","floor":"15/15","total":"3670","ping":"92.25","pping":"16.12","pprice":"236","pest":true,"layout":"3/2/3","age":"9.17","note":null},
+{"seq":"C08","dist":"100m以內","ym":"115/06","addr":"台中市南區德富路89號6樓之1","floor":"6/8","total":"770","ping":"33.09","pping":"0","pprice":null,"pest":false,"layout":"3/2/2","age":"28.42","note":"陽台外推"},
+{"seq":"C09","dist":"100m以內","ym":"114/11","addr":"台中市南區德祥街15巷9號5樓之1","floor":"5/9","total":"710","ping":"39.07","pping":"4.34","pprice":"100","pest":true,"layout":"3/1/2","age":"28.83","note":"社區名稱：文心大鎮"},
+{"seq":"C10","dist":"100~200m","ym":"115/03","addr":"台中市南區建國南路一段173號5樓","floor":"5/12","total":"1120","ping":"43.95","pping":"11.61","pprice":"120","pest":true,"layout":"3/2/2","age":"34.33","note":null},
+{"seq":"C11","dist":"100~200m","ym":"114/11","addr":"台中市南區建國南路一段133號十一樓之9","floor":"11/15","total":"2500","ping":"46.37","pping":"8.08","pprice":null,"pest":false,"layout":"3/2/2","age":"2.08","note":null},
+{"seq":"C12","dist":"100~200m","ym":"114/12","addr":"台中市南區德富路122號4樓之3","floor":"4/14","total":"996","ping":"33.21","pping":"0","pprice":null,"pest":false,"layout":"3/2/2","age":"25.58","note":"夾層"}]}
