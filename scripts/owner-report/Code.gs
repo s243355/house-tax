@@ -76,6 +76,7 @@ function doPost(e) {
   if (action === 'whoami') return out_({ ok: true, user: u });
   if (action === 'list') return u.pick ? list_() : out_({ ok: false, error: 'perm' });
   if (action === 'my_reports') return u.read ? myReports_(u) : out_({ ok: false, error: 'perm' });
+  if (action === 'open_report') return u.read ? openReport_(u, body.row) : out_({ ok: false, error: 'perm' });
   if (action === 'save') return u.save ? save_(body, u) : out_({ ok: false, error: 'perm' });
   return out_({ ok: false, error: 'action' });
 }
@@ -160,10 +161,28 @@ function myReports_(u) {
   const last = sh.getLastRow();
   if (last < 2) return out_({ ok: true, reports: [] });
   const rows = sh.getRange(2, 1, last - 1, REP_EMAIL).getValues();
-  const mine = rows.filter(function (r) { return u.admin || normEmail_(r[REP_EMAIL - 1]) === u.email; }).map(function (r) {
-    return { at: String(r[0]), agent: r[1], community: r[2], address: r[3], floor: r[4], online: r[14], expect: r[15], url: r[17] };
-  }).reverse().slice(0, 200);
-  return out_({ ok: true, reports: mine });
+  const mine = [];
+  rows.forEach(function (r, i) {
+    if (!(u.admin || normEmail_(r[REP_EMAIL - 1]) === u.email)) return;
+    mine.push({ row: i + 2, at: String(r[0]), agent: r[1], community: r[2], address: r[3], floor: r[4], online: r[14], expect: r[15], url: r[17] });
+  });
+  return out_({ ok: true, reports: mine.reverse().slice(0, 200) });
+}
+
+/* ---------- 打開存過的報告：回傳那次存檔的完整資料（雲端資料夾裡的「_資料.json」）---------- */
+function openReport_(u, row) {
+  const n = parseInt(row, 10);
+  const sh = ss_().getSheetByName(REPORTS);
+  if (!(n >= 2 && n <= sh.getLastRow())) return out_({ ok: false, error: 'row' });
+  const r = sh.getRange(n, 1, 1, REP_EMAIL).getValues()[0];
+  if (!(u.admin || normEmail_(r[REP_EMAIL - 1]) === u.email)) return out_({ ok: false, error: 'perm' });
+  const m = String(r[17] || '').match(/[-\w]{25,}/);
+  if (!m) return out_({ ok: false, error: 'nofile' });
+  let base = '';
+  try { base = DriveApp.getFileById(m[0]).getName().replace(/\.[^.]+$/, ''); } catch (err) { return out_({ ok: false, error: 'nofile' }); }
+  const it = DriveApp.getFolderById(FOLDER_ID).getFilesByName(base + '_資料.json');
+  if (!it.hasNext()) return out_({ ok: false, error: 'nofile' });
+  return out_({ ok: true, name: base, state: it.next().getBlob().getDataAsString('UTF-8') });
 }
 
 /* ---------- 存檔 ---------- */

@@ -182,6 +182,8 @@ table.dt td.hi-g{background:var(--p-grnbg)!important;color:var(--p-grn);font-wei
 table.dt td.em{font-weight:700;color:var(--p-green)}
 table.dt tr.self td{background:var(--p-gsoft)!important;font-weight:700}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.more{position:relative;background:none;border:0}.more>summary{list-style:none;display:inline-block}.more>summary::-webkit-details-marker{display:none}
+.more .menu{position:absolute;right:0;top:calc(100% + 4px);z-index:30;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
 .pptback{background:var(--card);border:2px solid var(--g);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .pptback table{border-collapse:collapse;width:100%;font-size:13px}.pptback td,.pptback th{border-bottom:1px solid var(--line);padding:5px 4px;text-align:left;vertical-align:top;white-space:pre-wrap;word-break:break-all}
 .pptback .from{color:var(--muted);text-decoration:line-through}
@@ -264,10 +266,10 @@ ol.nl .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--p-green);c
   <div class="acts">
     <button id="bNew" type="button">新案件</button>
     <span class="confirm" id="newConfirm" hidden>清空目前資料？<button class="sm" id="bNewYes" type="button">清空</button><button class="sm" id="bNewNo" type="button">取消</button></span>
-    <button id="bJson" type="button">存檔 .json</button>
-    <label class="btn" for="fJson">讀檔</label><input type="file" id="fJson" accept=".json,application/json" hidden>
+    <label class="btn" for="fOpen" title="選 .pptx：讀回在 PowerPoint 改過的報告；選 .json：讀入整份報告備份">開啟檔案（PPT／備份）</label><input type="file" id="fOpen" accept=".pptx,.json,application/json,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden aria-label="開啟檔案（PPT 或備份 .json）">
+    <input type="file" id="fJson" accept=".json,application/json" hidden aria-label="讀入報告備份 .json"><input type="file" id="fPptBack" accept=".pptx" hidden aria-label="讀回編輯後的 PPT">
     <button id="bPptx" type="button">下載可編輯 PPTX</button>
-    <label class="btn" for="fPptBack" title="在 PowerPoint 改過的報告讀回工具，改的內容會在存檔時更新店內資料庫">讀回編輯後的 PPT</label><input type="file" id="fPptBack" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hidden>
+    <details class="more"><summary class="btn">更多</summary><div class="menu"><button id="bJson" type="button">下載備份 .json</button></div></details>
     <button class="pri" id="bPdf" type="button">下載 PDF</button>
   </div>
 </header>
@@ -1335,15 +1337,23 @@ async function doArchiveWeb(){const n=String(S.basic.community||'').trim();if(!n
    const pdf=await makePdfBlob(1.5);files.push({name:base+'.pdf',mime:'application/pdf',b64:await blobB64(pdf)});
    try{toast('產生 PPTX 中…',15000);const pp=await buildPptx();files.push({name:base+'.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(await pp.write({outputType:'blob'}))})}catch(e){}
    if(EDITED_PPT)files.push({name:base+'（業務編輯版）.pptx',mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation',b64:await blobB64(EDITED_PPT.blob)});
-   const st=JSON.parse(JSON.stringify(S));st.logo='';st.img={cover:[],plan:'',map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
+   const st=JSON.parse(JSON.stringify(S));st.logo='';const isUrl=u=>typeof u==='string'&&!/^data:|^blob:/.test(u)&&u.length<2000;st.img={cover:(S.img.cover||[]).filter(isUrl),plan:isUrl(S.img.plan)?S.img.plan:'',map:isUrl(S.img.map)?S.img.map:''};files.push({name:base+'_資料.json',mime:'application/json',b64:btoa(unescape(encodeURIComponent(JSON.stringify(st))))});
    const {commRow,repRow}=sheetRows(n,'');toast('上傳到店內雲端中…',30000);
    const r=await gas({action:'save',...cred(),name:n,commRow,repRow,doc:liteDoc(n),files});
    if(!r.ok)throw new Error(r.error||'fail');toast(`已存檔到店內雲端，「${n}」社區資料已同步建檔`,6000);if(WEBUSER.pick)loadWebLib();if(WEBUSER.read)loadMyReports();return true}
   catch(e){toast(ERRS[e&&e.message]||'存檔失敗，請稍後再試；可以先按「存檔 .json」留底',6000);return false}finally{btn.disabled=false}}
 $('#bWebArchive').onclick=doArchiveWeb;
 async function loadMyReports(){const box=$('#myRepList');box.innerHTML='<p class="hint">讀取中…</p>';try{const r=await gas({action:'my_reports',...cred()});if(!r.ok){box.innerHTML=`<p class="warn">${esc(ERRS[r.error]||'讀取失敗')}</p>`;return}
-  box.innerHTML=r.reports.length?`<div class="tbwrap"><table class="tb"><tr><th>存檔時間</th><th>社區／樓層</th><th>開價區間</th><th></th></tr>${r.reports.map(x=>`<tr><td>${esc(x.at)}</td><td>${esc(x.community)} ${esc(x.floor)}</td><td>${esc(x.online||'—')}</td><td>${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">開啟</a>`:''}</td></tr>`).join('')}</table></div>`:'<p class="hint">還沒有存過報告。</p>'}catch(e){box.innerHTML='<p class="warn">連不上店內資料庫。</p>'}}
+  box.innerHTML=r.reports.length?`<div class="tbwrap"><table class="tb"><tr><th>存檔時間</th><th>社區／樓層</th><th>開價區間</th><th></th></tr>${r.reports.map(x=>`<tr><td>${esc(x.at)}</td><td>${esc(x.community)} ${esc(x.floor)}</td><td>${esc(x.online||'—')}</td><td>${x.row?`<button class="sm pri" type="button" data-openrep="${esc(x.row)}">打開到工具</button> `:''}${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">看 PDF</a>`:''}</td></tr>`).join('')}</table></div>`:'<p class="hint">還沒有存過報告。</p>'}catch(e){box.innerHTML='<p class="warn">連不上店內資料庫。</p>'}}
 $('#bMyRep').onclick=loadMyReports;
+// 打開存過的報告：從雲端讀回那次存檔的完整資料；目前草稿有別的社區時，要再按一次確認
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-openrep]');if(!b)return;
+  const cur=String(S.basic.community||'').trim();if(cur&&!b.dataset.sure){b.dataset.sure='1';b.textContent='再按一次：覆蓋目前草稿（'+cur+'）';return}
+  b.disabled=true;b.textContent='讀取中…';
+  try{const r=await gas({action:'open_report',row:b.dataset.openrep,...cred()});
+    if(!r.ok){toast(ERRS[r.error]||(r.error==='nofile'?'找不到這份報告的完整資料（較早的存檔可能沒有），請改用 PDF。':'讀取失敗'),5000);b.disabled=false;b.textContent='打開到工具';delete b.dataset.sure;return}
+    loadState(JSON.parse(r.state));EDITED_PPT=null;toast(`已打開「${r.name}」。在 PowerPoint 改過的話，按上方「開啟檔案」選那份 PPT。`,6000);window.scrollTo({top:0,behavior:'smooth'})}
+  catch(err){toast('讀取失敗，請稍後再試');b.disabled=false;b.textContent='打開到工具';delete b.dataset.sure}});
 /* 店長授權管理 */
 let ADMIN='';
 function permBoxes(u,i){return ['read','pick','save'].map((k,j)=>`<td style="text-align:center"><input type="checkbox" id="au-${i}-${k}" aria-label="${['讀取','挑選社區','存檔'][j]}" ${u[k]?'checked':''} style="width:auto;min-width:0"></td>`).join('')}
@@ -1629,6 +1639,9 @@ async function readPptx(file){const Z=await loadZip();const zip=await Z.loadAsyn
   const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>+a.match(/\d+/)[0]-+b.match(/\d+/)[0]);
   const xmls=[];for(const n of names)xmls.push(await zip.file(n).async('string'));return OwnerReport.pptxRead(xmls)}
 const PB_FIELD={basic:'#i-b-address',area:'#i-a-total',features:'#i-features','market':'#mktTb','price':'#i-p-online'};
+// 上方「開啟檔案」：.pptx 走讀回修改，.json 走整份讀入
+$('#fOpen').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const isPpt=/\.pptx$/i.test(f.name)||/presentationml/.test(f.type);
+  const t=isPpt?$('#fPptBack'):$('#fJson');const dt=new DataTransfer();dt.items.add(f);t.files=dt.files;t.dispatchEvent(new Event('change'));$('.more')&&($('.more').open=false)};
 $('#fPptBack').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const box=$('#pptBack');box.hidden=false;box.innerHTML='<p class="hint">讀取 PPT 中…</p>';
   try{const r=await readPptx(f);const meta=r.meta;
     if(!meta&&!Object.keys(r.fields).length&&!Object.keys(r.tables).length){box.innerHTML='<p class="warn">這份 PPT 不是用本工具「下載可編輯 PPTX」產生的，讀不到欄位。</p><div class="row"><button class="sm" type="button" id="bPbClose">關閉</button></div>';$('#bPbClose').onclick=()=>{box.hidden=true};return}
