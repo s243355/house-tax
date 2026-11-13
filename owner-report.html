@@ -33,12 +33,7 @@
   --f-sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-serif:"Noto Serif TC","PMingLiU",serif;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#101512; --card:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2b3730;
-  --g:#62c08a; --g-soft:#1c3226; --gold:#d6ad5e; --warn:#f0a36f; --warn-soft:#3a2416; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#101512; --card:#18201b; --ink:#e4ebe6; --muted:#9aa89f; --line:#2b3730;
-  --g:#62c08a; --g-soft:#1c3226; --gold:#d6ad5e; --warn:#f0a36f; --warn-soft:#3a2416; color-scheme:dark}
+/* 不跟系統深色模式：全站 tools-theme.css 固定淺色並把內文設成深色字，這裡若再切深色底會變成深字配深底、看不清楚 */
 body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:14px}
 *{box-sizing:border-box}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line);

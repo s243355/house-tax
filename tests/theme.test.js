@@ -68,3 +68,10 @@ for (const name of withHeader.concat(['card'])) {
   assert.ok(read(name + '.html').includes('https://line.me/R/ti/p/@161cayoi'), name + ' LINE must be the official account');
 }
 console.log('line tests passed');
+
+// tools-theme.css 固定淺色、內文深色字；工具頁不可再有自己的深色模式，否則會變成深字配深底（屋主報告書 115/11/13 的問題）
+for (const name of themed) {
+  const html = read(name + '.html');
+  assert.ok(!/prefers-color-scheme\s*:\s*dark/.test(html), name + ' must not switch to dark colours (tools theme keeps text dark)');
+  assert.ok(!/\[data-theme="dark"\]/.test(html), name + ' must not define a dark data-theme');
+}
