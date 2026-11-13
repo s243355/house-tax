@@ -137,4 +137,21 @@ const communities = fs.readFileSync(path.join(root, 'yucheng-communities.html'),
 assert.ok(communities.includes('class="abadge" href="/yucheng-a-'), 'LINE bot still scrapes root-absolute abadge links');
 assert.ok(!communities.includes('class="abadge" href="yucheng-a-'), 'abadge must not be rewritten to a relative URL');
 
+// 每月實價更新用 scripts/yucheng 重產社區頁。模板若寫回 /images/...，產出頁會再被上面的檢查擋下。
+const genDir = path.join(root, 'scripts/yucheng');
+for (const name of fs.readdirSync(genDir)) {
+  if (!name.endsWith('.py')) continue;
+  const text = fs.readFileSync(path.join(genDir, name), 'utf8');
+  rootAbsAttr.lastIndex = 0;
+  let gm;
+  while ((gm = rootAbsAttr.exec(text))) {
+    const target = gm[2];
+    const allowed = target.startsWith('yucheng-') || target === '' || target.startsWith('#');
+    assert.ok(allowed, 'scripts/yucheng/' + name + ' root-absolute ' + gm[0].slice(0, 80));
+  }
+}
+const pageTemplate = fs.readFileSync(path.join(genDir, 'common.py'), 'utf8');
+assert.ok(pageTemplate.includes('src="images/sinyi-logo.png"'), 'community page template must use a relative logo');
+assert.ok(!pageTemplate.includes('src="/images/sinyi-logo.png"'), 'community page template must not use a root-absolute logo');
+
 console.log('pages tests passed');
