@@ -151,11 +151,12 @@ footer strong{color:var(--fg)}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;gap:8px;background:var(--surface);border-top:1px solid var(--line);
   padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .dock .btn{flex:1;max-width:220px;padding:9px 6px;font-size:.88rem;line-height:1.2;white-space:nowrap}
+.brand-logo{height:20px;width:auto;display:block;flex:none}@media (max-width:380px){.brand-logo{height:16px}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand-wrap" href="/"><span class="brand-mark">承</span><span class="brand">房產找<b>祐承</b></span></a>
+  <a class="brand-wrap" href="/"><img class="brand-logo" src="/images/sinyi-logo.png" alt="信義房屋" width="113" height="20" style="height:20px;width:auto;display:block;flex:none"><span aria-hidden="true" style="width:1px;height:18px;background:var(--line,#d5ddd8);flex:none"></span><span class="brand">房產找<b>祐承</b></span></a>
   <a class="btn solid" data-line href="https://line.me/R/ti/p/%40161cayoi">加 LINE</a>
 </div>
 <div class="tabsrow"><div class="wrap">
